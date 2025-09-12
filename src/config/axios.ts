@@ -16,22 +16,18 @@ axiosInstance.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    // console.log("Request Config:", config);
     return config;
   },
   (error) => {
-    // console.error("Request Error:", error);
     return Promise.reject(error);
   }
 );
 
 axiosInstance.interceptors.response.use(
   (response) => {
-    // console.log("Response:", response);
     return response;
   },
   (error) => {
-    // console.error("Response Error:", error);
     return Promise.reject(error);
   }
 );

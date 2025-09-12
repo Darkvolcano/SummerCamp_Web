@@ -1,35 +1,83 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  // Outlet,
+} from "react-router-dom";
+// import Navbar from "./components/Navbar";
+// import Footer from "./components/Footer";
+import Login from "./pages/Login/Login";
+// import VerifyEmail from "./pages/VerifyEmail";
+// import VerifyOTP from "./pages/VerifyOTP";
+// import ManagerDashboard from "./pages/manager/ManagerDashboard";
+// import Register from "./pages/Register";
+// import HomePage from "./pages/HomePage";
+import Forbidden from "./pages/Forbidden/Forbidden";
+import { AuthGuardProvider } from "./contexts/AuthGuardContext";
+import { PagePath } from "./enums/page-path.enum";
+
+// const LayoutWithNavFooter = () => (
+//   <>
+//     <Navbar />
+//     <div style={{ paddingTop: "72px", overflow: "hidden" }}>
+//       <Outlet />
+//     </div>
+//     <Footer />
+//   </>
+// );
+
+// const LayoutWithSidebarAdmin = () => (
+//   <>
+//     <AdminSidebar />
+//   </>
+// );
+
+// const LayoutWithSidebarStaff = () => (
+//   <>
+//     <StaffSidebar />
+//   </>
+// );
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <Router>
+      <AuthGuardProvider>
+        <Routes>
+          <Route path="/forbidden" element={<Forbidden />} />
+          {/* <Route element={<LayoutWithNavFooter />}> */}
+          {/* <Route path="/" element={<HomePage />} /> */}
+          <Route path={PagePath.LOGIN} element={<Login />} />
+          {/* <Route path="/verify-email" element={<VerifyEmail />} />
+            <Route path="/verify-otp" element={<VerifyOTP />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/register" element={<Register />} /> */}
+          {/* <Route
+                path="order-tracking/:orderId"
+                element={<OrderTracking />}
+              />
+              <Route path="promotion" element={<Promotion />} /> */}
+          {/* </Route> */}
+
+          {/* <Route element={<LayoutWithSidebarAdmin />}>
+            <Route path="/admin/dashboard" element={<ReportManagement />} />
+            <Route path="/admin/users" element={<UserManagement />} />
+            <Route
+              path="/admin/system-issues"
+              element={<SystemIssuesReport />}
+            />
+            <Route path="/admin/chat" element={<ChatAdmin />} />
+            <Route path="/admin/profile" element={<AdminProfile />} />
+          </Route> */}
+
+          {/* <Route element={<LayoutWithSidebarStaff />}>
+            <Route path="/staff/orders" element={<StaffOrderManagement />} />
+            <Route path="/staff/profile" element={<StaffProfile />} />
+            <Route path="/staff/chat" element={<StaffChat />} />
+          </Route> */}
+        </Routes>
+      </AuthGuardProvider>
+    </Router>
+  );
 }
 
-export default App
+export default App;
