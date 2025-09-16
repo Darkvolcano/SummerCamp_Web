@@ -18,6 +18,6 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 const storage = getStorage(app);
-const messaging = getMessaging(app); // Khởi tạo Messaging
+const messaging = getMessaging(app);
 
 export { app, auth, googleProvider, storage, messaging };
