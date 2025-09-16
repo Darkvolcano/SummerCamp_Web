@@ -1,0 +1,67 @@
+.staff-sidebar-toggle-btn {
+  color: #d97706 !important; /* amber-600 */
+}
+.staff-sidebar-toggle-btn:hover {
+  color: #b45309 !important; /* amber-700 */
+}
+/* Placeholder input tìm kiếm */
+input[placeholder="Tìm kiếm..."] {
+  color: #d97706 !important; /* amber-600 */
+}
+input[placeholder="Tìm kiếm..."]::placeholder {
+  color: #d97706 !important; /* amber-600 */
+  opacity: 1;
+}
+.admin-bell-btn {
+  color: #d97706 !important; /* amber-600 */
+  transition: color 0.2s;
+}
+.admin-bell-btn:hover {
+  color: #b45309 !important; /* amber-700 */
+  transition: color 0.2s;
+}
+
+.staff-sidebar .ant-menu-item-selected {
+  background-color: #d97706 !important; /* amber-800 */
+}
+
+.staff-sidebar .ant-menu-item:hover {
+  background-color: #f1cd57 !important; /* amber-200 */
+}
+
+.staff-sidebar .ant-menu-submenu-title:hover {
+  background-color: #fde68a !important; /* amber-200 */
+}
+
+.staff-sidebar .ant-menu-item-selected .ant-menu-item-icon {
+  color: #fff !important;
+}
+
+.staff-sidebar .ant-menu-item .ant-menu-item-icon {
+  color: #fefce8 !important; /* amber-25 */
+  margin-right: 12px;
+}
+
+.staff-sidebar .ant-menu-submenu-title .ant-menu-item-icon {
+  color: #fefce8 !important; /* amber-25 */
+}
+
+.staff-sidebar .ant-menu-item-selected .ant-menu-title-content {
+  color: #fff !important;
+}
+
+.staff-sidebar .ant-menu-item .ant-menu-title-content {
+  color: #fefce8 !important; /* amber-25 */
+}
+
+.staff-sidebar .ant-menu-submenu-title .ant-menu-title-content {
+  color: #fefce8 !important; /* amber-25 */
+}
+
+.staff-sidebar .ant-menu-submenu-arrow {
+  color: #fefce8 !important; /* amber-25 */
+}
+
+.staff-sidebar .ant-menu-submenu-selected .ant-menu-submenu-arrow {
+  color: #fff !important;
+}

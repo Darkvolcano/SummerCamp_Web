@@ -15,6 +15,8 @@ import Login from "./pages/Login/Login";
 import Forbidden from "./pages/Forbidden/Forbidden";
 import { AuthGuardProvider } from "./contexts/AuthGuardContext";
 import { PagePath } from "./enums/page-path.enum";
+import AdminSidebar from "./components/sidebar/Admin/Admin";
+import StaffSidebar from "./components/sidebar/Staff/Staff";
 
 // const LayoutWithNavFooter = () => (
 //   <>
@@ -26,17 +28,18 @@ import { PagePath } from "./enums/page-path.enum";
 //   </>
 // );
 
-// const LayoutWithSidebarAdmin = () => (
-//   <>
-//     <AdminSidebar />
-//   </>
-// );
+// 2 cái layout sidebar này là ví dụ có thể sửa lại
+const LayoutWithSidebarAdmin = () => (
+  <>
+    <AdminSidebar />
+  </>
+);
 
-// const LayoutWithSidebarStaff = () => (
-//   <>
-//     <StaffSidebar />
-//   </>
-// );
+const LayoutWithSidebarStaff = () => (
+  <>
+    <StaffSidebar />
+  </>
+);
 
 function App() {
   return (
@@ -58,22 +61,24 @@ function App() {
               <Route path="promotion" element={<Promotion />} /> */}
           {/* </Route> */}
 
-          {/* <Route element={<LayoutWithSidebarAdmin />}>
-            <Route path="/admin/dashboard" element={<ReportManagement />} />
+          <Route element={<LayoutWithSidebarAdmin />}>
+            {/* Lưu ý: cái này dùng bỏ vào những trang quản lý mà admin quản lý */}
+            {/* <Route path="/admin/dashboard" element={<ReportManagement />} />
             <Route path="/admin/users" element={<UserManagement />} />
             <Route
               path="/admin/system-issues"
               element={<SystemIssuesReport />}
             />
             <Route path="/admin/chat" element={<ChatAdmin />} />
-            <Route path="/admin/profile" element={<AdminProfile />} />
-          </Route> */}
+            <Route path="/admin/profile" element={<AdminProfile />} /> */}
+          </Route>
 
-          {/* <Route element={<LayoutWithSidebarStaff />}>
-            <Route path="/staff/orders" element={<StaffOrderManagement />} />
+          <Route element={<LayoutWithSidebarStaff />}>
+            {/* Lưu ý: cái này dùng bỏ vào những trang mà staff quản lý và xem*/}
+            {/* <Route path="/staff/orders" element={<StaffOrderManagement />} />
             <Route path="/staff/profile" element={<StaffProfile />} />
-            <Route path="/staff/chat" element={<StaffChat />} />
-          </Route> */}
+            <Route path="/staff/chat" element={<StaffChat />} /> */}
+          </Route>
         </Routes>
       </AuthGuardProvider>
     </Router>

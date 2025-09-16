@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Input, Button, message, Form, Divider } from "antd";
 import "./Login.css";
 // import APP_LOGIN from "../assets/login.png";
