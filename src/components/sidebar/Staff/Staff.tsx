@@ -23,7 +23,7 @@ import {
 } from "@ant-design/icons";
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import "./Staff.css";
-import logo from "../../assets/logo-footer.png";
+// import logo from "../../assets/logo-footer.png";
 import { useAuthStore } from "../../../services/userService";
 import {
   useGetNotifications,
@@ -194,7 +194,7 @@ const StaffSidebar = () => {
               height: "60px",
             }}
           >
-            <img
+            {/* <img
               src={logo}
               alt="logo"
               style={{
@@ -203,7 +203,7 @@ const StaffSidebar = () => {
                 objectFit: "contain",
                 transition: "all 0.3s",
               }}
-            />
+            /> */}
           </h2>
         </div>
         <Menu
