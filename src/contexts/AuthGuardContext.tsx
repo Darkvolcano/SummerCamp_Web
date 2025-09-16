@@ -58,7 +58,7 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
       PagePath.RESET_PASSWORD,
     ];
 
-    // Cái này chỉ dành riêng cho những đường dẫn có chứa :id
+    // Cái này chỉ dành riêng cho những đường dẫn có chứa đuôi /:id
     const matchDynamicRoute = (routePattern: string, path: string) => {
       const dynamicRoutePattern = routePattern
         .replace(/:productId/, "[0-9]+")
@@ -94,18 +94,18 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
     // những trang mặc định đầu tiên cho từng role sau khi login thành công
     const roleRedirects: Record<UserRole, string> = {
       Parent: PagePath.HOME,
-      Staff: "/staff/orders",
+      Staff: "/staff/orders", // có thể thay đường dẫn bằng PagePath
       Admin: "/admin/users",
       Camper: "/manager/dashboard",
     };
 
-    if (location.pathname === "/") {
+    if (location.pathname === PagePath.ROOT) {
       navigate(roleRedirects[decoded.role as UserRole], { replace: true });
       return;
     }
 
     const restrictedPages: Record<UserRole, string[]> = {
-      // có thể thay những đường dẫn bằng PagePath cũng được
+      // có thể thay những đường dẫn bằng PagePath
       Staff: [
         "/staff/orders",
         "/staff/profile",
