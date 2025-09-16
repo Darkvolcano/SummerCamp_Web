@@ -94,12 +94,12 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
     // những trang mặc định đầu tiên cho từng role sau khi login thành công
     const roleRedirects: Record<UserRole, string> = {
       Parent: PagePath.HOME,
-      Staff: "/staff/orders", // có thể thay những đường dẫn bằng PagePath
+      Staff: "/staff/orders", // có thể thay đường dẫn bằng PagePath
       Admin: "/admin/users",
       Camper: "/manager/dashboard",
     };
 
-    if (location.pathname === "/") {
+    if (location.pathname === PagePath.ROOT) {
       navigate(roleRedirects[decoded.role as UserRole], { replace: true });
       return;
     }

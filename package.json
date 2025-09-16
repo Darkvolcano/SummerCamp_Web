@@ -10,10 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@ckeditor/ckeditor5-react": "^11.0.0",
     "@tanstack/react-query": "^5.87.4",
     "@tanstack/react-router": "^1.131.41",
     "antd": "^5.27.3",
     "axios": "^1.12.0",
+    "ckeditor5": "^46.1.1",
     "dayjs": "^1.11.18",
     "firebase": "^12.2.1",
     "jwt-decode": "^4.0.0",
