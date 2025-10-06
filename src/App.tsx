@@ -46,6 +46,7 @@ function App() {
     <Router>
       <AuthGuardProvider>
         <Routes>
+          <Route path="/" element={<Login />} />
           <Route path="/forbidden" element={<Forbidden />} />
           {/* <Route element={<LayoutWithNavFooter />}> */}
           {/* <Route path="/" element={<HomePage />} /> */}
