@@ -1,187 +1,217 @@
 .login-container {
-  display: flex;
-  height: 94vh;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  font-family: "Montserrat", sans-serif;
+    display: flex;
+    height: 94vh;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: "Montserrat", sans-serif;
+    overflow: hidden;
+}
+
+.login-container.slide-out {
+    animation: slideOutToLeft 0.6s ease-out forwards;
+}
+
+@keyframes slideOutToLeft {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
 }
 
 .image-section {
-  flex: 1;
-  background: #000;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    flex: 1;
+    background: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .food-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .form-section {
-  flex: 1;
-  background: #fff7e6;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
+    flex: 1;
+    background: #fff7e6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
 }
 
 .form-content {
-  margin: 0px auto;
-  width: max-content;
-  padding: 0px 20px;
+    margin: 0px auto;
+    width: max-content;
+    padding: 0px 20px;
 }
 
 .title {
-  font-size: 40px;
-  font-weight: bold;
-  margin-bottom: 10px;
-  color: #ec6426;
+    font-size: 40px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #ec6426;
 }
 
 .subtitle {
-  font-size: 16px;
-  color: #632713;
-  margin-bottom: 30px;
+    font-size: 16px;
+    color: #632713;
+    margin-bottom: 30px;
 }
 
 .input-field {
-  margin-bottom: 20px;
-  border-radius: 5px;
-  margin: 10px 0;
-  height: 40px;
-  max-width: 100% !important;
-  border: 1px solid #d9d9d9 !important;
-  width: 100%;
-  color: #da7339;
-  font-family: "Montserrat", sans-serif;
-  /* max-width: 400px; */
+    margin-bottom: 20px;
+    border-radius: 5px;
+    margin: 10px 0;
+    height: 40px;
+    max-width: 100% !important;
+    border: 1px solid #d9d9d9 !important;
+    width: 100%;
+    color: #da7339;
+    font-family: "Montserrat", sans-serif;
+    /* max-width: 400px; */
 }
 
 .input-field:hover {
-  border-color: #f97316 !important;
+    border-color: #f97316 !important;
 }
 
 .login-button {
-  width: 100%;
-  /* max-width: 400px; */
-  background: #f97316;
-  border: none;
-  height: 40px;
-  font-family: "Montserrat", sans-serif;
-  border-radius: 5px;
-  color: #fff;
-  outline: none !important;
-  font-weight: bold;
-  font-size: 16px;
+    width: 100%;
+    /* max-width: 400px; */
+    background: #f97316;
+    border: none;
+    height: 40px;
+    font-family: "Montserrat", sans-serif;
+    border-radius: 5px;
+    color: #fff;
+    outline: none !important;
+    font-weight: bold;
+    font-size: 16px;
+    transition: background 0.3s ease;
 }
 
 .login-button:hover {
-  background: #e86215 !important;
+    background: #e86215 !important;
+    color: white !important;
 }
 
 .divider {
-  margin-top: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .divider::before,
 .divider::after {
-  content: "";
-  flex: 1;
-  border-bottom: 1px solid #d9d9d9;
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid #d9d9d9;
 }
 
 .divider::before {
-  margin-right: 10px;
+    margin-right: 10px;
 }
 
 .divider::after {
-  margin-left: 10px;
+    margin-left: 10px;
 }
 
 .divider-text a {
-  color: #78a243;
-  font-size: 14px;
-  text-decoration: underline;
+    color: #78a243;
+    font-size: 14px;
+    text-decoration: underline;
+    transition: color 0.3s ease;
+}
+
+.divider-text a:hover {
+    color: #5c7a32;
 }
 
 .login-brown {
-  color: #632713;
+    color: #632713;
 }
 
 .login-green {
-  color: #78a243;
-}
-
-.login-container .login-button:hover {
-  color: white !important;
+    color: #78a243;
 }
 
 .ant-menu-light .ant-menu-item:hover::after {
-  border-bottom: none !important;
+    border-bottom: none !important;
 }
 
 .ant-input-password .ant-input {
-  height: auto;
-  font-family: "Montserrat", sans-serif;
+    height: auto;
+    font-family: "Montserrat", sans-serif;
 }
 
-/* .ant-form-item-additional {
-    margin-top: -14px;
-    margin-bottom: 7px;
-  } */
-
 .ant-form-item-additional .ant-form-item-explain-error {
-  font-family: "Montserrat", sans-serif;
+    font-family: "Montserrat", sans-serif;
 }
 
 .form-content:has(.otp) {
-  padding: 0px 155px;
+    padding: 0px 155px;
 }
 
 .google-login-button {
-  height: -webkit-fill-available;
-  font-size: 16px;
-  padding: 5px;
-  color: #000 !important;
-  border: 1px solid #d9d9d9 !important;
-  outline: none !important;
+    height: -webkit-fill-available;
+    font-size: 16px;
+    padding: 5px;
+    color: #000 !important;
+    border: 1px solid #d9d9d9 !important;
+    outline: none !important;
 }
 
 .google-login-button .ant-btn-icon {
-  height: 26px;
+    height: 26px;
 }
 
 .link-forgot-password {
-  text-decoration: underline;
-  font-style: italic;
-  font-size: 16px;
-  color: #632713;
-  font-family: "Montserrat", sans-serif;
-  width: -webkit-fill-available;
-  display: block;
-  text-align: right;
-  margin-bottom: 20px;
+    text-decoration: underline;
+    font-style: italic;
+    font-size: 16px;
+    color: #632713;
+    font-family: "Montserrat", sans-serif;
+    width: -webkit-fill-available;
+    display: block;
+    text-align: right;
+    margin-bottom: 20px;
 }
 
 :where(.css-dev-only-do-not-override-ut69n1).ant-input-affix-wrapper::before {
-  display: none !important;
+    display: none !important;
 }
 
 .ant-input-password.input-field {
-  justify-content: space-between;
+    justify-content: space-between;
 }
 
 .ant-otp-input {
-  font-weight: 700;
-  font-size: 26px !important;
-  color: #632713;
-  font-family: "Montserrat", sans-serif;
+    font-weight: 700;
+    font-size: 26px !important;
+    color: #632713;
+    font-family: "Montserrat", sans-serif;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .login-container {
+        flex-direction: column;
+    }
+
+    .image-section {
+        display: none;
+    }
+
+    .form-section {
+        flex: 1;
+    }
 }

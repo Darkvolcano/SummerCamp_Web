@@ -7,10 +7,10 @@ import {
 // import Navbar from "./components/Navbar";
 // import Footer from "./components/Footer";
 import Login from "./pages/Login/Login";
+import Register from "./pages/Register/Register";
 // import VerifyEmail from "./pages/VerifyEmail";
 // import VerifyOTP from "./pages/VerifyOTP";
 // import ManagerDashboard from "./pages/manager/ManagerDashboard";
-// import Register from "./pages/Register";
 // import HomePage from "./pages/HomePage";
 import Forbidden from "./pages/Forbidden/Forbidden";
 import { AuthGuardProvider } from "./contexts/AuthGuardContext";
@@ -46,14 +46,15 @@ function App() {
     <Router>
       <AuthGuardProvider>
         <Routes>
+          <Route path="/" element={<Login />} />
           <Route path="/forbidden" element={<Forbidden />} />
           {/* <Route element={<LayoutWithNavFooter />}> */}
           {/* <Route path="/" element={<HomePage />} /> */}
           <Route path={PagePath.LOGIN} element={<Login />} />
+          <Route path="/register" element={<Register />} />
           {/* <Route path="/verify-email" element={<VerifyEmail />} />
             <Route path="/verify-otp" element={<VerifyOTP />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/register" element={<Register />} /> */}
+            <Route path="/forgot-password" element={<ForgotPassword />} /> */}
           {/* <Route
                 path="order-tracking/:orderId"
                 element={<OrderTracking />}
