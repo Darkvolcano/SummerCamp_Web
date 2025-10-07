@@ -20,7 +20,7 @@
     align-items: center;
 }
 
-.register-container .form-section {
+/* .register-container .form-section {
     flex: 1;
     background: #fff7e6;
     display: flex;
@@ -28,6 +28,14 @@
     align-items: center;
     width: 100%;
     animation: slideInFromRight 0.6s ease-out;
+} */
+.register-container .form-section {
+    flex: 1;
+    background: #fff7e6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
 }
 
 @keyframes slideInFromRight {
