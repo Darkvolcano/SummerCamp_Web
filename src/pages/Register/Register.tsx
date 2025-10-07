@@ -1,13 +1,24 @@
 import { Input, Button, message, Form, Checkbox, DatePicker } from "antd";
-import "./Register.css";
-import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { UserOutlined, MailOutlined, LockOutlined, CalendarOutlined } from "@ant-design/icons";
+import loginBackground from '../../assets/login-background.png';
+import { PagePath } from '../../enums/page-path.enum';
 
 const Register = () => {
   const [registerForm] = Form.useForm();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [isSliding, setIsSliding] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+
+  // Trigger slide-in animation when component mounts
+  useEffect(() => {
+    // Small delay to ensure smooth animation
+    setTimeout(() => {
+      setIsVisible(true);
+    }, 50);
+  }, []);
 
   const onFinish = async (values: any) => {
     setLoading(true);
@@ -19,7 +30,7 @@ const Register = () => {
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       message.success("Đăng ký thành công! Vui lòng kiểm tra email để kích hoạt tài khoản.");
-      navigate("/login");
+      navigate(PagePath.LOGIN);
     } catch (error) {
       message.error("Đăng ký thất bại. Vui lòng thử lại.");
     } finally {
@@ -27,15 +38,47 @@ const Register = () => {
     }
   };
 
+  const handleBackToLogin = () => {
+    setIsSliding(true);
+    // Wait for animation to complete before navigating
+    setTimeout(() => {
+      navigate(PagePath.LOGIN);
+    }, 600);
+  };
+
   return (
-    <div className="register-container">
-      <div className="image-section">
-        {/* Background image will be set via CSS */}
-      </div>
-      <div className="form-section">
-        <div className="form-content">
-          <h1 className="title">ĐĂNG KÝ</h1>
-          <p className="subtitle">Tạo tài khoản mới để bắt đầu</p>
+    <div
+      className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-cover bg-center bg-no-repeat overflow-hidden z-50"
+      style={{
+        backgroundImage: `url(${loginBackground})`,
+        margin: 0,
+        padding: 0,
+        width: '100vw',
+        height: '100vh',
+      }}
+    >
+      {/* Register Form Container with slide animation */}
+      <div
+        className="relative z-10"
+        style={{
+          width: '450px',
+          maxHeight: '90vh',
+          transform: isSliding ? 'translateX(150%)' : (isVisible ? 'translateX(0)' : 'translateX(150%)'),
+          opacity: isSliding ? 0 : (isVisible ? 1 : 0),
+          transition: 'transform 0.6s ease-out, opacity 0.6s ease-out',
+        }}
+      >
+        <div className="w-full h-full flex flex-col p-8 shadow-2xl overflow-y-auto" style={{
+          backgroundColor: 'rgba(255, 255, 255, 0.8)',
+          borderRadius: '25px',
+          maxHeight: '90vh'
+        }}>
+          <h1 className="text-2xl font-bold text-center mb-2" style={{ color: '#ec6426' }}>
+            ĐĂNG KÝ
+          </h1>
+          <p className="text-center mb-6 text-sm" style={{ color: '#632713' }}>
+            Tạo tài khoản mới để bắt đầu
+          </p>
 
           <Form
             form={registerForm}
@@ -54,7 +97,12 @@ const Register = () => {
               >
                 <Input
                   placeholder="Tên"
-                  className="input-field"
+                  style={{
+                    height: '40px',
+                    borderRadius: '20px',
+                    border: '2px solid #d9d9d9',
+                    fontFamily: 'inherit'
+                  }}
                   prefix={<UserOutlined style={{ color: '#da7339' }} />}
                 />
               </Form.Item>
@@ -69,7 +117,12 @@ const Register = () => {
               >
                 <Input
                   placeholder="Họ"
-                  className="input-field"
+                  style={{
+                    height: '40px',
+                    borderRadius: '20px',
+                    border: '2px solid #d9d9d9',
+                    fontFamily: 'inherit'
+                  }}
                   prefix={<UserOutlined style={{ color: '#da7339' }} />}
                 />
               </Form.Item>
@@ -94,8 +147,12 @@ const Register = () => {
             >
               <DatePicker
                 placeholder="Ngày sinh"
-                className="input-field date-picker"
-                style={{ width: '100%' }}
+                style={{
+                  width: '100%',
+                  height: '40px',
+                  borderRadius: '20px',
+                  border: '2px solid #d9d9d9'
+                }}
                 format="DD/MM/YYYY"
                 suffixIcon={<CalendarOutlined style={{ color: '#da7339' }} />}
               />
@@ -111,7 +168,12 @@ const Register = () => {
             >
               <Input
                 placeholder="Email"
-                className="input-field"
+                style={{
+                  height: '40px',
+                  borderRadius: '20px',
+                  border: '2px solid #d9d9d9',
+                  fontFamily: 'inherit'
+                }}
                 prefix={<MailOutlined style={{ color: '#da7339' }} />}
               />
             </Form.Item>
@@ -126,7 +188,12 @@ const Register = () => {
             >
               <Input.Password
                 placeholder="Mật khẩu"
-                className="input-field"
+                style={{
+                  height: '40px',
+                  borderRadius: '20px',
+                  border: '2px solid #d9d9d9',
+                  fontFamily: 'inherit'
+                }}
                 prefix={<LockOutlined style={{ color: '#da7339' }} />}
               />
             </Form.Item>
@@ -149,7 +216,12 @@ const Register = () => {
             >
               <Input.Password
                 placeholder="Xác nhận mật khẩu"
-                className="input-field"
+                style={{
+                  height: '40px',
+                  borderRadius: '20px',
+                  border: '2px solid #d9d9d9',
+                  fontFamily: 'inherit'
+                }}
                 prefix={<LockOutlined style={{ color: '#da7339' }} />}
               />
             </Form.Item>
@@ -165,35 +237,55 @@ const Register = () => {
                 },
               ]}
             >
-              <Checkbox className="terms-checkbox">
+              <Checkbox>
                 <span style={{ fontSize: '12px', color: '#632713' }}>
                   Tôi đồng ý với{' '}
-                  <Link to="/terms-of-service" style={{ color: '#f97316', fontWeight: 600 }}>
+                  <span style={{ color: '#f97316', fontWeight: 600 }}>
                     Điều khoản dịch vụ
-                  </Link>
+                  </span>
                   {' '}và{' '}
-                  <Link to="/privacy-policy" style={{ color: '#f97316', fontWeight: 600 }}>
+                  <span style={{ color: '#f97316', fontWeight: 600 }}>
                     Chính sách bảo mật
-                  </Link>
+                  </span>
                 </span>
               </Checkbox>
             </Form.Item>
 
             <Form.Item style={{ marginBottom: 0 }}>
               <Button
-                className="register-button"
                 htmlType="submit"
                 loading={loading}
+                style={{
+                  width: '100%',
+                  background: '#f97316',
+                  border: 'none',
+                  height: '40px',
+                  borderRadius: '20px',
+                  color: '#fff',
+                  fontWeight: 'bold',
+                  fontSize: '16px'
+                }}
               >
                 {loading ? 'Đang tạo tài khoản...' : 'Tạo tài khoản'}
               </Button>
             </Form.Item>
           </Form>
 
-          <div className="divider" style={{ marginTop: 20 }}>
-            <span className="divider-text">
-              <Link to="/login">Đã có tài khoản? Đăng nhập</Link>
-            </span>
+          <div style={{ marginTop: 20, textAlign: 'center' }}>
+            <button
+              onClick={handleBackToLogin}
+              style={{
+                background: 'none',
+                border: 'none',
+                padding: 0,
+                color: '#78a243',
+                fontSize: '14px',
+                textDecoration: 'underline',
+                cursor: 'pointer'
+              }}
+            >
+              Đã có tài khoản? Đăng nhập
+            </button>
           </div>
         </div>
       </div>

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import loginBackground from '../../assets/login-background.png';
+import { PagePath } from '../../enums/page-path.enum';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -8,6 +9,7 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [isSliding, setIsSliding] = useState(false);
 
   const handleSubmit = () => {
     // Handle login logic here
@@ -24,7 +26,11 @@ const Login = () => {
   };
 
   const handleSignUp = () => {
-    navigate('/register');
+    setIsSliding(true);
+    // Wait for animation to complete before navigating
+    setTimeout(() => {
+      navigate(PagePath.REGISTER);
+    }, 600); // Match this with CSS animation duration
   };
 
   return (
@@ -38,8 +44,17 @@ const Login = () => {
         height: '100vh',
       }}
     >
-      {/* Login Form Container */}
-      <div className="relative z-10" style={{ width: '400px', minHeight: '550px' }}>
+      {/* Login Form Container with slide animation */}
+      <div
+        className="relative z-10"
+        style={{
+          width: '400px',
+          minHeight: '550px',
+          transform: isSliding ? 'translateX(-150%)' : 'translateX(0)',
+          opacity: isSliding ? 0 : 1,
+          transition: 'transform 0.6s ease-out, opacity 0.6s ease-out',
+        }}
+      >
         <div className="w-full h-full flex flex-col p-8 shadow-2xl overflow-hidden" style={{
           backgroundColor: 'rgba(255, 255, 255, 0.8)',
           borderRadius: '25px'
@@ -179,5 +194,3 @@ const Login = () => {
 };
 
 export default Login;
-
-// Trigger Jira Commit
