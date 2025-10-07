@@ -17,7 +17,7 @@ import { AuthGuardProvider } from "./contexts/AuthGuardContext";
 import { PagePath } from "./enums/page-path.enum";
 import AdminSidebar from "./components/sidebar/Admin/Admin";
 import StaffSidebar from "./components/sidebar/Staff/Staff";
-
+import VerifyOtp from "./pages/Otp/OtpVerification";
 // const LayoutWithNavFooter = () => (
 //   <>
 //     <Navbar />
@@ -51,7 +51,8 @@ function App() {
           {/* <Route element={<LayoutWithNavFooter />}> */}
           {/* <Route path="/" element={<HomePage />} /> */}
           <Route path={PagePath.LOGIN} element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          <Route path={PagePath.REGISTER} element={<Register />} />
+          <Route path={PagePath.VERIFY_OTP} element={<VerifyOtp />} />
           {/* <Route path="/verify-email" element={<VerifyEmail />} />
             <Route path="/verify-otp" element={<VerifyOTP />} />
             <Route path="/forgot-password" element={<ForgotPassword />} /> */}
