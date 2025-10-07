@@ -12,9 +12,7 @@ const Register = () => {
   const [isSliding, setIsSliding] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
-  // Trigger slide-in animation when component mounts
   useEffect(() => {
-    // Small delay to ensure smooth animation
     setTimeout(() => {
       setIsVisible(true);
     }, 50);
@@ -26,11 +24,15 @@ const Register = () => {
       // TODO: Implement your register API call here
       console.log("Registration data:", values);
 
-      // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      message.success("Đăng ký thành công! Vui lòng kiểm tra email để kích hoạt tài khoản.");
-      navigate(PagePath.LOGIN);
+      message.success("Đăng ký thành công! Vui lòng kiểm tra email để nhập mã OTP.");
+
+      setIsSliding(true);
+      setTimeout(() => {
+        // Navigate to OTP verification with email
+        navigate(PagePath.VERIFY_OTP, { state: { email: values.email } });
+      }, 600);
     } catch (error) {
       message.error("Đăng ký thất bại. Vui lòng thử lại.");
     } finally {
@@ -40,7 +42,6 @@ const Register = () => {
 
   const handleBackToLogin = () => {
     setIsSliding(true);
-    // Wait for animation to complete before navigating
     setTimeout(() => {
       navigate(PagePath.LOGIN);
     }, 600);
@@ -57,7 +58,6 @@ const Register = () => {
         height: '100vh',
       }}
     >
-      {/* Register Form Container with slide animation */}
       <div
         className="relative z-10"
         style={{
