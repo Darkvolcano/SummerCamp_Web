@@ -1,0 +1,190 @@
+.register-container {
+    display: flex;
+    height: 94vh;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: "Montserrat", sans-serif;
+    overflow: hidden;
+}
+
+.register-container .image-section {
+    flex: 1;
+    background: #000;
+    background-image: url('../../assets/login-background.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.register-container .form-section {
+    flex: 1;
+    background: #fff7e6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    animation: slideInFromRight 0.6s ease-out;
+}
+
+@keyframes slideInFromRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.register-container .form-content {
+    margin: 0px auto;
+    width: max-content;
+    padding: 0px 20px;
+    max-width: 500px;
+}
+
+.register-container .title {
+    font-size: 40px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #ec6426;
+    text-align: center;
+}
+
+.register-container .subtitle {
+    font-size: 16px;
+    color: #632713;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.register-container .input-field {
+    margin-bottom: 20px;
+    border-radius: 5px;
+    margin: 10px 0;
+    height: 40px;
+    max-width: 100% !important;
+    border: 1px solid #d9d9d9 !important;
+    width: 100%;
+    color: #da7339;
+    font-family: "Montserrat", sans-serif;
+}
+
+.register-container .input-field:hover {
+    border-color: #f97316 !important;
+}
+
+.register-container .input-field:focus,
+.register-container .input-field:focus-within {
+    border-color: #f97316 !important;
+    box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.1) !important;
+}
+
+.register-container .date-picker {
+    height: 40px;
+}
+
+.register-container .date-picker .ant-picker-input>input {
+    color: #da7339;
+    font-family: "Montserrat", sans-serif;
+}
+
+.register-container .register-button {
+    width: 100%;
+    background: #f97316;
+    border: none;
+    height: 40px;
+    font-family: "Montserrat", sans-serif;
+    border-radius: 5px;
+    color: #fff;
+    outline: none !important;
+    font-weight: bold;
+    font-size: 16px;
+    transition: background 0.3s ease;
+}
+
+.register-container .register-button:hover {
+    background: #e86215 !important;
+    color: #fff !important;
+}
+
+.register-container .register-button:disabled {
+    background: #ffa366 !important;
+    cursor: not-allowed;
+}
+
+.register-container .divider {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.register-container .divider-text a {
+    color: #78a243;
+    font-size: 14px;
+    text-decoration: underline;
+    transition: color 0.3s ease;
+}
+
+.register-container .divider-text a:hover {
+    color: #5c7a32;
+}
+
+.register-container .terms-checkbox {
+    color: #632713;
+}
+
+.register-container .terms-checkbox .ant-checkbox-inner {
+    border-color: #d9d9d9;
+}
+
+.register-container .terms-checkbox .ant-checkbox-checked .ant-checkbox-inner {
+    background-color: #f97316;
+    border-color: #f97316;
+}
+
+.register-container .ant-input-password .ant-input {
+    height: auto;
+    font-family: "Montserrat", sans-serif;
+    color: #da7339;
+}
+
+.register-container .ant-input-password.input-field {
+    justify-content: space-between;
+}
+
+.register-container .ant-form-item-explain-error {
+    font-family: "Montserrat", sans-serif;
+    font-size: 12px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .register-container {
+        flex-direction: column;
+    }
+
+    .register-container .image-section {
+        display: none;
+    }
+
+    .register-container .form-section {
+        flex: 1;
+    }
+
+    .register-container .title {
+        font-size: 32px;
+    }
+
+    .register-container .form-content {
+        padding: 20px;
+        width: 100%;
+    }
+}
