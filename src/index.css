@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
 
 @layer utilities {
   @keyframes fadeIn {
@@ -19,7 +20,6 @@
 }
 
 /* Import Quicksand font - Playful, friendly, supports Vietnamese */
-@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
 
 @layer base {
 :root {
