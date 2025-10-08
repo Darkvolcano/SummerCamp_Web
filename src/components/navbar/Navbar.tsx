@@ -9,7 +9,7 @@ export default function Navbar() {
 
   const handleMobileLinkClick = () => setShowMobileMenu(false);
 
-  // Đóng mobile menu khi click ra ngoài
+  // Close mobile menu
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -24,7 +24,7 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Theo dõi scroll để thay đổi background navbar
+  // navbar scroll change
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
@@ -34,7 +34,7 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Navigation links data
+  // Navigation links 
   const navLinks = [
     { to: "/", label: "Trang chủ" },
     { to: "/programs", label: "Chương trình" },
@@ -43,7 +43,7 @@ export default function Navbar() {
     { to: "/contact", label: "Liên hệ" },
   ];
 
-  // Desktop Navigation Links 
+  // Desktop Navigation  
   const renderDesktopNavigationLinks = () => (
     <div className="hidden md:flex space-x-2 lg:space-x-4 text-xs lg:text-lg font-medium">
       {navLinks.map((link) => (
@@ -56,16 +56,10 @@ export default function Navbar() {
           <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-orange-400 transition-all duration-300 group-hover:w-full"></span>
         </Link>
       ))}
-      <Link
-        to="/find-work"
-        className="text-white hover:text-yellow-400 transition-colors px-2 py-1"
-      >
-        Find Work
-      </Link>
     </div>
   );
 
-  // Mobile Navigation Links 
+  // Mobile Navigation  
   const renderMobileNavigationLinks = () => (
     <>
       {navLinks.map((link, index) => (
