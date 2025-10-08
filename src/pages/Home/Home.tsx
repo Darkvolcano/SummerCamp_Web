@@ -1,269 +1,402 @@
-import { Button, Card, Avatar, Dropdown, message } from 'antd';
-import { UserOutlined, LogoutOutlined, SettingOutlined } from '@ant-design/icons';
+import React from 'react';
+import { Card, Row, Col } from 'antd';
+import { 
+  SafetyCertificateOutlined,
+  HeartOutlined,
+  // TrophyOutlined,
+  StarFilled,
+  TeamOutlined,
+  SearchOutlined,
+} from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { useAuthStore } from '../../services/userService';
-import { PagePath } from '../../enums/page-path.enum';
-import type { MenuProps } from 'antd';
+import './Home.css';
 
-const Home = () => {
-    const navigate = useNavigate();
-    const { user, logout } = useAuthStore();
+const Home: React.FC = () => {
+  const navigate = useNavigate();
 
-    const handleLogout = () => {
-        logout();
-        message.success('Đăng xuất thành công!');
-        navigate(PagePath.LOGIN);
-    };
+  const handleSignUpClick = () => {
+    navigate('/register');
+  };
 
-    const menuItems: MenuProps['items'] = [
-        {
-            key: 'profile',
-            label: 'Thông tin cá nhân',
-            icon: <UserOutlined />,
-            onClick: () => {
-                message.info('Chức năng đang được phát triển');
-            }
-        },
-        {
-            key: 'settings',
-            label: 'Cài đặt',
-            icon: <SettingOutlined />,
-            onClick: () => {
-                message.info('Chức năng đang được phát triển');
-            }
-        },
-        {
-            type: 'divider',
-        },
-        {
-            key: 'logout',
-            label: 'Đăng xuất',
-            icon: <LogoutOutlined />,
-            danger: true,
-            onClick: handleLogout,
-        },
-    ];
+  // Features data
+  // const features = [
+  //   {
+  //     icon: <SafetyCertificateOutlined className="text-4xl text-orange-500" />,
+  //     title: 'An toàn tuyệt đối',
+  //     description: 'Môi trường an toàn với đội ngũ giám sát 24/7 và các biện pháp bảo vệ nghiêm ngặt',
+  //   },
+  //   {
+  //     icon: <TeamOutlined className="text-4xl text-orange-500" />,
+  //     title: 'Đội ngũ chuyên nghiệp',
+  //     description: 'Huấn luyện viên giàu kinh nghiệm và tâm huyết với trẻ em',
+  //   },
+  //   {
+  //     icon: <TrophyOutlined className="text-4xl text-orange-500" />,
+  //     title: 'Chương trình đa dạng',
+  //     description: 'Nhiều hoạt động thú vị phát triển toàn diện cho trẻ',
+  //   },
+  //   {
+  //     icon: <HeartOutlined className="text-4xl text-orange-500" />,
+  //     title: 'Chăm sóc tận tình',
+  //     description: 'Quan tâm đến từng trẻ với sự yêu thương và trách nhiệm',
+  //   },
+  // ];
 
-    return (
-        <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
-            {/* Header */}
-            <header className="bg-white shadow-sm border-b border-orange-100">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center h-16">
-                        <div className="flex items-center">
-                            <h1 className="text-2xl font-bold text-orange-600">
-                                Camp Ease
-                            </h1>
-                        </div>
+  // Camp categories
+  const campCategories = [
+    {
+      image: '/images/2Explore.jpg',
+      title: 'Trại khám phá',
+      description: 'Khám phá thiên nhiên và môi trường xung quanh',
+    },
+    {
+      image: '/images/2Game.jpg',
+      title: 'Trại trò chơi',
+      description: 'Học tập qua các trò chơi vận động và tư duy',
+    },
+    {
+      image: '/images/3Game.jpg',
+      title: 'Trại thể thao',
+      description: 'Rèn luyện sức khỏe và kỹ năng thể thao',
+    },
+    {
+      image: '/images/3GirlRead.jpg',
+      title: 'Trại đọc sách',
+      description: 'Nuôi dưỡng tình yêu đọc sách và học hỏi',
+    },
+    {
+      image: '/images/3hill.jpg',
+      title: 'Trại leo núi',
+      description: 'Chinh phục đỉnh cao và rèn luyện ý chí',
+    },
+    {
+      image: '/images/4talk.jpg',
+      title: 'Trại giao tiếp',
+      description: 'Phát triển kỹ năng mềm và giao tiếp',
+    },
+  ];
 
-                        <div className="flex items-center gap-4">
-                            <span className="text-gray-700 font-medium">
-                                Xin chào, {user?.fullName || 'User'}
-                            </span>
-                            <Dropdown menu={{ items: menuItems }} placement="bottomRight" arrow>
-                                <Avatar
-                                    size="large"
-                                    icon={<UserOutlined />}
-                                    className="cursor-pointer bg-orange-500 hover:bg-orange-600 transition-colors"
-                                />
-                            </Dropdown>
-                        </div>
-                    </div>
-                </div>
-            </header>
+  // Services
+  const services = [
+    {
+      title: 'Tìm kiếm trại hè dễ dàng',
+      description: 'Dễ dàng tìm kiếm và so sánh các chương trình trại hè phù hợp với con bạn',
+      icon: <SearchOutlined className="text-5xl text-orange-500" />,
+    },
+    {
+      title: 'Đăng ký nhanh chóng',
+      description: 'Quy trình đăng ký đơn giản, tiện lợi chỉ với vài bước',
+      icon: <TeamOutlined className="text-5xl text-orange-500" />,
+    },
+    {
+      title: 'Thanh toán an toàn',
+      description: 'Hệ thống thanh toán bảo mật với nhiều phương thức linh hoạt',
+      icon: <SafetyCertificateOutlined className="text-5xl text-orange-500" />,
+    },
+    {
+      title: 'Hỗ trợ 24/7',
+      description: 'Đội ngũ chăm sóc khách hàng sẵn sàng hỗ trợ mọi lúc',
+      icon: <HeartOutlined className="text-5xl text-orange-500" />,
+    },
+  ];
 
-            {/* Main Content */}
-            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                {/* Welcome Section */}
-                <div className="text-center mb-12">
-                    <h2 className="text-4xl font-bold text-gray-900 mb-4">
-                        Chào mừng đến với Camp Ease! 🏕️
-                    </h2>
-                    <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                        Hệ thống quản lý trại hè toàn diện, giúp bạn tổ chức và quản lý các hoạt động trại hè một cách dễ dàng và hiệu quả.
-                    </p>
-                </div>
+  // Testimonials
+  const testimonials = [
+    {
+      name: 'Nguyễn Thị Mai',
+      role: 'Phụ huynh',
+      rating: 5,
+      content: 'Con tôi đã có những trải nghiệm tuyệt vời tại trại hè. Các hoạt động rất bổ ích và an toàn. Đội ngũ huấn luyện viên rất tận tâm.',
+    },
+    {
+      name: 'Trần Văn Hùng',
+      role: 'Phụ huynh',
+      rating: 5,
+      content: 'Trại hè đã giúp con tôi trở nên tự tin và độc lập hơn. Các kỹ năng sống mà con học được rất hữu ích.',
+    },
+    {
+      name: 'Lê Thị Hương',
+      role: 'Phụ huynh',
+      rating: 5,
+      content: 'Tôi rất hài lòng với chất lượng dịch vụ. Cơ sở vật chất hiện đại và đội ngũ nhân viên chuyên nghiệp.',
+    },
+  ];
 
-                {/* User Info Card */}
-                <Card
-                    className="mb-8 shadow-lg border-orange-200"
-                    style={{ borderRadius: '16px' }}
-                >
-                    <div className="flex items-center gap-6">
-                        <Avatar
-                            size={80}
-                            icon={<UserOutlined />}
-                            className="bg-gradient-to-br from-orange-400 to-orange-600"
-                        />
-                        <div className="flex-1">
-                            <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                                {user?.fullName || 'Người dùng'}
-                            </h3>
-                            <div className="space-y-1">
-                                <p className="text-gray-600">
-                                    <span className="font-semibold">Email:</span> {user?.email || 'N/A'}
-                                </p>
-                                <p className="text-gray-600">
-                                    <span className="font-semibold">Số điện thoại:</span> {user?.phone_number || 'N/A'}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </Card>
-
-                {/* Features Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-                    <Card
-                        hoverable
-                        className="shadow-md border-orange-100 hover:border-orange-300 transition-all"
-                        style={{ borderRadius: '12px' }}
-                        onClick={() => message.info('Chức năng đang được phát triển')}
-                    >
-                        <div className="text-center">
-                            <div className="text-5xl mb-4">🏕️</div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-2">
-                                Quản lý Trại hè
-                            </h3>
-                            <p className="text-gray-600">
-                                Tạo và quản lý các chương trình trại hè
-                            </p>
-                        </div>
-                    </Card>
-
-                    <Card
-                        hoverable
-                        className="shadow-md border-orange-100 hover:border-orange-300 transition-all"
-                        style={{ borderRadius: '12px' }}
-                        onClick={() => message.info('Chức năng đang được phát triển')}
-                    >
-                        <div className="text-center">
-                            <div className="text-5xl mb-4">👥</div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-2">
-                                Quản lý Học viên
-                            </h3>
-                            <p className="text-gray-600">
-                                Theo dõi thông tin và tiến độ học viên
-                            </p>
-                        </div>
-                    </Card>
-
-                    <Card
-                        hoverable
-                        className="shadow-md border-orange-100 hover:border-orange-300 transition-all"
-                        style={{ borderRadius: '12px' }}
-                        onClick={() => message.info('Chức năng đang được phát triển')}
-                    >
-                        <div className="text-center">
-                            <div className="text-5xl mb-4">📅</div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-2">
-                                Lịch trình
-                            </h3>
-                            <p className="text-gray-600">
-                                Xem và quản lý lịch trình hoạt động
-                            </p>
-                        </div>
-                    </Card>
-
-                    <Card
-                        hoverable
-                        className="shadow-md border-orange-100 hover:border-orange-300 transition-all"
-                        style={{ borderRadius: '12px' }}
-                        onClick={() => message.info('Chức năng đang được phát triển')}
-                    >
-                        <div className="text-center">
-                            <div className="text-5xl mb-4">💰</div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-2">
-                                Thanh toán
-                            </h3>
-                            <p className="text-gray-600">
-                                Quản lý thanh toán và giao dịch
-                            </p>
-                        </div>
-                    </Card>
-
-                    <Card
-                        hoverable
-                        className="shadow-md border-orange-100 hover:border-orange-300 transition-all"
-                        style={{ borderRadius: '12px' }}
-                        onClick={() => message.info('Chức năng đang được phát triển')}
-                    >
-                        <div className="text-center">
-                            <div className="text-5xl mb-4">📊</div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-2">
-                                Báo cáo
-                            </h3>
-                            <p className="text-gray-600">
-                                Xem báo cáo và thống kê chi tiết
-                            </p>
-                        </div>
-                    </Card>
-
-                    <Card
-                        hoverable
-                        className="shadow-md border-orange-100 hover:border-orange-300 transition-all"
-                        style={{ borderRadius: '12px' }}
-                        onClick={() => message.info('Chức năng đang được phát triển')}
-                    >
-                        <div className="text-center">
-                            <div className="text-5xl mb-4">⚙️</div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-2">
-                                Cài đặt
-                            </h3>
-                            <p className="text-gray-600">
-                                Tùy chỉnh hệ thống theo nhu cầu
-                            </p>
-                        </div>
-                    </Card>
-                </div>
-
-                {/* Quick Actions */}
-                <Card
-                    title={<span className="text-xl font-bold">Thao tác nhanh</span>}
-                    className="shadow-lg border-orange-200"
-                    style={{ borderRadius: '16px' }}
-                >
-                    <div className="flex flex-wrap gap-4">
-                        <Button
-                            type="primary"
-                            size="large"
-                            className="bg-orange-500 hover:bg-orange-600 border-orange-500"
-                            onClick={() => message.info('Chức năng đang được phát triển')}
-                        >
-                            Tạo trại hè mới
-                        </Button>
-                        <Button
-                            size="large"
-                            onClick={() => message.info('Chức năng đang được phát triển')}
-                        >
-                            Xem danh sách trại hè
-                        </Button>
-                        <Button
-                            size="large"
-                            onClick={() => message.info('Chức năng đang được phát triển')}
-                        >
-                            Quản lý đăng ký
-                        </Button>
-                        <Button
-                            size="large"
-                            onClick={() => message.info('Chức năng đang được phát triển')}
-                        >
-                            Xem báo cáo
-                        </Button>
-                    </div>
-                </Card>
-            </main>
-
-            {/* Footer */}
-            <footer className="bg-white border-t border-orange-100 mt-12">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                    <div className="text-center text-gray-600">
-                        <p>© 2025 Camp Ease. All rights reserved.</p>
-                        <p className="text-sm mt-2">Hệ thống quản lý trại hè chuyên nghiệp</p>
-                    </div>
-                </div>
-            </footer>
+  return (
+    <div className="home-page">
+      
+      {/* Hero Section */}
+      <section 
+        className="relative min-h-screen flex items-center justify-center overflow-hidden"
+        style={{
+          background: 'linear-gradient(270deg, rgba(83, 83, 83, 0.86) 0%, rgba(25, 25, 25, 0.688) 33.5%, rgba(25, 25, 25, 0.86) 100%), url(/images/GroupLearn.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        {/* Content */}
+        <div className="relative z-10 px-4 max-w-6xl mx-auto pt-20">
+          <div className="max-w-3xl">
+            <h1 className="text-5xl md:text-5xl font-bold mb-6 leading-tight">
+              <span className="bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text text-transparent">
+                Khám phá, học hỏi và kết bạn
+              </span>
+              <span className="text-white block mt-2">
+                trong môi trường trại hè an toàn
+              </span>
+            </h1>
+            <p className="text-xl text-white/90 mb-8 leading-relaxed">
+              Tham gia trại hè để con bạn có cơ hội phát triển toàn diện về kỹ năng, 
+              kiến thức và trải nghiệm những kỷ niệm đáng nhớ cùng bạn bè mới.
+            </p>
+            <button
+              onClick={handleSignUpClick}
+              className="bg-gradient-to-r from-orange-500 to-yellow-400 text-white font-bold px-10 py-4 rounded-xl text-lg hover:shadow-2xl transition-all duration-300 hover:scale-105"
+            >
+              Đăng ký ngay
+            </button>
+          </div>
         </div>
-    );
+      </section>
+      {/* About Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-6">
+          <Row gutter={[48, 48]} align="middle">
+            <Col xs={24} lg={12}>
+              <div className="relative">
+                <img
+                  src="/images/close-up-girl-child-friends-park-smiling-camera.jpg"
+                  alt="Children at camp"
+                  className="w-full rounded-3xl shadow-2xl"
+                />
+              </div>
+            </Col>
+
+            <Col xs={24} lg={12}>
+              <div className="space-y-6">
+                <h2 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
+                  Trại hè dành cho mọi lứa tuổi
+                </h2>
+                <p className="text-lg text-gray-600 leading-relaxed">
+                  Tìm chương trình trại hè phù hợp cho con bạn tại CampEase
+                </p>
+                <ul className="space-y-4 text-gray-700">
+                  <li className="flex items-start">
+                    <span className="text-orange-500 mr-3 text-xl">✓</span>
+                    <span>Truy cập hơn 100+ chương trình trại hè từ các tổ chức uy tín</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-orange-500 mr-3 text-xl">✓</span>
+                    <span>Kết nối nhanh chóng với ban tổ chức trại hè</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-orange-500 mr-3 text-xl">✓</span>
+                    <span>Quy trình đăng ký đơn giản và tiện lợi</span>
+                  </li>
+                </ul>
+                <button
+                  onClick={handleSignUpClick}
+                  className="mt-6 bg-gradient-to-r from-orange-500 to-yellow-400 text-white font-bold px-8 py-4 rounded-xl hover:shadow-xl transition-all duration-300"
+                >
+                  Bắt đầu ngay
+                </button>
+              </div>
+            </Col>
+          </Row>
+        </div>
+      </section>
+
+      {/* Find Match Section */}
+      <section className="py-20 bg-[rgba(15,15,15,0.95)]">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold mb-4">
+              <span className="bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text text-transparent">
+                Tìm trại hè phù hợp cho bạn
+              </span>
+            </h2>
+          </div>
+
+          <Row gutter={[32, 32]} justify="center">
+            <Col xs={24} md={12} lg={10}>
+              <Card className="bg-white rounded-2xl overflow-hidden shadow-xl border-0 h-full">
+                <div className="h-56 overflow-hidden">
+                  <img
+                    src="/images/close-up-girl-child-friends-park-smiling-camera.jpg"
+                    alt="For Parents"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="p-6">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-3">Dành cho Phụ huynh</h3>
+                  <p className="text-gray-600 mb-4 leading-relaxed">
+                    Tìm kiếm và đăng ký các chương trình trại hè chất lượng cao cho con bạn. 
+                    Dễ dàng theo dõi và quản lý đăng ký.
+                  </p>
+                  <button
+                    onClick={() => navigate('/camps')}
+                    className="text-orange-500 font-semibold hover:text-orange-600 transition-colors"
+                  >
+                    Khám phá ngay →
+                  </button>
+                </div>
+              </Card>
+            </Col>
+
+            <Col xs={24} md={12} lg={10}>
+              <Card className="bg-white rounded-2xl overflow-hidden shadow-xl border-0 h-full">
+                <div className="h-56 overflow-hidden">
+                  <img
+                    src="/images/GroupLearn.jpg"
+                    alt="For Organizers"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="p-6">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-3">Dành cho Ban tổ chức</h3>
+                  <p className="text-gray-600 mb-4 leading-relaxed">
+                    Quản lý chương trình trại hè, nhân viên và học viên một cách hiệu quả. 
+                    Hệ thống quản lý toàn diện.
+                  </p>
+                  <button
+                    onClick={() => navigate('/login')}
+                    className="text-orange-500 font-semibold hover:text-orange-600 transition-colors"
+                  >
+                    Đăng nhập →
+                  </button>
+                </div>
+              </Card>
+            </Col>
+          </Row>
+        </div>
+      </section>
+
+      {/* Categories Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-6">
+          <h2 className="text-3xl font-bold text-gray-900 mb-8">Khám phá danh mục</h2>
+          
+          <div className="mb-8">
+            <h3 className="text-xl font-semibold text-gray-800 mb-6">Các loại trại hè</h3>
+            <Row gutter={[24, 24]}>
+              {campCategories.map((category, index) => (
+                <Col xs={12} sm={8} md={6} key={index}>
+                  <div className="group cursor-pointer">
+                    <div className="overflow-hidden rounded-xl mb-3 shadow-md hover:shadow-xl transition-all duration-300">
+                      <img
+                        src={category.image}
+                        alt={category.title}
+                        className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+                    </div>
+                    <h4 className="font-semibold text-gray-800 group-hover:text-orange-500 transition-colors">
+                      {category.title}
+                    </h4>
+                    <p className="text-sm text-gray-600">{category.description}</p>
+                  </div>
+                </Col>
+              ))}
+            </Row>
+            <div className="text-right mt-4">
+              <button className="text-orange-500 font-semibold hover:text-orange-600 transition-colors">
+                Xem thêm →
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              Phản hồi từ phụ huynh
+            </h2>
+            <p className="text-gray-600 text-lg">
+              Những trải nghiệm thực tế từ cộng đồng của chúng tôi
+            </p>
+          </div>
+
+          <Row gutter={[32, 32]}>
+            {testimonials.map((testimonial, index) => (
+              <Col xs={24} md={8} key={index}>
+                <Card className="h-full border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+                  <div className="mb-4">
+                    {[...Array(testimonial.rating)].map((_, i) => (
+                      <StarFilled key={i} className="text-yellow-400 text-lg" />
+                    ))}
+                  </div>
+                  <p className="text-gray-700 mb-6 leading-relaxed italic">
+                    "{testimonial.content}"
+                  </p>
+                  <div className="flex items-center">
+                    <div className="w-12 h-12 bg-gradient-to-r from-orange-400 to-yellow-400 rounded-full flex items-center justify-center text-white font-bold text-lg mr-4">
+                      {testimonial.name.charAt(0)}
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900">{testimonial.name}</h4>
+                      <p className="text-sm text-gray-500">{testimonial.role}</p>
+                    </div>
+                  </div>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+        </div>
+      </section>
+
+      {/* Services Section */}
+      <section className="py-20 bg-gradient-to-br from-white via-orange-50 to-yellow-50">
+        <div className="max-w-7xl mx-auto px-6">
+          <h2 className="text-3xl font-bold text-gray-900 mb-12 text-center">Dịch vụ của chúng tôi</h2>
+          <Row gutter={[32, 32]}>
+            {services.map((service, index) => (
+              <Col xs={24} sm={12} key={index}>
+                <div className="bg-white p-8 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300">
+                  <div className="mb-6">{service.icon}</div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">{service.title}</h3>
+                  <p className="text-gray-600 leading-relaxed">{service.description}</p>
+                </div>
+              </Col>
+            ))}
+          </Row>
+          <div className="text-center mt-12">
+            <button className="px-10 py-4 border-2 border-orange-500 text-orange-500 font-semibold rounded-full hover:bg-orange-50 transition-all duration-300">
+              Xem thêm
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 bg-gradient-to-r from-orange-500 via-orange-400 to-yellow-400">
+        <div className="max-w-4xl mx-auto text-center px-6">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+            Sẵn sàng cho mùa hè tuyệt vời?
+          </h2>
+          <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+            Đăng ký ngay để con bạn có cơ hội trải nghiệm những hoạt động 
+            bổ ích và thú vị trong mùa hè này!
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button
+              onClick={handleSignUpClick}
+              className="bg-white text-orange-600 font-bold px-10 py-4 rounded-xl hover:bg-gray-50 transition-all duration-300 shadow-lg hover:shadow-xl"
+            >
+              Đăng ký ngay
+            </button>
+            <button
+              onClick={() => navigate('/camps')}
+              className="bg-transparent border-2 border-white text-white font-bold px-10 py-4 rounded-xl hover:bg-white hover:text-orange-600 transition-all duration-300"
+            >
+              Xem các trại hè
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
 };
 
 export default Home;

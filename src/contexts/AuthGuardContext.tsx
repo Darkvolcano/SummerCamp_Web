@@ -50,6 +50,7 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
   useEffect(() => {
     // Public routes that don't need authentication
     const publicRoutes = [
+      PagePath.ROOT,
       PagePath.LOGIN,
       PagePath.REGISTER,
       PagePath.VERIFY_EMAIL,
