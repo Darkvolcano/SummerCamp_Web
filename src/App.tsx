@@ -12,7 +12,7 @@ import { PagePath } from "./enums/page-path.enum";
 import AdminSidebar from "./components/sidebar/Admin/Admin";
 import StaffSidebar from "./components/sidebar/Staff/Staff";
 import VerifyOtp from "./pages/Otp/OtpVerification";
-
+import MainLayout from "./layouts/MainLayout";
 const LayoutWithSidebarAdmin = () => (
   <>
     <AdminSidebar />
@@ -37,8 +37,8 @@ function App() {
           <Route path={PagePath.FORBIDDEN} element={<Forbidden />} />
 
           {/* Home Route - Protected */}
-          <Route path={PagePath.HOME} element={<Home />} />
-          <Route path={PagePath.ROOT} element={<Home />} />
+          <Route path={PagePath.HOME} element={<MainLayout><Home /></MainLayout>} />
+          <Route path={PagePath.ROOT} element={<MainLayout><Home /></MainLayout>} />
 
           {/* Admin Routes */}
           <Route element={<LayoutWithSidebarAdmin />}>
