@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { message, Button, Alert } from 'antd';
-import { MailOutlined, RedoOutlined } from '@ant-design/icons';
-import loginBackground from '../../assets/login-background.png';
+import { Mail, RefreshCw, ArrowLeft, CheckCircle2, AlertCircle, Clock, Loader2 } from 'lucide-react';
 import { PagePath } from '../../enums/page-path.enum';
+import { useVerifyOTP, useResendOTP } from '../../services/userService';
+import './OtpVerification.css';
 
 const OtpVerification = () => {
     const navigate = useNavigate();
@@ -11,13 +11,14 @@ const OtpVerification = () => {
     const [otp, setOtp] = useState(['', '', '', '', '', '']);
     const [isSliding, setIsSliding] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
-    const [loading, setLoading] = useState(false);
     const [countdown, setCountdown] = useState(60);
     const [canResend, setCanResend] = useState(false);
-    const [resending, setResending] = useState(false);
     const [error, setError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+    const verifyOtpMutation = useVerifyOTP();
+    const resendOtpMutation = useResendOTP();
 
     const email = location.state?.email || 'user@example.com';
 
@@ -99,30 +100,33 @@ const OtpVerification = () => {
             return;
         }
 
-        setLoading(true);
         setError('');
         setSuccessMessage('');
 
         try {
-            // TODO: Implement your OTP verification API call here
-            console.log('Verifying OTP:', otpCode, 'for email:', email);
+            const response = await verifyOtpMutation.mutateAsync({
+                email: email,
+                otp: otpCode
+            });
 
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            if (response) {
+                setSuccessMessage('✅ Mã xác thực thành công!');
 
-            setSuccessMessage('✅ Mã xác thực thành công!');
-
-            setTimeout(() => {
-                setIsSliding(true);
                 setTimeout(() => {
-                    navigate(PagePath.LOGIN);
-                }, 600);
-            }, 1000);
+                    setIsSliding(true);
+                    setTimeout(() => {
+                        navigate(PagePath.LOGIN);
+                    }, 600);
+                }, 1000);
+            }
         } catch (error: any) {
             console.error('OTP verification failed:', error);
 
             let errorMessage = 'Xác thực thất bại. Vui lòng thử lại.';
 
-            if (error.message) {
+            if (error?.responseValue?.message) {
+                errorMessage = error.responseValue.message;
+            } else if (error.message) {
                 if (error.message.includes('expired')) {
                     errorMessage = 'Mã xác thực đã hết hạn. Vui lòng yêu cầu mã mới.';
                 } else if (error.message.includes('invalid') || error.message.includes('incorrect')) {
@@ -135,33 +139,31 @@ const OtpVerification = () => {
             setError(errorMessage);
             setOtp(['', '', '', '', '', '']);
             inputRefs.current[0]?.focus();
-        } finally {
-            setLoading(false);
         }
     };
 
     const handleResend = async () => {
-        if (!canResend || resending) return;
+        if (!canResend || resendOtpMutation.isPending) return;
 
-        setResending(true);
         setError('');
         setSuccessMessage('');
 
         try {
-            // TODO: Implement your resend OTP API call here
-            console.log('Resending OTP to:', email);
+            // Note: Backend doesn't have resend-otp endpoint yet
+            // This is a placeholder - you may need to implement resend-otp in backend
+            // For now, user should go back to register page to retry
+            setError('Chức năng gửi lại mã đang được phát triển. Vui lòng quay lại trang đăng ký để thử lại.');
 
-            await new Promise(resolve => setTimeout(resolve, 500));
-
-            setSuccessMessage('📧 Mã xác thực mới đã được gửi thành công!');
-            setCountdown(60);
-            setCanResend(false);
-            setOtp(['', '', '', '', '', '']);
-            inputRefs.current[0]?.focus();
-        } catch (error) {
-            setError('Gửi lại mã thất bại. Vui lòng thử lại.');
-        } finally {
-            setResending(false);
+            // Uncomment when backend has resend-otp endpoint:
+            // await resendOtpMutation.mutateAsync({ email: email });
+            // setSuccessMessage('📧 Mã xác thực mới đã được gửi thành công!');
+            // setCountdown(60);
+            // setCanResend(false);
+            // setOtp(['', '', '', '', '', '']);
+            // inputRefs.current[0]?.focus();
+        } catch (error: any) {
+            const errorMessage = error?.responseValue?.message || 'Gửi lại mã thất bại. Vui lòng thử lại.';
+            setError(errorMessage);
         }
     };
 
@@ -173,78 +175,51 @@ const OtpVerification = () => {
     };
 
     return (
-        <div
-            className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-cover bg-center bg-no-repeat overflow-hidden z-50"
-            style={{
-                backgroundImage: `url(${loginBackground})`,
-                margin: 0,
-                padding: 0,
-                width: '100vw',
-                height: '100vh',
-            }}
-        >
-            <div
-                className="relative z-10"
-                style={{
-                    width: '480px',
-                    minHeight: '550px',
-                    transform: isSliding ? 'translateX(150%)' : (isVisible ? 'translateX(0)' : 'translateX(150%)'),
-                    opacity: isSliding ? 0 : (isVisible ? 1 : 0),
-                    transition: 'transform 0.6s ease-out, opacity 0.6s ease-out',
-                }}
-            >
-                <div className="w-full h-full flex flex-col p-8 shadow-2xl" style={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.85)',
-                    borderRadius: '25px'
-                }}>
-                    {/* Icon */}
-                    <div className="flex justify-center mb-4">
-                        <div className="w-20 h-20 rounded-full flex items-center justify-center" style={{
-                            backgroundColor: 'rgba(249, 115, 22, 0.1)',
-                        }}>
-                            <MailOutlined style={{ fontSize: '40px', color: '#f97316' }} />
-                        </div>
-                    </div>
+        <div className="otp-page-wrapper">
+            {/* Animated Background */}
+            <div className="otp-background">
+                <div className="floating-shapes">
+                    <div className="shape shape-1"></div>
+                    <div className="shape shape-2"></div>
+                    <div className="shape shape-3"></div>
+                    <div className="shape shape-4"></div>
+                    <div className="shape shape-5"></div>
+                </div>
+            </div>
 
-                    <h1 className="text-2xl font-bold text-center mb-2" style={{ color: '#ec6426', fontFamily: 'Montserrat, sans-serif' }}>
-                        Xác thực Email của bạn
-                    </h1>
-                    <p className="text-center mb-6 text-sm" style={{ color: '#632713', fontFamily: 'Montserrat, sans-serif' }}>
-                        Nhập mã OTP 6 chữ số đã được gửi đến email của bạn
-                    </p>
+            {/* Main Container */}
+            <div className={`otp-container ${isSliding ? 'slide-out' : ''} ${isVisible ? 'slide-in' : ''}`}>
+                <div className="otp-card">
+                    {/* Header Section */}
+                    <div className="otp-header">
+                        <div className="otp-icon">
+                            <Mail size={48} />
+                        </div>
+                        <h1 className="otp-title">Xác thực Email</h1>
+                        <p className="otp-subtitle">
+                            Nhập mã OTP 6 chữ số đã được gửi đến
+                        </p>
+                        <p className="otp-email">{email}</p>
+                    </div>
 
                     {/* Success Message */}
                     {successMessage && (
-                        <Alert
-                            message={successMessage}
-                            type="success"
-                            showIcon
-                            style={{
-                                marginBottom: '20px',
-                                borderRadius: '12px',
-                                fontFamily: 'Montserrat, sans-serif',
-                                fontSize: '14px'
-                            }}
-                        />
+                        <div className="otp-alert otp-alert-success">
+                            <CheckCircle2 size={20} />
+                            <span>{successMessage}</span>
+                        </div>
                     )}
 
                     {/* Error Message */}
                     {error && (
-                        <Alert
-                            message={error}
-                            type="error"
-                            showIcon
-                            style={{
-                                marginBottom: '20px',
-                                borderRadius: '12px',
-                                fontFamily: 'Montserrat, sans-serif',
-                                fontSize: '14px'
-                            }}
-                        />
+                        <div className="otp-alert otp-alert-error">
+                            <AlertCircle size={20} />
+                            <span>{error}</span>
+                        </div>
                     )}
 
                     {/* OTP Input Fields */}
-                    <div className="flex justify-center gap-2 mb-6" onPaste={handlePaste}>
+                    <div className="otp-inputs" onPaste={handlePaste}>
                         {otp.map((digit, index) => (
                             <input
                                 key={index}
@@ -257,113 +232,79 @@ const OtpVerification = () => {
                                 value={digit}
                                 onChange={(e) => handleChange(index, e.target.value)}
                                 onKeyDown={(e) => handleKeyDown(index, e)}
-                                disabled={loading || resending}
-                                className="text-center font-bold border-2 rounded-xl focus:outline-none transition-all duration-200"
-                                style={{
-                                    width: '56px',
-                                    height: '64px',
-                                    fontSize: '24px',
-                                    color: '#632713',
-                                    fontFamily: 'Montserrat, sans-serif',
-                                    backgroundColor: 'white',
-                                    borderColor: error ? '#ff4d4f' : (digit ? '#f97316' : '#d9d9d9'),
-                                    boxShadow: digit ? '0 0 0 2px rgba(249, 115, 22, 0.1)' : 'none',
-                                }}
+                                disabled={verifyOtpMutation.isPending || resendOtpMutation.isPending}
+                                className={`otp-input ${digit ? 'otp-input-filled' : ''} ${error ? 'otp-input-error' : ''}`}
                             />
                         ))}
                     </div>
 
                     {/* Verify Button */}
-                    <Button
-                        type="primary"
+                    <button
                         onClick={() => handleVerify()}
-                        loading={loading}
-                        disabled={otp.join('').length !== 6 || loading}
-                        style={{
-                            width: '100%',
-                            background: otp.join('').length === 6 ? '#f97316' : '#ffa366',
-                            border: 'none',
-                            height: '48px',
-                            borderRadius: '24px',
-                            color: '#fff',
-                            fontWeight: 'bold',
-                            fontSize: '16px',
-                            marginBottom: '24px',
-                            fontFamily: 'Montserrat, sans-serif',
-                            boxShadow: otp.join('').length === 6 ? '0 4px 12px rgba(249, 115, 22, 0.3)' : 'none',
-                        }}
+                        disabled={otp.join('').length !== 6 || verifyOtpMutation.isPending}
+                        className={`otp-verify-button ${otp.join('').length === 6 ? 'active' : ''}`}
                     >
-                        {loading ? 'Đang xác thực...' : 'Xác thực mã'}
-                    </Button>
+                        {verifyOtpMutation.isPending ? (
+                            <>
+                                <Loader2 className="button-spinner" size={20} />
+                                Đang xác thực...
+                            </>
+                        ) : (
+                            <>
+                                <CheckCircle2 size={20} />
+                                Xác thực mã
+                            </>
+                        )}
+                    </button>
 
-                    {/* Resend Code Section */}
-                    <div className="text-center mb-6">
-                        <p className="text-sm mb-2" style={{ color: '#632713', fontFamily: 'Montserrat, sans-serif' }}>
-                            Bạn chưa nhận được mã?
-                        </p>
-                        <Button
-                            type="text"
-                            icon={<RedoOutlined />}
-                            onClick={handleResend}
-                            disabled={!canResend || resending}
-                            loading={resending}
-                            style={{
-                                color: canResend ? '#f97316' : '#999',
-                                fontWeight: 600,
-                                fontSize: '14px',
-                                fontFamily: 'Montserrat, sans-serif',
-                                height: 'auto',
-                                padding: '4px 8px',
-                            }}
-                        >
-                            {resending
-                                ? 'Đang gửi...'
-                                : canResend
-                                    ? 'Gửi lại mã'
-                                    : `Gửi lại sau ${countdown}s`
-                            }
-                        </Button>
-                    </div>
-
-                    {/* Email Info Box */}
-                    <div
-                        className="p-4 rounded-xl mb-6"
-                        style={{
-                            backgroundColor: 'rgba(249, 115, 22, 0.05)',
-                            border: '1px solid rgba(249, 115, 22, 0.15)',
-                        }}
-                    >
-                        <p className="text-xs text-center mb-1" style={{ color: '#632713', fontFamily: 'Montserrat, sans-serif' }}>
-                            Mã đã được gửi đến: <strong style={{ color: '#f97316' }}>{email}</strong>
-                        </p>
-                        <p className="text-xs text-center mb-2" style={{ color: '#632713', fontFamily: 'Montserrat, sans-serif' }}>
-                            Mã sẽ hết hạn sau 10 phút
-                        </p>
-                        <p className="text-xs text-center" style={{ color: '#78a243', fontFamily: 'Montserrat, sans-serif' }}>
-                            💡 Kiểm tra thư mục spam nếu bạn không thấy email
-                        </p>
-                    </div>
-
-                    {/* Back to Register Button */}
-                    <div className="text-center">
+                    {/* Resend Section */}
+                    <div className="otp-resend-section">
+                        <p className="otp-resend-text">Bạn chưa nhận được mã?</p>
                         <button
-                            onClick={handleBackToRegister}
-                            disabled={loading || resending}
-                            style={{
-                                background: 'none',
-                                border: 'none',
-                                padding: 0,
-                                color: '#78a243',
-                                fontSize: '14px',
-                                textDecoration: 'underline',
-                                cursor: 'pointer',
-                                fontFamily: 'Montserrat, sans-serif',
-                                opacity: loading || resending ? 0.5 : 1,
-                            }}
+                            onClick={handleResend}
+                            disabled={!canResend || resendOtpMutation.isPending}
+                            className={`otp-resend-button ${canResend ? 'active' : ''}`}
                         >
-                            ← Quay lại đăng ký
+                            {resendOtpMutation.isPending ? (
+                                <>
+                                    <Loader2 className="button-spinner" size={16} />
+                                    Đang gửi...
+                                </>
+                            ) : canResend ? (
+                                <>
+                                    <RefreshCw size={16} />
+                                    Gửi lại mã
+                                </>
+                            ) : (
+                                <>
+                                    <Clock size={16} />
+                                    Gửi lại sau {countdown}s
+                                </>
+                            )}
                         </button>
                     </div>
+
+                    {/* Info Box */}
+                    <div className="otp-info-box">
+                        <div className="info-item">
+                            <Clock size={16} />
+                            <span>Mã sẽ hết hạn sau 10 phút</span>
+                        </div>
+                        <div className="info-item">
+                            <Mail size={16} />
+                            <span>Kiểm tra thư mục spam nếu không thấy email</span>
+                        </div>
+                    </div>
+
+                    {/* Back Button */}
+                    <button
+                        onClick={handleBackToRegister}
+                        disabled={verifyOtpMutation.isPending || resendOtpMutation.isPending}
+                        className="otp-back-button"
+                    >
+                        <ArrowLeft size={16} />
+                        Quay lại đăng ký
+                    </button>
                 </div>
             </div>
         </div>
