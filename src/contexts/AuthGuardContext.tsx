@@ -5,7 +5,7 @@ import { message } from "antd";
 import { jwtDecode } from "jwt-decode";
 import { PagePath } from "../enums/page-path.enum";
 
-type UserRole = "Parent" | "Staff" | "Admin" | "Camper";
+type UserRole = "Parent" | "Staff" | "Admin" | "Camper" | "User";
 
 type AuthGuardContextType = Record<string, unknown>;
 
@@ -76,12 +76,14 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
 
     try {
       const decoded = jwtDecode<{
-        id: number;
-        role: string;
-        fullName: string;
+        sub: string;
         email: string;
-        phone_number: string;
+        name: string;
+        role: string;
         exp: number;
+        iat: number;
+        iss: string;
+        aud: string;
       }>(token);
 
       // Default redirects for each role when accessing root
@@ -90,6 +92,7 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
         Staff: "/staff/orders",
         Admin: "/admin/users",
         Camper: "/manager/dashboard",
+        User: PagePath.HOME, // ✅ Regular users redirect to home
       };
 
       if (location.pathname === PagePath.ROOT) {
@@ -106,6 +109,7 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
           "/staff/pos",
           "/staff/payment-success",
           "/staff/pos/payment-cancel",
+          "/profile", // ✅ User profile page - accessible to all roles
         ],
         Parent: [
           PagePath.HOME,
@@ -116,6 +120,7 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
           "/user/order-tracking/:orderId",
           "/user/promotion",
           "/payment-cancel",
+          "/profile", // ✅ User profile page - accessible to all roles
         ],
         Camper: [
           "/manager/dashboard",
@@ -132,8 +137,17 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
           "/manager/profile",
           "/manager/blog",
           "/manager/materials-process",
+          "/profile", // ✅ User profile page - accessible to all roles
         ],
-        Admin: ["/admin/users", "/admin/profile"],
+        Admin: [
+          "/admin/users",
+          "/admin/profile",
+          "/profile", // ✅ User profile page - accessible to all roles
+        ],
+        User: [
+          PagePath.HOME,
+          "/profile", // ✅ User profile page - accessible to all roles
+        ],
       };
 
       const userRole = decoded.role as UserRole;

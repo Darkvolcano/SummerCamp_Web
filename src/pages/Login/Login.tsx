@@ -61,11 +61,14 @@ const Login = () => {
 
     setLoading(true);
     try {
-      const result = await login({ email, password });
+      const result = await login({ email, password }, rememberMe);
 
       if (result.success) {
         message.success('Đăng nhập thành công!');
-        navigate('/');
+        // Redirect to home page
+        setTimeout(() => {
+          navigate(PagePath.ROOT);
+        }, 500);
       } else {
         message.error(result.message || 'Đăng nhập thất bại');
       }
