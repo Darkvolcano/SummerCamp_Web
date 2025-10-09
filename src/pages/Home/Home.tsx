@@ -10,7 +10,11 @@ import {
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import './Home.css';
-
+import supporticon from "../../assets/support icon.png";
+import gradicon from "../../assets/grad icon.png";
+import lightbulb from "../../assets/lightbulb icon.png";
+import safeicon from "../../assets/safe icon.png";
+import teamicon from "../../assets/team icon.png";
 const Home: React.FC = () => {
   const navigate = useNavigate();
 
@@ -127,7 +131,7 @@ const Home: React.FC = () => {
       
       {/* Hero Section */}
       <section 
-        className="relative min-h-screen flex items-center justify-center overflow-hidden"
+        className="relative min-h-[700px] flex items-center justify-center overflow-hidden"
         style={{
           background: 'linear-gradient(270deg, rgba(83, 83, 83, 0.86) 0%, rgba(25, 25, 25, 0.688) 33.5%, rgba(25, 25, 25, 0.86) 100%), url(/images/GroupLearn.jpg)',
           backgroundSize: 'cover',
@@ -158,6 +162,152 @@ const Home: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* Tại sao nên chọn CampEase Section */}
+      <section className="py-20 ">
+        <div className="max-w-5xl mx-auto px-6 text-center">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-8">
+            Tại sao nên chọn CampEase?
+          </h2>
+          
+          <div className="">
+            <p className="text-lg md:text-xl text-gray-700 leading-relaxed">
+              CampEase đặc biệt chú trọng việc{' '}
+              <span className="font-bold text-orange-600">
+                truyền tải kiến thức thông qua các hoạt động thực hành thú vị
+              </span>{' '}
+              và{' '}
+              <span className="font-bold text-orange-600">
+                ứng dụng các bài học lý thuyết vào cuộc sống thường thức
+              </span>{' '}
+              để tạo ra được những sản phẩm trong cuộc sống hằng ngày.
+            </p>
+          </div>
+
+        </div>
+
+{/* Grid Layout - 3 rows x 3 columns */}
+<div className="max-w-[1000px] mx-auto px-4 mt-12">
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 justify-center">
+    
+    {/* Row 1: Photo 1 + Card 1 + Card 2 */}
+
+    <div className="w-full md:w-[300px] h-[300px] mx-auto">
+      <div className="w-full h-full rounded-2xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+        <img 
+          src="/images/3hill.jpg" 
+          alt="Trẻ em leo núi"
+          className="w-full h-full object-cover object-bottom"
+        />
+      </div>
+    </div>
+
+    <div className="w-full md:w-[300px] h-[300px] mx-auto bg-white/50 backdrop-blur-sm rounded-2xl border border-gray-200 p-6 hover:shadow-md transition-all">
+      <div className="flex flex-col items-center text-center h-full justify-center space-y-3">
+        <div className="w-16 h-16 flex items-center justify-center flex-shrink-0">
+          <img src={supporticon} alt="Support" className="w-full h-full" />
+        </div>
+        <div>
+          <h3 className="text-base font-bold text-orange-500 mb-2">Hợp tác và hỗ trợ lẫn nhau</h3>
+          <ul className="text-gray-600 text-xs space-y-1 text-left">
+            <li>✓ Tư duy phản biện được trau dồi</li>
+            <li>✓ Xem việc thất bại là cơ hội để học hỏi</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div className="w-full md:w-[300px] h-[300px] mx-auto bg-white/50 backdrop-blur-sm rounded-2xl border border-gray-200 p-6 hover:shadow-md transition-all">
+      <div className="flex flex-col items-center text-center h-full justify-center space-y-3">
+        <div className="w-16 h-16 flex items-center justify-center flex-shrink-0">
+          <img src={lightbulb} alt="Lightbulb" className="w-full h-full" />
+        </div>
+        <div>
+          <h3 className="text-base font-bold text-orange-500 mb-2">Sáng tạo</h3>
+          <ul className="text-gray-600 text-xs space-y-1 text-left">
+            <li>✓ Tư duy sáng tạo</li>
+            <li>✓ Hoạt động khám phá thực tế</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    {/* Row 2: Card 3 + Card 4 + Photo 2 */}
+    <div className="w-full md:w-[300px] h-[300px] mx-auto bg-white/50 backdrop-blur-sm rounded-2xl border border-gray-200 p-6 hover:shadow-md transition-all">
+      <div className="flex flex-col items-center text-center h-full justify-center space-y-3">
+        <div className="w-16 h-16 flex items-center justify-center flex-shrink-0">
+          <img src={safeicon} alt="Safety" className="w-full h-full" />
+        </div>
+        <div>
+          <h3 className="text-base font-bold text-orange-500 mb-2">An toàn</h3>
+          <ul className="text-gray-600 text-xs space-y-1 text-left">
+            <li>✓ Đề cao sự an toàn trong mọi hoạt động</li>
+            <li>✓ Ăn uống được đảm bảo chất lượng</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div className="w-full md:w-[300px] h-[300px] mx-auto bg-white/50 backdrop-blur-sm rounded-2xl border border-gray-200 p-6 hover:shadow-md transition-all">
+      <div className="flex flex-col items-center text-center h-full justify-center space-y-3">
+        <div className="w-16 h-16 flex items-center justify-center flex-shrink-0">
+          <img src={teamicon} alt="Team" className="w-full h-full" />
+        </div>
+        <div>
+          <h3 className="text-base font-bold text-orange-500 mb-2">Đội ngũ chuyên nghiệp</h3>
+          <ul className="text-gray-600 text-xs space-y-1 text-left">
+            <li>✓ Giáo viên giàu kinh nghiệm</li>
+            <li>✓ Ứng dụng nội dung thực tế</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div className="w-full md:w-[300px] h-[300px] mx-auto">
+      <div className="w-full h-full rounded-2xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+        <img 
+          src="/images/2Game.jpg" 
+          alt="Trẻ em chơi trò chơi"
+          className="w-full h-full object-cover object-left"
+        />
+      </div>
+    </div>
+
+    {/* Row 3: Card 5 + Photo 3 spans 2 columns */}
+    <div className="w-full md:w-[300px] h-[300px] mx-auto bg-white/50 backdrop-blur-sm rounded-2xl border border-gray-200 p-6 hover:shadow-md transition-all">
+      <div className="flex flex-col items-center text-center h-full justify-center space-y-3">
+        <div className="w-16 h-16 flex items-center justify-center flex-shrink-0">
+          <img src={gradicon} alt="Graduation" className="w-full h-full" />
+        </div>
+        <div>
+          <h3 className="text-base font-bold text-orange-500 mb-2">Phát triển toàn diện</h3>
+          <ul className="text-gray-600 text-xs space-y-1 text-left">
+            <li>✓ Đa dạng lứa tuổi và sở thích</li>
+            <li>✓ Kết hợp học và chơi</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div className="w-full md:col-span-2 h-[300px] mx-auto">
+      <div className="w-full h-full rounded-2xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+        <img 
+          src="/images/3GirlRead.jpg" 
+          alt="Các bé gái đọc sách"
+          className="w-full h-full object-cover"
+        />
+      </div>
+    </div>
+
+  </div>
+</div>
+
+  </section>
+
+
+
+
+
       {/* About Section */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-6">
