@@ -58,7 +58,7 @@ interface AuthState {
   user: User | null;
   token: string | null;
   error: string | null;
-  login: (values: LoginDto) => Promise<{
+  login: (values: LoginDto, rememberMe?: boolean) => Promise<{
     success: boolean;
     message: string;
   }>;
@@ -73,8 +73,9 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>((set) => {
   const loadStoredAuth = () => {
-    const storedUser = localStorage.getItem("user");
-    const storedToken = localStorage.getItem("token");
+    // Check both localStorage and sessionStorage
+    const storedUser = localStorage.getItem("user") || sessionStorage.getItem("user");
+    const storedToken = localStorage.getItem("token") || sessionStorage.getItem("token");
 
     return {
       user: storedUser ? JSON.parse(storedUser) : null,
@@ -121,32 +122,54 @@ export const useAuthStore = create<AuthState>((set) => {
   return {
     ...loadStoredAuth(),
 
-    login: async (values: LoginDto) => {
+    login: async (values: LoginDto, rememberMe: boolean = false) => {
       try {
-        const response = await axiosInstance.post("auth/login", values, {
+        // Backend expects Email and Password with capital letters
+        const requestPayload = {
+          Email: values.email,
+          Password: values.password,
+        };
+
+        const response = await axiosInstance.post("auth/login", requestPayload, {
           headers: { "Content-Type": "application/json" },
         });
 
         const data = response.data;
         if (data.accessToken) {
+          // Decode JWT - backend uses 'sub' for id, 'name' for fullName
           const decoded = jwtDecode<{
-            id: number;
-            role: string;
-            fullName: string;
+            sub: string;
             email: string;
-            phone_number: string;
+            name: string;
+            role: string;
+            jti: string;
+            nbf: number;
+            exp: number;
+            iat: number;
+            iss: string;
+            aud: string;
           }>(data.accessToken);
 
           const user = {
-            id: decoded.id,
-            fullName: decoded.fullName,
+            id: parseInt(decoded.sub),
+            fullName: decoded.name,
             email: decoded.email,
-            phone_number: decoded.phone_number,
+            phone_number: "", // Not included in JWT, will be fetched separately if needed
           };
 
-          localStorage.setItem("user", JSON.stringify(user));
-          localStorage.setItem("token", data.accessToken);
-          localStorage.setItem("refreshToken", data.refreshToken);
+          // Store in localStorage or sessionStorage based on rememberMe
+          const storage = rememberMe ? localStorage : sessionStorage;
+          storage.setItem("user", JSON.stringify(user));
+          storage.setItem("token", data.accessToken);
+          storage.setItem("refreshToken", data.refreshToken);
+          storage.setItem("rememberMe", rememberMe.toString());
+
+          // Also set in localStorage for the loadStoredAuth to work
+          if (rememberMe) {
+            localStorage.setItem("user", JSON.stringify(user));
+            localStorage.setItem("token", data.accessToken);
+            localStorage.setItem("refreshToken", data.refreshToken);
+          }
 
           // await registerServiceWorker();
 
@@ -265,6 +288,12 @@ export const useAuthStore = create<AuthState>((set) => {
     logout: () => {
       localStorage.removeItem("user");
       localStorage.removeItem("token");
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("rememberMe");
+      sessionStorage.removeItem("user");
+      sessionStorage.removeItem("token");
+      sessionStorage.removeItem("refreshToken");
+      sessionStorage.removeItem("rememberMe");
       set({ user: null, token: null, error: null });
     },
 
@@ -288,7 +317,19 @@ export const useRegister = () => {
         console.log('Request Data:', JSON.stringify(newAccount, null, 2));
         console.log('API URL:', axiosInstance.defaults.baseURL + '/auth/register');
 
-        const response = await axiosInstance.post(`auth/register`, newAccount);
+        // Backend expects PascalCase property names
+        const requestPayload = {
+          FirstName: newAccount.firstName,
+          LastName: newAccount.lastName,
+          Email: newAccount.email,
+          PhoneNumber: newAccount.phoneNumber,
+          Password: newAccount.password,
+          Dob: newAccount.dob, // Format: "YYYY-MM-DD"
+        };
+
+        console.log('Transformed Payload:', JSON.stringify(requestPayload, null, 2));
+
+        const response = await axiosInstance.post(`auth/register`, requestPayload);
 
         console.log('=== REGISTER RESPONSE SUCCESS ===');
         console.log('Response:', response.data);
@@ -344,9 +385,9 @@ export const useForgotPassword = () => {
   return useMutation({
     mutationFn: async (verifyAccount: ForgorPasswordDto) => {
       try {
+        // Backend expects email as a query parameter, not in body
         const response = await axiosInstance.post(
-          `auth/forgot-password`,
-          verifyAccount
+          `auth/forgot-password?email=${encodeURIComponent(verifyAccount.email)}`
         );
         return response.data;
       } catch (error) {
@@ -395,7 +436,15 @@ export const useVerifyOTP = () => {
         console.log('=== VERIFY OTP REQUEST DEBUG ===');
         console.log('Request Data:', JSON.stringify(verifyOTP, null, 2));
 
-        const response = await axiosInstance.post(`auth/verify-otp`, verifyOTP);
+        // Backend expects PascalCase property names
+        const requestPayload = {
+          Email: verifyOTP.email,
+          Otp: verifyOTP.otp,
+        };
+
+        console.log('Transformed Payload:', JSON.stringify(requestPayload, null, 2));
+
+        const response = await axiosInstance.post(`auth/verify-otp`, requestPayload);
 
         console.log('=== VERIFY OTP RESPONSE SUCCESS ===');
         console.log('Response:', response.data);
