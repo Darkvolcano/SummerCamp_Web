@@ -7,6 +7,7 @@ import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
 import Home from "./pages/Home/Home";
 import Forbidden from "./pages/Forbidden/Forbidden";
+import UserProfile from "./pages/Profile/UserProfile";
 import { AuthGuardProvider } from "./contexts/AuthGuardContext";
 import { PagePath } from "./enums/page-path.enum";
 import AdminSidebar from "./components/sidebar/Admin/Admin";
@@ -39,6 +40,9 @@ function App() {
           {/* Home Route - Protected */}
           <Route path={PagePath.HOME} element={<MainLayout><Home /></MainLayout>} />
           <Route path={PagePath.ROOT} element={<MainLayout><Home /></MainLayout>} />
+
+          {/* User Profile Route */}
+          <Route path="/profile" element={<UserProfile />} />
 
           {/* Admin Routes */}
           <Route element={<LayoutWithSidebarAdmin />}>
