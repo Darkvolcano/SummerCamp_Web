@@ -83,91 +83,76 @@ const Home: React.FC = () => {
   // Activities data
   const activities = [
     {
-      image: "https://res.cloudinary.com/da9zmbssb/image/upload/v1760070571/act_treasure_eujrrv.jpg",
+      image:
+        "https://res.cloudinary.com/da9zmbssb/image/upload/v1760070571/act_treasure_eujrrv.jpg",
       title: "Truy tìm kho báu",
       description:
         'Trò chơi lớn đòi hỏi sự hợp tác của cả đội để giải mật thư và tìm ra "kho báu".',
     },
     {
-      image: "https://res.cloudinary.com/da9zmbssb/image/upload/v1760070863/act_obsticle_hajyc3.jpg",
+      image:
+        "https://res.cloudinary.com/da9zmbssb/image/upload/v1760070863/act_obsticle_hajyc3.jpg",
       title: "Vượt chướng ngại vật đồng đội",
       description:
         "Cùng nhau vượt qua các thử thách như đi chung trên ván gỗ, nhảy bao bố tiếp sức.",
     },
     {
-      image: "https://res.cloudinary.com/da9zmbssb/image/upload/v1760070617/act_folk_game_cn8d7z.jpg",
+      image:
+        "https://res.cloudinary.com/da9zmbssb/image/upload/v1760070617/act_folk_game_cn8d7z.jpg",
       title: "Trò chơi dân gian",
       description: "Bịt mắt bắt dê, rồng rắn lên mây, nhảy sạp, ô ăn quan.",
     },
     {
-      image: "https://res.cloudinary.com/da9zmbssb/image/upload/v1760070573/act_sport_nlvm53.jpg",
+      image:
+        "https://res.cloudinary.com/da9zmbssb/image/upload/v1760070573/act_sport_nlvm53.jpg",
       title: "Các môn thể thao",
       description: "Tổ chức các trận đấu bóng đá mini, bóng rổ, cầu lông.",
     },
     {
-      image: "https://res.cloudinary.com/da9zmbssb/image/upload/v1760070572/act_survive_g1iga1.jpg",
+      image:
+        "https://res.cloudinary.com/da9zmbssb/image/upload/v1760070572/act_survive_g1iga1.jpg",
       title: "Học kỹ năng sinh tồn",
       description:
         "Dựng lều trại mini, học cách xem la bàn, buộc các nút dây đơn giản.",
     },
     {
-      image: "https://res.cloudinary.com/da9zmbssb/image/upload/v1760070573/act_painting_cxlhpw.jpg",
+      image:
+        "https://res.cloudinary.com/da9zmbssb/image/upload/v1760070573/act_painting_cxlhpw.jpg",
       title: "Vẽ tranh và tô màu",
       description:
         'Theo chủ đề tự do hoặc chủ đề của trại hè như "Mùa hè của em", "Bảo vệ môi trường".',
     },
     {
-      image: "https://res.cloudinary.com/da9zmbssb/image/upload/v1760070572/act_origami_bn1qk5.jpg",
+      image:
+        "https://res.cloudinary.com/da9zmbssb/image/upload/v1760070572/act_origami_bn1qk5.jpg",
       title: "Gấp giấy Origami",
       description: "Học nghệ thuật gấp giấy Nhật Bản với nhiều mẫu thú vị.",
     },
     {
-      image: "https://res.cloudinary.com/da9zmbssb/image/upload/v1760070573/act_science_sqr0fo.jpg",
+      image:
+        "https://res.cloudinary.com/da9zmbssb/image/upload/v1760070573/act_science_sqr0fo.jpg",
       title: "Thí nghiệm khoa học vui",
       description:
         "Làm núi lửa phun trào, tạo chất dẻo ma quái (slime), trồng cây trong chai.",
     },
     {
-      image: "https://res.cloudinary.com/da9zmbssb/image/upload/v1760070572/act_cooking_hdzjaq.jpg",
+      image:
+        "https://res.cloudinary.com/da9zmbssb/image/upload/v1760070572/act_cooking_hdzjaq.jpg",
       title: "Lớp học nấu ăn cơ bản",
       description:
         "Tự làm bánh quy, trang trí bánh cupcake, pha các loại nước đơn giản.",
     },
     {
-      image: "https://res.cloudinary.com/da9zmbssb/image/upload/v1760079360/act_cinema_ks3gmw.jpg",
+      image:
+        "https://res.cloudinary.com/da9zmbssb/image/upload/v1760079360/act_cinema_ks3gmw.jpg",
       title: "Rạp chiếu phim ngoài trời",
       description: "Thưởng thức phim hay dưới bầu trời đêm cùng bạn bè.",
     },
     {
-      image: "https://res.cloudinary.com/da9zmbssb/image/upload/v1760079351/act_campfire_xftcdh.jpg",
+      image:
+        "https://res.cloudinary.com/da9zmbssb/image/upload/v1760079351/act_campfire_xftcdh.jpg",
       title: "Đốt lửa trại",
       description: "Tụ tập quanh lửa trại, hát và kể chuyện cùng nhau.",
-    },
-  ];
-
-  // Services
-  const services = [
-    {
-      title: "Tìm kiếm trại hè dễ dàng",
-      description:
-        "Dễ dàng tìm kiếm và so sánh các chương trình trại hè phù hợp với con bạn",
-      icon: <SearchOutlined className="text-5xl text-orange-500" />,
-    },
-    {
-      title: "Đăng ký nhanh chóng",
-      description: "Quy trình đăng ký đơn giản, tiện lợi chỉ với vài bước",
-      icon: <TeamOutlined className="text-5xl text-orange-500" />,
-    },
-    {
-      title: "Thanh toán an toàn",
-      description:
-        "Hệ thống thanh toán bảo mật với nhiều phương thức linh hoạt",
-      icon: <SafetyCertificateOutlined className="text-5xl text-orange-500" />,
-    },
-    {
-      title: "Hỗ trợ 24/7",
-      description: "Đội ngũ chăm sóc khách hàng sẵn sàng hỗ trợ mọi lúc",
-      icon: <HeartOutlined className="text-5xl text-orange-500" />,
     },
   ];
 
@@ -607,263 +592,243 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-
-{/* About Section - Sticky Background */}
-<section className="relative bg-[#FFE37A] py-20">
-
-  {/* Content Container */}
-  <div className="relative py-20">
-    <div className="max-w-7xl mx-auto px-6">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-        
-        {/* Left Side */}
-        <div className="hidden lg:block sticky top-24">
-          <div className="w-full max-w-lg aspect-square bg-white/20 rounded-3xl backdrop-blur-sm border-2 border-white/30 flex items-center justify-center mx-auto">
-            <div className="text-center">
-              <div className="text-6xl mb-4">🏕️</div>
-              <p className="text-gray-700 font-semibold">3D Model sẽ được thêm vào đây</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Right Side */}
-        <div className="space-y-8">
-          
-          <div className="space-y-6">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
-              Hãy để Trại hè CampEase 2025 trở thành dấu ấn rực rỡ trên hành trình trưởng thành của con!
-            </h2>
-            
-            <p className="text-xl text-gray-800 leading-relaxed">
-              Một mùa hè tràn đầy cảm hứng, năng lượng và khám phá, nơi mỗi ngày con được học hỏi điều mới, 
-              tự do thể hiện bản thân và phát triển toàn diện về trí tuệ, thể chất, nghệ thuật và kỹ năng sống.
-            </p>
-          </div>
-
-          <div className="space-y-6 bg-white/40 backdrop-blur-sm rounded-2xl p-8 border border-white/50">
-            <h3 className="text-3xl font-bold text-gray-900 mb-6">
-              TẠI SAO NÊN CHỌN TRẠI HÈ CampEase?
-            </h3>
-
-            <div className="space-y-5">
-              <div className="flex gap-4">
-                <div className="flex-shrink-0 w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold">
-                  1
+      {/* About Section - Sticky Background */}
+      <section className="relative bg-[#FFE37A] py-20">
+        {/* Content Container */}
+        <div className="relative py-20">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+              {/* Left Side */}
+              <div className="hidden lg:block sticky top-24">
+                <div className="w-full max-w-lg aspect-square bg-white/20 rounded-3xl backdrop-blur-sm border-2 border-white/30 flex items-center justify-center mx-auto">
+                  <div className="text-center">
+                    <div className="text-6xl mb-4">🏕️</div>
+                    <p className="text-gray-700 font-semibold">
+                      3D Model sẽ được thêm vào đây
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="font-bold text-gray-900 mb-2">Học tập qua trải nghiệm thực tiễn</h4>
-                  <p className="text-gray-700">
-                    Học tập thông qua các dự án sáng tạo, hoạt động khám phá thực tế – từ đó phát triển khả năng thích nghi và tính tự lập.
+              </div>
+
+              {/* Right Side */}
+              <div className="space-y-8">
+                <div className="space-y-6">
+                  <h2 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
+                    Hãy để Trại hè CampEase 2025 trở thành dấu ấn rực rỡ trên
+                    hành trình trưởng thành của con!
+                  </h2>
+
+                  <p className="text-xl text-gray-800 leading-relaxed">
+                    Một mùa hè tràn đầy cảm hứng, năng lượng và khám phá, nơi
+                    mỗi ngày con được học hỏi điều mới, tự do thể hiện bản thân
+                    và phát triển toàn diện về trí tuệ, thể chất, nghệ thuật và
+                    kỹ năng sống.
                   </p>
                 </div>
-              </div>
 
-              <div className="flex gap-4">
-                <div className="flex-shrink-0 w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold">
-                  2
-                </div>
-                <div>
-                  <h4 className="font-bold text-gray-900 mb-2">Phát triển toàn diện kỹ năng thế kỷ 21</h4>
-                  <p className="text-gray-700">
-                    Tư duy phản biện, sáng tạo, thuyết trình, làm việc nhóm và giải quyết vấn đề – tất cả được lồng ghép 
-                    trong từng hoạt động giúp con tự tin hơn mỗi ngày.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex gap-4">
-                <div className="flex-shrink-0 w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold">
-                  3
-                </div>
-                <div>
-                  <h4 className="font-bold text-gray-900 mb-2">Khơi dậy đam mê – Đánh thức tiềm năng</h4>
-                  <p className="text-gray-700">
-                    Dù con yêu sân khấu, đam mê thể thao hay say mê công nghệ – trại hè có nhiều lựa chọn đa dạng 
-                    để con tự do khám phá bản thân và phát triển thế mạnh riêng.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex gap-4">
-                <div className="flex-shrink-0 w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold">
-                  4
-                </div>
-                <div>
-                  <h4 className="font-bold text-gray-900 mb-2">Đội ngũ chuyên gia và giáo viên đồng hành</h4>
-                  <p className="text-gray-700">
-                    Dày dặn kinh nghiệm giảng dạy và dẫn dắt đội tuyển, tận tâm hướng dẫn và truyền cảm hứng suốt hành trình.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex gap-4">
-                <div className="flex-shrink-0 w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold">
-                  5
-                </div>
-                <div>
-                  <h4 className="font-bold text-gray-900 mb-2">Tỏa sáng cuối mỗi hành trình</h4>
-                  <p className="text-gray-700">
-                    Thi đấu thể thao, trình diễn nghệ thuật, triển lãm sản phẩm sáng tạo – mỗi học sinh đều có sân khấu riêng 
-                    để thể hiện sự tiến bộ và tài năng sau từng giai đoạn học tập.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-4 bg-white/40 backdrop-blur-sm rounded-2xl p-8 border border-white/50">
-            <h3 className="text-2xl font-bold text-gray-900">
-              CÁC CHƯƠNG TRÌNH HÈ ĐẶC SẮC – ĐA DẠNG LỰA CHỌN
-            </h3>
-            <p className="text-gray-700 text-lg">
-              Dành cho học sinh chuẩn bị vào lớp 1 đến lớp 5.
-            </p>
-          </div>
-
-          <div className="bg-gradient-to-r from-orange-500 to-yellow-400 rounded-2xl p-8 text-white">
-            <h3 className="text-2xl font-bold mb-3">ƯU ĐÃI ĐẶC BIỆT</h3>
-            <p className="text-lg">
-              Hưởng ưu đãi giảm giá <span className="text-3xl font-bold">20%</span> đối với thành viên đã tham gia
-            </p>
-          </div>
-
-          {/* Image*/}
-          <div className="relative h-[600px] mt-12">
-            <div className="absolute inset-0 flex items-center justify-center">
-              
-              <div 
-                className="absolute w-80 h-80 rounded-2xl shadow-2xl transform transition-all duration-700 hover:scale-105 hover:z-50"
-                style={{
-                  transform: 'rotate(-8deg) translateY(60px)',
-                  zIndex: 1
-                }}
-              >
-                <img
-                  src="https://res.cloudinary.com/da9zmbssb/image/upload/v1760080622/cookrice_fxethy.jpg"
-                  alt="Nấu ăn"
-                  className="w-full h-full object-cover rounded-2xl"
-                />
-              </div>
-
-              <div 
-                className="absolute w-80 h-80 rounded-2xl shadow-2xl transform transition-all duration-700 hover:scale-105 hover:z-50"
-                style={{
-                  transform: 'rotate(5deg) translateY(30px) translateX(-20px)',
-                  zIndex: 2
-                }}
-              >
-                <img
-                  src="https://res.cloudinary.com/da9zmbssb/image/upload/v1760080623/dance_zefd35.jpg"
-                  alt="Khiêu vũ"
-                  className="w-full h-full object-cover rounded-2xl"
-                />
-              </div>
-
-              <div 
-                className="absolute w-80 h-80 rounded-2xl shadow-2xl transform transition-all duration-700 hover:scale-105 hover:z-50"
-                style={{
-                  transform: 'rotate(-3deg) translateX(20px)',
-                  zIndex: 3
-                }}
-              >
-                <img
-                  src="https://res.cloudinary.com/da9zmbssb/image/upload/v1760080623/onsticleteam_nxdrxr.jpg"
-                  alt="Vượt chướng ngại vật"
-                  className="w-full h-full object-cover rounded-2xl"
-                />
-              </div>
-
-              <div 
-                className="absolute w-80 h-80 rounded-2xl shadow-2xl transform transition-all duration-700 hover:scale-105 hover:z-50"
-                style={{
-                  transform: 'rotate(7deg) translateY(-30px)',
-                  zIndex: 4
-                }}
-              >
-                <img
-                  src="https://res.cloudinary.com/da9zmbssb/image/upload/v1760080805/makecar_akap6v.jpg"
-                  alt="Làm xe"
-                  className="w-full h-full object-cover rounded-2xl"
-                />
-              </div>
-
-            </div>
-          </div>
-
-        </div>
-
-      </div>
-    </div>
-  </div>
-</section>
-
-
-      {/* Find Match Section */}
-      <section className="py-20 bg-[rgba(15,15,15,0.95)]">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">
-              <span className="bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text text-transparent">
-                Tìm trại hè phù hợp cho bạn
-              </span>
-            </h2>
-          </div>
-
-          <Row gutter={[32, 32]} justify="center">
-            <Col xs={24} md={12} lg={10}>
-              <Card className="bg-white rounded-2xl overflow-hidden shadow-xl border-0 h-full">
-                <div className="h-56 overflow-hidden">
-                  <img
-                    src="/images/close-up-girl-child-friends-park-smiling-camera.jpg"
-                    alt="For Parents"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="p-6">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                    Dành cho Phụ huynh
+                <div className="space-y-6 bg-white/40 backdrop-blur-sm rounded-2xl p-8 border border-white/50">
+                  <h3 className="text-3xl font-bold text-gray-900 mb-6">
+                    TẠI SAO NÊN CHỌN TRẠI HÈ CampEase?
                   </h3>
-                  <p className="text-gray-600 mb-4 leading-relaxed">
-                    Tìm kiếm và đăng ký các chương trình trại hè chất lượng cao
-                    cho con bạn. Dễ dàng theo dõi và quản lý đăng ký.
-                  </p>
-                  <button
-                    onClick={() => navigate("/camps")}
-                    className="text-orange-500 font-semibold hover:text-orange-600 transition-colors"
-                  >
-                    Khám phá ngay →
-                  </button>
-                </div>
-              </Card>
-            </Col>
 
-            <Col xs={24} md={12} lg={10}>
-              <Card className="bg-white rounded-2xl overflow-hidden shadow-xl border-0 h-full">
-                <div className="h-56 overflow-hidden">
-                  <img
-                    src="/images/GroupLearn.jpg"
-                    alt="For Organizers"
-                    className="w-full h-full object-cover"
-                  />
+                  <div className="space-y-5">
+                    <div className="flex gap-4">
+                      <div className="flex-shrink-0 w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold">
+                        1
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-gray-900 mb-2">
+                          Học tập qua trải nghiệm thực tiễn
+                        </h4>
+                        <p className="text-gray-700">
+                          Học tập thông qua các dự án sáng tạo, hoạt động khám
+                          phá thực tế – từ đó phát triển khả năng thích nghi và
+                          tính tự lập.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-4">
+                      <div className="flex-shrink-0 w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold">
+                        2
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-gray-900 mb-2">
+                          Phát triển toàn diện kỹ năng thế kỷ 21
+                        </h4>
+                        <p className="text-gray-700">
+                          Tư duy phản biện, sáng tạo, thuyết trình, làm việc
+                          nhóm và giải quyết vấn đề – tất cả được lồng ghép
+                          trong từng hoạt động giúp con tự tin hơn mỗi ngày.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-4">
+                      <div className="flex-shrink-0 w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold">
+                        3
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-gray-900 mb-2">
+                          Khơi dậy đam mê – Đánh thức tiềm năng
+                        </h4>
+                        <p className="text-gray-700">
+                          Dù con yêu sân khấu, đam mê thể thao hay say mê công
+                          nghệ – trại hè có nhiều lựa chọn đa dạng để con tự do
+                          khám phá bản thân và phát triển thế mạnh riêng.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-4">
+                      <div className="flex-shrink-0 w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold">
+                        4
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-gray-900 mb-2">
+                          Đội ngũ chuyên gia và giáo viên đồng hành
+                        </h4>
+                        <p className="text-gray-700">
+                          Dày dặn kinh nghiệm giảng dạy và dẫn dắt đội tuyển,
+                          tận tâm hướng dẫn và truyền cảm hứng suốt hành trình.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-4">
+                      <div className="flex-shrink-0 w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold">
+                        5
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-gray-900 mb-2">
+                          Tỏa sáng cuối mỗi hành trình
+                        </h4>
+                        <p className="text-gray-700">
+                          Thi đấu thể thao, trình diễn nghệ thuật, triển lãm sản
+                          phẩm sáng tạo – mỗi học sinh đều có sân khấu riêng để
+                          thể hiện sự tiến bộ và tài năng sau từng giai đoạn học
+                          tập.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div className="p-6">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                    Dành cho Ban tổ chức
+
+                <div className="space-y-4 bg-white/40 backdrop-blur-sm rounded-2xl p-8 border border-white/50">
+                  <h3 className="text-2xl font-bold text-gray-900">
+                    CÁC CHƯƠNG TRÌNH HÈ ĐẶC SẮC – ĐA DẠNG LỰA CHỌN
                   </h3>
-                  <p className="text-gray-600 mb-4 leading-relaxed">
-                    Quản lý chương trình trại hè, nhân viên và học viên một cách
-                    hiệu quả. Hệ thống quản lý toàn diện.
+                  <p className="text-gray-700 text-lg">
+                    Dành cho học sinh chuẩn bị vào lớp 1 đến lớp 5.
                   </p>
-                  <button
-                    onClick={() => navigate("/login")}
-                    className="text-orange-500 font-semibold hover:text-orange-600 transition-colors"
-                  >
-                    Đăng nhập →
-                  </button>
                 </div>
-              </Card>
-            </Col>
-          </Row>
+
+                <div className="bg-gradient-to-r from-orange-500 to-yellow-400 rounded-2xl p-8 text-white">
+                  <h3 className="text-2xl font-bold mb-3">ƯU ĐÃI ĐẶC BIỆT</h3>
+                  <p className="text-lg">
+                    Hưởng ưu đãi giảm giá{" "}
+                    <span className="text-3xl font-bold">20%</span> đối với
+                    thành viên đã tham gia
+                  </p>
+                </div>
+
+                {/* Image Stack scroll*/}
+                <div className="relative">
+                  <div className="min-h-screen flex items-center justify-center sticky top-0">
+                    <div
+                      className="relative origin-top transition-all duration-300"
+                      style={{
+                        top: "calc(0px - 5vh)",
+                        transform: "scale(1) rotate(-8deg)",
+                      }}
+                    >
+                      <div
+                        className="w-[380px] h-[290px] rounded-2xl shadow-2xl overflow-hidden"
+                        style={{
+                          transform: "scale(1.3)",
+                        }}
+                      >
+                        <img
+                          src="https://res.cloudinary.com/da9zmbssb/image/upload/v1760080622/cookrice_fxethy.jpg"
+                          alt="Nấu ăn"
+                          className="w-full h-full object-cover transition-transform duration-700 hover:scale-110"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="min-h-screen flex items-center justify-center sticky top-0">
+                    <div
+                      className="relative origin-top transition-all duration-300"
+                      style={{
+                        top: "calc(25px - 5vh)",
+                        transform: "scale(0.98) rotate(5deg)",
+                      }}
+                    >
+                      <div
+                        className="w-[400px] h0-[300px] rounded-2xl shadow-2xl overflow-hidden"
+                        style={{
+                          transform: "scale(1.3)",
+                        }}
+                      >
+                        <img
+                          src="https://res.cloudinary.com/da9zmbssb/image/upload/v1760080623/dance_zefd35.jpg"
+                          alt="Khiêu vũ"
+                          className="w-full h-full object-cover transition-transform duration-700 hover:scale-110"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="min-h-screen flex items-center justify-center sticky top-0">
+                    <div
+                      className="relative origin-top transition-all duration-300"
+                      style={{
+                        top: "calc(50px - 5vh)",
+                        transform: "scale(0.96) rotate(-3deg)",
+                      }}
+                    >
+                      <div
+                        className="w-[400px] h-[300px] rounded-2xl shadow-2xl overflow-hidden"
+                        style={{
+                          transform: "scale(1.3)",
+                        }}
+                      >
+                        <img
+                          src="https://res.cloudinary.com/da9zmbssb/image/upload/v1760080623/onsticleteam_nxdrxr.jpg"
+                          alt="Vượt chướng ngại vật"
+                          className="w-full h-full object-cover transition-transform duration-700 hover:scale-110"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="min-h-screen flex items-center justify-center sticky top-0">
+                    <div
+                      className="relative origin-top transition-all duration-300"
+                      style={{
+                        top: "calc(75px - 5vh)",
+                        transform: "scale(0.94) rotate(7deg)",
+                      }}
+                    >
+                      <div
+                        className="w-[400px] h-[300px] rounded-2xl shadow-2xl overflow-hidden"
+                        style={{
+                          transform: "scale(1.3)",
+                        }}
+                      >
+                        <img
+                          src="https://res.cloudinary.com/da9zmbssb/image/upload/v1760080805/makecar_akap6v.jpg"
+                          alt="Làm xe"
+                          className="w-full h-full object-cover transition-transform duration-700 hover:scale-110"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -904,7 +869,7 @@ const Home: React.FC = () => {
             </Row>
             <div className="text-right mt-4">
               <button className="text-orange-500 font-semibold hover:text-orange-600 transition-colors">
-                Xem thêm →
+                Xem tất cả chương trình trại hè →
               </button>
             </div>
           </div>
@@ -952,35 +917,6 @@ const Home: React.FC = () => {
               </Col>
             ))}
           </Row>
-        </div>
-      </section>
-
-      {/* Services Section */}
-      <section className="py-20 bg-gradient-to-br from-white via-orange-50 to-yellow-50">
-        <div className="max-w-7xl mx-auto px-6">
-          <h2 className="text-3xl font-bold text-gray-900 mb-12 text-center">
-            Dịch vụ của chúng tôi
-          </h2>
-          <Row gutter={[32, 32]}>
-            {services.map((service, index) => (
-              <Col xs={24} sm={12} key={index}>
-                <div className="bg-white p-8 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300">
-                  <div className="mb-6">{service.icon}</div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3">
-                    {service.title}
-                  </h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    {service.description}
-                  </p>
-                </div>
-              </Col>
-            ))}
-          </Row>
-          <div className="text-center mt-12">
-            <button className="px-10 py-4 border-2 border-orange-500 text-orange-500 font-semibold rounded-full hover:bg-orange-50 transition-all duration-300">
-              Xem thêm
-            </button>
-          </div>
         </div>
       </section>
 
