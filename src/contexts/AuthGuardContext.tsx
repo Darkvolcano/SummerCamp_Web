@@ -58,6 +58,10 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
       PagePath.RESET_PASSWORD,
       PagePath.FORBIDDEN,
       "/admin/dashboard", // Temporarily public for testing
+      "/admin/camps", // Temporarily public for testing
+      "/admin/blogs", // Temporarily public for testing
+      "/admin/accounts", // Temporarily public for testing
+      "/admin/settings", // Temporarily public for testing
     ];
 
     // Check if current route is public

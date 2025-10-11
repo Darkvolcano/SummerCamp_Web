@@ -102,6 +102,12 @@
     box-shadow: 0 4px 12px rgba(249, 115, 22, 0.2);
 }
 
+.action-button:focus {
+    outline: none;
+    border-color: #f97316;
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
+}
+
 .action-button.primary {
     background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
     color: white;
@@ -110,6 +116,10 @@
 
 .action-button.primary:hover {
     box-shadow: 0 8px 20px rgba(249, 115, 22, 0.4);
+}
+
+.action-button.primary:focus {
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.3);
 }
 
 /* Statistics Grid */

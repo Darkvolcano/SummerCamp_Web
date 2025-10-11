@@ -111,6 +111,13 @@
     transform: scaleY(1);
 }
 
+.nav-item:focus {
+    outline: none;
+    background: rgba(249, 115, 22, 0.1);
+    color: #fb923c;
+    box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.3);
+}
+
 .nav-item.active {
     background: linear-gradient(135deg, rgba(249, 115, 22, 0.15) 0%, rgba(251, 146, 60, 0.15) 100%);
     color: #fb923c;
@@ -179,6 +186,12 @@
 .toggle-button:hover {
     background: rgba(249, 115, 22, 0.2);
     transform: scale(1.05);
+}
+
+.toggle-button:focus {
+    outline: none;
+    border-color: #f97316;
+    box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.3);
 }
 
 /* Animations */

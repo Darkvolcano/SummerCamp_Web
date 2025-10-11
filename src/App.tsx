@@ -9,6 +9,7 @@ import Home from "./pages/Home/Home";
 import Forbidden from "./pages/Forbidden/Forbidden";
 import UserProfile from "./pages/Profile/UserProfile";
 import AdminDashboard from "./pages/Admin/Dashboard/AdminDashboard";
+import CampManagement from "./pages/Admin/CampManagement/CampManagement";
 import { AuthGuardProvider } from "./contexts/AuthGuardContext";
 import { PagePath } from "./enums/page-path.enum";
 import AdminSidebar from "./components/sidebar/Admin/Admin";
@@ -38,8 +39,9 @@ function App() {
           <Route path={PagePath.VERIFY_OTP} element={<VerifyOtp />} />
           <Route path={PagePath.FORBIDDEN} element={<Forbidden />} />
 
-          {/* Admin Dashboard - Temporarily Public for Testing */}
+          {/* Admin Routes - Temporarily Public for Testing */}
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/camps" element={<CampManagement />} />
 
           {/* Home Route - Protected */}
           <Route path={PagePath.HOME} element={<MainLayout><Home /></MainLayout>} />
