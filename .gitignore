@@ -15,11 +15,21 @@ dist-ssr
 
 # Environment variables
 .env
+.env.*
 .env.local
 .env.development
 .env.test
 .env.production
 .env*.local
+
+# Documentation (Generated)
+README.md
+*README.md
+LOGIN_REGISTER_REDESIGN.md
+DESIGN_VISUAL_SUMMARY.md
+REDESIGN_COMPLETE.md
+QUICK_REFERENCE.md
+VISUAL_PREVIEW.md
 
 # Firebase
 .firebase/
