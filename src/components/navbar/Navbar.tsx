@@ -50,7 +50,7 @@ export default function Navbar() {
   // Navigation links 
   const navLinks = [
     { to: "/", label: "Trang chủ" },
-    { to: "/programs", label: "Chương trình" },
+    { to: "/camp", label: "Chương trình" },
     { to: "/blogs", label: "Tin tức" },
     { to: "/about", label: "Giới thiệu" },
     { to: "/contact", label: "Liên hệ" },
