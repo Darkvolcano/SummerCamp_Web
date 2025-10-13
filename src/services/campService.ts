@@ -1,5 +1,11 @@
 import axiosInstance from "../config/axios";
 
+export interface CampType {
+    campTypeId: number;
+    name: string;
+    description: string;
+    isActive: boolean;
+}
 // DTOs matching backend structure
 export interface CampRequestDto {
     name: string;
@@ -192,6 +198,19 @@ const campService = {
     deleteCamp: async (id: number): Promise<void> => {
         await axiosInstance.delete(`/camp/${id}`);
     },
+
+
+    // Camp types
+    getAllCampTypes: async (): Promise<CampType[]> => {
+        const response = await axiosInstance.get("/camptype");
+        return response.data as CampType[];
+    },
+
+    getCampTypeById: async (id: number): Promise<CampType> => {
+        const response = await axiosInstance.get(`/camptype/${id}`);
+        return response.data as CampType;
+    }
+
 };
 
 export default campService;
