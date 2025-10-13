@@ -215,7 +215,7 @@
 .register-title {
     font-size: 1.5rem;
     font-weight: 800;
-    color: #1e293b;
+    color: #f97316 !important;
     margin-bottom: 0.25rem;
     letter-spacing: -0.02em;
 }
@@ -247,7 +247,7 @@
 .form-label {
     font-size: 0.8125rem;
     font-weight: 600;
-    color: #475569;
+    color: #f97316 !important;
     margin-left: 4px;
 }
 
@@ -292,9 +292,21 @@
     border: none;
     outline: none;
     font-size: 0.875rem;
-    color: #1e293b;
+    color: #1e293b !important;
+    font-weight: 600;
     background: transparent;
     font-family: 'Quicksand', sans-serif;
+    -webkit-text-fill-color: #1e293b !important;
+}
+
+.form-input:-webkit-autofill,
+.form-input:-webkit-autofill:hover,
+.form-input:-webkit-autofill:focus,
+.form-input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px white inset !important;
+    -webkit-text-fill-color: #1e293b !important;
+    color: #1e293b !important;
+    font-weight: 600 !important;
 }
 
 .form-input::placeholder {
