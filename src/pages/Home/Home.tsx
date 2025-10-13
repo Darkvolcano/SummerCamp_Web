@@ -1,22 +1,18 @@
 import React from "react";
 import { Card, Row, Col } from "antd";
-import {
-  SafetyCertificateOutlined,
-  HeartOutlined,
-  // TrophyOutlined,
-  StarFilled,
-  TeamOutlined,
-  SearchOutlined,
-} from "@ant-design/icons";
+import { StarFilled, SearchOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "../../services/userService"; // ✅ Import auth store
 import "./Home.css";
 import supporticon from "../../assets/support icon.png";
 import gradicon from "../../assets/grad icon.png";
 import lightbulb from "../../assets/lightbulb icon.png";
 import safeicon from "../../assets/safe icon.png";
 import teamicon from "../../assets/team icon.png";
+
 const Home: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuthStore(); 
 
   const handleSignUpClick = () => {
     navigate("/register");
@@ -209,18 +205,20 @@ const Home: React.FC = () => {
               năng, kiến thức và trải nghiệm những kỷ niệm đáng nhớ cùng bạn bè
               mới.
             </p>
-            <button
-              onClick={handleSignUpClick}
-              className="bg-gradient-to-r from-orange-500 to-yellow-400 text-white font-bold px-10 py-4 rounded-xl text-lg hover:shadow-2xl transition-all duration-300 hover:scale-105"
-            >
-              Đăng ký ngay
-            </button>
+            {!user && (
+              <button
+                onClick={handleSignUpClick}
+                className="bg-[#FF8F50] text-white rounded-[105px] px-8 py-4 font-bold hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2 whitespace-nowrap hover:bg-[#ff7e3d]"
+              >
+                Đăng ký ngay
+              </button>
+            )}
           </div>
         </div>
       </section>
 
       {/* Search Bar */}
-      <div className="relative -mt-10 z-50 px-4">
+      <div className="relative -mt-10 z-40 px-4">
         <div className="max-w-4xl mx-auto">
           <div className="bg-white rounded-full shadow-2xl p-2 flex flex-col md:flex-row items-center gap-2">
             {/* Địa điểm */}
@@ -613,7 +611,7 @@ const Home: React.FC = () => {
               {/* Right Side */}
               <div className="space-y-8">
                 <div className="space-y-6">
-                  <h2 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
+                  <h2 className="text-4xl md:text-4xl font-bold text-gray-900 leading-tight">
                     Hãy để Trại hè CampEase 2025 trở thành dấu ấn rực rỡ trên
                     hành trình trưởng thành của con!
                   </h2>
@@ -868,7 +866,10 @@ const Home: React.FC = () => {
               ))}
             </Row>
             <div className="text-right mt-4">
-              <button className="text-orange-500 font-semibold hover:text-orange-600 transition-colors">
+              <button
+                onClick={() => navigate("/camp")}
+                className="bg-[#FF8F50] text-white rounded-[105px] px-8 py-4 font-bold hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2 whitespace-nowrap hover:bg-[#ff7e3d]"
+              >
                 Xem tất cả chương trình trại hè →
               </button>
             </div>
@@ -930,20 +931,30 @@ const Home: React.FC = () => {
             Đăng ký ngay để con bạn có cơ hội trải nghiệm những hoạt động bổ ích
             và thú vị trong mùa hè này!
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          {!user && (
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <button
+                onClick={handleSignUpClick}
+                className="bg-white text-orange-600 font-bold px-10 py-4 rounded-xl hover:bg-gray-50 transition-all duration-300 shadow-lg hover:shadow-xl"
+              >
+                Đăng ký ngay
+              </button>
+              <button
+                onClick={() => navigate("/camp")}
+                className="bg-transparent border-2 border-white text-white font-bold px-10 py-4 rounded-xl hover:bg-white hover:text-orange-600 transition-all duration-300"
+              >
+                Xem các trại hè
+              </button>
+            </div>
+          )}
+          {user && (
             <button
-              onClick={handleSignUpClick}
+              onClick={() => navigate("/camp")}
               className="bg-white text-orange-600 font-bold px-10 py-4 rounded-xl hover:bg-gray-50 transition-all duration-300 shadow-lg hover:shadow-xl"
             >
-              Đăng ký ngay
+              Khám phá các trại hè →
             </button>
-            <button
-              onClick={() => navigate("/camps")}
-              className="bg-transparent border-2 border-white text-white font-bold px-10 py-4 rounded-xl hover:bg-white hover:text-orange-600 transition-all duration-300"
-            >
-              Xem các trại hè
-            </button>
-          </div>
+          )}
         </div>
       </section>
     </div>
