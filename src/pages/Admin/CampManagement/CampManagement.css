@@ -2,8 +2,21 @@
 .camp-management-container {
     display: flex;
     min-height: 100vh;
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 25%, #fcd34d 50%, #fbbf24 75%, #f59e0b 100%);
+    animation: gradientShift 15s ease infinite;
     font-family: 'Quicksand', sans-serif;
+}
+
+@keyframes gradientShift {
+
+    0%,
+    100% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
 }
 
 .camp-management-main {
@@ -43,7 +56,7 @@
 }
 
 .page-subtitle {
-    color: rgba(255, 255, 255, 0.6);
+    color: #78350f;
     font-size: 0.95rem;
     margin: 0;
 }
@@ -78,21 +91,23 @@
 }
 
 .stat-card {
-    background: rgba(255, 255, 255, 0.05);
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 2px solid #fcd34d;
     border-radius: 16px;
     padding: 1.5rem;
     display: flex;
     align-items: center;
     gap: 1rem;
     transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(251, 146, 60, 0.2);
 }
 
 .stat-card:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
     transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 24px rgba(251, 146, 60, 0.3);
+    border-color: #fbbf24;
 }
 
 .stat-icon {
@@ -126,13 +141,14 @@
 }
 
 .stat-label {
-    color: rgba(255, 255, 255, 0.6);
+    color: #78350f;
     font-size: 0.875rem;
     margin: 0 0 0.25rem 0;
+    font-weight: 600;
 }
 
 .stat-value {
-    color: white;
+    color: #78350f;
     font-size: 1.75rem;
     font-weight: 700;
     margin: 0;
@@ -153,17 +169,19 @@
     align-items: center;
     gap: 0.75rem;
     padding: 0.75rem 1rem;
-    background: rgba(255, 255, 255, 0.05);
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 2px solid #fbbf24;
     border-radius: 12px;
-    color: rgba(255, 255, 255, 0.6);
+    color: #78350f;
     transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(251, 146, 60, 0.15);
 }
 
 .search-box:focus-within {
     border-color: #f97316;
-    background: rgba(255, 255, 255, 0.08);
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.25);
 }
 
 .search-box input {
@@ -171,8 +189,9 @@
     background: transparent;
     border: none;
     outline: none;
-    color: white;
+    color: #78350f;
     font-size: 0.95rem;
+    font-weight: 600;
     font-family: 'Quicksand', sans-serif;
 }
 
@@ -181,7 +200,7 @@
 }
 
 .search-box input::placeholder {
-    color: rgba(255, 255, 255, 0.4);
+    color: #a16207;
 }
 
 .filter-group {
@@ -189,19 +208,21 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.75rem 1rem;
-    background: rgba(255, 255, 255, 0.05);
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 2px solid #fbbf24;
     border-radius: 12px;
-    color: rgba(255, 255, 255, 0.6);
+    color: #78350f;
+    box-shadow: 0 2px 8px rgba(251, 146, 60, 0.15);
 }
 
 .filter-select {
     background: transparent;
     border: none;
     outline: none;
-    color: white;
+    color: #78350f;
     font-size: 0.95rem;
+    font-weight: 600;
     font-family: 'Quicksand', sans-serif;
     cursor: pointer;
     padding: 0.25rem;
@@ -214,24 +235,28 @@
 }
 
 .filter-select option {
-    background: #1e293b;
-    color: white;
+    background: #fffbeb;
+    color: #78350f;
+    font-weight: 600;
 }
 
 .btn-refresh {
     padding: 0.75rem;
-    background: rgba(255, 255, 255, 0.05);
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 2px solid #fbbf24;
     border-radius: 12px;
-    color: rgba(255, 255, 255, 0.6);
+    color: #78350f;
     cursor: pointer;
     transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(251, 146, 60, 0.15);
 }
 
 .btn-refresh:hover:not(:disabled) {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    color: #78350f;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.25);
 }
 
 .btn-refresh:focus:not(:disabled) {
@@ -261,11 +286,12 @@
 
 /* Table Container */
 .table-container {
-    background: rgba(255, 255, 255, 0.05);
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 2px solid #fbbf24;
     border-radius: 16px;
     overflow: hidden;
+    box-shadow: 0 4px 12px rgba(251, 146, 60, 0.2);
 }
 
 /* Loading & Empty States */
@@ -276,24 +302,26 @@
     align-items: center;
     justify-content: center;
     padding: 4rem 2rem;
-    color: rgba(255, 255, 255, 0.6);
+    color: #78350f;
     text-align: center;
 }
 
 .empty-state svg {
-    color: rgba(255, 255, 255, 0.3);
+    color: #a16207;
     margin-bottom: 1rem;
 }
 
 .empty-state h3 {
-    color: white;
+    color: #78350f;
     font-size: 1.5rem;
     margin: 0 0 0.5rem 0;
+    font-weight: 700;
 }
 
 .empty-state p {
     margin: 0 0 1.5rem 0;
     font-size: 1rem;
+    color: #a16207;
 }
 
 /* Table */
@@ -303,33 +331,35 @@
 }
 
 .camps-table thead {
-    background: rgba(249, 115, 22, 0.1);
-    border-bottom: 2px solid rgba(249, 115, 22, 0.3);
+    background: linear-gradient(135deg, #fde68a 0%, #fcd34d 100%);
+    border-bottom: 3px solid #f97316;
 }
 
 .camps-table th {
     padding: 1rem;
     text-align: left;
-    color: #fb923c;
-    font-weight: 600;
+    color: #78350f;
+    font-weight: 700;
     font-size: 0.875rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .camps-table tbody tr {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 2px solid rgba(251, 146, 60, 0.15);
     transition: all 0.2s ease;
 }
 
 .camps-table tbody tr:hover {
-    background: rgba(255, 255, 255, 0.03);
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    transform: translateX(4px);
 }
 
 .camps-table td {
     padding: 1rem;
-    color: rgba(255, 255, 255, 0.9);
+    color: #78350f;
     font-size: 0.9rem;
+    font-weight: 600;
 }
 
 /* Camp Name Cell */
@@ -348,15 +378,16 @@
 }
 
 .camp-name {
-    font-weight: 600;
-    color: white;
+    font-weight: 700;
+    color: #78350f;
     margin: 0 0 0.25rem 0;
 }
 
 .camp-address {
-    color: rgba(255, 255, 255, 0.5);
+    color: #a16207;
     font-size: 0.85rem;
     margin: 0;
+    font-weight: 600;
 }
 
 /* Other Cells */
@@ -385,13 +416,14 @@
 }
 
 .date-separator {
-    color: rgba(255, 255, 255, 0.4);
+    color: #a16207;
     font-style: italic;
+    font-weight: 600;
 }
 
 .price-cell {
-    font-weight: 600;
-    color: #10b981;
+    font-weight: 700;
+    color: #059669;
 }
 
 /* Status Badge */
@@ -494,10 +526,11 @@
 .results-footer {
     padding: 1rem;
     text-align: center;
-    color: rgba(255, 255, 255, 0.6);
+    color: #78350f;
     font-size: 0.875rem;
-    background: rgba(255, 255, 255, 0.03);
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    font-weight: 600;
+    background: linear-gradient(135deg, #fde68a 0%, #fcd34d 100%);
+    border-top: 2px solid #f97316;
 }
 
 /* Responsive */

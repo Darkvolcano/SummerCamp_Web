@@ -1,12 +1,12 @@
 /* ========== Stat Card Component ========== */
 
 .stat-card {
-    background: rgba(255, 255, 255, 0.95);
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
     border-radius: 20px;
     padding: 1.5rem;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 30px rgba(251, 146, 60, 0.25);
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: 3px solid #fbbf24;
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
@@ -26,11 +26,13 @@
 
 .stat-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 15px 40px rgba(249, 115, 22, 0.35);
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border-color: #f97316;
 }
 
 .stat-card:hover::before {
-    opacity: 0.2;
+    opacity: 0.3;
 }
 
 /* Card Header */
@@ -83,7 +85,10 @@
 .stat-value {
     font-size: 2rem;
     font-weight: 800;
-    color: #1e293b;
+    background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     margin-bottom: 0.25rem;
     letter-spacing: -0.02em;
     line-height: 1;
@@ -91,14 +96,14 @@
 
 .stat-title {
     font-size: 0.875rem;
-    color: #64748b;
-    font-weight: 600;
+    color: #78350f;
+    font-weight: 700;
 }
 
 /* Progress Bar */
 .stat-progress-bar {
     height: 4px;
-    background: #e2e8f0;
+    background: #fde68a;
     border-radius: 4px;
     overflow: hidden;
     position: relative;

@@ -1,12 +1,12 @@
 /* ========== Recent Activity Card ========== */
 
 .activity-card {
-    background: rgba(255, 255, 255, 0.95);
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
     border-radius: 20px;
     padding: 1.5rem;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 30px rgba(251, 146, 60, 0.25);
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: 3px solid #fbbf24;
     max-height: 600px;
     display: flex;
     flex-direction: column;
@@ -18,13 +18,16 @@
     align-items: center;
     margin-bottom: 1.5rem;
     padding-bottom: 1rem;
-    border-bottom: 2px solid #f1f5f9;
+    border-bottom: 3px solid #fbbf24;
 }
 
 .card-title {
     font-size: 1.25rem;
     font-weight: 800;
-    color: #1e293b;
+    background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     letter-spacing: -0.02em;
 }
 
@@ -67,7 +70,7 @@
 }
 
 .activity-list::-webkit-scrollbar-track {
-    background: #f1f5f9;
+    background: #fde68a;
     border-radius: 10px;
 }
 
@@ -86,7 +89,8 @@
     gap: 1rem;
     padding: 1rem;
     border-radius: 12px;
-    background: #f8fafc;
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border: 2px solid #fbbf24;
     transition: all 0.3s ease;
     animation: slideIn 0.4s ease-out backwards;
 }
@@ -112,9 +116,10 @@
 }
 
 .activity-item:hover {
-    background: white;
+    background: linear-gradient(135deg, #fde68a 0%, #fcd34d 100%);
     transform: translateX(4px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.25);
+    border-color: #f97316;
 }
 
 .activity-icon {
@@ -141,18 +146,19 @@
 
 .activity-text {
     font-size: 0.875rem;
-    color: #475569;
+    color: #78350f;
     line-height: 1.5;
+    font-weight: 600;
 }
 
 .activity-user {
     font-weight: 700;
-    color: #1e293b;
+    color: #f97316;
 }
 
 .activity-time {
     font-size: 0.75rem;
-    color: #94a3b8;
+    color: #a16207;
     font-weight: 600;
 }
 

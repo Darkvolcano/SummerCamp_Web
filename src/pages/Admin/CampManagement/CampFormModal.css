@@ -27,15 +27,15 @@
 
 /* Modal Content */
 .modal-content {
-    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-    border: 1px solid rgba(249, 115, 22, 0.3);
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+    border: 3px solid #f97316;
     border-radius: 20px;
     width: 100%;
     max-width: 800px;
     max-height: 90vh;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 20px 60px rgba(249, 115, 22, 0.4);
     animation: slideUp 0.3s ease;
 }
 
@@ -57,7 +57,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 1.5rem 2rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 2px solid #fbbf24;
 }
 
 .modal-header h2 {
@@ -71,11 +71,11 @@
 }
 
 .close-btn {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: linear-gradient(135deg, #fde68a 0%, #fcd34d 100%);
+    border: 2px solid #fbbf24;
     border-radius: 8px;
     padding: 0.5rem;
-    color: rgba(255, 255, 255, 0.6);
+    color: #78350f;
     cursor: pointer;
     transition: all 0.2s ease;
     display: flex;
@@ -84,8 +84,9 @@
 }
 
 .close-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
+    background: linear-gradient(135deg, #fcd34d 0%, #fbbf24 100%);
+    color: #78350f;
+    border-color: #f97316;
 }
 
 .close-btn:focus {

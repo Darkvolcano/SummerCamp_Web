@@ -84,13 +84,11 @@ export default function CampFormModal({
         setFormData((prev) => ({
             ...prev,
             [name]:
-                name === "minParticipants" ||
-                    name === "maxParticipants" ||
-                    name === "price" ||
-                    name === "campTypeId" ||
-                    name === "locationId"
-                    ? value === "" ? null : Number(value)
-                    : value,
+                name === "minParticipants" || name === "maxParticipants"
+                    ? value === "" ? 0 : Number(value) // Convert empty to 0, not null
+                    : name === "price" || name === "campTypeId" || name === "locationId"
+                        ? value === "" ? null : Number(value)
+                        : value,
         }));
         // Clear error when user starts typing
         if (errors[name as keyof CampRequestDto]) {
