@@ -57,6 +57,8 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
       PagePath.VERIFY_OTP,
       PagePath.RESET_PASSWORD,
       PagePath.FORBIDDEN,
+      PagePath.CAMP,
+      PagePath.CAMP_DETAIL,
       "/admin/dashboard", // Temporarily public for testing
       "/admin/camps", // Temporarily public for testing
       "/admin/blogs", // Temporarily public for testing

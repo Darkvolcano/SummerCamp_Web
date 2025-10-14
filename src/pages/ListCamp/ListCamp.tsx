@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import { Card, Spin, message } from "antd";
 import { SearchOutlined, EnvironmentOutlined } from "@ant-design/icons";
 import { useAuthStore } from "../../services/userService"; 
+import campTypeService, {type CampType} from "../../services/campTypeService";
 import { useNavigate } from "react-router-dom";
 import campService, {
-  type CampResponseDto,
-  type CampType,
+  type CampResponseDto
 } from "../../services/campService";
 import "./ListCamp.css";
 
@@ -27,7 +27,7 @@ const ListCamp: React.FC = () => {
       setLoading(true);
       const [campsData, typesData] = await Promise.all([
         campService.getAllCamps(),
-        campService.getAllCampTypes(),
+        campTypeService.getAllCampTypes(),
       ]);
       console.log("Fetched camps:", campsData);
       console.log("Fetched camp types:", typesData);
@@ -48,19 +48,16 @@ const ListCamp: React.FC = () => {
   // Filter camps
   const filteredCamps = camps.filter((camp) => {
     const matchesType =
-      selectedType === null || camp.campTypeId === selectedType;
+      selectedType === null || camp.campType?.id === selectedType;
     const matchesSearch =
       camp.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       camp.description.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesType && matchesSearch;
   });
 
-
-  // Get camp type name
-  const getCampTypeName = (campTypeId: number | null) => {
-    const campType = campTypes.find((type) => type.campTypeId === campTypeId);
-    return campType?.name || "Chưa phân loại";
-  };
+  // const getCampTypeName = (camp: CampResponseDto) => {
+  //   return camp.campType?.name || "Chưa phân loại";
+  // };
 
   return (
     <div className="listCamp-page">
@@ -157,7 +154,7 @@ const ListCamp: React.FC = () => {
 
                 {campTypes.map((type) => {
                   const count = camps.filter(
-                    (c) => c.campTypeId === type.campTypeId
+                    (c) => c.campType?.id === type.campTypeId
                   ).length;
                   return (
                     <button
@@ -226,16 +223,18 @@ const ListCamp: React.FC = () => {
                             }
                             className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                           />
-                          <div className="absolute top-4 right-4">
-                            <span className="bg-[#FF8F50] text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg">
-                              {getCampTypeName(camp.campTypeId)}
-                            </span>
-                          </div>
+                          {camp.campType && (
+                            <div className="absolute top-4 right-4">
+                              <span className="bg-[#FF8F50] text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg">
+                                {camp.campType.name}
+                              </span>
+                            </div>
+                          )}
                         </div>
                       }
                       onClick={() => navigate(`/camp/${camp.campId}`)}
                     >
-                      <div className="p-1">
+                      <div className="p-4">
                         <div className="flex items-center gap-2 text-[#FF8F50] mb-2">
                           <EnvironmentOutlined className="text-sm" />
                           <span className="text-xs font-semibold">
@@ -243,13 +242,14 @@ const ListCamp: React.FC = () => {
                           </span>
                         </div>
 
-                        <h3 className="text-lg font-bold text-gray-900 mb-1 line-clamp-2 min-h-[2.5 rem]">
+                        <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 min-h-[3rem]">
                           {camp.name}
                         </h3>
 
-                        <p className="text-gray-600 text-sm mb-2 line-clamp-2 min-h-[2.5rem]">
+                        <p className="text-gray-600 text-sm mb-3 line-clamp-2 min-h-[2.5rem]">
                           {camp.description}
                         </p>
+
                         <div className="flex items-center justify-between pt-3 border-t border-gray-100">
                           <div>
                             <p className="text-xs text-gray-500 mb-0.5">
