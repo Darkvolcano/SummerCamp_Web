@@ -93,7 +93,7 @@
 }
 
 /* Form */
-.camp-form {
+.blog-form {
     display: flex;
     flex-direction: column;
     flex: 1;
@@ -145,8 +145,7 @@
 }
 
 .form-group input,
-.form-group textarea,
-.form-group select {
+.form-group textarea {
     width: 100%;
     padding: 0.75rem 1rem;
     background: #ffffff;
@@ -159,8 +158,7 @@
 }
 
 .form-group input:focus,
-.form-group textarea:focus,
-.form-group select:focus {
+.form-group textarea:focus {
     outline: none;
     border-color: #111827;
     box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.1);
@@ -173,7 +171,7 @@
 
 .form-group textarea {
     resize: vertical;
-    min-height: 100px;
+    min-height: 200px;
 }
 
 .form-group input.error,
@@ -188,26 +186,38 @@
     margin-top: 0.25rem;
 }
 
-/* Form Row */
-.form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
+/* CKEditor Integration */
+.form-group .editor-container {
+    margin-top: 0;
 }
 
-/* Image Preview */
-.image-preview {
-    margin-top: 1rem;
-    border-radius: 12px;
+.form-group .editor-container label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #374151;
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.form-group .editor-container__editor {
+    min-width: 100%;
+    max-width: 100%;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
     overflow: hidden;
-    border: 2px solid rgba(249, 115, 22, 0.3);
+    transition: all 0.3s ease;
 }
 
-.image-preview img {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-    display: block;
+.form-group .editor-container__editor:focus-within {
+    border-color: #111827;
+    box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.1);
+}
+
+.form-group .editor-container__editor .ck-editor__editable {
+    min-height: 300px;
+    max-height: 500px;
 }
 
 /* Modal Footer */
@@ -301,10 +311,6 @@
     .form-scroll,
     .modal-footer {
         padding: 1rem;
-    }
-
-    .form-row {
-        grid-template-columns: 1fr;
     }
 
     .modal-footer {

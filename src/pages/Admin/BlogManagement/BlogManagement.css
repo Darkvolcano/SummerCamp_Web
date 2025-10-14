@@ -1,12 +1,12 @@
-/* Camp Management Container */
-.camp-management-container {
+/* Blog Management Container */
+.blog-management-container {
     display: flex;
     min-height: 100vh;
     background: #f9fafb;
     font-family: 'Quicksand', sans-serif;
 }
 
-.camp-management-main {
+.blog-management-main {
     flex: 1;
     margin-left: 280px;
     padding: 2rem;
@@ -14,12 +14,12 @@
     overflow-x: hidden;
 }
 
-.camp-management-main.sidebar-collapsed {
+.blog-management-main.sidebar-collapsed {
     margin-left: 80px;
 }
 
 /* Header */
-.camp-management-header {
+.blog-management-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -106,16 +106,8 @@
     background: #111827;
 }
 
-.stat-icon.active {
+.stat-icon.recent {
     background: #374151;
-}
-
-.stat-icon.pending {
-    background: #4b5563;
-}
-
-.stat-icon.revenue {
-    background: #6b7280;
 }
 
 .stat-content {
@@ -180,41 +172,6 @@
 
 .search-box input::placeholder {
     color: #9ca3af;
-}
-
-.filter-group {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1rem;
-    background: #ffffff;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    color: #4b5563;
-}
-
-.filter-select {
-    background: transparent;
-    border: none;
-    outline: none;
-    color: #111827;
-    font-size: 0.95rem;
-    font-weight: 600;
-    font-family: 'Quicksand', sans-serif;
-    cursor: pointer;
-    padding: 0.25rem;
-}
-
-.filter-select:focus {
-    outline: 2px solid #111827;
-    outline-offset: 2px;
-    border-radius: 4px;
-}
-
-.filter-select option {
-    background: #ffffff;
-    color: #111827;
-    font-weight: 600;
 }
 
 .btn-refresh {
@@ -299,17 +256,17 @@
 }
 
 /* Table */
-.camps-table {
+.blogs-table {
     width: 100%;
     border-collapse: collapse;
 }
 
-.camps-table thead {
+.blogs-table thead {
     background: #f9fafb;
     border-bottom: 1px solid #e5e7eb;
 }
 
-.camps-table th {
+.blogs-table th {
     padding: 1rem;
     text-align: left;
     color: #111827;
@@ -319,119 +276,51 @@
     letter-spacing: 0.5px;
 }
 
-.camps-table tbody tr {
+.blogs-table tbody tr {
     border-bottom: 1px solid #f3f4f6;
     transition: all 0.2s ease;
 }
 
-.camps-table tbody tr:hover {
+.blogs-table tbody tr:hover {
     background: #f9fafb;
     transform: translateX(4px);
 }
 
-.camps-table td {
+.blogs-table td {
     padding: 1rem;
     color: #4b5563;
     font-size: 0.9rem;
     font-weight: 600;
 }
 
-/* Camp Name Cell */
-.camp-name-cell {
+/* Blog Title Cell */
+.blog-title-cell {
     display: flex;
     align-items: center;
     gap: 1rem;
 }
 
-.camp-thumbnail {
-    width: 60px;
-    height: 60px;
-    border-radius: 8px;
-    object-fit: cover;
-    border: 2px solid rgba(249, 115, 22, 0.3);
-}
-
-.camp-name {
+.blog-title {
     font-weight: 700;
     color: #111827;
-    margin: 0 0 0.25rem 0;
-}
-
-.camp-address {
-    color: #6b7280;
-    font-size: 0.85rem;
     margin: 0;
-    font-weight: 600;
 }
 
-/* Other Cells */
-.place-cell,
-.dates-cell,
-.participants-cell {
+/* Author Cell */
+.author-cell,
+.date-cell {
     display: flex;
     align-items: center;
     gap: 0.5rem;
 }
 
-.dates-cell {
-    flex-direction: column;
-    align-items: flex-start;
-}
-
-.dates-cell>div {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-}
-
-.dates-cell p {
-    margin: 0;
-    font-size: 0.85rem;
-}
-
-.date-separator {
-    color: #9ca3af;
-    font-style: italic;
-    font-weight: 600;
-}
-
-.price-cell {
-    font-weight: 700;
-    color: #059669;
-}
-
-/* Status Badge */
-.status-badge {
-    padding: 0.375rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: capitalize;
-    display: inline-block;
-}
-
-.status-badge.active {
-    background: rgba(17, 24, 39, 0.1);
-    color: #111827;
-    border: 1px solid rgba(17, 24, 39, 0.2);
-}
-
-.status-badge.pending {
-    background: rgba(107, 114, 128, 0.1);
-    color: #4b5563;
-    border: 1px solid rgba(107, 114, 128, 0.2);
-}
-
-.status-badge.completed {
-    background: rgba(17, 24, 39, 0.1);
-    color: #111827;
-    border: 1px solid rgba(17, 24, 39, 0.2);
-}
-
-.status-badge.cancelled {
-    background: rgba(239, 68, 68, 0.1);
-    color: #dc2626;
-    border: 1px solid rgba(239, 68, 68, 0.2);
+/* Preview Cell */
+.preview-cell {
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #6b7280;
 }
 
 /* Actions Cell */
@@ -515,12 +404,12 @@
 }
 
 @media (max-width: 768px) {
-    .camp-management-main {
+    .blog-management-main {
         margin-left: 80px;
         padding: 1rem;
     }
 
-    .camp-management-header {
+    .blog-management-header {
         flex-direction: column;
         align-items: flex-start;
     }
@@ -542,7 +431,7 @@
         overflow-x: auto;
     }
 
-    .camps-table {
+    .blogs-table {
         min-width: 900px;
     }
 }
