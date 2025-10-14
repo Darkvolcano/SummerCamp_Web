@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { X, Save, FileText, Calendar } from "lucide-react";
+import { X, Save, FileText } from "lucide-react";
 import { message } from "antd";
 import type { BlogResponseDto, BlogRequestDto } from "./BlogManagement";
+import { useCreateBlogs, useUpdateBlogs } from "../../../services/blogService";
 import { CKEditorComponent } from "../../../components/CKEditor/CKEditor";
 import "./BlogFormModal.css";
 
@@ -18,11 +19,14 @@ export default function BlogFormModal({
     onClose,
     onSuccess,
 }: BlogFormModalProps) {
+    // Use real API mutations
+    const createMutation = useCreateBlogs();
+    const updateMutation = useUpdateBlogs();
+
     const [formData, setFormData] = useState<BlogRequestDto>({
         title: "",
         content: "",
-        authorId: 1, // TODO: Get from auth context
-        publishedDate: new Date().toISOString().split("T")[0],
+        image: "",
     });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [saving, setSaving] = useState(false);
@@ -32,8 +36,7 @@ export default function BlogFormModal({
             setFormData({
                 title: blog.title,
                 content: blog.content,
-                authorId: blog.authorId,
-                publishedDate: new Date(blog.createdAt).toISOString().split("T")[0],
+                image: blog.image || "",
             });
         }
     }, [blog, isEditing]);
@@ -72,10 +75,6 @@ export default function BlogFormModal({
             newErrors.content = "Content must be at least 20 characters";
         }
 
-        if (!formData.publishedDate) {
-            newErrors.publishedDate = "Published date is required";
-        }
-
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -91,19 +90,22 @@ export default function BlogFormModal({
         try {
             setSaving(true);
 
-            // TODO: Replace with actual API calls
             if (isEditing && blog) {
-                console.log("Updating blog:", blog.id, formData);
+                if (!blog.id) {
+                    throw new Error("Blog ID is missing");
+                }
+
+                await updateMutation.mutateAsync({ id: blog.id, blog: formData });
                 message.success("Blog updated successfully");
             } else {
-                console.log("Creating blog:", formData);
+                await createMutation.mutateAsync(formData);
                 message.success("Blog created successfully");
             }
 
             onSuccess();
-        } catch (error: any) {
-            console.error("Error saving blog:", error);
-            message.error(error.response?.data?.message || "Failed to save blog");
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : "Failed to save blog";
+            message.error(errorMessage);
         } finally {
             setSaving(false);
         }
@@ -139,24 +141,6 @@ export default function BlogFormModal({
                             />
                             {errors.title && (
                                 <span className="error-message">{errors.title}</span>
-                            )}
-                        </div>
-
-                        {/* Published Date */}
-                        <div className="form-group">
-                            <label>
-                                <Calendar size={16} />
-                                Published Date <span className="required">*</span>
-                            </label>
-                            <input
-                                type="date"
-                                name="publishedDate"
-                                value={formData.publishedDate}
-                                onChange={handleChange}
-                                className={errors.publishedDate ? "error" : ""}
-                            />
-                            {errors.publishedDate && (
-                                <span className="error-message">{errors.publishedDate}</span>
                             )}
                         </div>
 

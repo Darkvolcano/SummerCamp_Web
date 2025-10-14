@@ -11,6 +11,9 @@ import UserProfile from "./pages/Profile/UserProfile";
 import AdminDashboard from "./pages/Admin/Dashboard/AdminDashboard";
 import CampManagement from "./pages/Admin/CampManagement/CampManagement";
 import BlogManagement from "./pages/Admin/BlogManagement/BlogManagement";
+import MySchedule from "./pages/Staff/MySchedule/MySchedule";
+import MyCamps from "./pages/Staff/MyCamps/MyCamps";
+import MyBlogs from "./pages/Staff/MyBlogs/MyBlogs";
 import { AuthGuardProvider } from "./contexts/AuthGuardContext";
 import { PagePath } from "./enums/page-path.enum";
 import AdminSidebar from "./components/sidebar/Admin/Admin";
@@ -47,6 +50,11 @@ function App() {
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/camps" element={<CampManagement />} />
           <Route path="/admin/blogs" element={<BlogManagement />} />
+
+          {/* Staff Routes - Temporarily Public for Testing */}
+          <Route path="/staff/schedule" element={<MySchedule />} />
+          <Route path="/staff/camps" element={<MyCamps />} />
+          <Route path="/staff/blogs" element={<MyBlogs />} />
 
           {/* Home Route - Protected */}
           <Route path={PagePath.HOME} element={<MainLayout><Home /></MainLayout>} />

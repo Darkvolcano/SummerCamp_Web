@@ -1,0 +1,196 @@
+/* ========== My Camps Styles ========== */
+
+.filter-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    background: #ffffff;
+    padding: 0.5rem;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.filter-tab {
+    flex: 1;
+    padding: 0.75rem 1.5rem;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filter-tab:hover {
+    background: #fff5f0;
+    color: #FF8F50;
+    transform: translateY(-2px);
+}
+
+.filter-tab.active {
+    background: #FF8F50;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(255, 143, 80, 0.3);
+}
+
+/* ========== Camps Grid ========== */
+
+.camps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+
+.camp-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.camp-card:hover {
+    box-shadow: 0 8px 24px rgba(255, 143, 80, 0.2);
+    transform: translateY(-4px);
+    border-color: #FFB088;
+}
+
+.camp-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.camp-icon {
+    width: 48px;
+    height: 48px;
+    background: #fff5f0;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FF8F50;
+}
+
+.status-badge {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.status-upcoming {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.status-ongoing {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.status-completed {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.camp-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #FF8F50;
+    margin: 0 0 0.75rem 0;
+}
+
+.camp-description {
+    font-size: 0.875rem;
+    color: #6b7280;
+    line-height: 1.5;
+    margin: 0 0 1.25rem 0;
+}
+
+.camp-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+    padding: 1rem;
+    background: #fff5f0;
+    border-radius: 8px;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: #4b5563;
+}
+
+.detail-item svg {
+    color: #FF8F50;
+    flex-shrink: 0;
+}
+
+.view-details-btn {
+    width: 100%;
+    padding: 0.75rem;
+    background: #FF8F50;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.view-details-btn:hover {
+    background: #ff7e3d;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 143, 80, 0.4);
+}
+
+.view-details-btn:active {
+    transform: scale(0.98);
+}
+
+.no-camps {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    color: #9ca3af;
+}
+
+.no-camps svg {
+    margin-bottom: 1.5rem;
+    opacity: 0.5;
+}
+
+.no-camps p {
+    font-size: 1.125rem;
+    margin: 0;
+}
+
+/* ========== Responsive ========== */
+
+@media (max-width: 768px) {
+    .filter-tabs {
+        flex-direction: column;
+    }
+
+    .filter-tab {
+        text-align: center;
+    }
+
+    .camps-grid {
+        grid-template-columns: 1fr;
+    }
+}
