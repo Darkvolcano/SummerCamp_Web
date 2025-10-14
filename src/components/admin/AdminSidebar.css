@@ -6,15 +6,15 @@
     top: 0;
     height: 100vh;
     width: 280px;
-    background: linear-gradient(180deg, #fffbeb 0%, #fef3c7 50%, #fde68a 100%);
+    background: #ffffff;
     backdrop-filter: blur(20px);
-    border-right: 3px solid #f97316;
+    border-right: 1px solid #e5e7eb;
     display: flex;
     flex-direction: column;
     padding: 1.5rem;
     transition: width 0.3s ease;
     z-index: 1000;
-    box-shadow: 4px 0 20px rgba(249, 115, 22, 0.3);
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
 }
 
 .admin-sidebar.collapsed {
@@ -41,10 +41,7 @@
 .logo-text {
     font-size: 1.25rem;
     font-weight: 800;
-    background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #111827;
     letter-spacing: -0.02em;
     white-space: nowrap;
     animation: fadeIn 0.3s ease;
@@ -73,7 +70,7 @@
 }
 
 .sidebar-nav::-webkit-scrollbar-thumb {
-    background: rgba(249, 115, 22, 0.3);
+    background: #d1d5db;
     border-radius: 4px;
 }
 
@@ -82,9 +79,9 @@
     align-items: center;
     gap: 1rem;
     padding: 0.875rem 1rem;
-    color: #78350f;
+    color: #4b5563;
     text-decoration: none;
-    border-radius: 12px;
+    border-radius: 8px;
     font-size: 0.9375rem;
     font-weight: 600;
     transition: all 0.3s ease;
@@ -98,17 +95,16 @@
     left: 0;
     top: 0;
     height: 100%;
-    width: 4px;
-    background: linear-gradient(180deg, #f97316 0%, #fb923c 100%);
+    width: 3px;
+    background: #111827;
     transform: scaleY(0);
     transition: transform 0.3s ease;
 }
 
 .nav-item:hover {
-    background: linear-gradient(135deg, #fde68a 0%, #fcd34d 100%);
-    color: #f97316;
+    background: #f3f4f6;
+    color: #111827;
     transform: translateX(4px);
-    box-shadow: 0 2px 8px rgba(249, 115, 22, 0.2);
 }
 
 .nav-item:hover::before {
@@ -117,20 +113,20 @@
 
 .nav-item:focus {
     outline: none;
-    background: linear-gradient(135deg, #fde68a 0%, #fcd34d 100%);
-    color: #f97316;
-    box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.3);
+    background: #f3f4f6;
+    color: #111827;
+    box-shadow: 0 0 0 2px rgba(17, 24, 39, 0.1);
 }
 
 .nav-item.active {
-    background: linear-gradient(135deg, #fcd34d 0%, #fbbf24 100%);
-    color: #f97316;
-    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+    background: #111827;
+    color: #ffffff;
     font-weight: 700;
 }
 
 .nav-item.active::before {
     transform: scaleY(1);
+    background: #ffffff;
 }
 
 .nav-icon {
@@ -161,20 +157,19 @@
     gap: 0.5rem;
     margin-top: 1rem;
     padding-top: 1rem;
-    border-top: 2px solid rgba(249, 115, 22, 0.3);
+    border-top: 1px solid #e5e7eb;
 }
 
 .logout-button {
-    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-    border: 2px solid #ef4444;
+    background: #fee2e2;
+    border: 1px solid #ef4444;
     color: #dc2626;
 }
 
 .logout-button:hover {
-    background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%);
-    color: #dc2626;
+    background: #fecaca;
+    color: #b91c1c;
     transform: translateX(0);
-    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
 }
 
 .toggle-button {
@@ -182,25 +177,24 @@
     align-items: center;
     justify-content: center;
     padding: 0.75rem;
-    background: linear-gradient(135deg, #fde68a 0%, #fcd34d 100%);
-    border: 2px solid #f97316;
-    border-radius: 12px;
-    color: #f97316;
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    color: #4b5563;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(249, 115, 22, 0.2);
 }
 
 .toggle-button:hover {
-    background: linear-gradient(135deg, #fcd34d 0%, #fbbf24 100%);
+    background: #e5e7eb;
+    color: #111827;
     transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
 }
 
 .toggle-button:focus {
     outline: none;
-    border-color: #f97316;
-    box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.3);
+    border-color: #111827;
+    box-shadow: 0 0 0 2px rgba(17, 24, 39, 0.1);
 }
 
 /* Animations */
