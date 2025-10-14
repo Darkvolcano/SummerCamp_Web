@@ -17,6 +17,8 @@ import AdminSidebar from "./components/sidebar/Admin/Admin";
 import StaffSidebar from "./components/sidebar/Staff/Staff";
 import VerifyOtp from "./pages/Otp/OtpVerification";
 import MainLayout from "./layouts/MainLayout";
+import ListCamp from "./pages/ListCamp/ListCamp";
+import CampDetail from "./pages/CampDetail/CampDetail";
 const LayoutWithSidebarAdmin = () => (
   <>
     <AdminSidebar />
@@ -39,7 +41,8 @@ function App() {
           <Route path={PagePath.REGISTER} element={<Register />} />
           <Route path={PagePath.VERIFY_OTP} element={<VerifyOtp />} />
           <Route path={PagePath.FORBIDDEN} element={<Forbidden />} />
-
+          <Route path={PagePath.CAMP} element={<MainLayout><ListCamp /></MainLayout>} />
+          <Route path={PagePath.CAMP_DETAIL} element={<MainLayout><CampDetail /></MainLayout>} />
           {/* Admin Routes - Temporarily Public for Testing */}
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/camps" element={<CampManagement />} />

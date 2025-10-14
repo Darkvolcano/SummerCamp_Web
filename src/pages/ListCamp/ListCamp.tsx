@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Card, Spin, message } from "antd";
 import { SearchOutlined, EnvironmentOutlined } from "@ant-design/icons";
+import { useAuthStore } from "../../services/userService"; 
 import { useNavigate } from "react-router-dom";
 import campService, {
   type CampResponseDto,
@@ -15,6 +16,7 @@ const ListCamp: React.FC = () => {
   const [selectedType, setSelectedType] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const { user } = useAuthStore(); 
 
   useEffect(() => {
     fetchData();
@@ -79,7 +81,7 @@ const ListCamp: React.FC = () => {
               <span className="bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text text-transparent">
                 Tìm kiếm trại hè phù hợp
               </span>
-              <span className="text-white block mt-2">
+              <span className="text-white text-4xl block mt-2">
                 Cho trẻ phát huy tối đa tiềm năng
               </span>
             </h1>
@@ -88,18 +90,20 @@ const ListCamp: React.FC = () => {
               năng, kiến thức và trải nghiệm những kỷ niệm đáng nhớ cùng bạn bè
               mới.
             </p>
-            <button
-              onClick={handleSignUpClick}
-              className="bg-[#FF8F50] text-white rounded-[105px] px-8 py-4 font-bold hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2 whitespace-nowrap hover:bg-[#ff7e3d]"
-            >
-              Đăng ký ngay
-            </button>
+            {!user && (
+              <button
+                onClick={handleSignUpClick}
+                className="bg-[#FF8F50] text-white rounded-[105px] px-8 py-4 font-bold hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2 whitespace-nowrap hover:bg-[#ff7e3d]"
+              >
+                Đăng ký ngay
+              </button>
+            )}
           </div>
         </div>
       </section>
 
       {/* Search Bar */}
-      <div className="relative -mt-10 z-50 px-4 mb-16">
+      <div className="relative -mt-10 z-30 px-4 mb-16">
         <div className="max-w-4xl mx-auto">
           <div className="bg-white rounded-full shadow-2xl p-2 flex items-center">
             <div className="flex-1 px-6">

@@ -2,7 +2,7 @@ import React from "react";
 import { Card, Row, Col } from "antd";
 import { StarFilled, SearchOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "../../services/userService"; // ✅ Import auth store
+import { useAuthStore } from "../../services/userService"; 
 import "./Home.css";
 import supporticon from "../../assets/support icon.png";
 import gradicon from "../../assets/grad icon.png";
