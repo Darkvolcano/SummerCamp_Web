@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import {
     Plus,
     Search,
@@ -14,68 +14,17 @@ import AdminSidebar from "../../../components/admin/AdminSidebar";
 import BlogFormModal from "./BlogFormModal";
 import BlogDetailModal from "../BlogManagement/BlogDetailModal";
 import { message } from "antd";
+import { useBlogs, useDeleteBlogs, type BlogDto } from "../../../services/blogService";
 import "./BlogManagement.css";
 
-// Blog interface based on backend DTO
-export interface BlogResponseDto {
-    id: number;
-    title: string;
-    content: string;
-    createdAt: string;
-    authorId: number;
-    authorName: string;
-}
+// Re-export BlogDto as BlogResponseDto for compatibility
+export type BlogResponseDto = BlogDto;
 
 export interface BlogRequestDto {
     title: string;
     content: string;
-    authorId: number;
-    publishedDate: string;
+    image: string;
 }
-
-// Mock API service (replace with actual service)
-const blogService = {
-    getAllBlogs: async (): Promise<BlogResponseDto[]> => {
-        // TODO: Replace with actual API call
-        return [
-            {
-                id: 1,
-                title: "Summer Camp Activities Guide",
-                content: "Learn about our exciting summer camp activities...",
-                createdAt: "2024-10-01T10:00:00",
-                authorId: 1,
-                authorName: "John Doe",
-            },
-            {
-                id: 2,
-                title: "Safety Guidelines for Parents",
-                content: "Important safety information for parents...",
-                createdAt: "2024-10-05T14:30:00",
-                authorId: 2,
-                authorName: "Jane Smith",
-            },
-        ];
-    },
-    createBlog: async (blog: BlogRequestDto): Promise<BlogResponseDto> => {
-        return {
-            id: Date.now(),
-            ...blog,
-            authorName: "Current User",
-            createdAt: new Date().toISOString(),
-        };
-    },
-    updateBlog: async (id: number, blog: BlogRequestDto): Promise<BlogResponseDto> => {
-        return {
-            id,
-            ...blog,
-            authorName: "Current User",
-            createdAt: new Date().toISOString(),
-        };
-    },
-    deleteBlog: async (id: number): Promise<void> => {
-        console.log("Deleting blog:", id);
-    },
-};
 
 export default function BlogManagement() {
     const [isCollapsed, setIsCollapsed] = useState(false);
@@ -83,51 +32,31 @@ export default function BlogManagement() {
     const handleToggleCollapse = () => {
         setIsCollapsed(!isCollapsed);
     };
-    const [blogs, setBlogs] = useState<BlogResponseDto[]>([]);
-    const [filteredBlogs, setFilteredBlogs] = useState<BlogResponseDto[]>([]);
-    const [loading, setLoading] = useState(false);
+
+    // Use real API hooks
+    const { data: blogs = [], isLoading: loading, refetch } = useBlogs();
+    const deleteMutation = useDeleteBlogs();
+
     const [searchTerm, setSearchTerm] = useState("");
 
     // Modal states
     const [isFormModalOpen, setIsFormModalOpen] = useState(false);
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-    const [selectedBlog, setSelectedBlog] = useState<BlogResponseDto | null>(null);
+    const [selectedBlog, setSelectedBlog] = useState<BlogDto | null>(null);
     const [isEditing, setIsEditing] = useState(false);
 
-    // Fetch blogs
-    const fetchBlogs = async () => {
-        try {
-            setLoading(true);
-            const data = await blogService.getAllBlogs();
-            setBlogs(data);
-            setFilteredBlogs(data);
-            message.success("Blogs loaded successfully");
-        } catch (error: any) {
-            console.error("Error fetching blogs:", error);
-            message.error("Failed to load blogs");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchBlogs();
-    }, []);
-
-    // Search filter
-    useEffect(() => {
-        let result = blogs;
-
-        if (searchTerm) {
-            result = result.filter(
-                (blog) =>
-                    blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    blog.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    blog.authorName.toLowerCase().includes(searchTerm.toLowerCase())
-            );
+    // Derive filtered blogs using useMemo to avoid infinite loops
+    const filteredBlogs = useMemo(() => {
+        if (!searchTerm) {
+            return blogs;
         }
 
-        setFilteredBlogs(result);
+        return blogs.filter(
+            (blog: BlogDto) =>
+                blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                blog.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                blog.Author?.fullName?.toLowerCase().includes(searchTerm.toLowerCase())
+        );
     }, [searchTerm, blogs]);
 
     // Handle create
@@ -151,15 +80,16 @@ export default function BlogManagement() {
     };
 
     // Handle delete
-    const handleDelete = async (blog: BlogResponseDto) => {
+    const handleDelete = async (blog: BlogDto) => {
         if (window.confirm(`Are you sure you want to delete "${blog.title}"?`)) {
             try {
-                await blogService.deleteBlog(blog.id);
+                await deleteMutation.mutateAsync(blog.id);
                 message.success("Blog deleted successfully");
-                fetchBlogs();
-            } catch (error: any) {
+                refetch();
+            } catch (error) {
                 console.error("Error deleting blog:", error);
-                message.error("Failed to delete blog");
+                const errorMessage = error instanceof Error ? error.message : "Failed to delete blog";
+                message.error(errorMessage);
             }
         }
     };
@@ -167,7 +97,7 @@ export default function BlogManagement() {
     // Handle form success
     const handleFormSuccess = () => {
         setIsFormModalOpen(false);
-        fetchBlogs();
+        refetch();
     };
 
     // Calculate stats
@@ -240,7 +170,7 @@ export default function BlogManagement() {
 
                     <button
                         className="btn-refresh"
-                        onClick={fetchBlogs}
+                        onClick={() => refetch()}
                         disabled={loading}
                     >
                         <RefreshCw size={20} className={loading ? "spinning" : ""} />
@@ -296,7 +226,7 @@ export default function BlogManagement() {
                                             <td>
                                                 <div className="author-cell">
                                                     <User size={16} />
-                                                    {blog.authorName}
+                                                    {blog.Author?.fullName || "Unknown Author"}
                                                 </div>
                                             </td>
                                             <td>

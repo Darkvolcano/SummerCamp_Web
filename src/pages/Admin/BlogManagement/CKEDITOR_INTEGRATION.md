@@ -22,9 +22,11 @@ Successfully integrated CKEditor 5 rich text editor into the Blog Management mod
 - **Indentation**: Indent/Outdent blocks
 
 ### License
-- Trial license included in the component
-- Expires: January 27, 2025
-- Full feature access during trial period
+- **Current**: GPL (Open Source)
+- **Usage**: Free for open-source projects
+- **Commercial**: Requires license from https://ckeditor.com/pricing/
+- **Note**: GPL license requires your project to also be open-source
+- Full feature access available
 
 ## Implementation Details
 

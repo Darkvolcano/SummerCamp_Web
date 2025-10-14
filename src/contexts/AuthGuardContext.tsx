@@ -62,6 +62,9 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
       "/admin/blogs", // Temporarily public for testing
       "/admin/accounts", // Temporarily public for testing
       "/admin/settings", // Temporarily public for testing
+      "/staff/schedule", // Temporarily public for testing
+      "/staff/camps", // Temporarily public for testing
+      "/staff/blogs", // Temporarily public for testing
     ];
 
     // Check if current route is public

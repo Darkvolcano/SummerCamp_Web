@@ -49,7 +49,7 @@ export default function BlogDetailModal({
                             </div>
                             <div className="info-content">
                                 <p className="info-label">Author</p>
-                                <h4 className="info-value">{blog.authorName}</h4>
+                                <h4 className="info-value">{blog.Author?.fullName || "Unknown Author"}</h4>
                             </div>
                         </div>
 
@@ -59,7 +59,7 @@ export default function BlogDetailModal({
                             </div>
                             <div className="info-content">
                                 <p className="info-label">Published</p>
-                                <h4 className="info-value">{formatDate(blog.createdAt)}</h4>
+                                <h4 className="info-value">{formatDate(new Date(blog.createdAt).toISOString())}</h4>
                             </div>
                         </div>
 

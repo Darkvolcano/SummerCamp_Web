@@ -38,8 +38,9 @@ import {
 import "ckeditor5/ckeditor5.css";
 import "./CKEditor.css";
 
-const LICENSE_KEY =
-  "eyJhbGciOiJFUzI1NiJ9.eyJleHAiOjE3NDgzOTAzOTksImp0aSI6IjdhZDMyMzNmLWJjNWUtNDI5OC1iZmE0LThkNGYyOGNmZTBiOCIsInVzYWdlRW5kcG9pbnQiOiJodHRwczovL3Byb3h5LWV2ZW50LmNrZWRpdG9yLmNvbSIsImRpc3RyaWJ1dGlvbkNoYW5uZWwiOlsiY2xvdWQiLCJkcnVwYWwiLCJzaCJdLCJ3aGl0ZUxhYmVsIjp0cnVlLCJsaWNlbnNlVHlwZSI6InRyaWFsIiwiZmVhdHVyZXMiOlsiKiJdLCJ2YyI6Ijg0MmMxNWE1In0.aC1rvB25WZrgryX7apspj70ZqvRFKAXoe3jLu64Hk8lzD1MeQ9zdPzrPG7DteyXK0yA-MIkCIoak0AXh_128MA";
+// Using GPL license for open-source development
+// For commercial use, obtain a license from https://ckeditor.com/pricing/
+const LICENSE_KEY = "GPL";
 
 interface CKEditorComponentProps {
   name: string;
@@ -65,60 +66,60 @@ export const CKEditorComponent: React.FC<CKEditorComponentProps> = ({
 
   const headingOptions: {
     model:
-      | "paragraph"
-      | "heading1"
-      | "heading2"
-      | "heading3"
-      | "heading4"
-      | "heading5"
-      | "heading6";
+    | "paragraph"
+    | "heading1"
+    | "heading2"
+    | "heading3"
+    | "heading4"
+    | "heading5"
+    | "heading6";
     view: string;
     title: string;
     class: string;
   }[] = [
-    {
-      model: "paragraph",
-      view: "p",
-      title: "Paragraph",
-      class: "ck-heading_paragraph",
-    },
-    {
-      model: "heading1",
-      view: "h1",
-      title: "Heading 1",
-      class: "ck-heading_heading1",
-    },
-    {
-      model: "heading2",
-      view: "h2",
-      title: "Heading 2",
-      class: "ck-heading_heading2",
-    },
-    {
-      model: "heading3",
-      view: "h3",
-      title: "Heading 3",
-      class: "ck-heading_heading3",
-    },
-    {
-      model: "heading4",
-      view: "h4",
-      title: "Heading 4",
-      class: "ck-heading_heading4",
-    },
-    {
-      model: "heading5",
-      view: "h5",
-      title: "Heading 5",
-      class: "ck-heading_heading5",
-    },
-    {
-      model: "heading6",
-      view: "h6",
-      title: "Heading 6",
-      class: "ck-heading_heading6",
-    },
-  ];
+      {
+        model: "paragraph",
+        view: "p",
+        title: "Paragraph",
+        class: "ck-heading_paragraph",
+      },
+      {
+        model: "heading1",
+        view: "h1",
+        title: "Heading 1",
+        class: "ck-heading_heading1",
+      },
+      {
+        model: "heading2",
+        view: "h2",
+        title: "Heading 2",
+        class: "ck-heading_heading2",
+      },
+      {
+        model: "heading3",
+        view: "h3",
+        title: "Heading 3",
+        class: "ck-heading_heading3",
+      },
+      {
+        model: "heading4",
+        view: "h4",
+        title: "Heading 4",
+        class: "ck-heading_heading4",
+      },
+      {
+        model: "heading5",
+        view: "h5",
+        title: "Heading 5",
+        class: "ck-heading_heading5",
+      },
+      {
+        model: "heading6",
+        view: "h6",
+        title: "Heading 6",
+        class: "ck-heading_heading6",
+      },
+    ];
 
   const editorConfig = {
     licenseKey: LICENSE_KEY,
