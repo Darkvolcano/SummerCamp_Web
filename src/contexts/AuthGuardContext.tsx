@@ -5,7 +5,7 @@ import { message } from "antd";
 import { jwtDecode } from "jwt-decode";
 import { PagePath } from "../enums/page-path.enum";
 
-type UserRole = "Parent" | "Staff" | "Admin" | "Camper";
+type UserRole = "Parent" | "Staff" | "Admin" | "Camper" | "User";
 
 type AuthGuardContextType = Record<string, unknown>;
 
@@ -48,124 +48,150 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
   }, [token, user, setUser, setToken, logout]);
 
   useEffect(() => {
-    // những trang cần public mà ko cần login hay register
+    // Public routes that don't need authentication
     const publicRoutes = [
-      PagePath.HOME,
+      PagePath.ROOT,
       PagePath.LOGIN,
       PagePath.REGISTER,
       PagePath.VERIFY_EMAIL,
       PagePath.VERIFY_OTP,
       PagePath.RESET_PASSWORD,
+      PagePath.FORBIDDEN,
+      PagePath.CAMP,
+      PagePath.CAMP_DETAIL,
+      "/admin/dashboard", // Temporarily public for testing
+      "/admin/camps", // Temporarily public for testing
+      "/admin/blogs", // Temporarily public for testing
+      "/admin/accounts", // Temporarily public for testing
+      "/admin/settings", // Temporarily public for testing
+      "/staff/schedule", // Temporarily public for testing
+      "/staff/camps", // Temporarily public for testing
+      "/staff/blogs", // Temporarily public for testing
     ];
 
-    // Cái này chỉ dành riêng cho những đường dẫn có chứa đuôi /:id
-    const matchDynamicRoute = (routePattern: string, path: string) => {
-      const dynamicRoutePattern = routePattern
-        .replace(/:productId/, "[0-9]+")
-        .replace(/:userId/, "[0-9]+")
-        .replace(/:orderId/, "[0-9]+")
-        .replace(/:id/, "[0-9]+");
-      const regex = new RegExp(`^${dynamicRoutePattern}$`);
-      return regex.test(path);
-    };
-
-    if (!user || !token) {
-      if (
-        publicRoutes.some((route) =>
-          matchDynamicRoute(route, location.pathname)
-        ) ||
-        publicRoutes.includes(location.pathname as PagePath)
-      ) {
-        return;
+    // Check if current route is public
+    if (publicRoutes.includes(location.pathname as PagePath) || location.pathname === "/admin/dashboard") {
+      // If user is already logged in and tries to access login/register, redirect to home
+      if (user && token && (location.pathname === PagePath.LOGIN || location.pathname === PagePath.REGISTER)) {
+        navigate(PagePath.HOME, { replace: true });
       }
+      return;
+    }
+
+    // Protected routes - require authentication
+    if (!user || !token) {
       navigate(PagePath.LOGIN, { replace: true });
       return;
     }
 
-    const decoded = jwtDecode<{
-      id: number;
-      role: string;
-      fullName: string;
-      email: string;
-      phone_number: string;
-      exp: number;
-    }>(token);
+    try {
+      const decoded = jwtDecode<{
+        sub: string;
+        email: string;
+        name: string;
+        role: string;
+        exp: number;
+        iat: number;
+        iss: string;
+        aud: string;
+      }>(token);
 
-    // những trang mặc định đầu tiên cho từng role sau khi login thành công
-    const roleRedirects: Record<UserRole, string> = {
-      Parent: PagePath.HOME,
-      Staff: "/staff/orders", // có thể thay đường dẫn bằng PagePath
-      Admin: "/admin/users",
-      Camper: "/manager/dashboard",
-    };
+      // Default redirects for each role when accessing root
+      const roleRedirects: Record<UserRole, string> = {
+        Parent: PagePath.HOME,
+        Staff: "/staff/orders",
+        Admin: "/admin/users",
+        Camper: "/manager/dashboard",
+        User: PagePath.HOME, // ✅ Regular users redirect to home
+      };
 
-    if (location.pathname === PagePath.ROOT) {
-      navigate(roleRedirects[decoded.role as UserRole], { replace: true });
-      return;
+      if (location.pathname === PagePath.ROOT) {
+        navigate(roleRedirects[decoded.role as UserRole] || PagePath.HOME, { replace: true });
+        return;
+      }
+
+      // Role-based access control
+      const restrictedPages: Record<UserRole, string[]> = {
+        Staff: [
+          "/staff/orders",
+          "/staff/profile",
+          "/staff/chat",
+          "/staff/pos",
+          "/staff/payment-success",
+          "/staff/pos/payment-cancel",
+          "/profile", // ✅ User profile page - accessible to all roles
+        ],
+        Parent: [
+          PagePath.HOME,
+          "/checkout",
+          "/payment-success",
+          "/user/information",
+          "/user/order-history",
+          "/user/order-tracking/:orderId",
+          "/user/promotion",
+          "/payment-cancel",
+          "/profile", // ✅ User profile page - accessible to all roles
+        ],
+        Camper: [
+          "/manager/dashboard",
+          "/manager/orders",
+          "/manager/orders/confirm-orders",
+          "/manager/transactions",
+          "/manager/products",
+          "/manager/promotions",
+          "/manager/staffs",
+          "/manager/feedback",
+          "/manager/chat",
+          "/manager/staffs/staffId",
+          "/manager/materials",
+          "/manager/profile",
+          "/manager/blog",
+          "/manager/materials-process",
+          "/profile", // ✅ User profile page - accessible to all roles
+        ],
+        Admin: [
+          "/admin/users",
+          "/admin/profile",
+          "/profile", // ✅ User profile page - accessible to all roles
+        ],
+        User: [
+          PagePath.HOME,
+          "/profile", // ✅ User profile page - accessible to all roles
+        ],
+      };
+
+      const userRole = decoded.role as UserRole;
+      const allowedPages = restrictedPages[userRole] || [];
+
+      // Check if user has access to current page
+      const matchDynamicRoute = (routePattern: string, path: string) => {
+        const dynamicRoutePattern = routePattern
+          .replace(/:productId/, "[0-9]+")
+          .replace(/:userId/, "[0-9]+")
+          .replace(/:orderId/, "[0-9]+")
+          .replace(/:id/, "[0-9]+");
+        const regex = new RegExp(`^${dynamicRoutePattern}$`);
+        return regex.test(path);
+      };
+
+      const isAllowed =
+        publicRoutes.includes(location.pathname as PagePath) ||
+        allowedPages.some((route) => {
+          if (route.includes(":")) {
+            return matchDynamicRoute(route, location.pathname);
+          }
+          return route === location.pathname;
+        });
+
+      if (!isAllowed) {
+        navigate(PagePath.FORBIDDEN, { replace: true });
+      }
+    } catch (error) {
+      console.error("Error in auth guard:", error);
+      logout();
+      navigate(PagePath.LOGIN, { replace: true });
     }
-
-    const restrictedPages: Record<UserRole, string[]> = {
-      // có thể thay những đường dẫn bằng PagePath
-      Staff: [
-        "/staff/orders",
-        "/staff/profile",
-        "/staff/chat",
-        "/staff/pos",
-        "/staff/payment-success",
-        "/staff/pos/payment-cancel",
-      ],
-      Parent: [
-        "/checkout",
-        "/payment-success",
-        "/user/information",
-        "/user/order-history",
-        "/user/order-tracking/:orderId",
-        "/user/promotion",
-        "/payment-cancel",
-      ],
-      Camper: [
-        "/manager/dashboard",
-        "/manager/orders",
-        "/manager/orders/confirm-orders",
-        "/manager/transactions",
-        "/manager/products",
-        "/manager/promotions",
-        "/manager/staffs",
-        "/manager/feedback",
-        "/manager/chat",
-        "/manager/staffs/staffId",
-        "/manager/materials",
-        "/manager/profile",
-        "/manager/blog",
-        "/manager/materials-process",
-      ],
-      Admin: ["/admin/users", "/admin/profile"],
-    };
-
-    const userRole = decoded.role as UserRole;
-    const allowedPages = restrictedPages[userRole] || [];
-    // Cái này chỉ dành riêng cho những đường dẫn có chứa :id
-    const isAllowed =
-      publicRoutes.some((route) =>
-        matchDynamicRoute(route, location.pathname)
-      ) ||
-      publicRoutes.includes(location.pathname as PagePath) ||
-      allowedPages.some((route) => {
-        if (
-          route.includes(":productId") ||
-          route.includes(":orderId") ||
-          route.includes(":userId") ||
-          route.includes(":id")
-        ) {
-          return matchDynamicRoute(route, location.pathname);
-        }
-        return route === location.pathname;
-      });
-
-    if (!isAllowed) {
-      navigate(PagePath.FORBIDDEN, { replace: true });
-    }
-  }, [user, location, navigate, token]);
+  }, [user, location, navigate, token, logout]);
 
   return (
     <AuthGuardContext.Provider value={{}}>{children}</AuthGuardContext.Provider>

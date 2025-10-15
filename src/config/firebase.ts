@@ -1,7 +1,7 @@
-import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
-import { getStorage } from "firebase/storage";
-import { getMessaging } from "firebase/messaging";
+import { initializeApp, type FirebaseApp } from "firebase/app";
+import { getAuth, GoogleAuthProvider, type Auth } from "firebase/auth";
+import { getStorage, type FirebaseStorage } from "firebase/storage";
+import { getMessaging, type Messaging } from "firebase/messaging";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "demo-api-key",
@@ -14,11 +14,11 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "",
 };
 
-let app;
-let auth;
-let googleProvider;
-let storage;
-let messaging;
+let app: FirebaseApp;
+let auth: Auth;
+let googleProvider: GoogleAuthProvider;
+let storage: FirebaseStorage;
+let messaging: Messaging;
 
 try {
   app = initializeApp(firebaseConfig);

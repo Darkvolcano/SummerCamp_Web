@@ -3,12 +3,12 @@
 }
 
 .manager-menu {
-  background: #d97b41 !important;
+  background: #ffffff !important;
 }
 
 .manager-menu .ant-menu-item,
 .manager-menu .ant-menu-submenu-title {
-  color: #fff !important;
+  color: #4b5563 !important;
   font-weight: 500;
   background: transparent !important;
   height: 44px;
@@ -18,23 +18,23 @@
 }
 
 .manager-menu .ant-menu-item-selected,
-.manager-menu .ant-menu-submenu-selected > .ant-menu-submenu-title {
-  background: #e9c97b !important;
-  color: #a05a2c !important;
+.manager-menu .ant-menu-submenu-selected>.ant-menu-submenu-title {
+  background: #111827 !important;
+  color: #ffffff !important;
   font-weight: 700;
-  box-shadow: 0 2px 8px 0 rgba(233, 201, 123, 0.15);
+  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.1);
 }
 
 .manager-menu .ant-menu-item-selected .anticon,
 .manager-menu .ant-menu-submenu-selected .anticon {
-  color: #a05a2c !important;
+  color: #ffffff !important;
 }
 
 .manager-menu .ant-menu-item:hover,
 .manager-menu .ant-menu-submenu-title:hover {
-  background: #e9c97b !important;
-  color: #a05a2c !important;
-  box-shadow: 0 2px 8px 0 rgba(233, 201, 123, 0.1);
+  background: #f3f4f6 !important;
+  color: #111827 !important;
+  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.05);
 }
 
 .manager-menu .ant-menu-item .anticon,
@@ -50,9 +50,10 @@
   justify-content: center;
   gap: 10px;
   padding: 32px 0 18px 0;
-  background: #d97b41;
-  border-bottom: 1px solid #e9c97b44;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
 }
+
 .ant-layout-sider-trigger {
   display: none !important;
 }

@@ -1,42 +1,141 @@
-import { Input, Button, message, Form, Checkbox, DatePicker } from "antd";
-import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { UserOutlined, MailOutlined, LockOutlined, CalendarOutlined } from "@ant-design/icons";
-import loginBackground from '../../assets/login-background.png';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { message } from 'antd';
+import { User, Mail, Lock, Phone, Calendar, Eye, EyeOff, ArrowRight, Loader2, UserPlus, Trophy } from 'lucide-react';
 import { PagePath } from '../../enums/page-path.enum';
+import { useRegister } from '../../services/userService';
+import dayjs from 'dayjs';
+import './Register.css';
 
 const Register = () => {
-  const [registerForm] = Form.useForm();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+  const registerMutation = useRegister();
   const [isSliding, setIsSliding] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
+  // Form fields
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [dateOfBirth, setDateOfBirth] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [acceptTerms, setAcceptTerms] = useState(false);
+
+  // UI states
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [focusedField, setFocusedField] = useState('');
+
+  // Validation errors
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
   useEffect(() => {
-    setTimeout(() => {
-      setIsVisible(true);
-    }, 50);
+    setTimeout(() => setIsVisible(true), 100);
   }, []);
 
-  const onFinish = async (values: any) => {
-    setLoading(true);
+  const validateField = (name: string, value: string) => {
+    const newErrors = { ...errors };
+
+    switch (name) {
+      case 'firstName':
+        if (!value) newErrors.firstName = 'Tên là bắt buộc';
+        else if (value.length < 2) newErrors.firstName = 'Tên phải có ít nhất 2 ký tự';
+        else delete newErrors.firstName;
+        break;
+
+      case 'lastName':
+        if (!value) newErrors.lastName = 'Họ là bắt buộc';
+        else if (value.length < 2) newErrors.lastName = 'Họ phải có ít nhất 2 ký tự';
+        else delete newErrors.lastName;
+        break;
+
+      case 'email':
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!value) newErrors.email = 'Email là bắt buộc';
+        else if (!emailRegex.test(value)) newErrors.email = 'Email không hợp lệ';
+        else delete newErrors.email;
+        break;
+
+      case 'phoneNumber':
+        if (!value) newErrors.phoneNumber = 'Số điện thoại là bắt buộc';
+        else if (!/^[0-9]{10}$/.test(value)) newErrors.phoneNumber = 'Số điện thoại phải có 10 chữ số';
+        else delete newErrors.phoneNumber;
+        break;
+
+      case 'dateOfBirth':
+        if (!value) newErrors.dateOfBirth = 'Ngày sinh là bắt buộc';
+        else {
+          const age = dayjs().diff(dayjs(value), 'year');
+          if (age < 18) newErrors.dateOfBirth = 'Bạn phải ít nhất 18 tuổi';
+          else delete newErrors.dateOfBirth;
+        }
+        break;
+
+      case 'password':
+        if (!value) newErrors.password = 'Mật khẩu là bắt buộc';
+        else if (value.length < 6) newErrors.password = 'Mật khẩu phải có ít nhất 6 ký tự';
+        else delete newErrors.password;
+
+        if (confirmPassword && value !== confirmPassword) {
+          newErrors.confirmPassword = 'Mật khẩu không khớp';
+        } else if (confirmPassword) {
+          delete newErrors.confirmPassword;
+        }
+        break;
+
+      case 'confirmPassword':
+        if (!value) newErrors.confirmPassword = 'Xác nhận mật khẩu là bắt buộc';
+        else if (value !== password) newErrors.confirmPassword = 'Mật khẩu không khớp';
+        else delete newErrors.confirmPassword;
+        break;
+    }
+
+    setErrors(newErrors);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Validate all fields
+    const fieldsToValidate = ['firstName', 'lastName', 'email', 'phoneNumber', 'dateOfBirth', 'password', 'confirmPassword'];
+    fieldsToValidate.forEach(field => {
+      const value = eval(field);
+      validateField(field, value);
+    });
+
+    if (!acceptTerms) {
+      message.error('Bạn phải chấp nhận điều khoản dịch vụ');
+      return;
+    }
+
+    if (Object.keys(errors).length > 0) return;
+
     try {
-      // TODO: Implement your register API call here
-      console.log("Registration data:", values);
+      const registerData = {
+        firstName,
+        lastName,
+        email,
+        phoneNumber,
+        dob: dayjs(dateOfBirth).format('YYYY-MM-DD'),
+        password,
+      };
 
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await registerMutation.mutateAsync(registerData);
 
-      message.success("Đăng ký thành công! Vui lòng kiểm tra email để nhập mã OTP.");
-
-      setIsSliding(true);
-      setTimeout(() => {
-        // Navigate to OTP verification with email
-        navigate(PagePath.VERIFY_OTP, { state: { email: values.email } });
-      }, 600);
-    } catch (error) {
-      message.error("Đăng ký thất bại. Vui lòng thử lại.");
-    } finally {
-      setLoading(false);
+      if (response) {
+        message.success('Đăng ký thành công! Vui lòng kiểm tra email để nhập mã OTP.');
+        setIsSliding(true);
+        setTimeout(() => {
+          navigate(PagePath.VERIFY_OTP, {
+            state: { email, fromRegister: true }
+          });
+        }, 600);
+      }
+    } catch (error: any) {
+      const errorMessage = error?.responseValue?.message || 'Đăng ký thất bại. Vui lòng thử lại.';
+      message.error(errorMessage);
     }
   };
 
@@ -48,244 +147,350 @@ const Register = () => {
   };
 
   return (
-    <div
-      className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-cover bg-center bg-no-repeat overflow-hidden z-50"
-      style={{
-        backgroundImage: `url(${loginBackground})`,
-        margin: 0,
-        padding: 0,
-        width: '100vw',
-        height: '100vh',
-      }}
-    >
-      <div
-        className="relative z-10"
-        style={{
-          width: '450px',
-          maxHeight: '90vh',
-          transform: isSliding ? 'translateX(150%)' : (isVisible ? 'translateX(0)' : 'translateX(150%)'),
-          opacity: isSliding ? 0 : (isVisible ? 1 : 0),
-          transition: 'transform 0.6s ease-out, opacity 0.6s ease-out',
-        }}
-      >
-        <div className="w-full h-full flex flex-col p-8 shadow-2xl overflow-y-auto" style={{
-          backgroundColor: 'rgba(255, 255, 255, 0.8)',
-          borderRadius: '25px',
-          maxHeight: '90vh'
-        }}>
-          <h1 className="text-2xl font-bold text-center mb-2" style={{ color: '#ec6426' }}>
-            ĐĂNG KÝ
-          </h1>
-          <p className="text-center mb-6 text-sm" style={{ color: '#632713' }}>
-            Tạo tài khoản mới để bắt đầu
-          </p>
+    <div className="register-page-wrapper">
+      {/* Animated Background with Floating Shapes */}
+      <div className="register-background">
+        <div className="floating-shapes">
+          <div className="shape shape-1"></div>
+          <div className="shape shape-2"></div>
+          <div className="shape shape-3"></div>
+          <div className="shape shape-4"></div>
+          <div className="shape shape-5"></div>
+        </div>
+      </div>
 
-          <Form
-            form={registerForm}
-            name="register"
-            onFinish={onFinish}
-            layout="vertical"
-          >
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <Form.Item
-                name="firstName"
-                style={{ marginBottom: 10, flex: 1 }}
-                rules={[
-                  { required: true, message: "Nhập tên" },
-                  { min: 2, message: "Tên phải có ít nhất 2 ký tự" }
-                ]}
-              >
-                <Input
-                  placeholder="Tên"
-                  style={{
-                    height: '40px',
-                    borderRadius: '20px',
-                    border: '2px solid #d9d9d9',
-                    fontFamily: 'inherit'
-                  }}
-                  prefix={<UserOutlined style={{ color: '#da7339' }} />}
-                />
-              </Form.Item>
+      {/* Split Screen Container */}
+      <div className={`register-split-container ${isSliding ? 'slide-out-right' : isVisible ? 'slide-in' : ''}`}>
 
-              <Form.Item
-                name="lastName"
-                style={{ marginBottom: 10, flex: 1 }}
-                rules={[
-                  { required: true, message: "Nhập họ" },
-                  { min: 2, message: "Họ phải có ít nhất 2 ký tự" }
-                ]}
-              >
-                <Input
-                  placeholder="Họ"
-                  style={{
-                    height: '40px',
-                    borderRadius: '20px',
-                    border: '2px solid #d9d9d9',
-                    fontFamily: 'inherit'
-                  }}
-                  prefix={<UserOutlined style={{ color: '#da7339' }} />}
-                />
-              </Form.Item>
+        {/* Left Side - Register Form */}
+        <div className="register-form-section">
+          <div className="register-card-wrapper">
+            <div className="register-card">
+              {/* Decorative Elements */}
+              <div className="card-glow"></div>
+
+              {/* Header */}
+              <div className="register-header">
+                <div className="icon-wrapper">
+                  <UserPlus className="w-7 h-7" />
+                  <div className="icon-pulse"></div>
+                </div>
+                <h2 className="register-title">Tạo tài khoản mới</h2>
+                <p className="register-subtitle">Bắt đầu hành trình tuyệt vời của bạn</p>
+              </div>
+
+              {/* Form */}
+              <form onSubmit={handleSubmit} className="register-form">
+                {/* Name Fields Row */}
+                <div className="form-row">
+                  {/* First Name */}
+                  <div className="form-group">
+                    <label className="form-label">Tên</label>
+                    <div className={`input-wrapper ${focusedField === 'firstName' ? 'focused' : ''} ${errors.firstName ? 'error' : ''}`}>
+                      <User className="input-icon" />
+                      <input
+                        type="text"
+                        value={firstName}
+                        onChange={(e) => {
+                          setFirstName(e.target.value);
+                          if (errors.firstName) setErrors({ ...errors, firstName: '' });
+                        }}
+                        onFocus={() => setFocusedField('firstName')}
+                        onBlur={() => {
+                          setFocusedField('');
+                          validateField('firstName', firstName);
+                        }}
+                        placeholder="Tên"
+                        disabled={registerMutation.isPending}
+                        className="form-input"
+                      />
+                    </div>
+                    {errors.firstName && (
+                      <p className="error-message">{errors.firstName}</p>
+                    )}
+                  </div>
+
+                  {/* Last Name */}
+                  <div className="form-group">
+                    <label className="form-label">Họ</label>
+                    <div className={`input-wrapper ${focusedField === 'lastName' ? 'focused' : ''} ${errors.lastName ? 'error' : ''}`}>
+                      <User className="input-icon" />
+                      <input
+                        type="text"
+                        value={lastName}
+                        onChange={(e) => {
+                          setLastName(e.target.value);
+                          if (errors.lastName) setErrors({ ...errors, lastName: '' });
+                        }}
+                        onFocus={() => setFocusedField('lastName')}
+                        onBlur={() => {
+                          setFocusedField('');
+                          validateField('lastName', lastName);
+                        }}
+                        placeholder="Họ"
+                        disabled={registerMutation.isPending}
+                        className="form-input"
+                      />
+                    </div>
+                    {errors.lastName && (
+                      <p className="error-message">{errors.lastName}</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Email */}
+                <div className="form-group">
+                  <label className="form-label">Email</label>
+                  <div className={`input-wrapper ${focusedField === 'email' ? 'focused' : ''} ${errors.email ? 'error' : ''}`}>
+                    <Mail className="input-icon" />
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                        if (errors.email) setErrors({ ...errors, email: '' });
+                      }}
+                      onFocus={() => setFocusedField('email')}
+                      onBlur={() => {
+                        setFocusedField('');
+                        validateField('email', email);
+                      }}
+                      placeholder="your.email@example.com"
+                      disabled={registerMutation.isPending}
+                      className="form-input"
+                    />
+                  </div>
+                  {errors.email && (
+                    <p className="error-message">{errors.email}</p>
+                  )}
+                </div>
+
+                {/* Phone & Date Row */}
+                <div className="form-row">
+                  {/* Phone Number */}
+                  <div className="form-group">
+                    <label className="form-label">Số điện thoại</label>
+                    <div className={`input-wrapper ${focusedField === 'phoneNumber' ? 'focused' : ''} ${errors.phoneNumber ? 'error' : ''}`}>
+                      <Phone className="input-icon" />
+                      <input
+                        type="tel"
+                        value={phoneNumber}
+                        onChange={(e) => {
+                          setPhoneNumber(e.target.value);
+                          if (errors.phoneNumber) setErrors({ ...errors, phoneNumber: '' });
+                        }}
+                        onFocus={() => setFocusedField('phoneNumber')}
+                        onBlur={() => {
+                          setFocusedField('');
+                          validateField('phoneNumber', phoneNumber);
+                        }}
+                        placeholder="0123456789"
+                        disabled={registerMutation.isPending}
+                        className="form-input"
+                      />
+                    </div>
+                    {errors.phoneNumber && (
+                      <p className="error-message">{errors.phoneNumber}</p>
+                    )}
+                  </div>
+
+                  {/* Date of Birth */}
+                  <div className="form-group">
+                    <label className="form-label">Ngày sinh</label>
+                    <div className={`input-wrapper ${focusedField === 'dateOfBirth' ? 'focused' : ''} ${errors.dateOfBirth ? 'error' : ''}`}>
+                      <Calendar className="input-icon" />
+                      <input
+                        type="date"
+                        value={dateOfBirth}
+                        onChange={(e) => {
+                          setDateOfBirth(e.target.value);
+                          if (errors.dateOfBirth) setErrors({ ...errors, dateOfBirth: '' });
+                        }}
+                        onFocus={() => setFocusedField('dateOfBirth')}
+                        onBlur={() => {
+                          setFocusedField('');
+                          validateField('dateOfBirth', dateOfBirth);
+                        }}
+                        disabled={registerMutation.isPending}
+                        className="form-input"
+                      />
+                    </div>
+                    {errors.dateOfBirth && (
+                      <p className="error-message">{errors.dateOfBirth}</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Password */}
+                <div className="form-group">
+                  <label className="form-label">Mật khẩu</label>
+                  <div className={`input-wrapper ${focusedField === 'password' ? 'focused' : ''} ${errors.password ? 'error' : ''}`}>
+                    <Lock className="input-icon" />
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      value={password}
+                      onChange={(e) => {
+                        setPassword(e.target.value);
+                        if (errors.password) setErrors({ ...errors, password: '' });
+                      }}
+                      onFocus={() => setFocusedField('password')}
+                      onBlur={() => {
+                        setFocusedField('');
+                        validateField('password', password);
+                      }}
+                      placeholder="••••••••"
+                      disabled={registerMutation.isPending}
+                      className="form-input"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      disabled={registerMutation.isPending}
+                      className="toggle-password"
+                      tabIndex={-1}
+                    >
+                      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    </button>
+                  </div>
+                  {errors.password && (
+                    <p className="error-message">{errors.password}</p>
+                  )}
+                </div>
+
+                {/* Confirm Password */}
+                <div className="form-group">
+                  <label className="form-label">Xác nhận mật khẩu</label>
+                  <div className={`input-wrapper ${focusedField === 'confirmPassword' ? 'focused' : ''} ${errors.confirmPassword ? 'error' : ''}`}>
+                    <Lock className="input-icon" />
+                    <input
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      value={confirmPassword}
+                      onChange={(e) => {
+                        setConfirmPassword(e.target.value);
+                        if (errors.confirmPassword) setErrors({ ...errors, confirmPassword: '' });
+                      }}
+                      onFocus={() => setFocusedField('confirmPassword')}
+                      onBlur={() => {
+                        setFocusedField('');
+                        validateField('confirmPassword', confirmPassword);
+                      }}
+                      placeholder="••••••••"
+                      disabled={registerMutation.isPending}
+                      className="form-input"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      disabled={registerMutation.isPending}
+                      className="toggle-password"
+                      tabIndex={-1}
+                    >
+                      {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    </button>
+                  </div>
+                  {errors.confirmPassword && (
+                    <p className="error-message">{errors.confirmPassword}</p>
+                  )}
+                </div>
+
+                {/* Terms Checkbox */}
+                <div className="terms-group">
+                  <label className="checkbox-label">
+                    <input
+                      type="checkbox"
+                      checked={acceptTerms}
+                      onChange={(e) => setAcceptTerms(e.target.checked)}
+                      disabled={registerMutation.isPending}
+                      className="custom-checkbox"
+                    />
+                    <span>
+                      Tôi đồng ý với{' '}
+                      <span className="terms-link">Điều khoản dịch vụ</span>
+                      {' '}và{' '}
+                      <span className="terms-link">Chính sách bảo mật</span>
+                    </span>
+                  </label>
+                </div>
+
+                {/* Submit Button */}
+                <button
+                  type="submit"
+                  disabled={registerMutation.isPending || !acceptTerms}
+                  className={`submit-button ${registerMutation.isPending ? 'loading' : ''}`}
+                >
+                  {registerMutation.isPending ? (
+                    <>
+                      <Loader2 className="button-icon spin" />
+                      <span>Đang tạo tài khoản...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Tạo tài khoản</span>
+                      <ArrowRight className="button-icon slide" />
+                    </>
+                  )}
+                </button>
+              </form>
+
+              {/* Footer */}
+              <div className="register-footer">
+                <p>
+                  Đã có tài khoản?{' '}
+                  <button
+                    type="button"
+                    onClick={handleBackToLogin}
+                    disabled={registerMutation.isPending}
+                    className="login-link"
+                  >
+                    Đăng nhập
+                  </button>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Side - Hero Section */}
+        <div className="register-hero-section">
+          <div className="hero-content">
+            <div className="hero-badge">
+              <Trophy className="w-5 h-5" />
+              <span>Trải nghiệm tuyệt vời</span>
             </div>
 
-            <Form.Item
-              name="dateOfBirth"
-              style={{ marginBottom: 10 }}
-              rules={[
-                { required: true, message: "Chọn ngày sinh" },
-                {
-                  validator: (_, value) => {
-                    if (!value) return Promise.resolve();
-                    const age = new Date().getFullYear() - value.year();
-                    if (age < 18) {
-                      return Promise.reject("Bạn phải ít nhất 18 tuổi");
-                    }
-                    return Promise.resolve();
-                  }
-                }
-              ]}
-            >
-              <DatePicker
-                placeholder="Ngày sinh"
-                style={{
-                  width: '100%',
-                  height: '40px',
-                  borderRadius: '20px',
-                  border: '2px solid #d9d9d9'
-                }}
-                format="DD/MM/YYYY"
-                suffixIcon={<CalendarOutlined style={{ color: '#da7339' }} />}
-              />
-            </Form.Item>
+            <h1 className="hero-title">
+              Tham gia <br />
+              <span className="gradient-text">cộng đồng</span>
+            </h1>
 
-            <Form.Item
-              name="email"
-              style={{ marginBottom: 10 }}
-              rules={[
-                { required: true, message: "Nhập email" },
-                { type: 'email', message: "Email không hợp lệ" }
-              ]}
-            >
-              <Input
-                placeholder="Email"
-                style={{
-                  height: '40px',
-                  borderRadius: '20px',
-                  border: '2px solid #d9d9d9',
-                  fontFamily: 'inherit'
-                }}
-                prefix={<MailOutlined style={{ color: '#da7339' }} />}
-              />
-            </Form.Item>
+            <p className="hero-description">
+              Đăng ký ngay để khám phá hàng trăm chương trình trại hè
+              hấp dẫn và trải nghiệm không giới hạn
+            </p>
 
-            <Form.Item
-              name="password"
-              style={{ marginBottom: 10 }}
-              rules={[
-                { required: true, message: "Nhập mật khẩu" },
-                { min: 6, message: "Mật khẩu phải có ít nhất 6 ký tự" }
-              ]}
-            >
-              <Input.Password
-                placeholder="Mật khẩu"
-                style={{
-                  height: '40px',
-                  borderRadius: '20px',
-                  border: '2px solid #d9d9d9',
-                  fontFamily: 'inherit'
-                }}
-                prefix={<LockOutlined style={{ color: '#da7339' }} />}
-              />
-            </Form.Item>
-
-            <Form.Item
-              name="confirmPassword"
-              style={{ marginBottom: 10 }}
-              dependencies={['password']}
-              rules={[
-                { required: true, message: "Xác nhận mật khẩu" },
-                ({ getFieldValue }) => ({
-                  validator(_, value) {
-                    if (!value || getFieldValue('password') === value) {
-                      return Promise.resolve();
-                    }
-                    return Promise.reject(new Error('Mật khẩu không khớp'));
-                  },
-                }),
-              ]}
-            >
-              <Input.Password
-                placeholder="Xác nhận mật khẩu"
-                style={{
-                  height: '40px',
-                  borderRadius: '20px',
-                  border: '2px solid #d9d9d9',
-                  fontFamily: 'inherit'
-                }}
-                prefix={<LockOutlined style={{ color: '#da7339' }} />}
-              />
-            </Form.Item>
-
-            <Form.Item
-              name="acceptTerms"
-              valuePropName="checked"
-              style={{ marginBottom: 20 }}
-              rules={[
-                {
-                  validator: (_, value) =>
-                    value ? Promise.resolve() : Promise.reject(new Error('Bạn phải chấp nhận điều khoản')),
-                },
-              ]}
-            >
-              <Checkbox>
-                <span style={{ fontSize: '12px', color: '#632713' }}>
-                  Tôi đồng ý với{' '}
-                  <span style={{ color: '#f97316', fontWeight: 600 }}>
-                    Điều khoản dịch vụ
-                  </span>
-                  {' '}và{' '}
-                  <span style={{ color: '#f97316', fontWeight: 600 }}>
-                    Chính sách bảo mật
-                  </span>
-                </span>
-              </Checkbox>
-            </Form.Item>
-
-            <Form.Item style={{ marginBottom: 0 }}>
-              <Button
-                htmlType="submit"
-                loading={loading}
-                style={{
-                  width: '100%',
-                  background: '#f97316',
-                  border: 'none',
-                  height: '40px',
-                  borderRadius: '20px',
-                  color: '#fff',
-                  fontWeight: 'bold',
-                  fontSize: '16px'
-                }}
-              >
-                {loading ? 'Đang tạo tài khoản...' : 'Tạo tài khoản'}
-              </Button>
-            </Form.Item>
-          </Form>
-
-          <div style={{ marginTop: 20, textAlign: 'center' }}>
-            <button
-              onClick={handleBackToLogin}
-              style={{
-                background: 'none',
-                border: 'none',
-                padding: 0,
-                color: '#78a243',
-                fontSize: '14px',
-                textDecoration: 'underline',
-                cursor: 'pointer'
-              }}
-            >
-              Đã có tài khoản? Đăng nhập
-            </button>
+            <div className="hero-benefits">
+              <div className="benefit-item">
+                <div className="benefit-icon">✨</div>
+                <div className="benefit-text">
+                  <div className="benefit-title">Dễ dàng đăng ký</div>
+                  <div className="benefit-desc">Quy trình đơn giản và nhanh chóng</div>
+                </div>
+              </div>
+              <div className="benefit-item">
+                <div className="benefit-icon">🎯</div>
+                <div className="benefit-text">
+                  <div className="benefit-title">Chương trình đa dạng</div>
+                  <div className="benefit-desc">Hơn 500+ trại hè cho mọi lứa tuổi</div>
+                </div>
+              </div>
+              <div className="benefit-item">
+                <div className="benefit-icon">🛡️</div>
+                <div className="benefit-text">
+                  <div className="benefit-title">An toàn & tin cậy</div>
+                  <div className="benefit-desc">Đội ngũ chuyên nghiệp và tận tâm</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
