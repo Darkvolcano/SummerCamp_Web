@@ -1,8 +1,4 @@
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
 import Home from "./pages/Home/Home";
@@ -16,8 +12,8 @@ import MyCamps from "./pages/Staff/MyCamps/MyCamps";
 import MyBlogs from "./pages/Staff/MyBlogs/MyBlogs";
 import { AuthGuardProvider } from "./contexts/AuthGuardContext";
 import { PagePath } from "./enums/page-path.enum";
-import AdminSidebar from "./components/sidebar/Admin/Admin";
-import StaffSidebar from "./components/sidebar/Staff/Staff";
+import AdminSidebar from "./components/Sidebar/Admin/Admin";
+import StaffSidebar from "./components/Sidebar/Staff/Staff";
 import VerifyOtp from "./pages/Otp/OtpVerification";
 import MainLayout from "./layouts/MainLayout";
 import ListCamp from "./pages/ListCamp/ListCamp";
@@ -44,8 +40,22 @@ function App() {
           <Route path={PagePath.REGISTER} element={<Register />} />
           <Route path={PagePath.VERIFY_OTP} element={<VerifyOtp />} />
           <Route path={PagePath.FORBIDDEN} element={<Forbidden />} />
-          <Route path={PagePath.CAMP} element={<MainLayout><ListCamp /></MainLayout>} />
-          <Route path={PagePath.CAMP_DETAIL} element={<MainLayout><CampDetail /></MainLayout>} />
+          <Route
+            path={PagePath.CAMP}
+            element={
+              <MainLayout>
+                <ListCamp />
+              </MainLayout>
+            }
+          />
+          <Route
+            path={PagePath.CAMP_DETAIL}
+            element={
+              <MainLayout>
+                <CampDetail />
+              </MainLayout>
+            }
+          />
           {/* Admin Routes - Temporarily Public for Testing */}
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/camps" element={<CampManagement />} />
@@ -57,8 +67,22 @@ function App() {
           <Route path="/staff/blogs" element={<MyBlogs />} />
 
           {/* Home Route - Protected */}
-          <Route path={PagePath.HOME} element={<MainLayout><Home /></MainLayout>} />
-          <Route path={PagePath.ROOT} element={<MainLayout><Home /></MainLayout>} />
+          <Route
+            path={PagePath.HOME}
+            element={
+              <MainLayout>
+                <Home />
+              </MainLayout>
+            }
+          />
+          <Route
+            path={PagePath.ROOT}
+            element={
+              <MainLayout>
+                <Home />
+              </MainLayout>
+            }
+          />
 
           {/* User Profile Route */}
           <Route path="/profile" element={<UserProfile />} />
