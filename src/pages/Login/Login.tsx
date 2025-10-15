@@ -1,23 +1,31 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { message } from 'antd';
-import { Eye, EyeOff, Mail, Lock, Loader2, ArrowRight, Sun } from 'lucide-react';
-import { PagePath } from '../../enums/page-path.enum';
-import { useAuthStore } from '../../services/userService';
-import './Login.css';
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { message } from "antd";
+import {
+  Eye,
+  EyeOff,
+  Mail,
+  Lock,
+  Loader2,
+  ArrowRight,
+  Sun,
+} from "lucide-react";
+import { PagePath } from "../../enums/page-path.enum";
+import { useAuthStore } from "../../services/userService";
+import "./Login.css";
 
 const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuthStore();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [isSliding, setIsSliding] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [emailError, setEmailError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [emailFocused, setEmailFocused] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
 
@@ -28,27 +36,27 @@ const Login = () => {
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email) {
-      setEmailError('Email là bắt buộc');
+      setEmailError("Email là bắt buộc");
       return false;
     }
     if (!emailRegex.test(email)) {
-      setEmailError('Email không hợp lệ');
+      setEmailError("Email không hợp lệ");
       return false;
     }
-    setEmailError('');
+    setEmailError("");
     return true;
   };
 
   const validatePassword = (password: string) => {
     if (!password) {
-      setPasswordError('Mật khẩu là bắt buộc');
+      setPasswordError("Mật khẩu là bắt buộc");
       return false;
     }
     if (password.length < 6) {
-      setPasswordError('Mật khẩu phải có ít nhất 6 ký tự');
+      setPasswordError("Mật khẩu phải có ít nhất 6 ký tự");
       return false;
     }
-    setPasswordError('');
+    setPasswordError("");
     return true;
   };
 
@@ -64,16 +72,18 @@ const Login = () => {
       const result = await login({ email, password }, rememberMe);
 
       if (result.success) {
-        message.success('Đăng nhập thành công!');
+        message.success("Đăng nhập thành công!");
         // Redirect to home page
         setTimeout(() => {
           navigate(PagePath.ROOT);
         }, 500);
       } else {
-        message.error(result.message || 'Đăng nhập thất bại');
+        message.error(result.message || "Đăng nhập thất bại");
       }
     } catch (error: any) {
-      const errorMessage = error?.responseValue?.message || 'Đăng nhập thất bại. Vui lòng thử lại.';
+      const errorMessage =
+        error?.responseValue?.message ||
+        "Đăng nhập thất bại. Vui lòng thử lại.";
       message.error(errorMessage);
     } finally {
       setLoading(false);
@@ -81,7 +91,7 @@ const Login = () => {
   };
 
   const handleForgotPassword = () => {
-    message.info('Chức năng đang được phát triển');
+    message.info("Chức năng đang được phát triển");
   };
 
   const handleSignUp = () => {
@@ -92,7 +102,7 @@ const Login = () => {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !loading) {
+    if (e.key === "Enter" && !loading) {
       e.preventDefault();
       handleSubmit(e as any);
     }
@@ -112,8 +122,11 @@ const Login = () => {
       </div>
 
       {/* Split Screen Container */}
-      <div className={`login-split-container ${isSliding ? 'slide-out-left' : isVisible ? 'slide-in' : ''}`}>
-
+      <div
+        className={`login-split-container ${
+          isSliding ? "slide-out-left" : isVisible ? "slide-in" : ""
+        }`}
+      >
         {/* Left Side - Hero Section */}
         <div className="login-hero-section">
           <div className="hero-content">
@@ -128,8 +141,8 @@ const Login = () => {
             </h1>
 
             <p className="hero-description">
-              Tham gia cùng hàng nghìn gia đình đã tin tưởng chọn chúng tôi
-              cho kỳ nghỉ hè tuyệt vời của con em họ
+              Tham gia cùng hàng nghìn gia đình đã tin tưởng chọn chúng tôi cho
+              kỳ nghỉ hè tuyệt vời của con em họ
             </p>
 
             <div className="hero-stats">
@@ -172,24 +185,28 @@ const Login = () => {
                   <div className="icon-pulse"></div>
                 </div>
                 <h2 className="login-title">Chào mừng trở lại</h2>
-                <p className="login-subtitle">Đăng nhập để tiếp tục hành trình</p>
+                <p className="login-subtitle">
+                  Đăng nhập để tiếp tục hành trình
+                </p>
               </div>
 
               {/* Form */}
               <form onSubmit={handleSubmit} className="login-form">
                 {/* Email Field */}
-                <div className="form-group">
-                  <label className="form-label">
-                    Email
-                  </label>
-                  <div className={`input-wrapper ${emailFocused ? 'focused' : ''} ${emailError ? 'error' : ''}`}>
+                <div className="form-group form-group-unborder">
+                  <label className="form-label">Email</label>
+                  <div
+                    className={`input-wrapper ${
+                      emailFocused ? "focused" : ""
+                    } ${emailError ? "error" : ""}`}
+                  >
                     <Mail className="input-icon" />
                     <input
                       type="email"
                       value={email}
                       onChange={(e) => {
                         setEmail(e.target.value);
-                        if (emailError) setEmailError('');
+                        if (emailError) setEmailError("");
                       }}
                       onFocus={() => setEmailFocused(true)}
                       onBlur={() => {
@@ -202,24 +219,24 @@ const Login = () => {
                       className="form-input"
                     />
                   </div>
-                  {emailError && (
-                    <p className="error-message">{emailError}</p>
-                  )}
+                  {emailError && <p className="error-message">{emailError}</p>}
                 </div>
 
                 {/* Password Field */}
-                <div className="form-group">
-                  <label className="form-label">
-                    Mật khẩu
-                  </label>
-                  <div className={`input-wrapper ${passwordFocused ? 'focused' : ''} ${passwordError ? 'error' : ''}`}>
+                <div className="form-group form-group-unborder">
+                  <label className="form-label">Mật khẩu</label>
+                  <div
+                    className={`input-wrapper ${
+                      passwordFocused ? "focused" : ""
+                    } ${passwordError ? "error" : ""}`}
+                  >
                     <Lock className="input-icon" />
                     <input
-                      type={showPassword ? 'text' : 'password'}
+                      type={showPassword ? "text" : "password"}
                       value={password}
                       onChange={(e) => {
                         setPassword(e.target.value);
-                        if (passwordError) setPasswordError('');
+                        if (passwordError) setPasswordError("");
                       }}
                       onFocus={() => setPasswordFocused(true)}
                       onBlur={() => {
@@ -238,7 +255,11 @@ const Login = () => {
                       className="toggle-password"
                       tabIndex={-1}
                     >
-                      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      {showPassword ? (
+                        <EyeOff className="w-5 h-5" />
+                      ) : (
+                        <Eye className="w-5 h-5" />
+                      )}
                     </button>
                   </div>
                   {passwordError && (
@@ -272,7 +293,7 @@ const Login = () => {
                 <button
                   type="submit"
                   disabled={loading || !!emailError || !!passwordError}
-                  className={`submit-button ${loading ? 'loading' : ''}`}
+                  className={`submit-button ${loading ? "loading" : ""}`}
                 >
                   {loading ? (
                     <>
@@ -291,7 +312,7 @@ const Login = () => {
               {/* Footer */}
               <div className="login-footer">
                 <p>
-                  Chưa có tài khoản?{' '}
+                  Chưa có tài khoản?{" "}
                   <button
                     type="button"
                     onClick={handleSignUp}
