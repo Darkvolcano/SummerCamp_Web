@@ -18,6 +18,7 @@ export enum PagePath {
   ANY = "*",
   FORBIDDEN = "/403",
   ROOT = "/",
+  ABOUT = "/about",
 
   // Admin Routes
   ADMIN_DASHBOARD = "/admin/dashboard",

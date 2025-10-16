@@ -57,6 +57,9 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
       PagePath.FORBIDDEN,
       PagePath.CAMP,
       PagePath.CAMP_DETAIL,
+      PagePath.BLOG,
+      PagePath.BLOG_DETAIL,
+      PagePath.ABOUT,
     ];
 
     // Check if current route is public

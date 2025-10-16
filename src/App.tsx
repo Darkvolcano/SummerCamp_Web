@@ -18,6 +18,7 @@ import VerifyOtp from "./pages/Otp/OtpVerification";
 import MainLayout from "./layouts/MainLayout";
 import ListCamp from "./pages/ListCamp/ListCamp";
 import CampDetail from "./pages/CampDetail/CampDetail";
+import About from "./pages/About/About";
 const LayoutWithSidebarAdmin = () => (
   <>
     <AdminSidebar />
@@ -56,6 +57,14 @@ function App() {
               </MainLayout>
             }
           />
+          <Route
+            path={PagePath.ABOUT}
+            element={
+              <MainLayout>
+                <About />
+              </MainLayout>
+            }
+          />
 
           {/* Admin Routes - Protected */}
           <Route path={PagePath.ADMIN_DASHBOARD} element={<AdminDashboard />} />
@@ -84,6 +93,7 @@ function App() {
               </MainLayout>
             }
           />
+          
 
           {/* User Profile Route - Protected */}
           <Route path="/profile" element={<UserProfile />} />
