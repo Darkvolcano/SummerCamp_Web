@@ -33,11 +33,15 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   (error) => {
-    // Handle 401 Unauthorized - redirect to login
+    // Handle 401 Unauthorized - redirect to login (but not if already on login page)
     if (error.response?.status === 401) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      window.location.href = "/login";
+      const currentPath = window.location.pathname;
+      // Only redirect to login if not already on login or register pages
+      if (currentPath !== "/login" && currentPath !== "/register") {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        window.location.href = "/login";
+      }
     }
 
     // Handle 403 Forbidden
