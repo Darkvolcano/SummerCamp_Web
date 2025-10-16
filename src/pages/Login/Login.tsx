@@ -26,6 +26,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [loginError, setLoginError] = useState("");
   const [emailFocused, setEmailFocused] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
 
@@ -62,6 +63,10 @@ const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Clear previous login error
+    setLoginError("");
+
     const isEmailValid = validateEmail(email);
     const isPasswordValid = validatePassword(password);
 
@@ -73,18 +78,50 @@ const Login = () => {
 
       if (result.success) {
         message.success("Đăng nhập thành công!");
-        // Redirect to home page
-        setTimeout(() => {
-          navigate(PagePath.ROOT);
-        }, 500);
+
+        // Get user data from localStorage to check role
+        const storedUser = localStorage.getItem("user") || sessionStorage.getItem("user");
+        const storedToken = localStorage.getItem("token") || sessionStorage.getItem("token");
+
+        if (storedToken && storedUser) {
+          const { jwtDecode } = await import("jwt-decode");
+          const decoded = jwtDecode<{ role: string }>(storedToken);
+          const userRole = decoded.role?.toLowerCase();
+
+          // Redirect based on user role (case-insensitive)
+          setTimeout(() => {
+            if (userRole === "admin") {
+              navigate(PagePath.ADMIN_DASHBOARD);
+            } else if (userRole === "staff") {
+              navigate(PagePath.STAFF_SCHEDULE);
+            } else {
+              navigate(PagePath.HOME);
+            }
+          }, 500);
+        } else {
+          // Fallback to home if no token found
+          setTimeout(() => {
+            navigate(PagePath.HOME);
+          }, 500);
+        }
       } else {
-        message.error(result.message || "Đăng nhập thất bại");
+        // Handle failed login
+        const errorMsg = result.message || "Đăng nhập thất bại";
+        setLoginError(errorMsg);
       }
     } catch (error: any) {
-      const errorMessage =
-        error?.responseValue?.message ||
-        "Đăng nhập thất bại. Vui lòng thử lại.";
-      message.error(errorMessage);
+      // Handle wrong credentials
+      let errorMessage = "Đăng nhập thất bại. Vui lòng thử lại.";
+
+      if (error?.responseValue?.message) {
+        errorMessage = error.responseValue.message;
+      } else if (error?.responseValue?.code === "INVALID_CREDENTIALS") {
+        errorMessage = "Email hoặc mật khẩu không chính xác!";
+      } else if (error?.responseValue?.code === "ACCOUNT_NOT_ACTIVE") {
+        errorMessage = "Tài khoản chưa được kích hoạt. Vui lòng kiểm tra email.";
+      }
+
+      setLoginError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -123,9 +160,8 @@ const Login = () => {
 
       {/* Split Screen Container */}
       <div
-        className={`login-split-container ${
-          isSliding ? "slide-out-left" : isVisible ? "slide-in" : ""
-        }`}
+        className={`login-split-container ${isSliding ? "slide-out-left" : isVisible ? "slide-in" : ""
+          }`}
       >
         {/* Left Side - Hero Section */}
         <div className="login-hero-section">
@@ -196,9 +232,8 @@ const Login = () => {
                 <div className="form-group form-group-unborder">
                   <label className="form-label">Email</label>
                   <div
-                    className={`input-wrapper ${
-                      emailFocused ? "focused" : ""
-                    } ${emailError ? "error" : ""}`}
+                    className={`input-wrapper ${emailFocused ? "focused" : ""
+                      } ${emailError ? "error" : ""}`}
                   >
                     <Mail className="input-icon" />
                     <input
@@ -207,6 +242,7 @@ const Login = () => {
                       onChange={(e) => {
                         setEmail(e.target.value);
                         if (emailError) setEmailError("");
+                        if (loginError) setLoginError("");
                       }}
                       onFocus={() => setEmailFocused(true)}
                       onBlur={() => {
@@ -226,9 +262,8 @@ const Login = () => {
                 <div className="form-group form-group-unborder">
                   <label className="form-label">Mật khẩu</label>
                   <div
-                    className={`input-wrapper ${
-                      passwordFocused ? "focused" : ""
-                    } ${passwordError ? "error" : ""}`}
+                    className={`input-wrapper ${passwordFocused ? "focused" : ""
+                      } ${passwordError ? "error" : ""}`}
                   >
                     <Lock className="input-icon" />
                     <input
@@ -237,6 +272,7 @@ const Login = () => {
                       onChange={(e) => {
                         setPassword(e.target.value);
                         if (passwordError) setPasswordError("");
+                        if (loginError) setLoginError("");
                       }}
                       onFocus={() => setPasswordFocused(true)}
                       onBlur={() => {
@@ -266,6 +302,13 @@ const Login = () => {
                     <p className="error-message">{passwordError}</p>
                   )}
                 </div>
+
+                {/* Login Error Message */}
+                {loginError && (
+                  <div className="login-error-banner">
+                    <p>{loginError}</p>
+                  </div>
+                )}
 
                 {/* Remember & Forgot */}
                 <div className="form-options">
