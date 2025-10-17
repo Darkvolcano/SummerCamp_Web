@@ -65,7 +65,12 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
     // Check if current route is public
     if (publicRoutes.includes(location.pathname as PagePath)) {
       // If user is already logged in and tries to access login/register, redirect to appropriate dashboard
-      if (user && token && (location.pathname === PagePath.LOGIN || location.pathname === PagePath.REGISTER)) {
+      if (
+        user &&
+        token &&
+        (location.pathname === PagePath.LOGIN ||
+          location.pathname === PagePath.REGISTER)
+      ) {
         try {
           const decoded = jwtDecode<{ role: string }>(token);
           const userRole = decoded.role?.toLowerCase();
@@ -103,7 +108,12 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
       }>(token);
 
       // Normalize role to lowercase for case-insensitive comparison
-      const userRole = decoded.role?.toLowerCase() as "parent" | "staff" | "admin" | "camper" | "user";
+      const userRole = decoded.role?.toLowerCase() as
+        | "parent"
+        | "staff"
+        | "admin"
+        | "camper"
+        | "user";
 
       // Default redirects for each role when accessing root
       const roleRedirects: Record<string, string> = {
@@ -166,10 +176,7 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
           "/admin/profile",
           "/profile",
         ],
-        user: [
-          PagePath.HOME,
-          "/profile",
-        ],
+        user: [PagePath.HOME, "/profile"],
       };
 
       const allowedPages = restrictedPages[userRole] || [];
@@ -177,8 +184,9 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
       // Check if user has access to current page
       const matchDynamicRoute = (routePattern: string, path: string) => {
         const dynamicRoutePattern = routePattern
-          .replace(/:productId/, "[0-9]+")
+          .replace(/:campId/, "[0-9]+")
           .replace(/:userId/, "[0-9]+")
+          .replace(/:blogId/, "[0-9]+")
           .replace(/:orderId/, "[0-9]+")
           .replace(/:campId/, "[0-9]+")
           .replace(/:blogId/, "[0-9]+")
