@@ -11,6 +11,10 @@
   },
   "dependencies": {
     "@ckeditor/ckeditor5-react": "^11.0.0",
+    "@react-spring/web": "^10.0.3",
+    "@react-three/drei": "^10.7.6",
+    "@react-three/fiber": "^9.4.0",
+    "@react-three/postprocessing": "^3.0.4",
     "@tanstack/react-query": "^5.87.4",
     "@tanstack/react-router": "^1.131.41",
     "antd": "^5.27.3",
@@ -18,11 +22,14 @@
     "ckeditor5": "^46.1.1",
     "dayjs": "^1.11.18",
     "firebase": "^12.2.1",
+    "jotai": "^2.15.0",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.544.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-responsive": "^10.0.1",
     "react-router-dom": "^7.8.2",
+    "three": "^0.180.0",
     "zustand": "^5.0.8"
   },
   "devDependencies": {
@@ -30,6 +37,7 @@
     "@tailwindcss/postcss": "^4.1.14",
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
+    "@types/three": "^0.180.0",
     "@vitejs/plugin-react": "^5.0.0",
     "autoprefixer": "^10.4.21",
     "eslint": "^9.33.0",
