@@ -70,9 +70,17 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
     ];
 
     // Check if current route is public
-    if (publicRoutes.includes(location.pathname as PagePath) || location.pathname === "/admin/dashboard") {
+    if (
+      publicRoutes.includes(location.pathname as PagePath) ||
+      location.pathname === "/admin/dashboard"
+    ) {
       // If user is already logged in and tries to access login/register, redirect to home
-      if (user && token && (location.pathname === PagePath.LOGIN || location.pathname === PagePath.REGISTER)) {
+      if (
+        user &&
+        token &&
+        (location.pathname === PagePath.LOGIN ||
+          location.pathname === PagePath.REGISTER)
+      ) {
         navigate(PagePath.HOME, { replace: true });
       }
       return;
@@ -106,7 +114,9 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
       };
 
       if (location.pathname === PagePath.ROOT) {
-        navigate(roleRedirects[decoded.role as UserRole] || PagePath.HOME, { replace: true });
+        navigate(roleRedirects[decoded.role as UserRole] || PagePath.HOME, {
+          replace: true,
+        });
         return;
       }
 
@@ -166,8 +176,9 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
       // Check if user has access to current page
       const matchDynamicRoute = (routePattern: string, path: string) => {
         const dynamicRoutePattern = routePattern
-          .replace(/:productId/, "[0-9]+")
+          .replace(/:campId/, "[0-9]+")
           .replace(/:userId/, "[0-9]+")
+          .replace(/:blogId/, "[0-9]+")
           .replace(/:orderId/, "[0-9]+")
           .replace(/:id/, "[0-9]+");
         const regex = new RegExp(`^${dynamicRoutePattern}$`);
