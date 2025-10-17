@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
     Calendar,
     Tent,
@@ -7,6 +7,9 @@ import {
     ChevronLeft,
     ChevronRight,
 } from "lucide-react";
+import { message } from "antd";
+import { useAuthStore } from "../../services/userService";
+import { PagePath } from "../../enums/page-path.enum";
 import Logo from "../../assets/Logo.png";
 import "./StaffSidebar.css";
 
@@ -24,6 +27,8 @@ interface StaffSidebarProps {
 
 export default function StaffSidebar({ isCollapsed, onToggleCollapse }: StaffSidebarProps) {
     const location = useLocation();
+    const navigate = useNavigate();
+    const { logout } = useAuthStore();
 
     const navItems: NavItem[] = [
         {
@@ -47,6 +52,12 @@ export default function StaffSidebar({ isCollapsed, onToggleCollapse }: StaffSid
     ];
 
     const isActive = (path: string) => location.pathname === path;
+
+    const handleLogout = () => {
+        logout();
+        message.success("Đăng xuất thành công!");
+        navigate(PagePath.LOGIN);
+    };
 
     return (
         <aside className={`staff-sidebar ${isCollapsed ? "collapsed" : ""}`}>
@@ -73,7 +84,7 @@ export default function StaffSidebar({ isCollapsed, onToggleCollapse }: StaffSid
 
             {/* Bottom Section */}
             <div className="sidebar-bottom">
-                <button className="nav-item logout-button">
+                <button className="nav-item logout-button" onClick={handleLogout}>
                     <span className="nav-icon">
                         <LogOut size={20} />
                     </span>

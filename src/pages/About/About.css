@@ -1,0 +1,725 @@
+.about-page {
+    min-height: 100vh;
+}
+
+/* HERO */
+.hero-section {
+    position: relative;
+    background: #000;
+}
+
+.hero-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+.hero-content {
+    animation: fadeInLeft 1s ease-out;
+}
+
+@keyframes fadeInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.stat-item {
+    animation: countUp 1.5s ease-out;
+    text-align: center;
+}
+
+@keyframes countUp {
+    from {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* CARDS */
+.hero-animation {
+    position: relative;
+    height: 500px;
+}
+
+.floating-cards {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.floating-card {
+    position: absolute;
+    animation: float 6s ease-in-out infinite;
+}
+
+.floating-card.card-1 {
+    top: 10%;
+    right: 10%;
+    animation-delay: 0s;
+}
+
+.floating-card.card-2 {
+    top: 40%;
+    right: 30%;
+    animation-delay: 1s;
+}
+
+.floating-card.card-3 {
+    top: 70%;
+    right: 5%;
+    animation-delay: 2s;
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0px) rotate(0deg);
+    }
+
+    25% {
+        transform: translateY(-20px) rotate(2deg);
+    }
+
+    50% {
+        transform: translateY(-10px) rotate(-2deg);
+    }
+
+    75% {
+        transform: translateY(-20px) rotate(2deg);
+    }
+}
+
+/* MISSION */
+.mission-section {
+    position: relative;
+    overflow: hidden;
+}
+
+.mission-left {
+    animation: fadeInLeft 1s ease-out;
+}
+
+.mission-right {
+    animation: fadeInRight 1s ease-out;
+}
+
+@keyframes fadeInRight {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.mission-badge {
+    animation: scaleIn 0.5s ease-out;
+    animation-fill-mode: both;
+}
+
+.mission-badge:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.mission-badge:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.mission-badge:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.mission-badge:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.mission-card {
+    animation: fadeInUp 1s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* VISION */
+.vision-section {
+    position: relative;
+}
+
+.vision-bg-shapes {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 0;
+}
+
+.shape {
+    position: absolute;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1));
+    animation: floatShape 20s ease-in-out infinite;
+}
+
+.shape-1 {
+    width: 300px;
+    height: 300px;
+    top: 10%;
+    left: 5%;
+    animation-delay: 0s;
+}
+
+.shape-2 {
+    width: 200px;
+    height: 200px;
+    top: 60%;
+    left: 80%;
+    animation-delay: 5s;
+}
+
+.shape-3 {
+    width: 250px;
+    height: 250px;
+    top: 30%;
+    left: 50%;
+    animation-delay: 10s;
+}
+
+@keyframes floatShape {
+
+    0%,
+    100% {
+        transform: translate(0, 0) scale(1);
+        opacity: 0.3;
+    }
+
+    25% {
+        transform: translate(30px, -30px) scale(1.1);
+        opacity: 0.5;
+    }
+
+    50% {
+        transform: translate(-30px, 30px) scale(0.9);
+        opacity: 0.4;
+    }
+
+    75% {
+        transform: translate(30px, 30px) scale(1.05);
+        opacity: 0.5;
+    }
+}
+
+.vision-left,
+.vision-right {
+    animation: fadeIn 1s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.vision-card {
+    animation: slideInLeft 1s ease-out;
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.vision-feature {
+    animation: slideInRight 1s ease-out;
+    animation-fill-mode: both;
+}
+
+.vision-feature:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.vision-feature:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.vision-feature:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.vision-feature:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.vision-stats .stat-box {
+    animation: popIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    animation-fill-mode: both;
+}
+
+.vision-stats .stat-box:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.vision-stats .stat-box:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.vision-stats .stat-box:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.vision-stats .stat-box:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+@keyframes popIn {
+    from {
+        opacity: 0;
+        transform: scale(0);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* VALUE */
+.core-values-section {
+    position: relative;
+    overflow: hidden;
+}
+
+.core-values-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+/* Image Square */
+.core-value-image {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.core-value-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: brightness(0.9);
+}
+
+.core-value-image:hover img {
+    transform: scale(1.1);
+    filter: brightness(1.1);
+}
+
+/* Image Overlay */
+.image-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3), transparent);
+}
+
+/* Image Badge */
+.image-badge {
+    position: absolute;
+    top: 1.5rem;
+    left: 1.5rem;
+    width: 4rem;
+    height: 4rem;
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.core-value-image:hover .image-badge {
+    transform: scale(1.1) rotate(6deg);
+}
+
+/* Image Hover Text */
+.image-hover {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.core-value-image:hover .image-hover {
+    opacity: 1;
+}
+
+.image-hover span {
+    color: white;
+    font-size: 1.125rem;
+    font-weight: bold;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px;
+}
+
+/* Content Square */
+.core-value-content {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+}
+
+.content-inner {
+    max-width: 100%;
+    width: 100%;
+}
+
+/* Content Header */
+.content-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.content-icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.content-title {
+    font-size: 1.875rem;
+    font-weight: bold;
+    color: #111827;
+    margin: 0;
+}
+
+.content-slogan {
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-style: italic;
+    margin: 0.25rem 0 0 0;
+}
+
+.content-subtitle {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 1.5rem;
+}
+
+/* Content Button */
+.content-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 9999px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.content-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+}
+
+.button-arrow {
+    transition: transform 0.3s ease;
+}
+
+.content-button:hover .button-arrow {
+    transform: translateX(0.25rem);
+}
+
+/* Animations */
+.core-values-grid>div {
+    animation: fadeInScale 0.8s ease-out;
+    animation-fill-mode: both;
+}
+
+.core-values-grid>div:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.core-values-grid>div:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.core-values-grid>div:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.core-values-grid>div:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+.core-values-grid>div:nth-child(5) {
+    animation-delay: 0.5s;
+}
+
+.core-values-grid>div:nth-child(6) {
+    animation-delay: 0.6s;
+}
+
+.core-values-grid>div:nth-child(7) {
+    animation-delay: 0.7s;
+}
+
+.core-values-grid>div:nth-child(8) {
+    animation-delay: 0.8s;
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Modal styling */
+.core-value-modal .ant-modal-content {
+    border-radius: 24px;
+    overflow: hidden;
+}
+
+.core-value-modal .ant-modal-body {
+    padding: 0;
+}
+
+.core-value-modal .ant-modal-close {
+    top: 16px;
+    right: 16px;
+    width: 40px;
+    height: 40px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.core-value-modal .ant-modal-close:hover {
+    background: #f3f4f6;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+    .hero-animation {
+        display: none !important;
+    }
+
+    .hero-content {
+        text-align: center;
+    }
+
+    .hero-content .flex {
+        justify-content: center;
+    }
+
+    .core-values-section .grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .core-values-section .lg\:col-span-2,
+    .core-values-section .lg\:col-start-1,
+    .core-values-section .lg\:col-start-3 {
+        grid-column: auto !important;
+    }
+
+    .core-values-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .core-value-content {
+        padding: 2rem;
+    }
+
+    .content-title {
+        font-size: 1.5rem;
+    }
+
+    .content-subtitle {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-section h1 {
+        font-size: 2.5rem;
+    }
+
+    .mission-section h2,
+    .vision-section h2 {
+        font-size: 2rem;
+    }
+
+    .floating-card {
+        display: none;
+    }
+
+    .mission-badge {
+        padding: 0.75rem;
+    }
+
+    .vision-feature {
+        padding: 1rem;
+    }
+
+    .core-values-section h2 {
+        font-size: 2rem;
+    }
+
+    .core-values-section h3 {
+        font-size: 1.5rem;
+    }
+
+    .core-values-section p {
+        font-size: 1rem;
+    }
+
+    .core-values-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .core-value-image,
+    .core-value-content {
+        aspect-ratio: auto;
+        min-height: 400px;
+    }
+
+    .core-value-content {
+        padding: 1.5rem;
+    }
+
+    .content-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .content-title {
+        font-size: 1.25rem;
+    }
+
+    .content-subtitle {
+        font-size: 0.875rem;
+    }
+}
+
+/* HOVER */
+button:hover {
+    transform: translateY(-2px);
+}
+
+.mission-card:hover,
+.vision-card:hover {
+    transform: translateY(-5px);
+}
+
+.mission-badge:hover {
+    transform: translateY(-5px) scale(1.05);
+}
+
+.vision-feature:hover {
+    transform: translateX(10px);
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+.about-page * {
+    text-align: left;
+}

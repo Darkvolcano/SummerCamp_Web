@@ -18,5 +18,17 @@ export enum PagePath {
   ANY = "*",
   FORBIDDEN = "/403",
   ROOT = "/",
+  ABOUT = "/about",
 
+  // Admin Routes
+  ADMIN_DASHBOARD = "/admin/dashboard",
+  ADMIN_CAMPS = "/admin/camps",
+  ADMIN_BLOGS = "/admin/blogs",
+  ADMIN_ACCOUNTS = "/admin/accounts",
+  ADMIN_SETTINGS = "/admin/settings",
+
+  // Staff Routes
+  STAFF_SCHEDULE = "/staff/schedule",
+  STAFF_CAMPS = "/staff/camps",
+  STAFF_BLOGS = "/staff/blogs",
 }
