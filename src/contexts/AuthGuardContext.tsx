@@ -172,6 +172,8 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
           PagePath.ADMIN_CAMPS,
           PagePath.ADMIN_BLOGS,
           PagePath.ADMIN_ACCOUNTS,
+          PagePath.ADMIN_VEHICLES,
+          PagePath.ADMIN_VEHICLE_TYPES,
           PagePath.ADMIN_SETTINGS,
           "/admin/profile",
           "/profile",
