@@ -4,6 +4,8 @@ import {
     Users,
     BookOpen,
     Tent,
+    Truck,
+    Tag,
     Settings,
     LogOut,
     ChevronLeft,
@@ -59,6 +61,18 @@ export default function AdminSidebar({ isCollapsed, onToggleCollapse }: AdminSid
         },
         {
             id: 5,
+            label: "Vehicles Management",
+            path: "/admin/vehicles",
+            icon: <Truck size={20} />,
+        },
+        {
+            id: 6,
+            label: "Vehicle Types",
+            path: "/admin/vehicle-types",
+            icon: <Tag size={20} />,
+        },
+        {
+            id: 7,
             label: "Settings",
             path: "/admin/settings",
             icon: <Settings size={20} />,
