@@ -7,6 +7,8 @@ import UserProfile from "./pages/Profile/UserProfile";
 import AdminDashboard from "./pages/Admin/Dashboard/AdminDashboard";
 import CampManagement from "./pages/Admin/CampManagement/CampManagement";
 import BlogManagement from "./pages/Admin/BlogManagement/BlogManagement";
+import VehicleManagement from "./pages/Admin/VehicleManagement/VehicleManagement";
+import VehicleTypeManagement from "./pages/Admin/VehicleTypeManagement/VehicleTypeManagement";
 import MySchedule from "./pages/Staff/MySchedule/MySchedule";
 import MyCamps from "./pages/Staff/MyCamps/MyCamps";
 import MyBlogs from "./pages/Staff/MyBlogs/MyBlogs";
@@ -70,6 +72,8 @@ function App() {
           <Route path={PagePath.ADMIN_DASHBOARD} element={<AdminDashboard />} />
           <Route path={PagePath.ADMIN_CAMPS} element={<CampManagement />} />
           <Route path={PagePath.ADMIN_BLOGS} element={<BlogManagement />} />
+          <Route path={PagePath.ADMIN_VEHICLES} element={<VehicleManagement />} />
+          <Route path={PagePath.ADMIN_VEHICLE_TYPES} element={<VehicleTypeManagement />} />
 
           {/* Staff Routes - Protected */}
           <Route path={PagePath.STAFF_SCHEDULE} element={<MySchedule />} />
@@ -93,7 +97,7 @@ function App() {
               </MainLayout>
             }
           />
-          
+
 
           {/* User Profile Route - Protected */}
           <Route path="/profile" element={<UserProfile />} />
