@@ -8,7 +8,7 @@ import {
   Lock,
   Loader2,
   ArrowRight,
-  Sun,
+  Home,
 } from "lucide-react";
 import { PagePath } from "../../enums/page-path.enum";
 import { useAuthStore } from "../../services/userService";
@@ -166,10 +166,20 @@ const Login = () => {
         {/* Left Side - Hero Section */}
         <div className="login-hero-section">
           <div className="hero-content">
-            <div className="hero-badge">
-              <Sun className="w-5 h-5" />
-              <span>Summer Camp 2025</span>
-            </div>
+            <button
+              type="button"
+              className="hero-home-button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log("🏠 [Login] Home button clicked, navigating to root: /");
+                navigate("/");
+              }}
+              aria-label="Về trang chủ"
+            >
+              <Home className="w-5 h-5" />
+              <span>Về trang chủ</span>
+            </button>
 
             <h1 className="hero-title">
               Khám phá mùa hè <br />
