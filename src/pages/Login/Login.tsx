@@ -94,6 +94,8 @@ const Login = () => {
               navigate(PagePath.ADMIN_DASHBOARD);
             } else if (userRole === "staff") {
               navigate(PagePath.STAFF_SCHEDULE);
+            }else if (userRole === "manager") {
+              navigate(PagePath.MANAGER_DASHBOARD);
             } else {
               navigate(PagePath.HOME);
             }

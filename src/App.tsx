@@ -18,9 +18,11 @@ import AdminSidebar from "./components/sidebar/Admin/Admin";
 import StaffSidebar from "./components/sidebar/Staff/Staff";
 import VerifyOtp from "./pages/Otp/OtpVerification";
 import MainLayout from "./layouts/MainLayout";
+import ManagerLayout from "./layouts/ManagerLayout";
 import ListCamp from "./pages/ListCamp/ListCamp";
 import CampDetail from "./pages/CampDetail/CampDetail";
 import About from "./pages/About/About";
+import ManagerDashboard from "./pages/Manager/Dashboard/ManagerDashboard";
 const LayoutWithSidebarAdmin = () => (
   <>
     <AdminSidebar />
@@ -79,6 +81,12 @@ function App() {
           <Route path={PagePath.STAFF_SCHEDULE} element={<MySchedule />} />
           <Route path={PagePath.STAFF_CAMPS} element={<MyCamps />} />
           <Route path={PagePath.STAFF_BLOGS} element={<MyBlogs />} />
+
+
+          {/*Manager Routes*/}
+          <Route path={PagePath.MANAGER_DASHBOARD} element={<ManagerLayout><ManagerDashboard /></ManagerLayout>} />
+
+
 
           {/* Home Route - Protected */}
           <Route
