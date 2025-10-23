@@ -138,6 +138,15 @@ const Login = () => {
     }, 600);
   };
 
+  const handleGoHome = () => {
+    console.log("🏠 [Login] Home button clicked, starting slide animation");
+    setIsSliding(true);
+    setTimeout(() => {
+      console.log("🏠 [Login] Navigating to root: /");
+      navigate("/");
+    }, 600);
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !loading) {
       e.preventDefault();
@@ -172,9 +181,9 @@ const Login = () => {
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                console.log("🏠 [Login] Home button clicked, navigating to root: /");
-                navigate("/");
+                handleGoHome();
               }}
+              disabled={loading}
               aria-label="Về trang chủ"
             >
               <Home className="w-5 h-5" />
