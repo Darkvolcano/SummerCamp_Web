@@ -46,6 +46,18 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
   }, [token, user, setUser, setToken, logout]);
 
   useEffect(() => {
+    const matchDynamicRoute = (routePattern: string, path: string) => {
+      const dynamicRoutePattern = routePattern
+        .replace(/\//g, "\\/")
+        .replace(/:campId/g, "[0-9]+")
+        .replace(/:userId/g, "[0-9]+")
+        .replace(/:blogId/g, "[0-9]+")
+        .replace(/:orderId/g, "[0-9]+")
+        .replace(/:id/g, "[0-9]+");
+      const regex = new RegExp(`^${dynamicRoutePattern}$`);
+      return regex.test(path);
+    };
+
     // Public routes that don't need authentication
     const publicRoutes = [
       PagePath.ROOT,
@@ -60,10 +72,18 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
       PagePath.BLOG,
       PagePath.BLOG_DETAIL,
       PagePath.ABOUT,
+      PagePath.HOME, 
     ];
 
+    const isPublicRoute = publicRoutes.some((route) => {
+      if (route.includes(":")) {
+        return matchDynamicRoute(route, location.pathname);
+      }
+      return route === location.pathname;
+    });
+
     // Check if current route is public
-    if (publicRoutes.includes(location.pathname as PagePath)) {
+    if (isPublicRoute) {
       // If user is already logged in and tries to access login/register, redirect to appropriate dashboard
       if (
         user &&
@@ -183,22 +203,13 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
 
       const allowedPages = restrictedPages[userRole] || [];
 
-      // Check if user has access to current page
-      const matchDynamicRoute = (routePattern: string, path: string) => {
-        const dynamicRoutePattern = routePattern
-          .replace(/:campId/, "[0-9]+")
-          .replace(/:userId/, "[0-9]+")
-          .replace(/:blogId/, "[0-9]+")
-          .replace(/:orderId/, "[0-9]+")
-          .replace(/:campId/, "[0-9]+")
-          .replace(/:blogId/, "[0-9]+")
-          .replace(/:id/, "[0-9]+");
-        const regex = new RegExp(`^${dynamicRoutePattern}$`);
-        return regex.test(path);
-      };
-
       const isAllowed =
-        publicRoutes.includes(location.pathname as PagePath) ||
+        publicRoutes.some((route) => {
+          if (route.includes(":")) {
+            return matchDynamicRoute(route, location.pathname);
+          }
+          return route === location.pathname;
+        }) ||
         allowedPages.some((route) => {
           if (route.includes(":")) {
             return matchDynamicRoute(route, location.pathname);

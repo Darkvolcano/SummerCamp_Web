@@ -33,4 +33,17 @@ export enum PagePath {
   STAFF_SCHEDULE = "/staff/schedule",
   STAFF_CAMPS = "/staff/camps",
   STAFF_BLOGS = "/staff/blogs",
+
+  //Manager Routes
+  MANAGER_DASHBOARD = "/manager/dashboard/:campId",
+  MANAGER_REGIS = "/manager/registrations/:campId",
+  MANAGER_CAMPERS = "/manager/campers/:campId",
+  MANAGER_ACTIVITIES = "/manager/activities/:campId",
+  MANAGER_GROUPS = "/manager/groups/:campId",
+  MANAGER_TRANSPORTATION = "/manager/transportation/:campId",
+  MANAGER_ACCOMODATION = "/manager/accomodation/:campId",
+  MANAGER_PAYMENTS = "/manager/payments/:campId",
+  MANAGER_CALENDAR = "/manager/calendar",
+  Manager_INCIDENTS = "/manager/incidents",
+
 }
