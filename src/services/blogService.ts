@@ -23,11 +23,11 @@ export interface BlogDto {
   isActive: boolean;
   createdAt: Date;
   updatedAt: number;
-  Author: {
+  Author?: {
     id: number;
     fullName: string;
     email: string;
-  };
+  } | null;
 }
 
 interface MutationVariables {
@@ -39,6 +39,7 @@ export interface CreateBlog {
   title: string;
   content: string;
   image: string;
+  authorId?: number;
 }
 
 /**
@@ -59,12 +60,12 @@ interface BackendBlogDto {
     id: number;
     fullName: string;
     email: string;
-  };
+  } | null;
   author?: {
     id: number;
     fullName: string;
     email: string;
-  };
+  } | null;
 }
 
 /**
