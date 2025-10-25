@@ -4,6 +4,7 @@ import { message } from "antd";
 import type { BlogResponseDto, BlogRequestDto } from "./BlogManagement";
 import { useCreateBlogs, useUpdateBlogs } from "../../../services/blogService";
 import { CKEditorComponent } from "../../../components/CKEditor/CKEditor";
+import { useAuthStore } from "../../../services/userService";
 import "./BlogFormModal.css";
 
 interface BlogFormModalProps {
@@ -87,18 +88,31 @@ export default function BlogFormModal({
             return;
         }
 
+        // Get current user from auth store
+        const { user } = useAuthStore.getState();
+        if (!user || !user.id) {
+            message.error("User not authenticated. Please login again.");
+            return;
+        }
+
         try {
             setSaving(true);
+
+            // Attach current user ID to the blog data
+            const blogDataWithAuthor = {
+                ...formData,
+                authorId: user.id
+            };
 
             if (isEditing && blog) {
                 if (!blog.id) {
                     throw new Error("Blog ID is missing");
                 }
 
-                await updateMutation.mutateAsync({ id: blog.id, blog: formData });
+                await updateMutation.mutateAsync({ id: blog.id, blog: blogDataWithAuthor });
                 message.success("Blog updated successfully");
             } else {
-                await createMutation.mutateAsync(formData);
+                await createMutation.mutateAsync(blogDataWithAuthor);
                 message.success("Blog created successfully");
             }
 

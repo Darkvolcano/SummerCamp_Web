@@ -24,6 +24,7 @@ export interface BlogRequestDto {
     title: string;
     content: string;
     image: string;
+    authorId?: number; // Optional because it will be set in the form modal
 }
 
 export default function BlogManagement() {
@@ -103,11 +104,16 @@ export default function BlogManagement() {
     // Calculate stats
     const stats = {
         total: blogs.length,
-        recent: blogs.filter(
-            (b) =>
-                new Date(b.createdAt).getTime() >
-                Date.now() - 7 * 24 * 60 * 60 * 1000
-        ).length,
+        recent: blogs.filter((b) => {
+            if (!b.createdAt) return false;
+            try {
+                const blogDate = new Date(b.createdAt);
+                if (isNaN(blogDate.getTime())) return false;
+                return blogDate.getTime() > Date.now() - 7 * 24 * 60 * 60 * 1000;
+            } catch {
+                return false;
+            }
+        }).length,
     };
 
     return (
@@ -226,13 +232,13 @@ export default function BlogManagement() {
                                             <td>
                                                 <div className="author-cell">
                                                     <User size={16} />
-                                                    {blog.Author?.fullName || "Unknown Author"}
+                                                    {blog.Author?.fullName || `User ID: ${blog.authorId}`}
                                                 </div>
                                             </td>
                                             <td>
                                                 <div className="date-cell">
                                                     <Calendar size={16} />
-                                                    {new Date(blog.createdAt).toLocaleDateString()}
+                                                    {blog.createdAt ? new Date(blog.createdAt).toLocaleDateString() : "N/A"}
                                                 </div>
                                             </td>
                                             <td className="preview-cell">
