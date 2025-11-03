@@ -65,13 +65,14 @@ const Register = () => {
         else delete newErrors.lastName;
         break;
 
-      case "email":
+      case "email": {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!value) newErrors.email = "Email là bắt buộc";
         else if (!emailRegex.test(value))
           newErrors.email = "Email không hợp lệ";
         else delete newErrors.email;
         break;
+      }
 
       case "phoneNumber":
         if (!value) newErrors.phoneNumber = "Số điện thoại là bắt buộc";

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback } from "react";
 import {
   Calendar as BigCalendar,
   momentLocalizer,
@@ -132,7 +132,10 @@ const Calendar: React.FC = () => {
       );
     } else {
       // Add new
-      setActivities((prev) => [...prev, { ...activity, id: Date.now().toString() }]);
+      setActivities((prev) => [
+        ...prev,
+        { ...activity, id: Date.now().toString() },
+      ]);
     }
     setShowActivityForm(false);
   };
@@ -172,7 +175,8 @@ const Calendar: React.FC = () => {
       const date = moment(toolbar.date);
       return (
         <span className="toolbar-label">
-          {date.format("MMMM YYYY")} <span className="week-label">Week {date.week()}</span>
+          {date.format("MMMM YYYY")}{" "}
+          <span className="week-label">Week {date.week()}</span>
         </span>
       );
     };
@@ -181,8 +185,12 @@ const Calendar: React.FC = () => {
       <div className="custom-toolbar">
         <div className="toolbar-left">
           <div className="toolbar-date-section">
-            <span className="toolbar-month">{moment(toolbar.date).format("MMM")}</span>
-            <span className="toolbar-day">{moment(toolbar.date).format("DD")}</span>
+            <span className="toolbar-month">
+              {moment(toolbar.date).format("MMM")}
+            </span>
+            <span className="toolbar-day">
+              {moment(toolbar.date).format("DD")}
+            </span>
           </div>
           {label()}
         </div>
