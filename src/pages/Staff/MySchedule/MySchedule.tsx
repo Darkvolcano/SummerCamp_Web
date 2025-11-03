@@ -163,7 +163,6 @@ export default function MySchedule() {
 
     return (
         <div className="staff-layout">
-            <StaffSidebar isCollapsed={isCollapsed} onToggleCollapse={() => setIsCollapsed(!isCollapsed)} />
 
             <div className={`main-content ${isCollapsed ? "sidebar-collapsed" : ""}`}>
                 {/* Header */}

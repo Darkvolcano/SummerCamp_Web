@@ -1,25 +1,19 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import AdminSidebar from "../components/admin/AdminSidebar";
+import AdminSidebar from "../components/sidebar/Admin/AdminSidebar";
 
 export default function AdminLayout() {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-
-  const handleToggleCollapse = () => {
-    setIsCollapsed(!isCollapsed);
-  };
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   return (
-    <div className="admin-layout-container">
-      <AdminSidebar
-        isCollapsed={isCollapsed}
-        onToggleCollapse={handleToggleCollapse}
-      />
-
+    <div className="flex min-h-screen">
+      <AdminSidebar onCollapsedChange={setIsSidebarCollapsed} />
       <main
-        className={`admin-main-content ${
-          isCollapsed ? "sidebar-collapsed" : ""
-        }`}
+        className="flex-1 transition-all duration-300"
+        style={{
+          backgroundColor: "#EDF0FB",
+          marginLeft: isSidebarCollapsed ? "80px" : "280px",
+        }}
       >
         <Outlet />
       </main>

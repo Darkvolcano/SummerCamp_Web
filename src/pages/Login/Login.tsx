@@ -96,6 +96,8 @@ const Login = () => {
               navigate(PagePath.STAFF_SCHEDULE);
             }else if (userRole === "manager") {
               navigate(PagePath.MANAGER_DASHBOARD);
+            }else if (userRole === "driver") {
+              navigate(PagePath.DRIVER_CALENDAR);
             } else {
               navigate(PagePath.HOME);
             }
