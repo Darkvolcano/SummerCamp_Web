@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import ManagerSidebar from "../components/sidebar/Manager/ManagerSidebar";
+import StaffSidebar from "../components/sidebar/Staff/StaffSidebar";
 
-export default function ManagerLayout() {
+export default function StaffLayout() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   return (
     <div className="flex min-h-screen">
-      <ManagerSidebar onCollapsedChange={setIsSidebarCollapsed} />
+      <StaffSidebar onCollapsedChange={setIsSidebarCollapsed} />
       <main
         className="flex-1 transition-all duration-300"
         style={{
