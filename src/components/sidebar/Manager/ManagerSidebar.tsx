@@ -36,7 +36,7 @@ const ManagerSidebar: React.FC<ManagerSidebarProps> = ({
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
-  const [selectedCamp, setSelectedCamp] = useState("Chọn trại hè");
+  const [selectedCamp, setSelectedCamp] = useState("Choose a camp program");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
@@ -57,37 +57,42 @@ const ManagerSidebar: React.FC<ManagerSidebarProps> = ({
     },
     {
       path: PagePath.MANAGER_REGIS,
-      label: "Đăng ký",
+      label: "Registrations",
       icon: <ClipboardList size={20} />,
     },
     {
       path: PagePath.MANAGER_CAMPERS,
-      label: "Trại viên",
+      label: "Campers",
       icon: <Users size={20} />,
     },
     {
       path: PagePath.MANAGER_ACTIVITIES,
-      label: "Hoạt động",
+      label: "Activities",
       icon: <Activity size={20} />,
     },
     {
       path: PagePath.MANAGER_GROUPS,
-      label: "Phân nhóm",
+      label: "Groups",
       icon: <UsersRound size={20} />,
     },
     {
       path: PagePath.MANAGER_TRANSPORTATION,
-      label: "Quản lý đưa đón",
+      label: "Transportation",
       icon: <Bus size={20} />,
     },
     {
+      path: PagePath.MANAGER_LOCATIONS,
+      label: "Locations",
+      icon: <Bed size={20} />,
+    },
+    {
       path: PagePath.MANAGER_ACCOMODATION,
-      label: "Quản lý phòng ngủ",
+      label: "Accommodation",
       icon: <Bed size={20} />,
     },
     {
       path: PagePath.MANAGER_PAYMENTS,
-      label: "Thanh toán",
+      label: "Transactions",
       icon: <CreditCard size={20} />,
     },
   ];
@@ -95,12 +100,12 @@ const ManagerSidebar: React.FC<ManagerSidebarProps> = ({
   const bottomMenuItems: MenuItem[] = [
     {
       path: PagePath.MANAGER_CALENDAR,
-      label: "Lịch",
+      label: "Calendar",
       icon: <Calendar size={20} />,
     },
     {
-      path: PagePath.Manager_INCIDENTS,
-      label: "Báo cáo sự cố",
+      path: PagePath.MANAGER_INCIDENTS,
+      label: "Reports",
       icon: <AlertTriangle size={20} />,
     },
   ];
@@ -192,7 +197,7 @@ const ManagerSidebar: React.FC<ManagerSidebarProps> = ({
       {/* Camp Dropdown */}
       {!isCollapsed && (
         <div className="camp-selector-section">
-          <label className="camp-label">Quản lý trại hè</label>
+          <label className="camp-label">Camp program management</label>
           <div className="camp-dropdown">
             <button
               className="dropdown-toggle"
@@ -306,7 +311,7 @@ const ManagerSidebar: React.FC<ManagerSidebarProps> = ({
               className="user-dropdown-item"
             >
               <UserCircle size={18} />
-              <span>Thông tin cá nhân</span>
+              <span>Profile Settings</span>
             </button>
             <div className="user-dropdown-divider"></div>
             <button
@@ -314,7 +319,7 @@ const ManagerSidebar: React.FC<ManagerSidebarProps> = ({
               className="user-dropdown-item logout"
             >
               <LogOut size={18} />
-              <span>Đăng xuất</span>
+              <span>Logout</span>
             </button>
           </div>
         )}

@@ -196,7 +196,7 @@
 /* ==================== NAVIGATION ==================== */
 .sidebar-nav {
   flex: 1;
-  /* padding: 8px 16px; */
+  padding: 8px 16px; 
   transition: padding 0.3s ease;
 }
 
