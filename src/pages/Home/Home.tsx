@@ -1,8 +1,8 @@
-import React from "react";
+import React, { Suspense, lazy } from "react";
 import { Card, Row, Col } from "antd";
 import { StarFilled, SearchOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "../../services/userService"; 
+import { useAuthStore } from "../../services/userService";
 import "./Home.css";
 import supporticon from "../../assets/support icon.png";
 import gradicon from "../../assets/grad icon.png";
@@ -10,9 +10,11 @@ import lightbulb from "../../assets/lightbulb icon.png";
 import safeicon from "../../assets/safe icon.png";
 import teamicon from "../../assets/team icon.png";
 
+const CampingScene = lazy(() => import("../../components/3d/CampingScene"));
+
 const Home: React.FC = () => {
   const navigate = useNavigate();
-  const { user } = useAuthStore(); 
+  const { user } = useAuthStore();
 
   const handleSignUpClick = () => {
     navigate("/register");
@@ -596,14 +598,24 @@ const Home: React.FC = () => {
         <div className="relative py-20">
           <div className="max-w-7xl mx-auto px-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-              {/* Left Side */}
-              <div className="hidden lg:block sticky top-24">
-                <div className="w-full max-w-lg aspect-square bg-white/20 rounded-3xl backdrop-blur-sm border-2 border-white/30 flex items-center justify-center mx-auto">
-                  <div className="text-center">
-                    <div className="text-6xl mb-4">🏕️</div>
-                    <p className="text-gray-700 font-semibold">
-                      3D Model sẽ được thêm vào đây
-                    </p>
+              {/* Left Side - 3D Model */}
+              <div className="hidden lg:block sticky top-24 h-[calc(90vh-6rem)]">
+                <div className="w-full h-full flex items-center justify-center relative -mx-16">
+                  <div className="w-[120%] aspect-square rounded-3xl ">
+                    <Suspense
+                      fallback={
+                        <div className="w-full h-full flex items-center justify-center">
+                          <div className="text-center">
+                            <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                            <p className="text-gray-700 font-semibold">
+                              Đang tải mô hình 3D...
+                            </p>
+                          </div>
+                        </div>
+                      }
+                    >
+                      <CampingScene autoRotate={false} />
+                    </Suspense>
                   </div>
                 </div>
               </div>

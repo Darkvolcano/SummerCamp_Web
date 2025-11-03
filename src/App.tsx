@@ -1,8 +1,4 @@
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
 import Home from "./pages/Home/Home";
@@ -11,6 +7,8 @@ import UserProfile from "./pages/Profile/UserProfile";
 import AdminDashboard from "./pages/Admin/Dashboard/AdminDashboard";
 import CampManagement from "./pages/Admin/CampManagement/CampManagement";
 import BlogManagement from "./pages/Admin/BlogManagement/BlogManagement";
+import VehicleManagement from "./pages/Admin/VehicleManagement/VehicleManagement";
+import VehicleTypeManagement from "./pages/Admin/VehicleTypeManagement/VehicleTypeManagement";
 import MySchedule from "./pages/Staff/MySchedule/MySchedule";
 import MyCamps from "./pages/Staff/MyCamps/MyCamps";
 import MyBlogs from "./pages/Staff/MyBlogs/MyBlogs";
@@ -20,8 +18,11 @@ import AdminSidebar from "./components/sidebar/Admin/Admin";
 import StaffSidebar from "./components/sidebar/Staff/Staff";
 import VerifyOtp from "./pages/Otp/OtpVerification";
 import MainLayout from "./layouts/MainLayout";
+import ManagerLayout from "./layouts/ManagerLayout";
 import ListCamp from "./pages/ListCamp/ListCamp";
 import CampDetail from "./pages/CampDetail/CampDetail";
+import About from "./pages/About/About";
+import ManagerDashboard from "./pages/Manager/Dashboard/ManagerDashboard";
 const LayoutWithSidebarAdmin = () => (
   <>
     <AdminSidebar />
@@ -44,37 +45,79 @@ function App() {
           <Route path={PagePath.REGISTER} element={<Register />} />
           <Route path={PagePath.VERIFY_OTP} element={<VerifyOtp />} />
           <Route path={PagePath.FORBIDDEN} element={<Forbidden />} />
-          <Route path={PagePath.CAMP} element={<MainLayout><ListCamp /></MainLayout>} />
-          <Route path={PagePath.CAMP_DETAIL} element={<MainLayout><CampDetail /></MainLayout>} />
-          {/* Admin Routes - Temporarily Public for Testing */}
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="/admin/camps" element={<CampManagement />} />
-          <Route path="/admin/blogs" element={<BlogManagement />} />
+          <Route
+            path={PagePath.CAMP}
+            element={
+              <MainLayout>
+                <ListCamp />
+              </MainLayout>
+            }
+          />
+          <Route
+            path={PagePath.CAMP_DETAIL}
+            element={
+              <MainLayout>
+                <CampDetail />
+              </MainLayout>
+            }
+          />
+          <Route
+            path={PagePath.ABOUT}
+            element={
+              <MainLayout>
+                <About />
+              </MainLayout>
+            }
+          />
 
-          {/* Staff Routes - Temporarily Public for Testing */}
-          <Route path="/staff/schedule" element={<MySchedule />} />
-          <Route path="/staff/camps" element={<MyCamps />} />
-          <Route path="/staff/blogs" element={<MyBlogs />} />
+          {/* Admin Routes - Protected */}
+          <Route path={PagePath.ADMIN_DASHBOARD} element={<AdminDashboard />} />
+          <Route path={PagePath.ADMIN_CAMPS} element={<CampManagement />} />
+          <Route path={PagePath.ADMIN_BLOGS} element={<BlogManagement />} />
+          <Route path={PagePath.ADMIN_VEHICLES} element={<VehicleManagement />} />
+          <Route path={PagePath.ADMIN_VEHICLE_TYPES} element={<VehicleTypeManagement />} />
+
+          {/* Staff Routes - Protected */}
+          <Route path={PagePath.STAFF_SCHEDULE} element={<MySchedule />} />
+          <Route path={PagePath.STAFF_CAMPS} element={<MyCamps />} />
+          <Route path={PagePath.STAFF_BLOGS} element={<MyBlogs />} />
+
+
+          {/*Manager Routes*/}
+          <Route path={PagePath.MANAGER_DASHBOARD} element={<ManagerLayout><ManagerDashboard /></ManagerLayout>} />
+
+
 
           {/* Home Route - Protected */}
-          <Route path={PagePath.HOME} element={<MainLayout><Home /></MainLayout>} />
-          <Route path={PagePath.ROOT} element={<MainLayout><Home /></MainLayout>} />
+          <Route
+            path={PagePath.HOME}
+            element={
+              <MainLayout>
+                <Home />
+              </MainLayout>
+            }
+          />
+          <Route
+            path={PagePath.ROOT}
+            element={
+              <MainLayout>
+                <Home />
+              </MainLayout>
+            }
+          />
 
-          {/* User Profile Route */}
+
+          {/* User Profile Route - Protected */}
           <Route path="/profile" element={<UserProfile />} />
 
-          {/* Admin Routes */}
+          {/* Admin Routes with Sidebar */}
           <Route element={<LayoutWithSidebarAdmin />}>
-            {/* Add admin routes here */}
-            {/* <Route path="/admin/dashboard" element={<ReportManagement />} /> */}
-            {/* <Route path="/admin/users" element={<UserManagement />} /> */}
+            {/* Add additional admin routes here if needed */}
           </Route>
 
-          {/* Staff Routes */}
+          {/* Staff Routes with Sidebar */}
           <Route element={<LayoutWithSidebarStaff />}>
-            {/* Add staff routes here */}
-            {/* <Route path="/staff/orders" element={<StaffOrderManagement />} /> */}
-            {/* <Route path="/staff/profile" element={<StaffProfile />} /> */}
+            {/* Add additional staff routes here if needed */}
           </Route>
         </Routes>
       </AuthGuardProvider>

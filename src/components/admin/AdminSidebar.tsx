@@ -1,14 +1,19 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
     LayoutDashboard,
     Users,
     BookOpen,
     Tent,
+    Truck,
+    Tag,
     Settings,
     LogOut,
     ChevronLeft,
     ChevronRight,
 } from "lucide-react";
+import { message } from "antd";
+import { useAuthStore } from "../../services/userService";
+import { PagePath } from "../../enums/page-path.enum";
 import Logo from "../../assets/Logo.png";
 import "./AdminSidebar.css";
 
@@ -26,6 +31,8 @@ interface AdminSidebarProps {
 
 export default function AdminSidebar({ isCollapsed, onToggleCollapse }: AdminSidebarProps) {
     const location = useLocation();
+    const navigate = useNavigate();
+    const { logout } = useAuthStore();
 
     const navItems: NavItem[] = [
         {
@@ -54,6 +61,18 @@ export default function AdminSidebar({ isCollapsed, onToggleCollapse }: AdminSid
         },
         {
             id: 5,
+            label: "Vehicles Management",
+            path: "/admin/vehicles",
+            icon: <Truck size={20} />,
+        },
+        {
+            id: 6,
+            label: "Vehicle Types",
+            path: "/admin/vehicle-types",
+            icon: <Tag size={20} />,
+        },
+        {
+            id: 7,
             label: "Settings",
             path: "/admin/settings",
             icon: <Settings size={20} />,
@@ -61,6 +80,12 @@ export default function AdminSidebar({ isCollapsed, onToggleCollapse }: AdminSid
     ];
 
     const isActive = (path: string) => location.pathname === path;
+
+    const handleLogout = () => {
+        logout();
+        message.success("Đăng xuất thành công!");
+        navigate(PagePath.LOGIN);
+    };
 
     return (
         <aside className={`admin-sidebar ${isCollapsed ? "collapsed" : ""}`}>
@@ -87,7 +112,7 @@ export default function AdminSidebar({ isCollapsed, onToggleCollapse }: AdminSid
 
             {/* Bottom Section */}
             <div className="sidebar-bottom">
-                <button className="nav-item logout-button">
+                <button className="nav-item logout-button" onClick={handleLogout}>
                     <span className="nav-icon">
                         <LogOut size={20} />
                     </span>

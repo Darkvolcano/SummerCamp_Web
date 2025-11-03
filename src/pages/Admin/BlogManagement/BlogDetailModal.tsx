@@ -15,12 +15,38 @@ export default function BlogDetailModal({
     onEdit,
     onDelete,
 }: BlogDetailModalProps) {
-    const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-        });
+    const formatDate = (dateString: string | Date | null | undefined) => {
+        if (!dateString) return "N/A";
+        try {
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return "N/A";
+            return date.toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+            });
+        } catch {
+            return "N/A";
+        }
+    };
+
+    const formatDateTime = (dateString: string | Date | null | undefined) => {
+        if (!dateString) return "N/A";
+        try {
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return "N/A";
+            return date.toLocaleString();
+        } catch {
+            return "N/A";
+        }
+    };
+
+    const getAuthorDisplay = () => {
+        if (blog.Author?.fullName) {
+            return blog.Author.fullName;
+        }
+        // Fallback to showing author ID if author info not available
+        return `User ID: ${blog.authorId}`;
     };
 
     return (
@@ -49,7 +75,7 @@ export default function BlogDetailModal({
                             </div>
                             <div className="info-content">
                                 <p className="info-label">Author</p>
-                                <h4 className="info-value">{blog.Author?.fullName || "Unknown Author"}</h4>
+                                <h4 className="info-value">{getAuthorDisplay()}</h4>
                             </div>
                         </div>
 
@@ -59,7 +85,7 @@ export default function BlogDetailModal({
                             </div>
                             <div className="info-content">
                                 <p className="info-label">Published</p>
-                                <h4 className="info-value">{formatDate(new Date(blog.createdAt).toISOString())}</h4>
+                                <h4 className="info-value">{formatDate(blog.createdAt)}</h4>
                             </div>
                         </div>
 
@@ -93,7 +119,7 @@ export default function BlogDetailModal({
                             <div className="info-item">
                                 <span className="info-key">Created At</span>
                                 <span className="info-val">
-                                    {new Date(blog.createdAt).toLocaleString()}
+                                    {formatDateTime(blog.createdAt)}
                                 </span>
                             </div>
                             <div className="info-item">

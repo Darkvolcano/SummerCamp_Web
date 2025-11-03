@@ -18,5 +18,32 @@ export enum PagePath {
   ANY = "*",
   FORBIDDEN = "/403",
   ROOT = "/",
+  ABOUT = "/about",
+
+  // Admin Routes
+  ADMIN_DASHBOARD = "/admin/dashboard",
+  ADMIN_CAMPS = "/admin/camps",
+  ADMIN_BLOGS = "/admin/blogs",
+  ADMIN_ACCOUNTS = "/admin/accounts",
+  ADMIN_VEHICLES = "/admin/vehicles",
+  ADMIN_VEHICLE_TYPES = "/admin/vehicle-types",
+  ADMIN_SETTINGS = "/admin/settings",
+
+  // Staff Routes
+  STAFF_SCHEDULE = "/staff/schedule",
+  STAFF_CAMPS = "/staff/camps",
+  STAFF_BLOGS = "/staff/blogs",
+
+  //Manager Routes
+  MANAGER_DASHBOARD = "/manager/dashboard/:campId",
+  MANAGER_REGIS = "/manager/registrations/:campId",
+  MANAGER_CAMPERS = "/manager/campers/:campId",
+  MANAGER_ACTIVITIES = "/manager/activities/:campId",
+  MANAGER_GROUPS = "/manager/groups/:campId",
+  MANAGER_TRANSPORTATION = "/manager/transportation/:campId",
+  MANAGER_ACCOMODATION = "/manager/accomodation/:campId",
+  MANAGER_PAYMENTS = "/manager/payments/:campId",
+  MANAGER_CALENDAR = "/manager/calendar",
+  Manager_INCIDENTS = "/manager/incidents",
 
 }

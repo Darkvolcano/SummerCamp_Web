@@ -143,7 +143,7 @@ export default function Navbar() {
       className={`text-white px-2 md:px-4 py-1 md:py-2 flex justify-between items-center fixed top-0 w-full z-50 transition-all duration-500 ${
         isScrolled
           ? "bg-[#0F0E0E]/90 backdrop-blur-md shadow-lg"
-          : "bg-transparent"
+          : "bg-[#0F0E0E]/40 backdrop-blur-md shadow-lg"
       }`}
     >
       {/* Logo*/}
