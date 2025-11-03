@@ -1,22 +1,17 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
-  LayoutDashboard,
-  Tent,
-  Users,
-  FileText,
-  HelpCircle,
-  CreditCard,
+  ClipboardCheck,
   Calendar,
-  AlertTriangle,
+  Image,
+  LogIn,
   ChevronDown,
   LogOut,
   UserCircle,
-  Shield,
-  Logs,
+  Briefcase,
 } from "lucide-react";
 import { useAuthStore } from "../../../services/userService";
-import "./AdminSidebar.css";
+import "./StaffSidebar.css";
 import { PagePath } from "../../../enums/page-path.enum";
 
 interface MenuItem {
@@ -25,11 +20,11 @@ interface MenuItem {
   icon: React.ReactNode;
 }
 
-interface AdminSidebarProps {
+interface StaffSidebarProps {
   onCollapsedChange?: (isCollapsed: boolean) => void;
 }
 
-const AdminSidebar: React.FC<AdminSidebarProps> = ({ onCollapsedChange }) => {
+const StaffSidebar: React.FC<StaffSidebarProps> = ({ onCollapsedChange }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
@@ -39,52 +34,24 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ onCollapsedChange }) => {
 
   const mainMenuItems: MenuItem[] = [
     {
-      path: PagePath.ADMIN_DASHBOARD,
-      label: "Dashboard",
-      icon: <LayoutDashboard size={20} />,
-    },
-    {
-      path: PagePath.ADMIN_CAMPS,
-      label: "Camp Programs",
-      icon: <Tent size={20} />,
-    },
-        {
-      path: PagePath.ADMIN_CAMPTYPES,
-      label: "Camp Types",
-      icon: <Logs size={20} />,
-    },
-    {
-      path: PagePath.ADMIN_USERS,
-      label: "Users",
-      icon: <Users size={20} />,
-    },
-    {
-      path: PagePath.ADMIN_BLOGS,
-      label: "Blog Posts",
-      icon: <FileText size={20} />,
-    },
-    {
-      path: PagePath.ADMIN_FAQS,
-      label: "FAQs",
-      icon: <HelpCircle size={20} />,
-    },
-    {
-      path: PagePath.ADMIN_TRANSACTIONS,
-      label: "Transactions",
-      icon: <CreditCard size={20} />,
-    },
-  ];
-
-  const bottomMenuItems: MenuItem[] = [
-    {
-      path: PagePath.ADMIN_CALENDAR,
-      label: "Calendar",
+      path: PagePath.STAFF_CALENDAR,
+      label: "My Calendar",
       icon: <Calendar size={20} />,
     },
     {
-      path: PagePath.ADMIN_REPORTS,
-      label: "Reports",
-      icon: <AlertTriangle size={20} />,
+      path: PagePath.STAFF_ATTENDANCE,
+      label: "Attendance Checking",
+      icon: <ClipboardCheck size={20} />,
+    },
+    {
+      path: PagePath.STAFF_PHOTOS,
+      label: "Photo Sharing",
+      icon: <Image size={20} />,
+    },
+    {
+      path: PagePath.STAFF_CHECKIN,
+      label: "Check In",
+      icon: <LogIn size={20} />,
     },
   ];
 
@@ -124,7 +91,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ onCollapsedChange }) => {
   };
 
   return (
-    <div className={`admin-sidebar ${isCollapsed ? "collapsed" : ""}`}>
+    <div className={`staff-sidebar ${isCollapsed ? "collapsed" : ""}`}>
       {/* Toggle Button */}
       <button className="sidebar-toggle" onClick={toggleSidebar}>
         {isCollapsed ? ">" : "<"}
@@ -134,9 +101,9 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ onCollapsedChange }) => {
       <div className="sidebar-header">
         <div className="logo-container">
           <div className="logo-hexagon">
-            <Shield size={24} strokeWidth={2.5} />
+            <Briefcase size={24} strokeWidth={2.5} />
           </div>
-          {!isCollapsed && <span className="logo-text">Admin</span>}
+          {!isCollapsed && <span className="logo-text">Staff</span>}
         </div>
       </div>
 
@@ -144,29 +111,6 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ onCollapsedChange }) => {
       <nav className="sidebar-nav">
         <ul className="menu-list">
           {mainMenuItems.map((item) => (
-            <li key={item.path}>
-              <Link
-                to={item.path}
-                className={`menu-item ${
-                  location.pathname === item.path ? "active" : ""
-                }`}
-                title={isCollapsed ? item.label : ""}
-              >
-                <span className="menu-icon">{item.icon}</span>
-                {!isCollapsed && (
-                  <span className="menu-label">{item.label}</span>
-                )}
-              </Link>
-            </li>
-          ))}
-        </ul>
-
-        {/* Divider */}
-        <div className="sidebar-divider"></div>
-
-        {/* Bottom Navigation */}
-        <ul className="menu-list">
-          {bottomMenuItems.map((item) => (
             <li key={item.path}>
               <Link
                 to={item.path}
@@ -191,14 +135,14 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ onCollapsedChange }) => {
           className="user-info"
           onClick={() => !isCollapsed && setShowUserDropdown(!showUserDropdown)}
         >
-          <div className="user-avatar admin-avatar">
-            {user?.fullName?.charAt(0).toUpperCase() || "A"}
+          <div className="user-avatar">
+            {user?.fullName?.charAt(0).toUpperCase() || "S"}
           </div>
           {!isCollapsed && (
             <>
               <div className="user-details">
-                <div className="user-name">{user?.fullName || "Admin"}</div>
-                <div className="user-role">System Administrator</div>
+                <div className="user-name">{user?.fullName || "Staff"}</div>
+                <div className="user-role">Camp Staff</div>
               </div>
               <button className="user-menu-toggle">
                 <ChevronDown
@@ -235,10 +179,9 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ onCollapsedChange }) => {
             </button>
           </div>
         )}
-        
       </div>
     </div>
   );
 };
 
-export default AdminSidebar;
+export default StaffSidebar;
