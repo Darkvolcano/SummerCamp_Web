@@ -14,8 +14,6 @@ import MyCamps from "./pages/Staff/MyCamps/MyCamps";
 import MyBlogs from "./pages/Staff/MyBlogs/MyBlogs";
 import { AuthGuardProvider } from "./contexts/AuthGuardContext";
 import { PagePath } from "./enums/page-path.enum";
-import AdminSidebar from "./components/sidebar/Admin/Admin";
-import StaffSidebar from "./components/sidebar/Staff/Staff";
 import VerifyOtp from "./pages/Otp/OtpVerification";
 import MainLayout from "./layouts/MainLayout";
 import ManagerLayout from "./layouts/ManagerLayout";
@@ -23,17 +21,7 @@ import ListCamp from "./pages/ListCamp/ListCamp";
 import CampDetail from "./pages/CampDetail/CampDetail";
 import About from "./pages/About/About";
 import ManagerDashboard from "./pages/Manager/Dashboard/ManagerDashboard";
-const LayoutWithSidebarAdmin = () => (
-  <>
-    <AdminSidebar />
-  </>
-);
-
-const LayoutWithSidebarStaff = () => (
-  <>
-    <StaffSidebar />
-  </>
-);
+import AdminLayout from "./layouts/AdminLayout";
 
 function App() {
   return (
@@ -71,22 +59,37 @@ function App() {
           />
 
           {/* Admin Routes - Protected */}
-          <Route path={PagePath.ADMIN_DASHBOARD} element={<AdminDashboard />} />
-          <Route path={PagePath.ADMIN_CAMPS} element={<CampManagement />} />
-          <Route path={PagePath.ADMIN_BLOGS} element={<BlogManagement />} />
-          <Route path={PagePath.ADMIN_VEHICLES} element={<VehicleManagement />} />
-          <Route path={PagePath.ADMIN_VEHICLE_TYPES} element={<VehicleTypeManagement />} />
+          <Route element={<AdminLayout />}>
+            <Route
+              path={PagePath.ADMIN_DASHBOARD}
+              element={<AdminDashboard />}
+            />
+            <Route path={PagePath.ADMIN_CAMPS} element={<CampManagement />} />
+            <Route path={PagePath.ADMIN_BLOGS} element={<BlogManagement />} />
+            <Route
+              path={PagePath.ADMIN_VEHICLES}
+              element={<VehicleManagement />}
+            />
+            <Route
+              path={PagePath.ADMIN_VEHICLE_TYPES}
+              element={<VehicleTypeManagement />}
+            />
+          </Route>
 
           {/* Staff Routes - Protected */}
           <Route path={PagePath.STAFF_SCHEDULE} element={<MySchedule />} />
           <Route path={PagePath.STAFF_CAMPS} element={<MyCamps />} />
           <Route path={PagePath.STAFF_BLOGS} element={<MyBlogs />} />
 
-
           {/*Manager Routes*/}
-          <Route path={PagePath.MANAGER_DASHBOARD} element={<ManagerLayout><ManagerDashboard /></ManagerLayout>} />
-
-
+          <Route
+            path={PagePath.MANAGER_DASHBOARD}
+            element={
+              <ManagerLayout>
+                <ManagerDashboard />
+              </ManagerLayout>
+            }
+          />
 
           {/* Home Route - Protected */}
           <Route
@@ -106,19 +109,8 @@ function App() {
             }
           />
 
-
           {/* User Profile Route - Protected */}
           <Route path="/profile" element={<UserProfile />} />
-
-          {/* Admin Routes with Sidebar */}
-          <Route element={<LayoutWithSidebarAdmin />}>
-            {/* Add additional admin routes here if needed */}
-          </Route>
-
-          {/* Staff Routes with Sidebar */}
-          <Route element={<LayoutWithSidebarStaff />}>
-            {/* Add additional staff routes here if needed */}
-          </Route>
         </Routes>
       </AuthGuardProvider>
     </Router>
