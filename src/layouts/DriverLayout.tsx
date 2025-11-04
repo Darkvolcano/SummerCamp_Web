@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import DriverSidebar from "../components/sidebar/Driver/DriverSidebar";
+import DriverSidebar from "../components/Sidebar/Driver/DriverSidebar";
 
 export default function DriverLayout() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
