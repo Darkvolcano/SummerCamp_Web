@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { X, Plus } from "lucide-react";
+import { DatePicker, message } from "antd";
+import dayjs from "dayjs";
 import campService, {
   type CampResponseDto,
   type CampRequestDto,
@@ -10,8 +12,9 @@ import campTypeService, {
 import locationService, {
   type LocationResponseDto,
 } from "../../../services/LocationService";
-import { message } from "antd";
-import "./CampDetailModal.css";
+import promotionService, {
+  type PromotionResponseDto,
+} from "../../../services/promotionService";
 import AddLocationModal from "./AddLocationModal";
 
 interface CampDetailModalProps {
@@ -31,6 +34,7 @@ const CampDetailModal: React.FC<CampDetailModalProps> = ({
   const [loading, setLoading] = useState(false);
   const [campTypes, setCampTypes] = useState<CampTypeResponseDto[]>([]);
   const [locations, setLocations] = useState<LocationResponseDto[]>([]);
+  const [promotions, setPromotions] = useState<PromotionResponseDto[]>([]);
   const [showAddLocation, setShowAddLocation] = useState(false);
 
   const [formData, setFormData] = useState<CampRequestDto>({
@@ -54,11 +58,12 @@ const CampDetailModal: React.FC<CampDetailModalProps> = ({
     registrationEndDate: "",
   });
 
-  // Fetch camp types and locations on mount
+  // Fetch camp types, locations, and promotions on mount
   useEffect(() => {
     if (isOpen) {
       fetchCampTypes();
       fetchLocations();
+      fetchPromotions();
     }
   }, [isOpen]);
 
@@ -104,6 +109,16 @@ const CampDetailModal: React.FC<CampDetailModalProps> = ({
       setLocations(data);
     } catch (error) {
       console.error("Error fetching locations:", error);
+    }
+  };
+
+  const fetchPromotions = async () => {
+    try {
+      const data = await promotionService.getAllPromotions();
+      setPromotions(data);
+    } catch (error) {
+      console.error("Error fetching promotions:", error);
+      message.error("Failed to fetch promotions");
     }
   };
 
@@ -177,209 +192,291 @@ const CampDetailModal: React.FC<CampDetailModalProps> = ({
 
   return (
     <>
-      <div className="camp-detail-modal-overlay" onClick={onClose}>
-        <div className="camp-detail-modal-content" onClick={(e) => e.stopPropagation()}>
+      {/* Modal Overlay */}
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-1000" onClick={onClose}>
+        {/* Modal Content */}
+        <div
+          className="bg-white rounded-2xl shadow-2xl w-11/12 max-w-4xl max-h-[90vh] flex flex-col animate-in fade-in zoom-in-95 overflow-hidden"
+          onClick={(e) => e.stopPropagation()}
+        >
           {/* Header */}
-          <div className="camp-detail-modal-header">
-            <h2 className="camp-detail-modal-title">Camp Details</h2>
+          <div className="flex justify-between items-center px-6 py-6 border-b border-gray-200">
+            <h2 className="text-2xl font-bold text-gray-900">Camp Details</h2>
             <button
               onClick={onClose}
-              className="camp-detail-modal-close"
+              className="text-gray-400 hover:text-gray-900 transition-colors"
             >
               <X size={24} />
             </button>
           </div>
 
           {/* Body */}
-          <div className="camp-detail-modal-body">
+          <div className="overflow-y-auto flex-1 px-6 py-6 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-white">
+            <style>{`
+              .scrollbar-thin::-webkit-scrollbar {
+                width: 8px;
+              }
+              .scrollbar-thin::-webkit-scrollbar-track {
+                background: transparent;
+              }
+              .scrollbar-thin::-webkit-scrollbar-thumb {
+                background: white;
+                border-radius: 4px;
+              }
+              .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+                background: #e5e7eb;
+              }
+            `}</style>
             {/* Camp Image */}
-            <div className="camp-detail-image-container">
+            <div className="mb-6 rounded-lg overflow-hidden h-80 bg-gray-100">
               <img
                 src={formData.image}
                 alt={formData.name}
-                className="camp-detail-image"
+                className="w-full h-full object-cover"
               />
             </div>
 
             {/* Form Fields */}
-            <div className="camp-detail-form">
+            <div className="space-y-6">
               {/* Basic Info */}
-              <div className="camp-detail-section">
-                <h3 className="camp-detail-section-title">Basic Information</h3>
+              <div className="pb-6 border-b border-gray-100">
+                <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4 pb-3 border-b-2 border-blue-600 inline-block">
+                  Basic Information
+                </h3>
 
-                <div className="camp-detail-form-group">
-                  <label className="camp-detail-label">Camp Name *</label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    disabled={!isEditing}
-                    className="camp-detail-input"
-                  />
-                </div>
-
-                <div className="camp-detail-form-row">
-                  <div className="camp-detail-form-group">
-                    <label className="camp-detail-label">Place *</label>
+                <div className="space-y-4 mt-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Camp Name *
+                    </label>
                     <input
                       type="text"
-                      name="place"
-                      value={formData.place}
+                      name="name"
+                      value={formData.name}
                       onChange={handleInputChange}
                       disabled={!isEditing}
-                      className="camp-detail-input"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black"
                     />
                   </div>
-                  <div className="camp-detail-form-group">
-                    <label className="camp-detail-label">Address *</label>
-                    <input
-                      type="text"
-                      name="address"
-                      value={formData.address}
-                      onChange={handleInputChange}
-                      disabled={!isEditing}
-                      className="camp-detail-input"
-                    />
-                  </div>
-                </div>
 
-                <div className="camp-detail-form-group">
-                  <label className="camp-detail-label">Description</label>
-                  <textarea
-                    name="description"
-                    value={formData.description}
-                    onChange={handleInputChange}
-                    disabled={!isEditing}
-                    className="camp-detail-textarea"
-                    rows={3}
-                  />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Place *
+                      </label>
+                      <input
+                        type="text"
+                        name="place"
+                        value={formData.place}
+                        onChange={handleInputChange}
+                        disabled={!isEditing}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Address *
+                      </label>
+                      <input
+                        type="text"
+                        name="address"
+                        value={formData.address}
+                        onChange={handleInputChange}
+                        disabled={!isEditing}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Description
+                    </label>
+                    <textarea
+                      name="description"
+                      value={formData.description}
+                      onChange={handleInputChange}
+                      disabled={!isEditing}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                      rows={3}
+                    />
+                  </div>
                 </div>
               </div>
 
               {/* Dates */}
-              <div className="camp-detail-section">
-                <h3 className="camp-detail-section-title">Program Dates</h3>
+              <div className="pb-6 border-b border-gray-100">
+                <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4 pb-3 border-b-2 border-blue-600 inline-block">
+                  Program Dates
+                </h3>
 
-                <div className="camp-detail-form-row">
-                  <div className="camp-detail-form-group">
-                    <label className="camp-detail-label">Start Date *</label>
-                    <input
-                      type="date"
-                      name="startDate"
-                      value={formData.startDate}
-                      onChange={handleInputChange}
-                      disabled={!isEditing}
-                      className="camp-detail-input"
-                    />
+                <div className="space-y-4 mt-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Start Date *
+                      </label>
+                      <DatePicker
+                        value={formData.startDate ? dayjs(formData.startDate) : null}
+                        onChange={(date) =>
+                          setFormData({
+                            ...formData,
+                            startDate: date ? date.format("YYYY-MM-DD") : "",
+                          })
+                        }
+                        format="YYYY-MM-DD"
+                        disabled={!isEditing}
+                        className="w-full"
+                        style={{ width: "100%" }}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        End Date *
+                      </label>
+                      <DatePicker
+                        value={formData.endDate ? dayjs(formData.endDate) : null}
+                        onChange={(date) =>
+                          setFormData({
+                            ...formData,
+                            endDate: date ? date.format("YYYY-MM-DD") : "",
+                          })
+                        }
+                        format="YYYY-MM-DD"
+                        disabled={!isEditing}
+                        className="w-full"
+                        style={{ width: "100%" }}
+                      />
+                    </div>
                   </div>
-                  <div className="camp-detail-form-group">
-                    <label className="camp-detail-label">End Date *</label>
-                    <input
-                      type="date"
-                      name="endDate"
-                      value={formData.endDate}
-                      onChange={handleInputChange}
-                      disabled={!isEditing}
-                      className="camp-detail-input"
-                    />
-                  </div>
-                </div>
 
-                <div className="camp-detail-form-row">
-                  <div className="camp-detail-form-group">
-                    <label className="camp-detail-label">Registration Start *</label>
-                    <input
-                      type="date"
-                      name="registrationStartDate"
-                      value={formData.registrationStartDate}
-                      onChange={handleInputChange}
-                      disabled={!isEditing}
-                      className="camp-detail-input"
-                    />
-                  </div>
-                  <div className="camp-detail-form-group">
-                    <label className="camp-detail-label">Registration End *</label>
-                    <input
-                      type="date"
-                      name="registrationEndDate"
-                      value={formData.registrationEndDate}
-                      onChange={handleInputChange}
-                      disabled={!isEditing}
-                      className="camp-detail-input"
-                    />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Registration Start *
+                      </label>
+                      <DatePicker
+                        showTime
+                        value={formData.registrationStartDate ? dayjs(formData.registrationStartDate) : null}
+                        onChange={(date) =>
+                          setFormData({
+                            ...formData,
+                            registrationStartDate: date ? date.toISOString() : "",
+                          })
+                        }
+                        format="YYYY-MM-DD HH:mm:ss"
+                        disabled={!isEditing}
+                        className="w-full"
+                        style={{ width: "100%" }}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Registration End *
+                      </label>
+                      <DatePicker
+                        showTime
+                        value={formData.registrationEndDate ? dayjs(formData.registrationEndDate) : null}
+                        onChange={(date) =>
+                          setFormData({
+                            ...formData,
+                            registrationEndDate: date ? date.toISOString() : "",
+                          })
+                        }
+                        format="YYYY-MM-DD HH:mm:ss"
+                        disabled={!isEditing}
+                        className="w-full"
+                        style={{ width: "100%" }}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Participants & Age */}
-              <div className="camp-detail-section">
-                <h3 className="camp-detail-section-title">Participants</h3>
+              <div className="pb-6 border-b border-gray-100">
+                <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4 pb-3 border-b-2 border-blue-600 inline-block">
+                  Participants
+                </h3>
 
-                <div className="camp-detail-form-row">
-                  <div className="camp-detail-form-group">
-                    <label className="camp-detail-label">Min Participants *</label>
-                    <input
-                      type="number"
-                      name="minParticipants"
-                      value={formData.minParticipants}
-                      onChange={handleInputChange}
-                      disabled={!isEditing}
-                      className="camp-detail-input"
-                    />
+                <div className="space-y-4 mt-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Min Participants *
+                      </label>
+                      <input
+                        type="number"
+                        name="minParticipants"
+                        value={formData.minParticipants}
+                        onChange={handleInputChange}
+                        disabled={!isEditing}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Max Participants *
+                      </label>
+                      <input
+                        type="number"
+                        name="maxParticipants"
+                        value={formData.maxParticipants}
+                        onChange={handleInputChange}
+                        disabled={!isEditing}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black"
+                      />
+                    </div>
                   </div>
-                  <div className="camp-detail-form-group">
-                    <label className="camp-detail-label">Max Participants *</label>
-                    <input
-                      type="number"
-                      name="maxParticipants"
-                      value={formData.maxParticipants}
-                      onChange={handleInputChange}
-                      disabled={!isEditing}
-                      className="camp-detail-input"
-                    />
-                  </div>
-                </div>
 
-                <div className="camp-detail-form-row">
-                  <div className="camp-detail-form-group">
-                    <label className="camp-detail-label">Min Age *</label>
-                    <input
-                      type="number"
-                      name="minAge"
-                      value={formData.minAge}
-                      onChange={handleInputChange}
-                      disabled={!isEditing}
-                      className="camp-detail-input"
-                    />
-                  </div>
-                  <div className="camp-detail-form-group">
-                    <label className="camp-detail-label">Max Age *</label>
-                    <input
-                      type="number"
-                      name="maxAge"
-                      value={formData.maxAge}
-                      onChange={handleInputChange}
-                      disabled={!isEditing}
-                      className="camp-detail-input"
-                    />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Min Age *
+                      </label>
+                      <input
+                        type="number"
+                        name="minAge"
+                        value={formData.minAge}
+                        onChange={handleInputChange}
+                        disabled={!isEditing}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Max Age *
+                      </label>
+                      <input
+                        type="number"
+                        name="maxAge"
+                        value={formData.maxAge}
+                        onChange={handleInputChange}
+                        disabled={!isEditing}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Camp Type & Location */}
-              <div className="camp-detail-section">
-                <h3 className="camp-detail-section-title">Classification</h3>
+              <div className="pb-6 border-b border-gray-100">
+                <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4 pb-3 border-b-2 border-blue-600 inline-block">
+                  Classification
+                </h3>
 
-                <div className="camp-detail-form-row">
-                  <div className="camp-detail-form-group">
-                    <label className="camp-detail-label">Camp Type *</label>
+                <div className="grid grid-cols-2 gap-4 mt-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Camp Type *
+                    </label>
                     <select
                       name="campTypeId"
                       value={formData.campTypeId || ""}
                       onChange={handleInputChange}
                       disabled={!isEditing}
-                      className="camp-detail-select"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black"
                     >
                       <option value="">Select Camp Type</option>
                       {campTypes.map((type) => (
@@ -390,15 +487,17 @@ const CampDetailModal: React.FC<CampDetailModalProps> = ({
                     </select>
                   </div>
 
-                  <div className="camp-detail-form-group">
-                    <label className="camp-detail-label">Location *</label>
-                    <div className="camp-detail-location-wrapper">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Location *
+                    </label>
+                    <div className="flex gap-2">
                       <select
                         name="locationId"
                         value={formData.locationId || ""}
                         onChange={handleInputChange}
                         disabled={!isEditing}
-                        className="camp-detail-select"
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black"
                       >
                         <option value="">Select Location</option>
                         {locations.map((loc) => (
@@ -410,7 +509,7 @@ const CampDetailModal: React.FC<CampDetailModalProps> = ({
                       {isEditing && (
                         <button
                           onClick={() => setShowAddLocation(true)}
-                          className="camp-detail-add-location-btn"
+                          className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-medium flex items-center justify-center"
                           title="Add new location"
                         >
                           <Plus size={18} />
@@ -421,31 +520,59 @@ const CampDetailModal: React.FC<CampDetailModalProps> = ({
                 </div>
               </div>
 
-              {/* Pricing & Status */}
-              <div className="camp-detail-section">
-                <h3 className="camp-detail-section-title">Pricing & Status</h3>
+              {/* Pricing */}
+              <div>
+                <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4 pb-3 border-b-2 border-blue-600 inline-block">
+                  Pricing
+                </h3>
 
-                <div className="camp-detail-form-row">
-                  <div className="camp-detail-form-group">
-                    <label className="camp-detail-label">Price *</label>
-                    <input
-                      type="number"
-                      name="price"
-                      value={formData.price}
-                      onChange={handleInputChange}
-                      disabled={!isEditing}
-                      className="camp-detail-input"
-                    />
+                <div className="space-y-4 mt-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Price *
+                      </label>
+                      <input
+                        type="number"
+                        name="price"
+                        value={formData.price}
+                        onChange={handleInputChange}
+                        disabled={!isEditing}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Promotion (Optional)
+                      </label>
+                      <select
+                        name="promotionId"
+                        value={formData.promotionId || ""}
+                        onChange={handleInputChange}
+                        disabled={!isEditing}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black"
+                      >
+                        <option value="">No Promotion</option>
+                        {promotions.map((promo) => (
+                          <option key={promo.id} value={promo.id}>
+                            {promo.name} ({promo.percent}% off)
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
 
-                  <div className="camp-detail-form-group">
-                    <label className="camp-detail-label">Status *</label>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Status *
+                    </label>
                     <select
                       name="status"
                       value={formData.status}
                       onChange={handleInputChange}
                       disabled={!isEditing}
-                      className="camp-detail-select"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black"
                     >
                       <option value="PENDING_APPOVAL">Pending Approval</option>
                       <option value="IN_PROGRESS">In Progress</option>
@@ -460,20 +587,20 @@ const CampDetailModal: React.FC<CampDetailModalProps> = ({
           </div>
 
           {/* Footer */}
-          <div className="camp-detail-modal-footer">
+          <div className="flex justify-end gap-3 px-6 py-6 border-t border-gray-200 bg-gray-50">
             {isEditing ? (
               <>
                 <button
                   onClick={() => setIsEditing(false)}
-                  className="camp-detail-btn-cancel"
                   disabled={loading}
+                  className="px-6 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleUpdate}
-                  className="camp-detail-btn-save"
                   disabled={loading}
+                  className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? "Saving..." : "Save Changes"}
                 </button>
@@ -482,15 +609,15 @@ const CampDetailModal: React.FC<CampDetailModalProps> = ({
               <>
                 <button
                   onClick={handleDelete}
-                  className="camp-detail-btn-delete"
                   disabled={loading}
+                  className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Delete
                 </button>
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="camp-detail-btn-update"
                   disabled={loading}
+                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Update
                 </button>
