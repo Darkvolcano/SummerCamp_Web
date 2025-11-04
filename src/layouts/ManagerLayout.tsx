@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import ManagerSidebar from "../components/sidebar/Manager/ManagerSidebar";
+import ManagerSidebar from "../components/Sidebar/Manager/ManagerSidebar";
 
 export default function ManagerLayout() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
