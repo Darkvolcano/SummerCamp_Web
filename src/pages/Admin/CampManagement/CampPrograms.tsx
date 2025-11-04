@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Search, Calendar, Download, Edit, Trash2 } from "lucide-react";
+import { Search, Download, Eye } from "lucide-react";
+import { DatePicker } from "antd";
+import dayjs from "dayjs";
 import campService, {
   type CampResponseDto,
 } from "../../../services/campService";
@@ -7,11 +9,20 @@ import campTypeService, {
   type CampTypeResponseDto,
 } from "../../../services/campTypeService";
 import { CampStatus } from "../../../enums/camp-status.enum";
+import CampDetailModal from "./CampDetailModal";
+import CreateCampModal from "./CreateCampModal";
 
 const CampPrograms: React.FC = () => {
   const [camps, setCamps] = useState<CampResponseDto[]>([]);
   const [campTypes, setCampTypes] = useState<CampTypeResponseDto[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Detail Modal
+  const [selectedCamp, setSelectedCamp] = useState<CampResponseDto | null>(null);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+
+  // Create Modal
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   // Filters
   const [searchQuery, setSearchQuery] = useState("");
@@ -139,9 +150,9 @@ const CampPrograms: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#F9FAFB] p-6">
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-[#111827]">Camp Programs</h1>
-        <p className="text-sm text-[#6B7280] mt-1">
+      <div className="mb-4">
+        <h1 className="text-2xl font-bold text-[#111827]">Camp Programs</h1>
+        <p className="text-xs text-[#6B7280] mt-0.5">
           Manage and organize your summer camp programs
         </p>
       </div>
@@ -149,55 +160,74 @@ const CampPrograms: React.FC = () => {
       {/* Filters Section */}
       <div className="bg-white rounded-xl shadow-sm border border-[#E5E7EB] p-6 mb-6">
         {/* Search and Date Filters */}
-        <div className="flex flex-wrap gap-4 mb-6">
-          {/* Search */}
-          <div className="flex-1 min-w-[280px]">
-            <div className="relative">
-              <Search
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9CA3AF]"
-                size={20}
+        <div className="mb-6">
+          <label className="block text-sm font-semibold text-[#374151] mb-3">
+            Search & Date Range
+          </label>
+          <div className="flex flex-wrap gap-3">
+            {/* Search */}
+            <div className="flex-1 min-w-[280px]">
+              <div className="relative">
+                <Search
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9CA3AF]"
+                  size={18}
+                />
+                <input
+                  type="text"
+                  placeholder="Search by camp name..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-1.5 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:border-transparent text-sm text-[#6B7280] placeholder:text-[#9CA3AF]"
+                />
+              </div>
+            </div>
+
+            {/* Start Date */}
+            <div className="min-w-[180px]">
+              <DatePicker
+                value={startDateFilter ? dayjs(startDateFilter) : null}
+                onChange={(date) =>
+                  setStartDateFilter(date ? date.format("YYYY-MM-DD") : "")
+                }
+                format="YYYY-MM-DD"
+                placeholder="Start date"
+                className="w-full antd-date-picker"
+                style={{ width: "100%" }}
               />
-              <input
-                type="text"
-                placeholder="Search by camp name..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:border-transparent text-[#6B7280] placeholder:text-[#9CA3AF]"
+            </div>
+
+            {/* End Date */}
+            <div className="min-w-[180px]">
+              <DatePicker
+                value={endDateFilter ? dayjs(endDateFilter) : null}
+                onChange={(date) =>
+                  setEndDateFilter(date ? date.format("YYYY-MM-DD") : "")
+                }
+                format="YYYY-MM-DD"
+                placeholder="End date"
+                className="w-full antd-date-picker"
+                style={{ width: "100%" }}
               />
             </div>
           </div>
 
-          {/* Start Date */}
-          <div className="min-w-[200px]">
-            <div className="relative">
-              <Calendar
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9CA3AF]"
-                size={18}
-              />
-              <input
-                type="date"
-                value={startDateFilter}
-                onChange={(e) => setStartDateFilter(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:border-transparent text-[#6B7280]"
-              />
-            </div>
-          </div>
-
-          {/* End Date */}
-          <div className="min-w-[200px]">
-            <div className="relative">
-              <Calendar
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9CA3AF]"
-                size={18}
-              />
-              <input
-                type="date"
-                value={endDateFilter}
-                onChange={(e) => setEndDateFilter(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:border-transparent text-[#6B7280]"
-              />
-            </div>
-          </div>
+          {/* CSS for DatePicker styling */}
+          <style>{`
+            .antd-date-picker .ant-input {
+              height: 34px !important;
+              padding: 4px 11px !important;
+              border-color: #E5E7EB !important;
+              border-radius: 8px !important;
+              font-size: 14px !important;
+            }
+            .antd-date-picker .ant-input:focus {
+              box-shadow: 0 0 0 2px #6366F1 !important;
+              border-color: #6366F1 !important;
+            }
+            .antd-date-picker .ant-input::placeholder {
+              color: #9CA3AF !important;
+            }
+          `}</style>
         </div>
 
         {/* Camp Type Filter */}
@@ -320,9 +350,7 @@ const CampPrograms: React.FC = () => {
             </h2>
           </div>
           <button
-            onClick={() => {
-              /* Handle create */
-            }}
+            onClick={() => setIsCreateModalOpen(true)}
             className="flex items-center gap-2 px-4 py-2.5 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-all font-medium"
           >
             <Download size={18} />
@@ -423,7 +451,7 @@ const CampPrograms: React.FC = () => {
                       {formatDate(camp.registrationEndDate)}
                     </td>
                     <td className="px-6 py-4 text-sm font-semibold text-[#111827]">
-                      ${camp.price.toLocaleString()}
+                      {camp.price.toLocaleString('vi-VN')} VND
                     </td>
                     <td className="px-6 py-4">
                       <span
@@ -435,26 +463,17 @@ const CampPrograms: React.FC = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => {
-                            /* Handle edit */
-                          }}
-                          className="p-2 text-[#6366F1] hover:bg-[#EFF6FF] rounded-lg transition-colors"
-                          title="Edit"
-                        >
-                          <Edit size={18} />
-                        </button>
-                        <button
-                          onClick={() => {
-                            /* Handle delete */
-                          }}
-                          className="p-2 text-[#EF4444] hover:bg-[#FEF2F2] rounded-lg transition-colors"
-                          title="Delete"
-                        >
-                          <Trash2 size={18} />
-                        </button>
-                      </div>
+                      <button
+                        onClick={() => {
+                          setSelectedCamp(camp);
+                          setIsDetailModalOpen(true);
+                        }}
+                        className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-all font-medium text-sm"
+                        title="View Details"
+                      >
+                        <Eye size={16} />
+                        Details
+                      </button>
                     </td>
                   </tr>
                 ))
@@ -463,6 +482,24 @@ const CampPrograms: React.FC = () => {
           </table>
         </div>
       </div>
+
+      {/* Camp Detail Modal */}
+      <CampDetailModal
+        camp={selectedCamp}
+        isOpen={isDetailModalOpen}
+        onClose={() => {
+          setIsDetailModalOpen(false);
+          setSelectedCamp(null);
+        }}
+        onUpdate={fetchData}
+      />
+
+      {/* Create Camp Modal */}
+      <CreateCampModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSuccess={fetchData}
+      />
     </div>
   );
 };
