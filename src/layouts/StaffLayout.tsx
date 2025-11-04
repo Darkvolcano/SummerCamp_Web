@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import StaffSidebar from "../components/sidebar/Staff/StaffSidebar";
+import StaffSidebar from "../components/Sidebar/Staff/StaffSidebar";
 
 export default function StaffLayout() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
