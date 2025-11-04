@@ -90,26 +90,3 @@ button {
     background-position: 0% 50%;
   }
 }
-
-/* Loading spinner */
-.ant-spin {
-  color: #FF8F50;
-}
-
-/* Scrollbar styling */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #FF8F50;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #ff7e3d;
-}

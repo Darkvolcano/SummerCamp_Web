@@ -3,7 +3,6 @@ import { X, Plus } from "lucide-react";
 import { DatePicker, message } from "antd";
 import dayjs from "dayjs";
 import campService, {
-  type CampResponseDto,
   type CampRequestDto,
 } from "../../../services/campService";
 import campTypeService, {
@@ -17,20 +16,17 @@ import promotionService, {
 } from "../../../services/promotionService";
 import AddLocationModal from "./AddLocationModal";
 
-interface CampDetailModalProps {
-  camp: CampResponseDto | null;
+interface CreateCampModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onUpdate: () => void;
+  onSuccess: () => void;
 }
 
-const CampDetailModal: React.FC<CampDetailModalProps> = ({
-  camp,
+const CreateCampModal: React.FC<CreateCampModalProps> = ({
   isOpen,
   onClose,
-  onUpdate,
+  onSuccess,
 }) => {
-  const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [campTypes, setCampTypes] = useState<CampTypeResponseDto[]>([]);
   const [locations, setLocations] = useState<LocationResponseDto[]>([]);
@@ -53,7 +49,7 @@ const CampDetailModal: React.FC<CampDetailModalProps> = ({
     locationId: null,
     promotionId: null,
     price: 0,
-    status: "PENDING_APPOVAL",
+    status: "DRAFT",
     registrationStartDate: "",
     registrationEndDate: "",
   });
@@ -67,39 +63,13 @@ const CampDetailModal: React.FC<CampDetailModalProps> = ({
     }
   }, [isOpen]);
 
-  // Set form data when camp is selected
-  useEffect(() => {
-    if (camp && isOpen) {
-      setFormData({
-        name: camp.name,
-        description: camp.description,
-        place: camp.place,
-        address: camp.address,
-        minParticipants: camp.minParticipants,
-        maxParticipants: camp.maxParticipants,
-        minAge: camp.minAge,
-        maxAge: camp.maxAge,
-        startDate: camp.startDate,
-        endDate: camp.endDate,
-        image: camp.image,
-        campTypeId: camp.campType?.id || null,
-        locationId: camp.location?.id || null,
-        promotionId: camp.promotion?.id || null,
-        price: camp.price,
-        status: camp.status,
-        registrationStartDate: camp.registrationStartDate,
-        registrationEndDate: camp.registrationEndDate,
-      });
-      setIsEditing(false);
-    }
-  }, [camp, isOpen]);
-
   const fetchCampTypes = async () => {
     try {
       const data = await campTypeService.getAllCampTypes();
       setCampTypes(data);
     } catch (error) {
       console.error("Error fetching camp types:", error);
+      message.error("Failed to fetch camp types");
     }
   };
 
@@ -109,6 +79,7 @@ const CampDetailModal: React.FC<CampDetailModalProps> = ({
       setLocations(data);
     } catch (error) {
       console.error("Error fetching locations:", error);
+      message.error("Failed to fetch locations");
     }
   };
 
@@ -147,40 +118,75 @@ const CampDetailModal: React.FC<CampDetailModalProps> = ({
     }));
   };
 
-  const handleUpdate = async () => {
-    if (!camp) return;
+  const handleCreate = async () => {
+
+    // Validation
+    if (
+      !formData.name.trim() ||
+      !formData.place.trim() ||
+      !formData.address.trim() ||
+      !formData.startDate ||
+      !formData.endDate ||
+      !formData.registrationStartDate ||
+      !formData.registrationEndDate ||
+      formData.price <= 0 ||
+      !formData.campTypeId ||
+      !formData.locationId
+    ) {
+      message.error("Please fill in all required fields");
+      return;
+    }
 
     try {
       setLoading(true);
-      await campService.updateCamp(camp.campId, formData);
-      message.success("Camp updated successfully!");
-      setIsEditing(false);
-      onUpdate();
-    } catch (error) {
-      console.error("Error updating camp:", error);
-      message.error("Failed to update camp");
+      await campService.createCamp(formData);
+
+      message.success("Camp created successfully!");
+      handleClose();
+      onSuccess();
+    } catch (error: any) {
+      // Get error message
+      let errorMsg = "Failed to create camp. Please try again.";
+
+      if (error.response?.status === 401) {
+        errorMsg = "Session expired. Please login again.";
+      } else if (error.response?.status === 400) {
+        errorMsg = error.response.data?.message || "Validation error. Please check your input.";
+      } else if (error.response?.status === 403) {
+        errorMsg = "You don't have permission to create camps.";
+      } else if (error instanceof Error) {
+        errorMsg = error.message;
+      }
+
+      // Show error using alert
+      alert(errorMsg);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDelete = async () => {
-    if (!camp) return;
-
-    if (window.confirm("Are you sure you want to delete this camp?")) {
-      try {
-        setLoading(true);
-        await campService.deleteCamp(camp.campId);
-        message.success("Camp deleted successfully!");
-        onClose();
-        onUpdate();
-      } catch (error) {
-        console.error("Error deleting camp:", error);
-        message.error("Failed to delete camp");
-      } finally {
-        setLoading(false);
-      }
-    }
+  const handleClose = () => {
+    setFormData({
+      name: "",
+      description: "",
+      place: "",
+      address: "",
+      minParticipants: 0,
+      maxParticipants: 0,
+      minAge: 0,
+      maxAge: 0,
+      startDate: "",
+      endDate: "",
+      image: "",
+      campTypeId: null,
+      locationId: null,
+      promotionId: null,
+      price: 0,
+      status: "DRAFT",
+      registrationStartDate: "",
+      registrationEndDate: "",
+    });
+    onClose();
   };
 
   const handleAddLocationSuccess = async () => {
@@ -188,12 +194,12 @@ const CampDetailModal: React.FC<CampDetailModalProps> = ({
     await fetchLocations();
   };
 
-  if (!isOpen || !camp) return null;
+  if (!isOpen) return null;
 
   return (
     <>
       {/* Modal Overlay */}
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-1000" onClick={onClose}>
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-1000">
         {/* Modal Content */}
         <div
           className="bg-white rounded-2xl shadow-2xl w-11/12 max-w-4xl max-h-[90vh] flex flex-col animate-in fade-in zoom-in-95 overflow-hidden"
@@ -201,9 +207,9 @@ const CampDetailModal: React.FC<CampDetailModalProps> = ({
         >
           {/* Header */}
           <div className="flex justify-between items-center px-6 py-6 border-b border-gray-200">
-            <h2 className="text-2xl font-bold text-gray-900">Camp Details</h2>
+            <h2 className="text-2xl font-bold text-gray-900">Create New Camp</h2>
             <button
-              onClick={onClose}
+              onClick={handleClose}
               className="text-gray-400 hover:text-gray-900 transition-colors"
             >
               <X size={24} />
@@ -227,15 +233,6 @@ const CampDetailModal: React.FC<CampDetailModalProps> = ({
                 background: #e5e7eb;
               }
             `}</style>
-            {/* Camp Image */}
-            <div className="mb-6 rounded-lg overflow-hidden h-80 bg-gray-100">
-              <img
-                src={formData.image}
-                alt={formData.name}
-                className="w-full h-full object-cover"
-              />
-            </div>
-
             {/* Form Fields */}
             <div className="space-y-6">
               {/* Basic Info */}
@@ -254,8 +251,8 @@ const CampDetailModal: React.FC<CampDetailModalProps> = ({
                       name="name"
                       value={formData.name}
                       onChange={handleInputChange}
-                      disabled={!isEditing}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black"
+                      placeholder="Enter camp name"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     />
                   </div>
 
@@ -269,8 +266,8 @@ const CampDetailModal: React.FC<CampDetailModalProps> = ({
                         name="place"
                         value={formData.place}
                         onChange={handleInputChange}
-                        disabled={!isEditing}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black"
+                        placeholder="e.g., Mountain Area, Beach"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                       />
                     </div>
                     <div>
@@ -282,8 +279,8 @@ const CampDetailModal: React.FC<CampDetailModalProps> = ({
                         name="address"
                         value={formData.address}
                         onChange={handleInputChange}
-                        disabled={!isEditing}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black"
+                        placeholder="Enter full address"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                       />
                     </div>
                   </div>
@@ -296,11 +293,12 @@ const CampDetailModal: React.FC<CampDetailModalProps> = ({
                       name="description"
                       value={formData.description}
                       onChange={handleInputChange}
-                      disabled={!isEditing}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                      placeholder="Enter camp description"
+                      className="w-full px-3 py-2 border text-black border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
                       rows={3}
                     />
                   </div>
+
                 </div>
               </div>
 
@@ -325,7 +323,6 @@ const CampDetailModal: React.FC<CampDetailModalProps> = ({
                           })
                         }
                         format="YYYY-MM-DD"
-                        disabled={!isEditing}
                         className="w-full"
                         style={{ width: "100%" }}
                       />
@@ -343,7 +340,6 @@ const CampDetailModal: React.FC<CampDetailModalProps> = ({
                           })
                         }
                         format="YYYY-MM-DD"
-                        disabled={!isEditing}
                         className="w-full"
                         style={{ width: "100%" }}
                       />
@@ -365,7 +361,6 @@ const CampDetailModal: React.FC<CampDetailModalProps> = ({
                           })
                         }
                         format="YYYY-MM-DD HH:mm:ss"
-                        disabled={!isEditing}
                         className="w-full"
                         style={{ width: "100%" }}
                       />
@@ -384,7 +379,6 @@ const CampDetailModal: React.FC<CampDetailModalProps> = ({
                           })
                         }
                         format="YYYY-MM-DD HH:mm:ss"
-                        disabled={!isEditing}
                         className="w-full"
                         style={{ width: "100%" }}
                       />
@@ -410,8 +404,8 @@ const CampDetailModal: React.FC<CampDetailModalProps> = ({
                         name="minParticipants"
                         value={formData.minParticipants}
                         onChange={handleInputChange}
-                        disabled={!isEditing}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black"
+                        min="0"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                       />
                     </div>
                     <div>
@@ -423,8 +417,8 @@ const CampDetailModal: React.FC<CampDetailModalProps> = ({
                         name="maxParticipants"
                         value={formData.maxParticipants}
                         onChange={handleInputChange}
-                        disabled={!isEditing}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black"
+                        min="0"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                       />
                     </div>
                   </div>
@@ -439,8 +433,8 @@ const CampDetailModal: React.FC<CampDetailModalProps> = ({
                         name="minAge"
                         value={formData.minAge}
                         onChange={handleInputChange}
-                        disabled={!isEditing}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black"
+                        min="0"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                       />
                     </div>
                     <div>
@@ -452,8 +446,8 @@ const CampDetailModal: React.FC<CampDetailModalProps> = ({
                         name="maxAge"
                         value={formData.maxAge}
                         onChange={handleInputChange}
-                        disabled={!isEditing}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black"
+                        min="0"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                       />
                     </div>
                   </div>
@@ -475,8 +469,7 @@ const CampDetailModal: React.FC<CampDetailModalProps> = ({
                       name="campTypeId"
                       value={formData.campTypeId || ""}
                       onChange={handleInputChange}
-                      disabled={!isEditing}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     >
                       <option value="">Select Camp Type</option>
                       {campTypes.map((type) => (
@@ -496,8 +489,7 @@ const CampDetailModal: React.FC<CampDetailModalProps> = ({
                         name="locationId"
                         value={formData.locationId || ""}
                         onChange={handleInputChange}
-                        disabled={!isEditing}
-                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black"
+                        className="flex-1 px-3 py-2 border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                       >
                         <option value="">Select Location</option>
                         {locations.map((loc) => (
@@ -506,17 +498,16 @@ const CampDetailModal: React.FC<CampDetailModalProps> = ({
                           </option>
                         ))}
                       </select>
-                      {isEditing && (
-                        <button
-                          onClick={() => setShowAddLocation(true)}
-                          className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-medium flex items-center justify-center"
-                          title="Add new location"
-                        >
-                          <Plus size={18} />
-                        </button>
-                      )}
+                      <button
+                        onClick={() => setShowAddLocation(true)}
+                        className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-medium flex items-center justify-center"
+                        title="Add new location"
+                      >
+                        <Plus size={18} />
+                      </button>
                     </div>
                   </div>
+
                 </div>
               </div>
 
@@ -526,59 +517,37 @@ const CampDetailModal: React.FC<CampDetailModalProps> = ({
                   Pricing
                 </h3>
 
-                <div className="space-y-4 mt-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Price *
-                      </label>
-                      <input
-                        type="number"
-                        name="price"
-                        value={formData.price}
-                        onChange={handleInputChange}
-                        disabled={!isEditing}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Promotion (Optional)
-                      </label>
-                      <select
-                        name="promotionId"
-                        value={formData.promotionId || ""}
-                        onChange={handleInputChange}
-                        disabled={!isEditing}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black"
-                      >
-                        <option value="">No Promotion</option>
-                        {promotions.map((promo) => (
-                          <option key={promo.id} value={promo.id}>
-                            {promo.name} ({promo.percent}% off)
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                <div className="grid grid-cols-2 gap-4 mt-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Price *
+                    </label>
+                    <input
+                      type="number"
+                      name="price"
+                      value={formData.price}
+                      onChange={handleInputChange}
+                      min="0"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Status *
+                      Promotion (Optional)
                     </label>
                     <select
-                      name="status"
-                      value={formData.status}
+                      name="promotionId"
+                      value={formData.promotionId || ""}
                       onChange={handleInputChange}
-                      disabled={!isEditing}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     >
-                      <option value="PENDING_APPOVAL">Pending Approval</option>
-                      <option value="IN_PROGRESS">In Progress</option>
-                      <option value="OPEN_FOR_REGISTRATION">Open for Registration</option>
-                      <option value="CLOSED">Closed</option>
-                      <option value="CANCELLED">Cancelled</option>
+                      <option value="">No Promotion</option>
+                      {promotions.map((promo) => (
+                        <option key={promo.id} value={promo.id}>
+                          {promo.name} ({promo.percent}% off)
+                        </option>
+                      ))}
                     </select>
                   </div>
                 </div>
@@ -588,41 +557,20 @@ const CampDetailModal: React.FC<CampDetailModalProps> = ({
 
           {/* Footer */}
           <div className="flex justify-end gap-3 px-6 py-6 border-t border-gray-200 bg-gray-50">
-            {isEditing ? (
-              <>
-                <button
-                  onClick={() => setIsEditing(false)}
-                  disabled={loading}
-                  className="px-6 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleUpdate}
-                  disabled={loading}
-                  className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {loading ? "Saving..." : "Save Changes"}
-                </button>
-              </>
-            ) : (
-              <>
-                <button
-                  onClick={handleDelete}
-                  disabled={loading}
-                  className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Delete
-                </button>
-                <button
-                  onClick={() => setIsEditing(true)}
-                  disabled={loading}
-                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Update
-                </button>
-              </>
-            )}
+            <button
+              onClick={handleClose}
+              disabled={loading}
+              className="px-6 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleCreate}
+              disabled={loading}
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? "Creating..." : "Create Camp"}
+            </button>
           </div>
         </div>
       </div>
@@ -637,4 +585,4 @@ const CampDetailModal: React.FC<CampDetailModalProps> = ({
   );
 };
 
-export default CampDetailModal;
+export default CreateCampModal;
