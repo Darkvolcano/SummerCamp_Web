@@ -15,6 +15,84 @@ import {
 import campService, { type CampResponseDto } from "../../services/campService";
 import { useAuthStore } from "../../services/userService";
 import "./CampDetail.css";
+import { CampStatus } from "../../enums/camp-status.enum";
+
+const getStatusDisplay = (status: CampStatus) => {
+  switch (status) {
+    case CampStatus.OPEN_FOR_REGISTRATION:
+      return {
+        text: "Đang mở đăng ký",
+        shortText: "Đang mở",
+        color: "success",
+        icon: "🟢",
+      };
+    case CampStatus.PUBLISHED:
+      return {
+        text: "Sắp mở",
+        shortText: "Sắp mở",
+        color: "processing",
+        icon: "🔵",
+      };
+    case CampStatus.REGISTRATION_CLOSED:
+      return {
+        text: "Đã đóng đăng ký",
+        shortText: "Đã đóng",
+        color: "warning",
+        icon: "🟡",
+      };
+    case CampStatus.IN_PROGRESS:
+      return {
+        text: "Đang diễn ra",
+        shortText: "Đang diễn ra",
+        color: "blue",
+        icon: "🏕️",
+      };
+    case CampStatus.COMPLETED:
+      return {
+        text: "Đã kết thúc",
+        shortText: "Đã kết thúc",
+        color: "default",
+        icon: "✅",
+      };
+    case CampStatus.CANCELED:
+      return {
+        text: "Đã hủy",
+        shortText: "Đã hủy",
+        color: "error",
+        icon: "❌",
+      };
+    default:
+      return {
+        text: "Chưa công bố",
+        shortText: "Đang duyệt",
+        color: "default",
+        icon: "⚪",
+      };
+  }
+};
+
+const getRegisterButtonText = (status: CampStatus, isLoggedIn: boolean) => {
+  if (status !== CampStatus.OPEN_FOR_REGISTRATION) {
+    switch (status) {
+      case CampStatus.REGISTRATION_CLOSED:
+        return "🔒 Đã đóng đăng ký";
+      case CampStatus.IN_PROGRESS:
+        return "🏕️ Đang diễn ra";
+      case CampStatus.COMPLETED:
+        return "✅ Đã kết thúc";
+      case CampStatus.CANCELED:
+        return "❌ Đã hủy";
+      default:
+        return "🔒 Chưa mở đăng ký";
+    }
+  }
+
+  if (!isLoggedIn) {
+    return "🔑 Đăng nhập để đăng ký";
+  }
+
+  return "🎯 Đăng ký ngay";
+};
 
 const CampDetail: React.FC = () => {
   const { campId } = useParams<{ campId: string }>();
@@ -91,7 +169,9 @@ const CampDetail: React.FC = () => {
       <div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-gray-50 to-white">
         <div className="text-center">
           <Spin size="large" />
-          <p className="mt-4 text-gray-600 font-semibold">Đang tải thông tin trại hè...</p>
+          <p className="mt-4 text-gray-600 font-semibold">
+            Đang tải thông tin trại hè...
+          </p>
         </div>
       </div>
     );
@@ -118,6 +198,9 @@ const CampDetail: React.FC = () => {
   }
 
   const duration = calculateDuration(camp.startDate, camp.endDate);
+  const statusDisplay = getStatusDisplay(camp.status as CampStatus);
+  const isRegisterable = camp.status === CampStatus.OPEN_FOR_REGISTRATION;
+  const buttonText = getRegisterButtonText(camp.status as CampStatus, !!user);
 
   return (
     <div className="camp-detail-page bg-gradient-to-b from-gray-50 to-white min-h-screen">
@@ -139,22 +222,25 @@ const CampDetail: React.FC = () => {
             {/* Hero Image */}
             <div className="relative h-96 rounded-3xl overflow-hidden shadow-2xl group">
               <img
-                src={camp.image || "https://via.placeholder.com/1200x600?text=Summer+Camp"}
+                src={
+                  camp.image ||
+                  "https://via.placeholder.com/1200x600?text=Summer+Camp"
+                }
                 alt={camp.name}
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
               />
-              
+
               {/* Gradient Overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
-              
+
               {/* Badges Container */}
               <div className="absolute top-6 left-6 right-6 flex items-start justify-between">
                 {/* Status Badge */}
                 <Tag
-                  color={camp.status === "Active" ? "success" : "warning"}
+                  color={statusDisplay.color}
                   className="px-4 py-2 text-sm font-bold rounded-full border-2 border-white shadow-lg backdrop-blur-sm"
                 >
-                  {camp.status === "Active" ? "🟢 Đang mở đăng ký" : "🟡 Sắp mở"}
+                  {statusDisplay.icon} {statusDisplay.text}
                 </Tag>
 
                 {/* Camp Type Badge */}
@@ -182,7 +268,7 @@ const CampDetail: React.FC = () => {
               <h1 className="text-4xl font-bold text-gray-900 mb-4 leading-tight">
                 {camp.name}
               </h1>
-              
+
               {/* Location & Place */}
               <div className="flex flex-wrap items-center gap-4 mb-6">
                 <div className="flex items-center gap-2 text-gray-600">
@@ -266,7 +352,8 @@ const CampDetail: React.FC = () => {
                   <div>
                     <p className="text-sm text-gray-500 mb-1">Thời gian</p>
                     <p className="text-lg font-bold text-gray-900">
-                      {duration} ngày {duration > 1 ? `${duration - 1} đêm` : ""}
+                      {duration} ngày{" "}
+                      {duration > 1 ? `${duration - 1} đêm` : ""}
                     </p>
                   </div>
                 </div>
@@ -290,7 +377,9 @@ const CampDetail: React.FC = () => {
                 <div className="flex items-start gap-4">
                   <EnvironmentOutlined className="text-[#FF8F50] text-2xl mt-1" />
                   <div className="flex-1">
-                    <p className="text-sm text-gray-500 mb-2">Địa điểm tổ chức</p>
+                    <p className="text-sm text-gray-500 mb-2">
+                      Địa điểm tổ chức
+                    </p>
                     <p className="text-lg font-semibold text-gray-900">
                       {camp.address}
                     </p>
@@ -313,8 +402,8 @@ const CampDetail: React.FC = () => {
                   "Kết bạn và giao lưu",
                   "Trải nghiệm khó quên",
                 ].map((feature, index) => (
-                  <div 
-                    key={index} 
+                  <div
+                    key={index}
                     className="flex items-center gap-3 p-3 rounded-xl hover:bg-green-50 transition-colors group"
                   >
                     <CheckCircleFilled className="text-green-500 text-xl group-hover:scale-110 transition-transform" />
@@ -330,7 +419,9 @@ const CampDetail: React.FC = () => {
             <div className="bg-white rounded-3xl p-8 shadow-xl sticky top-24 border-2 border-orange-100 hover:shadow-2xl transition-shadow">
               {/* Price */}
               <div className="text-center mb-8 pb-6 border-b-2 border-gray-100">
-                <p className="text-gray-500 text-sm mb-2 uppercase tracking-wide">Giá trại hè</p>
+                <p className="text-gray-500 text-sm mb-2 uppercase tracking-wide">
+                  Giá trại hè
+                </p>
                 <div className="flex items-center justify-center gap-2">
                   <DollarOutlined className="text-[#FF8F50] text-2xl" />
                   <span className="text-5xl font-bold text-[#FF8F50]">
@@ -357,16 +448,15 @@ const CampDetail: React.FC = () => {
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-600 font-medium">Trạng thái:</span>
-                  <Tag
-                    color={camp.status === "Active" ? "success" : "warning"}
-                    className="font-semibold"
-                  >
-                    {camp.status === "Active" ? "Đang mở" : "Sắp mở"}
+                  <Tag color={statusDisplay.color} className="font-semibold">
+                    {statusDisplay.shortText}
                   </Tag>
                 </div>
                 {camp.campType && (
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-600 font-medium">Loại trại:</span>
+                    <span className="text-gray-600 font-medium">
+                      Loại trại:
+                    </span>
                     <span className="font-bold text-gray-900 text-right">
                       {camp.campType.name}
                     </span>
@@ -377,15 +467,10 @@ const CampDetail: React.FC = () => {
               {/* Register Button */}
               <button
                 onClick={handleRegister}
-                disabled={camp.status !== "Active"}
+                disabled={!isRegisterable}
                 className="w-full bg-gradient-to-r from-[#FF8F50] to-[#ff7e3d] hover:from-[#ff7e3d] hover:to-[#FF8F50] text-white font-bold py-4 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 text-lg disabled:from-gray-400 disabled:to-gray-500"
               >
-                {camp.status !== "Active" 
-                  ? "🔒 Chưa mở đăng ký" 
-                  : user 
-                    ? "🎯 Đăng ký ngay" 
-                    : "🔑 Đăng nhập để đăng ký"
-                }
+                {buttonText}
               </button>
 
               {/* Info Text */}
