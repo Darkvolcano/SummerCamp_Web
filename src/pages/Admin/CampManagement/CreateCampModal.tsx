@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { X, Plus } from "lucide-react";
-import { DatePicker, message } from "antd";
+import { DatePicker } from "antd";
 import dayjs from "dayjs";
+import useCustomNotification from "../../../hooks/useCustomNotification";
 import campService, {
   type CampRequestDto,
 } from "../../../services/campService";
@@ -27,6 +28,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
   onClose,
   onSuccess,
 }) => {
+  const { contextHolder, toastSuccess, toastError } = useCustomNotification();
   const [loading, setLoading] = useState(false);
   const [campTypes, setCampTypes] = useState<CampTypeResponseDto[]>([]);
   const [locations, setLocations] = useState<LocationResponseDto[]>([]);
@@ -69,7 +71,6 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
       setCampTypes(data);
     } catch (error) {
       console.error("Error fetching camp types:", error);
-      message.error("Failed to fetch camp types");
     }
   };
 
@@ -79,7 +80,6 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
       setLocations(data);
     } catch (error) {
       console.error("Error fetching locations:", error);
-      message.error("Failed to fetch locations");
     }
   };
 
@@ -89,7 +89,6 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
       setPromotions(data);
     } catch (error) {
       console.error("Error fetching promotions:", error);
-      message.error("Failed to fetch promotions");
     }
   };
 
@@ -133,7 +132,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
       !formData.campTypeId ||
       !formData.locationId
     ) {
-      message.error("Please fill in all required fields");
+      toastError('Validation Error', 'Please fill in all required fields');
       return;
     }
 
@@ -141,7 +140,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
       setLoading(true);
       await campService.createCamp(formData);
 
-      message.success("Camp created successfully!");
+      toastSuccess('Success', 'Camp created successfully!');
       handleClose();
       onSuccess();
     } catch (error: any) {
@@ -158,8 +157,8 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
         errorMsg = error.message;
       }
 
-      // Show error using alert
-      alert(errorMsg);
+      // Show error notification
+      toastError('Error', errorMsg);
     } finally {
       setLoading(false);
     }
@@ -198,6 +197,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
 
   return (
     <>
+      {contextHolder}
       {/* Modal Overlay */}
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-1000">
         {/* Modal Content */}
