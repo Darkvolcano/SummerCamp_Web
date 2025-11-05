@@ -1,4 +1,5 @@
 export enum CampStatus {
+  DRAFT ="Draft",
   PENDING_APPOVAL = "PendingApproval",
   REJECTED = "Rejected",
   PUBLISHED = "Published",

@@ -5,7 +5,7 @@ import Home from "./pages/Home/Home";
 import Forbidden from "./pages/Forbidden/Forbidden";
 import UserProfile from "./pages/Profile/UserProfile";
 import AdminDashboard from "./pages/Admin/Dashboard/AdminDashboard";
-import CampManagement from "./pages/Admin/CampManagement/CampManagement";
+import CampManagement from "./pages/Admin/CampManagement/CampPrograms";
 import BlogManagement from "./pages/Admin/BlogManagement/BlogManagement";
 import VehicleManagement from "./pages/Admin/VehicleManagement/VehicleManagement";
 import VehicleTypeManagement from "./pages/Admin/VehicleTypeManagement/VehicleTypeManagement";
