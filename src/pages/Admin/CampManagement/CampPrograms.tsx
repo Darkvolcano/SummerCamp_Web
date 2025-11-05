@@ -18,7 +18,9 @@ const CampPrograms: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   // Detail Modal
-  const [selectedCamp, setSelectedCamp] = useState<CampResponseDto | null>(null);
+  const [selectedCamp, setSelectedCamp] = useState<CampResponseDto | null>(
+    null
+  );
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
   // Create Modal
@@ -318,7 +320,9 @@ const CampPrograms: React.FC = () => {
                 </span>
               </div>
               <div>
-                <span className="text-sm text-[#6B7280]">Pending Approval: </span>
+                <span className="text-sm text-[#6B7280]">
+                  Pending Approval:{" "}
+                </span>
                 <span className="text-lg font-bold text-[#3B82F6]">
                   {statusCounts[CampStatus.PENDING_APPOVAL] || 0}
                 </span>
@@ -451,7 +455,7 @@ const CampPrograms: React.FC = () => {
                       {formatDate(camp.registrationEndDate)}
                     </td>
                     <td className="px-6 py-4 text-sm font-semibold text-[#111827]">
-                      {camp.price.toLocaleString('vi-VN')} VND
+                      {camp.price.toLocaleString("vi-VN")} VND
                     </td>
                     <td className="px-6 py-4">
                       <span
