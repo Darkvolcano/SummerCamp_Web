@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Search, Download, Eye } from "lucide-react";
+import { Search, Eye, HousePlus  } from "lucide-react";
 import { DatePicker } from "antd";
+import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import campService, {
   type CampResponseDto,
@@ -9,19 +10,13 @@ import campTypeService, {
   type CampTypeResponseDto,
 } from "../../../services/campTypeService";
 import { CampStatus } from "../../../enums/camp-status.enum";
-import CampDetailModal from "./CampDetailModal";
 import CreateCampModal from "./CreateCampModal";
 
 const CampPrograms: React.FC = () => {
+  const navigate = useNavigate();
   const [camps, setCamps] = useState<CampResponseDto[]>([]);
   const [campTypes, setCampTypes] = useState<CampTypeResponseDto[]>([]);
   const [loading, setLoading] = useState(true);
-
-  // Detail Modal
-  const [selectedCamp, setSelectedCamp] = useState<CampResponseDto | null>(
-    null
-  );
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
   // Create Modal
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -357,7 +352,7 @@ const CampPrograms: React.FC = () => {
             onClick={() => setIsCreateModalOpen(true)}
             className="flex items-center gap-2 px-4 py-2.5 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-all font-medium"
           >
-            <Download size={18} />
+            <HousePlus size={18} />
             Create new program
           </button>
         </div>
@@ -468,10 +463,7 @@ const CampPrograms: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <button
-                        onClick={() => {
-                          setSelectedCamp(camp);
-                          setIsDetailModalOpen(true);
-                        }}
+                        onClick={() => navigate(`/admin/camps/${camp.campId}`)}
                         className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-all font-medium text-sm"
                         title="View Details"
                       >
@@ -486,17 +478,6 @@ const CampPrograms: React.FC = () => {
           </table>
         </div>
       </div>
-
-      {/* Camp Detail Modal */}
-      <CampDetailModal
-        camp={selectedCamp}
-        isOpen={isDetailModalOpen}
-        onClose={() => {
-          setIsDetailModalOpen(false);
-          setSelectedCamp(null);
-        }}
-        onUpdate={fetchData}
-      />
 
       {/* Create Camp Modal */}
       <CreateCampModal

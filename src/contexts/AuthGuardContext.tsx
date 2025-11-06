@@ -190,6 +190,7 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
         admin: [
           PagePath.ADMIN_DASHBOARD,
           PagePath.ADMIN_CAMPS,
+          PagePath.ADMIN_CAMPS_DETAIL,
           PagePath.ADMIN_BLOGS,
           PagePath.ADMIN_ACCOUNTS,
           PagePath.ADMIN_VEHICLES,
