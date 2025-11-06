@@ -14,9 +14,12 @@ export interface Location {
 }
 
 export interface Promotion {
-  promotionId: number;
+  id: number;
   name: string;
-  discountPercentage?: number;
+  percent: number;
+  maxDiscountAmount?: number;
+  maxUsageCount?: number;
+  currentUsageCount?: number;
 }
 
 // Request DTO (for POST/PUT)
@@ -29,9 +32,9 @@ export interface CampRequestDto {
   maxParticipants: number;
   minAge: number;
   maxAge: number;
-  startDate: string; // Format: "YYYY-MM-DD"
+  startDate: string;
   endDate: string;
-  image: string;
+  image: string | null;
   campTypeId: number | null;
   locationId: number | null;
   promotionId: number | null;
@@ -54,7 +57,7 @@ export interface CampResponseDto {
   maxAge: number;
   startDate: string;
   endDate: string;
-  image: string;
+  image: string | null;
   price: number;
   status: string;
   createBy: number;
@@ -69,10 +72,7 @@ export interface CampResponseDto {
     id: number;
     name: string;
   } | null;
-  promotion: {
-    id: number;
-    name: string;
-  } | null;
+  promotion: Promotion | null;
 }
 
 // Backend raw response structure
@@ -90,7 +90,7 @@ interface BackendCampResponse {
   endDate: string;
   price: number;
   status: string;
-  image: string;
+  image: string | null;
   createBy: number;
   registrationStartDate: string;
   registrationEndDate: string;
@@ -102,10 +102,7 @@ interface BackendCampResponse {
     id: number;
     name: string;
   } | null;
-  promotion?: {
-    id: number;
-    name: string;
-  } | null;
+  promotion?: Promotion | null;
 }
 
 // Map backend response to frontend format
