@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Edit2, Trash2, CheckCircle, XCircle, Upload } from 'lucide-react';
+import { X, Edit2, Trash2, CheckCircle, XCircle, Upload, Plus } from 'lucide-react';
 import { DatePicker, Popover, Button } from 'antd';
 import dayjs from 'dayjs';
 import useCustomNotification from '../../../../hooks/useCustomNotification';
@@ -8,6 +8,7 @@ import campTypeService, { type CampTypeResponseDto } from '../../../../services/
 import locationService, { type LocationResponseDto } from '../../../../services/LocationService';
 import promotionService, { type PromotionResponseDto } from '../../../../services/promotionService';
 import { CampStatus } from '../../../../enums/camp-status.enum';
+import AddLocationModal from '../AddLocationModal';
 
 interface CampDetailOverviewProps {
   campId: number;
@@ -27,6 +28,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({ campId, onBack,
   const [openDeletePopover, setOpenDeletePopover] = useState(false);
   const [openApprovePopover, setOpenApprovePopover] = useState(false);
   const [openRejectPopover, setOpenRejectPopover] = useState(false);
+  const [showAddLocation, setShowAddLocation] = useState(false);
 
   const [formData, setFormData] = useState<CampRequestDto>({
     name: '',
@@ -196,6 +198,11 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({ campId, onBack,
     }));
   };
 
+  const handleAddLocationSuccess = async () => {
+    setShowAddLocation(false);
+    await locationService.getAllLocations().then(setLocations);
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -361,7 +368,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({ campId, onBack,
         </div>
 
         {/* Camp Image */}
-        {formData.image && (
+        {formData.image && !isEditing && (
           <div className="mb-6 rounded-lg overflow-hidden">
             <img
               src={formData.image}
@@ -446,7 +453,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({ campId, onBack,
                     {(imagePreview || formData.image) && (
                       <div className="relative w-full h-40 rounded-lg overflow-hidden border border-gray-300">
                         <img
-                          src={imagePreview || formData.image}
+                          src={imagePreview || formData.image || ""}
                           alt="Preview"
                           className="w-full h-full object-cover"
                         />
@@ -494,15 +501,16 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({ campId, onBack,
                     Start Date *
                   </label>
                   <DatePicker
+                    showTime
                     value={formData.startDate ? dayjs(formData.startDate) : null}
                     onChange={(date) =>
                       setFormData({
                         ...formData,
-                        startDate: date ? date.format('YYYY-MM-DD') : '',
+                        startDate: date ? date.toISOString() : '',
                       })
                     }
                     disabled={!isEditing}
-                    format="YYYY-MM-DD"
+                    format="YYYY-MM-DD HH:mm:ss"
                     className="w-full"
                     style={{ width: '100%' }}
                   />
@@ -512,15 +520,16 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({ campId, onBack,
                     End Date *
                   </label>
                   <DatePicker
+                    showTime
                     value={formData.endDate ? dayjs(formData.endDate) : null}
                     onChange={(date) =>
                       setFormData({
                         ...formData,
-                        endDate: date ? date.format('YYYY-MM-DD') : '',
+                        endDate: date ? date.toISOString() : '',
                       })
                     }
                     disabled={!isEditing}
-                    format="YYYY-MM-DD"
+                    format="YYYY-MM-DD HH:mm:ss"
                     className="w-full"
                     style={{ width: '100%' }}
                   />
@@ -669,20 +678,32 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({ campId, onBack,
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Location *
                 </label>
-                <select
-                  name="locationId"
-                  value={formData.locationId || ''}
-                  onChange={handleInputChange}
-                  disabled={!isEditing}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-black disabled:bg-gray-100 disabled:cursor-not-allowed"
-                >
-                  <option value="">Select Location</option>
-                  {locations.map((loc) => (
-                    <option key={loc.locationId} value={loc.locationId}>
-                      {loc.name}
-                    </option>
-                  ))}
-                </select>
+                <div className="flex gap-2">
+                  <select
+                    name="locationId"
+                    value={formData.locationId || ''}
+                    onChange={handleInputChange}
+                    disabled={!isEditing}
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-black disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  >
+                    <option value="">Select Location</option>
+                    {locations.map((loc) => (
+                      <option key={loc.locationId} value={loc.locationId}>
+                        {loc.name}
+                      </option>
+                    ))}
+                  </select>
+                  {isEditing && (
+                    <button
+                      type="button"
+                      onClick={() => setShowAddLocation(true)}
+                      className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-medium flex items-center justify-center"
+                      title="Add new location"
+                    >
+                      <Plus size={18} />
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -749,6 +770,13 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({ campId, onBack,
           </div>
         </div>
       </div>
+
+      {/* Add Location Modal */}
+      <AddLocationModal
+        isOpen={showAddLocation}
+        onClose={() => setShowAddLocation(false)}
+        onSuccess={handleAddLocationSuccess}
+      />
     </>
   );
 };

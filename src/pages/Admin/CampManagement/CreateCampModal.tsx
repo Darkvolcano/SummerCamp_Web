@@ -52,7 +52,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
     locationId: null,
     promotionId: null,
     price: 0,
-    status: "DRAFT",
+    status: "Draft",
     registrationStartDate: "",
     registrationEndDate: "",
   });
@@ -177,7 +177,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
       maxAge: 0,
       startDate: "",
       endDate: "",
-      image: "",
+      image: null,
       campTypeId: null,
       locationId: null,
       promotionId: null,
@@ -186,6 +186,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
       registrationStartDate: "",
       registrationEndDate: "",
     });
+    setImagePreview("");
     onClose();
   };
 
@@ -385,14 +386,15 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
                         Start Date *
                       </label>
                       <DatePicker
+                        showTime
                         value={formData.startDate ? dayjs(formData.startDate) : null}
                         onChange={(date) =>
                           setFormData({
                             ...formData,
-                            startDate: date ? date.format("YYYY-MM-DD") : "",
+                            startDate: date ? date.toISOString() : "",
                           })
                         }
-                        format="YYYY-MM-DD"
+                        format="YYYY-MM-DD HH:mm:ss"
                         className="w-full"
                         style={{ width: "100%" }}
                       />
@@ -402,14 +404,15 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
                         End Date *
                       </label>
                       <DatePicker
+                        showTime
                         value={formData.endDate ? dayjs(formData.endDate) : null}
                         onChange={(date) =>
                           setFormData({
                             ...formData,
-                            endDate: date ? date.format("YYYY-MM-DD") : "",
+                            endDate: date ? date.toISOString() : "",
                           })
                         }
-                        format="YYYY-MM-DD"
+                        format="YYYY-MM-DD HH:mm:ss"
                         className="w-full"
                         style={{ width: "100%" }}
                       />
