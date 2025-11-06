@@ -24,6 +24,7 @@ import ManagerDashboard from "./pages/Manager/Dashboard/ManagerDashboard";
 import AdminLayout from "./layouts/AdminLayout";
 import DriverLayout from "./layouts/DriverLayout";
 import StaffLayout from "./layouts/StaffLayout";
+import CampDetailPage from "./pages/Admin/CampManagement/CampDetailPage/CampDetailPage";
 
 function App() {
   return (
@@ -65,6 +66,7 @@ function App() {
           <Route path={PagePath.ADMIN_DASHBOARD} element={<AdminDashboard />} />
           <Route path={PagePath.ADMIN_CAMPS} element={<CampManagement />} />
           <Route path={PagePath.ADMIN_BLOGS} element={<BlogManagement />} />
+          <Route path={PagePath.ADMIN_CAMPS_DETAIL} element={<CampDetailPage />} />
           <Route
             path={PagePath.ADMIN_VEHICLES}
             element={<VehicleManagement />}
