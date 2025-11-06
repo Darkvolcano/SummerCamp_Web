@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { X, Plus } from "lucide-react";
+import { X, Plus, Upload } from "lucide-react";
 import { DatePicker } from "antd";
 import dayjs from "dayjs";
 import useCustomNotification from "../../../hooks/useCustomNotification";
@@ -30,6 +30,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
 }) => {
   const { contextHolder, toastSuccess, toastError } = useCustomNotification();
   const [loading, setLoading] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string>("");
   const [campTypes, setCampTypes] = useState<CampTypeResponseDto[]>([]);
   const [locations, setLocations] = useState<LocationResponseDto[]>([]);
   const [promotions, setPromotions] = useState<PromotionResponseDto[]>([]);
@@ -193,6 +194,32 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
     await fetchLocations();
   };
 
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+        // For now, store base64 or URL in formData
+        // Later will be replaced with actual Firebase upload
+        setFormData((prev) => ({
+          ...prev,
+          image: reader.result as string,
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setImagePreview("");
+    setFormData((prev) => ({
+      ...prev,
+      image: "",
+    }));
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -297,6 +324,49 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
                       className="w-full px-3 py-2 border text-black border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
                       rows={3}
                     />
+                  </div>
+
+                  {/* Image Upload */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Camp Image
+                    </label>
+                    <div className="space-y-3">
+                      {/* Preview */}
+                      {imagePreview && (
+                        <div className="relative w-full h-40 rounded-lg overflow-hidden border border-gray-300">
+                          <img
+                            src={imagePreview}
+                            alt="Preview"
+                            className="w-full h-full object-cover"
+                          />
+                          <button
+                            type="button"
+                            onClick={handleRemoveImage}
+                            className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
+                            title="Remove image"
+                          >
+                            <X size={16} />
+                          </button>
+                        </div>
+                      )}
+
+                      {/* Upload Button */}
+                      <label className="flex items-center justify-center px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition-colors">
+                        <div className="flex items-center gap-2">
+                          <Upload size={18} className="text-gray-500" />
+                          <span className="text-sm font-medium text-gray-700">
+                            {imagePreview ? "Change Image" : "Upload Image"}
+                          </span>
+                        </div>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageUpload}
+                          className="hidden"
+                        />
+                      </label>
+                    </div>
                   </div>
 
                 </div>
