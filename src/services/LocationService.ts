@@ -11,8 +11,10 @@ export interface LocationRequestDto {
   name: string;
   locationType: string;
   address: string;
-  latitude: number;
-  longitude: number;
+  latitude: number | null;
+  longitude: number | null;
+  parentLocationId?: number | null;
+  isActive?: boolean;
 }
 
 // Response DTO (from GET)
@@ -21,9 +23,11 @@ export interface LocationResponseDto {
   name: string;
   locationType: string;
   isActive: boolean;
-  address: string;
-  latitude: number;
-  longitude: number;
+  address: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  parentLocationId?: number | null;
+  parentLocationName?: string | null;
 }
 
 // API Service
@@ -87,6 +91,22 @@ const locationService = {
       (location) => location.locationType === LocationType.CAMP
     );
     return campLocations;
+  },
+
+  // Get locations by type
+  getLocationsByType: async (type: string): Promise<LocationResponseDto[]> => {
+    console.log(`[locationService] GET /api/location/type?type=${type}`);
+    const response = await axiosInstance.get("/api/location/type", {
+      params: { type },
+    });
+    return response.data as LocationResponseDto[];
+  },
+
+  // Get locations by parent location ID
+  getLocationsByParent: async (parentLocationId: number): Promise<LocationResponseDto[]> => {
+    console.log(`[locationService] GET /api/location/parent/${parentLocationId}`);
+    const response = await axiosInstance.get(`/api/location/parent/${parentLocationId}`);
+    return response.data as LocationResponseDto[];
   },
 
 };
