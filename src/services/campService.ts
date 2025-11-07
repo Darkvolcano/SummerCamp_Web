@@ -1,4 +1,5 @@
 import axiosInstance from "../config/axios";
+import { CampStatus } from "../enums/camp-status.enum";
 
 // Frontend interfaces
 export interface CampType {
@@ -137,7 +138,9 @@ const campService = {
   getAllCamps: async (): Promise<CampResponseDto[]> => {
     console.log("[campService] GET /camp");
     const response = await axiosInstance.get("/camp");
-    const mapped = (response.data as BackendCampResponse[]).map(mapBackendToFrontend);
+    const mapped = (response.data as BackendCampResponse[]).map(
+      mapBackendToFrontend
+    );
     return mapped;
   },
 
@@ -179,7 +182,10 @@ const campService = {
   },
 
   // Update camp
-  updateCamp: async (id: number, camp: CampRequestDto): Promise<CampResponseDto> => {
+  updateCamp: async (
+    id: number,
+    camp: CampRequestDto
+  ): Promise<CampResponseDto> => {
     console.log(`[campService] PUT /camp/${id}`);
     const requestPayload = {
       name: camp.name,
@@ -220,7 +226,9 @@ const campService = {
       params: { status },
     });
 
-    const mapped = (response.data as BackendCampResponse[]).map(mapBackendToFrontend);
+    const mapped = (response.data as BackendCampResponse[]).map(
+      mapBackendToFrontend
+    );
     return mapped;
   },
 
@@ -228,7 +236,7 @@ const campService = {
   getAllCampTypes: async (): Promise<CampType[]> => {
     console.log("[campService] GET /camptype");
     const response = await axiosInstance.get("/camptype");
-    
+
     // Map backend response to frontend format
     return response.data.map((type: any) => ({
       campTypeId: type.id || type.campTypeId,
@@ -242,14 +250,41 @@ const campService = {
   getCampTypeById: async (id: number): Promise<CampType> => {
     console.log(`📤 [campService] GET /camptype/${id}`);
     const response = await axiosInstance.get(`/camptype/${id}`);
-    console.log(`✅ [campService] GET /camptype/${id} response:`, response.data);
-    
+    console.log(
+      `✅ [campService] GET /camptype/${id} response:`,
+      response.data
+    );
+
     return {
       campTypeId: response.data.id || response.data.campTypeId,
       name: response.data.name,
       description: response.data.description,
       isActive: response.data.isActive,
     };
+  },
+
+  getPublishedCamps: async (): Promise<CampResponseDto[]> => {
+    console.log("[campService] GET /camp (published only)");
+    const response = await axiosInstance.get("/camp");
+
+    // Filter only published statuses
+    const publishedStatuses = [
+      CampStatus.PUBLISHED,
+      CampStatus.OPEN_FOR_REGISTRATION,
+      CampStatus.REGISTRATION_CLOSED,
+    ];
+
+    const allCamps = (response.data as BackendCampResponse[]).map(
+      mapBackendToFrontend
+    );
+    const publishedCamps = allCamps.filter((camp) =>
+      publishedStatuses.includes(camp.status as CampStatus)
+    );
+
+    console.log(
+      `[campService] Found ${publishedCamps.length}/${allCamps.length} published camps`
+    );
+    return publishedCamps;
   },
 };
 
