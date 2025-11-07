@@ -5,10 +5,12 @@ export interface Camper {
     camperName: string;
     gender: string;
     dob: string;
+    age?: number;
     groupId?: number | null;
     avatar?: string | null;
-    userId: number;
-    isActive: boolean;
+    userId?: number;
+    isActive?: boolean;
+    healthRecord?: HealthRecord;
 }
 
 export interface CamperRequestDto {
@@ -25,14 +27,27 @@ export interface CamperResponseDto {
     camperName: string;
     gender: string;
     dob: string;
+    age?: number;
     groupId?: number | null;
     avatar?: string | null;
-    userId: number;
-    isActive: boolean;
+    userId?: number;
+    isActive?: boolean;
+    healthRecord?: HealthRecord;
+}
+
+export interface HealthRecord {
+    createAt?: string;
+    condition?: string;
+    allergies?: string;
+    isAllergy?: boolean;
+    note?: string;
 }
 
 export interface HealthRecordCreateDto {
-    [key: string]: any;
+    condition?: string;
+    allergies?: string;
+    isAllergy?: boolean;
+    note?: string;
 }
 
 const camperService = {
