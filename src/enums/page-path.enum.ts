@@ -14,17 +14,19 @@ export enum PagePath {
   CAMP_DETAIL = "/camp/:campId",
   BLOG = "/blog",
   BLOG_DETAIL = "/blog/:blogId",
+  REGISTRATION_FORM = "/register-camp/:campId",
   CHAT = "/chat",
   ANY = "*",
   FORBIDDEN = "/403",
   ROOT = "/",
   ABOUT = "/about",
+  REGISTER_SUCCESS = "/register-success/:registrationId",
 
   // Admin Routes
   ADMIN_DASHBOARD = "/admin/dashboard",
   ADMIN_CAMPS = "/admin/camps",
   ADMIN_CAMPS_DETAIL = "/admin/camps/:campId",
-  ADMIN_CAMPTYPES= "/admin/camp-types",
+  ADMIN_CAMPTYPES = "/admin/camp-types",
   ADMIN_BLOGS = "/admin/blogs",
   ADMIN_ACCOUNTS = "/admin/accounts",
   ADMIN_VEHICLES = "/admin/vehicles",
@@ -36,8 +38,6 @@ export enum PagePath {
   ADMIN_CALENDAR = "/admin/calendar",
   ADMIN_REPORTS = "/admin/reports",
 
-
-
   // Staff Routes
   STAFF_SCHEDULE = "/staff/schedule",
   STAFF_CAMPS = "/staff/camps",
@@ -46,8 +46,6 @@ export enum PagePath {
   STAFF_CALENDAR = "/staff/calendar",
   STAFF_PHOTOS = "/staff/photos",
   STAFF_CHECKIN = "/staff/checkin ",
-
-
 
   //Manager Routes
   MANAGER_DASHBOARD = "/manager/dashboard/:campId",
@@ -64,6 +62,4 @@ export enum PagePath {
 
   //Driver Routes
   DRIVER_CALENDAR = "/driver/locations",
-
-
 }

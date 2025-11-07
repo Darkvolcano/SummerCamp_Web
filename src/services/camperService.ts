@@ -11,7 +11,6 @@ export interface Camper {
     isActive: boolean;
 }
 
-// Request DTO (for POST/PUT)
 export interface CamperRequestDto {
     camperName: string;
     gender: string;
@@ -21,7 +20,6 @@ export interface CamperRequestDto {
     healthRecord?: HealthRecordCreateDto;
 }
 
-// Response DTO (from GET)
 export interface CamperResponseDto {
     camperId: number;
     camperName: string;
