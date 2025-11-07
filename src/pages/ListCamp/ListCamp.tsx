@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Spin, message } from "antd";
 import { SearchOutlined, EnvironmentOutlined } from "@ant-design/icons";
-import { useAuthStore } from "../../services/userService"; 
-import campTypeService, {type CampType} from "../../services/campTypeService";
+import { useAuthStore } from "../../services/userService";
+import campTypeService, { type CampType } from "../../services/campTypeService";
 import { useNavigate } from "react-router-dom";
-import campService, {
-  type CampResponseDto
-} from "../../services/campService";
+import campService, { type CampResponseDto } from "../../services/campService";
 import "./ListCamp.css";
 
 const ListCamp: React.FC = () => {
@@ -16,7 +14,7 @@ const ListCamp: React.FC = () => {
   const [selectedType, setSelectedType] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const { user } = useAuthStore(); 
+  const { user } = useAuthStore();
 
   useEffect(() => {
     fetchData();
@@ -265,12 +263,18 @@ const ListCamp: React.FC = () => {
 
                           <div className="mb-4">
                             <p className="text-sm text-gray-600 mb-2">
-                              Độ tuổi: <span className="font-semibold">{camp.minAge} - {camp.maxAge} tuổi</span>
+                              Độ tuổi:{" "}
+                              <span className="font-semibold">
+                                {camp.minAge} - {camp.maxAge} tuổi
+                              </span>
                             </p>
                             <p className="text-sm text-gray-600">
-                              Trạng thái: <span
+                              Trạng thái:{" "}
+                              <span
                                 className="font-bold ml-1"
-                                style={{ color: getStatusLabel(camp.status).color }}
+                                style={{
+                                  color: getStatusLabel(camp.status).color,
+                                }}
                               >
                                 {getStatusLabel(camp.status).label}
                               </span>
