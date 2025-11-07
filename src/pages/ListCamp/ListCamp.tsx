@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Card, Spin, message } from "antd";
+import { Spin, message } from "antd";
 import { SearchOutlined, EnvironmentOutlined } from "@ant-design/icons";
 import { useAuthStore } from "../../services/userService"; 
 import campTypeService, {type CampType} from "../../services/campTypeService";
@@ -26,7 +26,7 @@ const ListCamp: React.FC = () => {
     try {
       setLoading(true);
       const [campsData, typesData] = await Promise.all([
-        campService.getAllCamps(),
+        campService.getPublishedCamps(),
         campTypeService.getAllCampTypes(),
       ]);
       console.log("Fetched camps:", campsData);
@@ -39,6 +39,16 @@ const ListCamp: React.FC = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Map status to display text and color
+  const getStatusLabel = (status: string) => {
+    const statusMap: { [key: string]: { label: string; color: string } } = {
+      Published: { label: "Sắp diễn ra", color: "#FFC107" },
+      OpenForRegistration: { label: "Mở đăng ký", color: "#4CAF50" },
+      RegistrationClosed: { label: "Đã đóng đăng ký", color: "#F44336" },
+    };
+    return statusMap[status] || { label: status, color: "#999" };
   };
 
   const handleSignUpClick = () => {
@@ -207,64 +217,72 @@ const ListCamp: React.FC = () => {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
                   {filteredCamps.map((camp) => (
-                    <Card
+                    <div
                       key={camp.campId}
-                      hoverable
-                      className="camp-card overflow-hidden rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
-                      cover={
-                        <div className="relative h-48 overflow-hidden">
-                          <img
-                            alt={camp.name}
-                            src={
-                              camp.image ||
-                              "https://via.placeholder.com/400x300?text=Summer+Camp"
-                            }
-                            className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
-                          />
-                          {camp.campType && (
-                            <div className="absolute top-4 right-4">
-                              <span className="bg-[#FF8F50] text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg">
-                                {camp.campType.name}
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      }
+                      className="camp-card-wrapper border-4 border-[#c99877] cursor-pointer group relative h-72 overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300"
                       onClick={() => navigate(`/camp/${camp.campId}`)}
                     >
-                      <div className="p-4">
-                        <div className="flex items-center gap-2 text-[#FF8F50] mb-2">
-                          <EnvironmentOutlined className="text-sm" />
-                          <span className="text-xs font-semibold">
-                            {camp.place}
-                          </span>
-                        </div>
+                      {/* Image Card */}
+                      <div className="image-card absolute inset-0 h-72 overflow-hidden rounded-2xl shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+                        <img
+                          alt={camp.name}
+                          src={
+                            camp.image ||
+                            "https://via.placeholder.com/400x300?text=Summer+Camp"
+                          }
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        />
+                        {camp.campType && (
+                          <div className="absolute top-4 right-4">
+                            <span className="bg-[#FF8F50] text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg">
+                              {camp.campType.name}
+                            </span>
+                          </div>
+                        )}
+                      </div>
 
-                        <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 min-h-[3rem]">
+                      {/* Postcard Info Container */}
+                      <div className="postcard-info absolute inset-0 h-72 bg-[#f5e9d2] rounded-2xl shadow-lg p-6 transition-transform duration-500 ease-out translate-y-48 group-hover:translate-y-0 flex flex-col">
+                        {/* Camp Name - Always visible */}
+                        <h3 className="text-lg font-bold text-gray-900 mb-1 line-clamp-1">
                           {camp.name}
                         </h3>
 
-                        <p className="text-gray-600 text-sm mb-3 line-clamp-2 min-h-[2.5rem]">
-                          {camp.description}
-                        </p>
+                        {/* Hidden content that appears on hover */}
+                        <div className="flex-1 overflow-hidden">
+                          <div className="flex items-center gap-2 text-[#FF8F50] mb-3">
+                            <EnvironmentOutlined className="text-sm flex-shrink-0" />
+                            <span className="text-xs font-semibold truncate">
+                              {camp.place}
+                            </span>
+                          </div>
 
-                        <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                          <div>
-                            <p className="text-xs text-gray-500 mb-0.5">
-                              Giá từ
+                          <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                            {camp.description}
+                          </p>
+
+                          <div className="mb-4">
+                            <p className="text-sm text-gray-600 mb-2">
+                              Độ tuổi: <span className="font-semibold">{camp.minAge} - {camp.maxAge} tuổi</span>
                             </p>
-                            <p className="text-xl font-bold text-[#FF8F50]">
-                              {camp.price.toLocaleString("vi-VN")}đ
+                            <p className="text-sm text-gray-600">
+                              Trạng thái: <span
+                                className="font-bold ml-1"
+                                style={{ color: getStatusLabel(camp.status).color }}
+                              >
+                                {getStatusLabel(camp.status).label}
+                              </span>
                             </p>
                           </div>
-                          <button className="bg-gradient-to-r from-[#FF8F50] to-[#ff7e3d] text-white px-4 py-1.5 rounded-full text-sm font-semibold hover:shadow-lg transition-all duration-300 hover:scale-105">
+
+                          <button className="w-full bg-gradient-to-r from-[#FF8F50] to-[#ff7e3d] text-white px-4 py-2 rounded-full text-sm font-semibold hover:shadow-lg transition-all duration-300 mt-auto">
                             Chi tiết
                           </button>
                         </div>
                       </div>
-                    </Card>
+                    </div>
                   ))}
                 </div>
               </>

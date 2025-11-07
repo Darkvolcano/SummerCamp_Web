@@ -3,23 +3,13 @@
   background: linear-gradient(to bottom, #fff 0%, #fff5e6 100%);
 }
 
-.listCamp-page .camp-card {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  padding: 0 !important;
-  text-align: left !important;
-}
-
-.listCamp-page .camp-card .ant-card-body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  padding: 0 !important;
-}
-
-.listCamp-page .camp-card .ant-card-body>div {
-  text-align: left;
+/* Line clamp utilities */
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .line-clamp-2 {
@@ -38,31 +28,30 @@
   text-overflow: ellipsis;
 }
 
-@keyframes fadeIn {
+/* Camp card wrapper animation */
+@keyframes fadeInUp {
   from {
     opacity: 0;
     transform: translateY(20px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-.listCamp-page .camp-card {
-  animation: fadeIn 0.5s ease-out;
+.camp-card-wrapper {
+  animation: fadeInUp 0.6s ease-out;
+  border-radius: 2rem;
 }
 
-.listCamp-page .camp-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
+
+
+/* Postcard info styling */
+.postcard-info {
+  z-index: 10;
 }
 
-.listCamp-page .camp-card img {
-  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.listCamp-page .camp-card:hover img {
-  transform: scale(1.1);
+.camp-card-wrapper:hover .postcard-info {
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
 }
