@@ -44,8 +44,9 @@ const AddLocationModal: React.FC<AddLocationModalProps> = ({
         name: formData.name,
         address: formData.address,
         locationType: "Camp",
-        latitude: 0,
-        longitude: 0,
+        latitude: null,
+        longitude: null,
+        parentLocationId: null,
       };
 
       await locationService.createLocation(newLocation);
@@ -96,7 +97,7 @@ const AddLocationModal: React.FC<AddLocationModalProps> = ({
               value={formData.name}
               onChange={handleInputChange}
               placeholder="e.g., Mountain Camp, Beach Camp"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              className="w-full px-3 py-2 border text-black border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
             />
           </div>
 
@@ -109,16 +110,11 @@ const AddLocationModal: React.FC<AddLocationModalProps> = ({
               value={formData.address}
               onChange={handleInputChange}
               placeholder="e.g., 123 Main St, City, State, Country"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+              className="w-full px-3 py-2 border text-black border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
               rows={3}
             />
           </div>
 
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-4">
-            <p className="text-sm text-blue-700">
-              <strong>Note:</strong> Location type is automatically set to "Camp" and coordinates will be added later.
-            </p>
-          </div>
         </div>
 
         {/* Footer */}

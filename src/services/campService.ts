@@ -1,4 +1,5 @@
 import axiosInstance from "../config/axios";
+import { CampStatus } from "../enums/camp-status.enum";
 
 // Frontend interfaces
 export interface CampType {
@@ -14,11 +15,15 @@ export interface Location {
 }
 
 export interface Promotion {
-  promotionId: number;
+  id: number;
   name: string;
-  discountPercentage?: number;
+  percent: number;
+  maxDiscountAmount?: number;
+  maxUsageCount?: number;
+  currentUsageCount?: number;
 }
 
+// Request DTO (for POST/PUT)
 export interface CampRequestDto {
   name: string;
   description: string;
@@ -30,7 +35,7 @@ export interface CampRequestDto {
   maxAge: number;
   startDate: string;
   endDate: string;
-  image: string;
+  image: string | null;
   campTypeId: number | null;
   locationId: number | null;
   promotionId: number | null;
@@ -40,7 +45,7 @@ export interface CampRequestDto {
   registrationEndDate: string;
 }
 
-// Request DTO (for POST/PUT)
+// Response DTO (from GET)
 export interface CampResponseDto {
   campId: number;
   name: string;
@@ -53,12 +58,13 @@ export interface CampResponseDto {
   maxAge: number;
   startDate: string;
   endDate: string;
-  image: string;
+  image: string | null;
   price: number;
   status: string;
   createBy: number;
   registrationStartDate: string;
-  registrationEndDate: string; // Nested objects
+  registrationEndDate: string;
+  // Nested objects
   campType: {
     id: number;
     name: string;
@@ -67,11 +73,7 @@ export interface CampResponseDto {
     id: number;
     name: string;
   } | null;
-  promotion: {
-    id: number;
-    name: string;
-    percent?: number;
-  } | null;
+  promotion: Promotion | null;
 }
 
 // Backend raw response structure
@@ -89,7 +91,7 @@ interface BackendCampResponse {
   endDate: string;
   price: number;
   status: string;
-  image: string;
+  image: string | null;
   createBy: number;
   registrationStartDate: string;
   registrationEndDate: string;
@@ -101,11 +103,7 @@ interface BackendCampResponse {
     id: number;
     name: string;
   } | null;
-  promotion?: {
-    id: number;
-    name: string;
-    percent?: number;
-  } | null;
+  promotion?: Promotion | null;
 }
 
 // Map backend response to frontend format
@@ -130,13 +128,7 @@ const mapBackendToFrontend = (data: BackendCampResponse): CampResponseDto => {
     registrationEndDate: data.registrationEndDate,
     campType: data.campType || null,
     location: data.location || null,
-    promotion: data.promotion
-      ? {
-          id: data.promotion.id,
-          name: data.promotion.name,
-          percent: data.promotion.percent,
-        }
-      : null,
+    promotion: data.promotion || null,
   };
 };
 
@@ -269,6 +261,30 @@ const campService = {
       description: response.data.description,
       isActive: response.data.isActive,
     };
+  },
+
+  getPublishedCamps: async (): Promise<CampResponseDto[]> => {
+    console.log("[campService] GET /camp (published only)");
+    const response = await axiosInstance.get("/camp");
+
+    // Filter only published statuses
+    const publishedStatuses = [
+      CampStatus.PUBLISHED,
+      CampStatus.OPEN_FOR_REGISTRATION,
+      CampStatus.REGISTRATION_CLOSED,
+    ];
+
+    const allCamps = (response.data as BackendCampResponse[]).map(
+      mapBackendToFrontend
+    );
+    const publishedCamps = allCamps.filter((camp) =>
+      publishedStatuses.includes(camp.status as CampStatus)
+    );
+
+    console.log(
+      `[campService] Found ${publishedCamps.length}/${allCamps.length} published camps`
+    );
+    return publishedCamps;
   },
 };
 

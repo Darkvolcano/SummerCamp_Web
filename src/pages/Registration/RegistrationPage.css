@@ -1,0 +1,58 @@
+/* Registration Page Styles */
+
+.registration-page {
+  background-color: #f5f5f5;
+}
+
+.registration-page .ant-form-item-label > label {
+  font-weight: 600;
+  color: #333;
+}
+
+.registration-page .ant-input,
+.registration-page .ant-input-number,
+.registration-page .ant-select-selector {
+  border-radius: 8px;
+}
+
+.registration-page .ant-select-selector {
+  border-color: #d9d9d9 !important;
+}
+
+.registration-page .ant-select-focused .ant-select-selector {
+  border-color: #ff8f50 !important;
+  box-shadow: 0 0 0 2px rgba(255, 143, 80, 0.2);
+}
+
+.registration-page .ant-input:focus,
+.registration-page .ant-input-number-input:focus {
+  border-color: #ff8f50;
+  box-shadow: 0 0 0 2px rgba(255, 143, 80, 0.2);
+}
+
+.registration-page .ant-checkbox-wrapper {
+  color: #333;
+}
+
+.registration-page .ant-checkbox-inner {
+  border-color: #ff8f50;
+}
+
+.registration-page .ant-checkbox-checked .ant-checkbox-inner {
+  background-color: #ff8f50;
+  border-color: #ff8f50;
+}
+
+.registration-page h2 {
+  color: #333;
+  margin-bottom: 1.5rem;
+}
+
+.registration-page .ant-modal-header {
+  border-bottom-color: #f0f0f0;
+}
+
+.registration-page .ant-modal-title {
+  color: #333;
+  font-weight: 600;
+}
