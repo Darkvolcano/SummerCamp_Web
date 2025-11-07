@@ -24,7 +24,7 @@ import ManagerDashboard from "./pages/Manager/Dashboard/ManagerDashboard";
 import AdminLayout from "./layouts/AdminLayout";
 import DriverLayout from "./layouts/DriverLayout";
 import StaffLayout from "./layouts/StaffLayout";
-import RegistrationPage from "./pages/Registration/Registration";
+import RegistrationPage from "./pages/Registration/RegistrationPage";
 import RegistrationSuccess from "./pages/RegistrationSuccess/RegistrationSuccess";
 import CampDetailPage from "./pages/Admin/CampManagement/CampDetailPage/CampDetailPage";
 

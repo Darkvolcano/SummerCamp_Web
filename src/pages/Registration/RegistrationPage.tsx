@@ -25,11 +25,13 @@ import promotionService, {
   type PromotionResponseDto,
 } from "../../services/promotionService";
 import { useAuthStore } from "../../services/userService";
+import useCustomNotification from "../../hooks/useCustomNotification";
 import "./RegistrationPage.css";
 
 const RegistrationPage: React.FC = () => {
   const { campId } = useParams<{ campId: string }>();
   const { user } = useAuthStore();
+  const { toastSuccess, toastError, contextHolder } = useCustomNotification();
   const [form] = Form.useForm();
 
   // State for campers
@@ -105,6 +107,21 @@ const RegistrationPage: React.FC = () => {
     fetchInitialData();
   }, [campId]);
 
+  // Calculate age from DOB
+  const calculateAge = (dob: string): number => {
+    const birthDate = new Date(dob);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birthDate.getDate())
+    ) {
+      age--;
+    }
+    return age;
+  };
+
   // Handle number of campers change
   const handleNumCampersChange = (value: number | null) => {
     if (value && value > 0) {
@@ -116,9 +133,10 @@ const RegistrationPage: React.FC = () => {
   };
 
   // Handle selecting existing camper
-  const handleSelectExistingCamper = (index: number, camperId: number) => {
-    const selectedCamper = myCampers.find((c) => c.camperId === camperId);
-    if (selectedCamper) {
+  const handleSelectExistingCamper = async (index: number, camperId: number) => {
+    try {
+      const selectedCamper = await camperService.getCamperById(camperId);
+
       const newCampers = [...campers];
       newCampers[index] = selectedCamper;
       setCampers(newCampers);
@@ -132,6 +150,9 @@ const RegistrationPage: React.FC = () => {
         avatar: selectedCamper.avatar,
       };
       setRegistrationCampers(newRegistrationCampers);
+    } catch (error) {
+      console.error("Error fetching camper details:", error);
+      message.error("Không thể tải thông tin trại viên");
     }
   };
 
@@ -174,12 +195,17 @@ const RegistrationPage: React.FC = () => {
         setCampers(newCampers);
       }
 
+      // Refresh the camper list
+      const updatedMyCampers = await camperService.getMyCampers();
+      setMyCampers(updatedMyCampers);
+
       setIsModalVisible(false);
       newCamperForm.resetFields();
-      message.success("Tạo học sinh mới thành công!");
+      setCamperAvatarPreview(null);
+      toastSuccess("Thành công", "Tạo trại viên mới thành công!");
     } catch (error) {
       console.error("Error creating new camper:", error);
-      message.error("Không thể tạo học sinh mới");
+      toastError("Lỗi", "Không thể tạo trại viên mới");
     }
   };
 
@@ -237,7 +263,7 @@ const RegistrationPage: React.FC = () => {
     }
 
     if (registrationCampers.some((c) => !c.camperName)) {
-      message.error("Vui lòng điền đầy đủ thông tin tất cả học sinh");
+      message.error("Vui lòng điền đầy đủ thông tin tất cả trại viên");
       return;
     }
 
@@ -278,11 +304,11 @@ const RegistrationPage: React.FC = () => {
   };
 
   const REGULATIONS = [
-    "Đối với các lớp trại hè không đủ số lượng học sinh đăng ký để mở lớp (tối thiểu từ 10 học sinh/ lớp tuỳ từng trại hè), nhà trường sẽ hoàn lại phí hè Phụ huynh đã đóng cho học sinh",
+    "Đối với các lớp trại hè không đủ số lượng trại viên đăng ký để mở lớp (tối thiểu từ 10 trại viên/ lớp tuỳ từng trại hè), nhà trường sẽ hoàn lại phí hè Phụ huynh đã đóng cho trại viên",
     "Nhà trường chỉ xếp lớp khi đã tiếp nhận đầy đủ đăng ký và khoản phí theo yêu cầu",
-    "Học sinh khi mắc bệnh truyền nhiễm phải được nghỉ ở nhà, Phụ huynh cần nộp cho nhà trường giấy khám sức khỏe khi Học sinh đi học lại",
-    "Phụ huynh ủy quyền cho nhà trường trong trường hợp Học sinh cần cấp cứu y khoa, nhà trường sẽ đưa Học sinh đến Bệnh viện có đủ khả năng cấp cứu gần nhất. Phụ huynh vui lòng thanh toán hoặc hoàn trả cho nhà trường các chi phí thăm khám và điều trị cho Học sinh",
-    "Nhà trường sẽ tổ chức chụp ảnh, ghi hình các hoạt động của Học sinh khi tham gia chương trình và có quyền sử dụng các hình ảnh này vào mục đích liên quan đến hoạt động giáo dục và quảng bá của trường",
+    "Trại viên khi mắc bệnh truyền nhiễm phải được nghỉ ở nhà, Phụ huynh cần nộp cho nhà trường giấy khám sức khỏe khi trại viên đi học lại",
+    "Phụ huynh ủy quyền cho nhà trường trong trường hợp trại viên cần cấp cứu y khoa, nhà trường sẽ đưa trại viên đến Bệnh viện có đủ khả năng cấp cứu gần nhất. Phụ huynh vui lòng thanh toán hoặc hoàn trả cho nhà trường các chi phí thăm khám và điều trị cho trại viên",
+    "Nhà trường sẽ tổ chức chụp ảnh, ghi hình các hoạt động của trại viên khi tham gia chương trình và có quyền sử dụng các hình ảnh này vào mục đích liên quan đến hoạt động giáo dục và quảng bá của trường",
   ];
 
   if (loading) {
@@ -294,51 +320,54 @@ const RegistrationPage: React.FC = () => {
   }
 
   return (
-    <div className="registration-page min-h-screen bg-gray-50 py-12">
+    <>
+      {contextHolder}
+      <div className="registration-page min-h-screen bg-gray-50 py-20">
       <div className="max-w-4xl mx-auto px-4">
         <h1 className="text-4xl font-bold text-gray-900 mb-8">
           Đăng ký trại hè
         </h1>
 
         <Form form={form} layout="vertical" className="space-y-8">
-          {/* Step 1: Select Number of Campers */}
+          {/* Step 1: Registration Information */}
           <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              1. Chọn số lượng học sinh
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">
+              1. Thông tin đăng ký
             </h2>
-            <Form.Item
-              label="Số lượng học sinh cần đăng ký"
-              name="numCampers"
-              rules={[{ required: true, message: "Vui lòng chọn số lượng" }]}
-            >
-              <InputNumber
-                min={1}
-                max={20}
-                value={numCampers}
-                onChange={handleNumCampersChange}
-                className="w-full"
-              />
-            </Form.Item>
-          </div>
 
-          {/* Step 2: Camper Information */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              2. Thông tin học sinh
-            </h2>
-            <div className="space-y-6">
-              {Array.from({ length: numCampers }).map((_, index) => (
+            {/* Select Number of Campers */}
+            <div className="mb-8 pb-1 border-b border-gray-200">
+              <Form.Item
+                label="Số lượng trại viên cần đăng ký"
+                name="numCampers"
+                initialValue={1}
+                rules={[{ required: true, message: "Vui lòng chọn số lượng" }]}
+              >
+                <InputNumber
+                  min={1}
+                  max={20}
+                  value={numCampers}
+                  onChange={handleNumCampersChange}
+                  className="w-full"
+                />
+              </Form.Item>
+            </div>
+
+            {/* Camper Information */}
+            {numCampers && (
+              <div className="space-y-6">
+                {Array.from({ length: numCampers }).map((_, index) => (
                 <div
                   key={index}
                   className="border-l-4 border-[#FF8F50] pl-6 py-4 bg-gray-50 rounded"
                 >
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                    Học sinh {index + 1}
+                    Trại viên {index + 1}
                   </h3>
 
                   <div className="grid grid-cols-2 gap-4 mb-4">
                     <Select
-                      placeholder="Chọn học sinh đã có"
+                      placeholder="Chọn trại viên đã có"
                       allowClear
                       optionLabelProp="label"
                       onChange={(value) =>
@@ -350,39 +379,94 @@ const RegistrationPage: React.FC = () => {
                         <Select.Option
                           key={camper.camperId}
                           value={camper.camperId}
+                          label={camper.camperName}
                         >
-                          {camper.camperName} ({camper.gender})
+                          <div className="flex items-center gap-2">
+                            {camper.avatar && (
+                              <img
+                                src={camper.avatar}
+                                alt={camper.camperName}
+                                className="w-6 h-6 rounded object-cover"
+                              />
+                            )}
+                            <span>{camper.camperName}</span>
+                          </div>
                         </Select.Option>
                       ))}
                     </Select>
                   </div>
 
                   {campers[index] && (
-                    <div className="grid grid-cols-2 gap-4 mb-4 p-4 bg-white rounded border border-gray-200">
-                      <div>
-                        <p className="text-sm text-gray-600">Tên học sinh</p>
-                        <p className="font-semibold text-gray-900">
-                          {campers[index]?.camperName}
-                        </p>
+                    <div className="mb-4 p-4 bg-white rounded border border-gray-200">
+                      <div className="flex gap-4 mb-4">
+                        {campers[index]?.avatar && (
+                          <img
+                            src={campers[index]?.avatar}
+                            alt={campers[index]?.camperName}
+                            className="w-23 h-26 rounded-lg object-cover border border-gray-300"
+                          />
+                        )}
+                        <div className="flex-1 grid grid-cols-2 gap-4">
+                          <div>
+                            <p className="text-sm text-gray-600">Tên trại viên</p>
+                            <p className="font-semibold text-gray-900">
+                              {campers[index]?.camperName}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-sm text-gray-600">Giới tính</p>
+                            <p className="font-semibold text-gray-900">
+                              {campers[index]?.gender}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-sm text-gray-600">Ngày sinh</p>
+                            <p className="font-semibold text-gray-900">
+                              {campers[index]?.dob}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-sm text-gray-600">Độ tuổi</p>
+                            <p className="font-semibold text-gray-900">
+                              {calculateAge(campers[index]?.dob || "")} tuổi
+                            </p>
+                          </div>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-sm text-gray-600">Giới tính</p>
-                        <p className="font-semibold text-gray-900">
-                          {campers[index]?.gender}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600">Ngày sinh</p>
-                        <p className="font-semibold text-gray-900">
-                          {campers[index]?.dob}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600">Nhóm</p>
-                        <p className="font-semibold text-gray-900">
-                          {campers[index]?.groupId || "Chưa xếp"}
-                        </p>
-                      </div>
+
+                      {campers[index]?.healthRecord && (
+                        <div className="border-t border-gray-200 pt-3 mt-3">
+                          <p className="text-sm font-semibold text-gray-600 mb-2">
+                            Thông tin sức khỏe
+                          </p>
+                          <div className="grid grid-cols-2 gap-3 text-sm">
+                            {campers[index]?.healthRecord?.condition && (
+                              <div>
+                                <p className="text-gray-600">Tình trạng</p>
+                                <p className="font-semibold text-gray-900">
+                                  {campers[index]?.healthRecord?.condition}
+                                </p>
+                              </div>
+                            )}
+                            {campers[index]?.healthRecord?.allergies && (
+                              <div>
+                                <p className="text-gray-600">Dị ứng</p>
+                                <p className="font-semibold text-gray-900">
+                                  {campers[index]?.healthRecord?.allergies}
+                                </p>
+                              </div>
+                            )}
+                            {campers[index]?.healthRecord?.note && (
+                              <div className="col-span-2">
+                                <p className="text-gray-600">Ghi chú</p>
+                                <p className="font-semibold text-gray-900">
+                                  {campers[index]?.healthRecord?.note}
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
 
@@ -393,17 +477,18 @@ const RegistrationPage: React.FC = () => {
                     onClick={() => showNewCamperModal(index)}
                     className="bg-[#FF8F50] border-[#FF8F50]"
                   >
-                    Đăng ký học sinh mới
+                    Đăng ký trại viên mới
                   </Button>
                 </div>
               ))}
-            </div>
+              </div>
+            )}
           </div>
 
-          {/* Step 3: Guardian Information */}
+          {/* Step 2: Guardian Information */}
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              3. Thông tin người giám hộ
+              2. Thông tin người giám hộ
             </h2>
             <div className="bg-blue-50 p-4 rounded mb-4">
               <p className="text-sm text-blue-800">
@@ -435,10 +520,10 @@ const RegistrationPage: React.FC = () => {
             )}
           </div>
 
-          {/* Step 4: Select Camp */}
+          {/* Step 3: Select Camp */}
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              4. Chọn trại hè
+              3. Chọn trại hè
             </h2>
             <Form.Item
               label="Trại hè"
@@ -503,10 +588,10 @@ const RegistrationPage: React.FC = () => {
             )}
           </div>
 
-          {/* Step 5: Summary & Promotion */}
+          {/* Step 4: Summary & Promotion */}
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              5. Tóm tắt & Khuyến mãi
+              4. Tóm tắt & Khuyến mãi
             </h2>
 
             <Form.Item label="Áp dụng mã khuyến mãi" name="promotionId">
@@ -534,7 +619,7 @@ const RegistrationPage: React.FC = () => {
               <div className="bg-gray-50 rounded p-4 border border-gray-200">
                 <div className="flex justify-between mb-2">
                   <span className="text-gray-700">
-                    Giá cơ bản ({numCampers} học sinh)
+                    Giá cơ bản ({numCampers} trại viên)
                   </span>
                   <span className="font-semibold">
                     {(selectedCamp.price * numCampers).toLocaleString()} VNĐ
@@ -565,10 +650,10 @@ const RegistrationPage: React.FC = () => {
             )}
           </div>
 
-          {/* Step 6: Regulations & Agreement */}
+          {/* Step 5: Regulations & Agreement */}
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              6. Quy định & Đồng ý
+              5. Quy định & Đồng ý
             </h2>
 
             <div className="bg-yellow-50 border border-yellow-200 rounded p-4 mb-6">
@@ -630,7 +715,7 @@ const RegistrationPage: React.FC = () => {
 
       {/* Modal for New Camper Registration */}
       <Modal
-        title="Đăng ký học sinh mới"
+        title="Đăng ký trại viên mới"
         open={isModalVisible}
         onOk={handleNewCamperOk}
         onCancel={handleNewCamperCancel}
@@ -639,11 +724,11 @@ const RegistrationPage: React.FC = () => {
       >
         <Form form={newCamperForm} layout="vertical">
           <Form.Item
-            label="Tên học sinh"
+            label="Tên trại viên"
             name="camperName"
-            rules={[{ required: true, message: "Vui lòng nhập tên học sinh" }]}
+            rules={[{ required: true, message: "Vui lòng nhập tên trại viên" }]}
           >
-            <Input placeholder="Nhập tên học sinh" />
+            <Input placeholder="Nhập tên trại viên" />
           </Form.Item>
 
           <Form.Item
@@ -706,6 +791,7 @@ const RegistrationPage: React.FC = () => {
         </Form>
       </Modal>
     </div>
+    </>
   );
 };
 
