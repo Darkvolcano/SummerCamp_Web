@@ -1,0 +1,36 @@
+.registration-page {
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #fff 0%, #fff5e6 100%);
+}
+
+.registration-page .camp-info-card {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  padding: 16px;
+  background-color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  margin-bottom: 24px;
+}
+
+.registration-page .camp-info-card img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.registration-page .camp-info-card .info-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  /* -webkit-line-clamp: 2; */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

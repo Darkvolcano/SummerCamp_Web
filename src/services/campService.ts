@@ -19,7 +19,6 @@ export interface Promotion {
   discountPercentage?: number;
 }
 
-// Request DTO (for POST/PUT)
 export interface CampRequestDto {
   name: string;
   description: string;
@@ -29,7 +28,7 @@ export interface CampRequestDto {
   maxParticipants: number;
   minAge: number;
   maxAge: number;
-  startDate: string; // Format: "YYYY-MM-DD"
+  startDate: string;
   endDate: string;
   image: string;
   campTypeId: number | null;
@@ -41,7 +40,7 @@ export interface CampRequestDto {
   registrationEndDate: string;
 }
 
-// Response DTO (from GET)
+// Request DTO (for POST/PUT)
 export interface CampResponseDto {
   campId: number;
   name: string;
@@ -59,8 +58,7 @@ export interface CampResponseDto {
   status: string;
   createBy: number;
   registrationStartDate: string;
-  registrationEndDate: string;
-  // Nested objects
+  registrationEndDate: string; // Nested objects
   campType: {
     id: number;
     name: string;
@@ -72,6 +70,7 @@ export interface CampResponseDto {
   promotion: {
     id: number;
     name: string;
+    percent?: number;
   } | null;
 }
 
@@ -105,6 +104,7 @@ interface BackendCampResponse {
   promotion?: {
     id: number;
     name: string;
+    percent?: number;
   } | null;
 }
 
@@ -130,7 +130,13 @@ const mapBackendToFrontend = (data: BackendCampResponse): CampResponseDto => {
     registrationEndDate: data.registrationEndDate,
     campType: data.campType || null,
     location: data.location || null,
-    promotion: data.promotion || null,
+    promotion: data.promotion
+      ? {
+          id: data.promotion.id,
+          name: data.promotion.name,
+          percent: data.promotion.percent,
+        }
+      : null,
   };
 };
 
@@ -140,7 +146,9 @@ const campService = {
   getAllCamps: async (): Promise<CampResponseDto[]> => {
     console.log("[campService] GET /camp");
     const response = await axiosInstance.get("/camp");
-    const mapped = (response.data as BackendCampResponse[]).map(mapBackendToFrontend);
+    const mapped = (response.data as BackendCampResponse[]).map(
+      mapBackendToFrontend
+    );
     return mapped;
   },
 
@@ -182,7 +190,10 @@ const campService = {
   },
 
   // Update camp
-  updateCamp: async (id: number, camp: CampRequestDto): Promise<CampResponseDto> => {
+  updateCamp: async (
+    id: number,
+    camp: CampRequestDto
+  ): Promise<CampResponseDto> => {
     console.log(`[campService] PUT /camp/${id}`);
     const requestPayload = {
       name: camp.name,
@@ -223,7 +234,9 @@ const campService = {
       params: { status },
     });
 
-    const mapped = (response.data as BackendCampResponse[]).map(mapBackendToFrontend);
+    const mapped = (response.data as BackendCampResponse[]).map(
+      mapBackendToFrontend
+    );
     return mapped;
   },
 
@@ -231,7 +244,7 @@ const campService = {
   getAllCampTypes: async (): Promise<CampType[]> => {
     console.log("[campService] GET /camptype");
     const response = await axiosInstance.get("/camptype");
-    
+
     // Map backend response to frontend format
     return response.data.map((type: any) => ({
       campTypeId: type.id || type.campTypeId,
@@ -245,8 +258,11 @@ const campService = {
   getCampTypeById: async (id: number): Promise<CampType> => {
     console.log(`📤 [campService] GET /camptype/${id}`);
     const response = await axiosInstance.get(`/camptype/${id}`);
-    console.log(`✅ [campService] GET /camptype/${id} response:`, response.data);
-    
+    console.log(
+      `✅ [campService] GET /camptype/${id} response:`,
+      response.data
+    );
+
     return {
       campTypeId: response.data.id || response.data.campTypeId,
       name: response.data.name,
