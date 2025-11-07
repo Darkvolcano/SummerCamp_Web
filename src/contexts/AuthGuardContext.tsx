@@ -53,6 +53,7 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
         .replace(/:userId/g, "[0-9]+")
         .replace(/:blogId/g, "[0-9]+")
         .replace(/:orderId/g, "[0-9]+")
+        .replace(/:registrationId/g, "[0-9]+")
         .replace(/:id/g, "[0-9]+");
       const regex = new RegExp(`^${dynamicRoutePattern}$`);
       return regex.test(path);
@@ -72,7 +73,7 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
       PagePath.BLOG,
       PagePath.BLOG_DETAIL,
       PagePath.ABOUT,
-      PagePath.HOME, 
+      PagePath.HOME,
     ];
 
     const isPublicRoute = publicRoutes.some((route) => {
@@ -169,6 +170,8 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
           "/user/promotion",
           "/payment-cancel",
           "/profile",
+          PagePath.REGISTRATION_FORM,
+          PagePath.REGISTER_SUCCESS,
         ],
         camper: [
           "/manager/dashboard",
@@ -198,7 +201,20 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
           "/admin/profile",
           "/profile",
         ],
-        user: [PagePath.HOME, "/profile"],
+        user: [
+          PagePath.HOME,
+          "/profile",
+          PagePath.REGISTRATION_FORM,
+          "/checkout",
+          "/payment-success",
+          "/user/information",
+          "/user/order-history",
+          "/user/order-tracking/:orderId",
+          "/user/promotion",
+          "/payment-cancel",
+          "/profile",
+          PagePath.REGISTER_SUCCESS,
+        ],
       };
 
       const allowedPages = restrictedPages[userRole] || [];

@@ -352,7 +352,7 @@ const CampDetail: React.FC = () => {
                   <div>
                     <p className="text-sm text-gray-500 mb-1">Thời gian</p>
                     <p className="text-lg font-bold text-gray-900">
-                      {duration} ngày{" "}
+                      {duration} ngày
                       {duration > 1 ? `${duration - 1} đêm` : ""}
                     </p>
                   </div>
@@ -467,7 +467,7 @@ const CampDetail: React.FC = () => {
               {/* Register Button */}
               <button
                 onClick={handleRegister}
-                disabled={!isRegisterable}
+                disabled={isRegisterable}
                 className="w-full bg-gradient-to-r from-[#FF8F50] to-[#ff7e3d] hover:from-[#ff7e3d] hover:to-[#FF8F50] text-white font-bold py-4 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 text-lg disabled:from-gray-400 disabled:to-gray-500"
               >
                 {buttonText}
