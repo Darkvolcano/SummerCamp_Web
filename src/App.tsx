@@ -26,6 +26,7 @@ import DriverLayout from "./layouts/DriverLayout";
 import StaffLayout from "./layouts/StaffLayout";
 import RegistrationPage from "./pages/Registration/Registration";
 import RegistrationSuccess from "./pages/RegistrationSuccess/RegistrationSuccess";
+import CampDetailPage from "./pages/Admin/CampManagement/CampDetailPage/CampDetailPage";
 
 function App() {
   return (
@@ -86,6 +87,10 @@ function App() {
             />
             <Route path={PagePath.ADMIN_CAMPS} element={<CampManagement />} />
             <Route path={PagePath.ADMIN_BLOGS} element={<BlogManagement />} />
+            <Route
+              path={PagePath.ADMIN_CAMPS_DETAIL}
+              element={<CampDetailPage />}
+            />
             <Route
               path={PagePath.ADMIN_VEHICLES}
               element={<VehicleManagement />}
