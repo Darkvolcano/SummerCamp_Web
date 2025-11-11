@@ -100,6 +100,10 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
             navigate(PagePath.ADMIN_DASHBOARD, { replace: true });
           } else if (userRole === "staff") {
             navigate(PagePath.STAFF_SCHEDULE, { replace: true });
+          } else if (userRole === "manager") {
+            navigate(PagePath.MANAGER_DASHBOARD, { replace: true });
+          } else if (userRole === "driver") {
+            navigate(PagePath.DRIVER_CALENDAR, { replace: true });
           } else {
             navigate(PagePath.HOME, { replace: true });
           }
@@ -133,7 +137,8 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
         | "parent"
         | "staff"
         | "admin"
-        | "camper"
+        | "manager"
+        | "driver"
         | "user";
 
       // Default redirects for each role when accessing root
@@ -141,7 +146,7 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
         parent: PagePath.HOME,
         staff: PagePath.STAFF_SCHEDULE,
         admin: PagePath.ADMIN_DASHBOARD,
-        camper: "/manager/dashboard",
+        manager: PagePath.MANAGER_DASHBOARD,
         user: PagePath.HOME,
       };
 
