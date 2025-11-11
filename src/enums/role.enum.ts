@@ -3,4 +3,5 @@ export enum Role {
   CAMPER = "Camper",
   STAFF = "Staff",
   ADMIN = "Admin",
+  DRIVER = "Driver",
 }

@@ -289,6 +289,8 @@ export const useAuthStore = create<AuthState>((set) => {
       localStorage.removeItem("token");
       localStorage.removeItem("refreshToken");
       localStorage.removeItem("rememberMe");
+      localStorage.removeItem("selectedCampId");
+      localStorage.removeItem("selectedCampName");
       sessionStorage.removeItem("user");
       sessionStorage.removeItem("token");
       sessionStorage.removeItem("refreshToken");
