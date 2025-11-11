@@ -136,9 +136,8 @@ export const useAuthStore = create<AuthState>((set) => {
 
         const data = response.data;
         if (data.accessToken) {
-          // Decode JWT - backend uses 'sub' for id, 'name' for fullName
           const decoded = jwtDecode<{
-            sub: string;
+            id: string;
             email: string;
             name: string;
             role: string;
@@ -151,10 +150,10 @@ export const useAuthStore = create<AuthState>((set) => {
           }>(data.accessToken);
 
           const user = {
-            id: parseInt(decoded.sub),
+            id: parseInt(decoded.id),
             fullName: decoded.name,
             email: decoded.email,
-            phone_number: "", // Not included in JWT, will be fetched separately if needed
+            phone_number: "",
           };
 
           // Store in localStorage or sessionStorage based on rememberMe
