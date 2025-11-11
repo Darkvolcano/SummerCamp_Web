@@ -21,6 +21,7 @@ import ListCamp from "./pages/ListCamp/ListCamp";
 import CampDetail from "./pages/CampDetail/CampDetail";
 import About from "./pages/About/About";
 import ManagerDashboard from "./pages/Manager/Dashboard/ManagerDashboard";
+import ManagerRegistrationsPage from "./pages/Manager/Registrations/ManagerRegistrationsPage";
 import AdminLayout from "./layouts/AdminLayout";
 import DriverLayout from "./layouts/DriverLayout";
 import StaffLayout from "./layouts/StaffLayout";
@@ -117,7 +118,7 @@ function App() {
             />
             <Route
               path={PagePath.MANAGER_REGIS}
-              element={<div>Manager Registration</div>}
+              element={<ManagerRegistrationsPage />}
             />
             <Route
               path={PagePath.MANAGER_CAMPERS}
