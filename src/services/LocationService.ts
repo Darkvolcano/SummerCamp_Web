@@ -95,8 +95,8 @@ const locationService = {
 
   // Get locations by type
   getLocationsByType: async (type: string): Promise<LocationResponseDto[]> => {
-    console.log(`[locationService] GET /api/location/type?type=${type}`);
-    const response = await axiosInstance.get("/api/location/type", {
+    console.log(`[locationService] GET /location/type?type=${type}`);
+    const response = await axiosInstance.get("/location/type", {
       params: { type },
     });
     return response.data as LocationResponseDto[];
@@ -104,8 +104,8 @@ const locationService = {
 
   // Get locations by parent location ID
   getLocationsByParent: async (parentLocationId: number): Promise<LocationResponseDto[]> => {
-    console.log(`[locationService] GET /api/location/parent/${parentLocationId}`);
-    const response = await axiosInstance.get(`/api/location/parent/${parentLocationId}`);
+    console.log(`[locationService] GET /location/parent/${parentLocationId}`);
+    const response = await axiosInstance.get(`/location/parent/${parentLocationId}`);
     return response.data as LocationResponseDto[];
   },
 

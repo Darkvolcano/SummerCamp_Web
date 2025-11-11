@@ -26,60 +26,64 @@ export interface CampStaffAssignmentResponse {
   camp: CampInfo;
 }
 
+export interface StaffCampAssignmentResponse {
+  camp: CampInfo;
+}
+
 const campStaffService = {
   /**
-   * POST /api/campstaffassignment
+   * POST /campstaffassignment
    */
   assignStaffToCamp: async (
     request: CampStaffAssignmentRequest
   ): Promise<CampStaffAssignmentResponse> => {
-    console.log("[campStaffService] POST /api/campstaffassignment");
+    console.log("[campStaffService] POST /campstaffassignment");
     const response = await axiosInstance.post<CampStaffAssignmentResponse>(
-      "/api/campstaffassignment",
+      "/campstaffassignment",
       request
     );
     return response.data;
   },
 
   /**
-   * GET /api/campstaffassignment/camp/{campId}
+   * GET /campstaffassignment/camp/{campId}
    */
   getStaffByCamp: async (campId: number): Promise<CampStaffAssignmentResponse[]> => {
-    console.log(`[campStaffService] GET /api/campstaffassignment/camp/${campId}`);
+    console.log(`[campStaffService] GET /campstaffassignment/camp/${campId}`);
     const response = await axiosInstance.get<CampStaffAssignmentResponse[]>(
-      `/api/campstaffassignment/camp/${campId}`
+      `/campstaffassignment/camp/${campId}`
     );
     return response.data;
   },
 
   /**
-   * GET /api/campstaffassignment/staff/{staffId}
+   * GET /campstaffassignment/staff/{staffId}
    */
-  getCampsByStaff: async (staffId: number): Promise<CampStaffAssignmentResponse[]> => {
-    console.log(`[campStaffService] GET /api/campstaffassignment/staff/${staffId}`);
-    const response = await axiosInstance.get<CampStaffAssignmentResponse[]>(
-      `/api/campstaffassignment/staff/${staffId}`
+  getCampsByStaff: async (staffId: number): Promise<StaffCampAssignmentResponse[]> => {
+    console.log(`[campStaffService] GET /campstaffassignment/staff/${staffId}`);
+    const response = await axiosInstance.get<StaffCampAssignmentResponse[]>(
+      `/campstaffassignment/staff/${staffId}`
     );
     return response.data;
   },
 
   /**
-   * GET /api/campstaffassignment/{id}
+   * GET /campstaffassignment/{id}
    */
   getAssignmentById: async (assignmentId: number): Promise<CampStaffAssignmentResponse> => {
-    console.log(`[campStaffService] GET /api/campstaffassignment/${assignmentId}`);
+    console.log(`[campStaffService] GET /campstaffassignment/${assignmentId}`);
     const response = await axiosInstance.get<CampStaffAssignmentResponse>(
-      `/api/campstaffassignment/${assignmentId}`
+      `/campstaffassignment/${assignmentId}`
     );
     return response.data;
   },
 
   /**
-   * DELETE /api/campstaffassignment/{id}
+   * DELETE /campstaffassignment/{id}
    */
   removeStaffFromCamp: async (assignmentId: number): Promise<void> => {
-    console.log(`[campStaffService] DELETE /api/campstaffassignment/${assignmentId}`);
-    await axiosInstance.delete(`/api/campstaffassignment/${assignmentId}`);
+    console.log(`[campStaffService] DELETE /campstaffassignment/${assignmentId}`);
+    await axiosInstance.delete(`/campstaffassignment/${assignmentId}`);
   },
 };
 

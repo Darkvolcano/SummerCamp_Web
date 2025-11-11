@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Edit2, Trash2, CheckCircle, XCircle, Upload, Plus } from 'lucide-react';
+import { X, Edit2, Trash2, CheckCircle, XCircle, Upload, Plus, Loader } from 'lucide-react';
 import { DatePicker, Popover, Button } from 'antd';
 import dayjs from 'dayjs';
 import useCustomNotification from '../../../../hooks/useCustomNotification';
@@ -7,6 +7,11 @@ import campService, { type CampResponseDto, type CampRequestDto } from '../../..
 import campTypeService, { type CampTypeResponseDto } from '../../../../services/campTypeService';
 import locationService, { type LocationResponseDto } from '../../../../services/LocationService';
 import promotionService, { type PromotionResponseDto } from '../../../../services/promotionService';
+import {
+  uploadImageToCloudinary,
+  validateImageFile,
+  deleteImageFromCloudinary,
+} from '../../../../services/uploadService';
 import { CampStatus } from '../../../../enums/camp-status.enum';
 import AddLocationModal from '../AddLocationModal';
 
@@ -21,7 +26,9 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({ campId, onBack,
   const [camp, setCamp] = useState<CampResponseDto | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [imageUploading, setImageUploading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string>("");
+  const [uploadedImagePublicId, setUploadedImagePublicId] = useState<string>("");
   const [campTypes, setCampTypes] = useState<CampTypeResponseDto[]>([]);
   const [locations, setLocations] = useState<LocationResponseDto[]>([]);
   const [promotions, setPromotions] = useState<PromotionResponseDto[]>([]);
@@ -175,23 +182,53 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({ campId, onBack,
     // TODO: Implement rejection logic
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
+      const validation = validateImageFile(file, 10);
+      if (!validation.valid) {
+        toastError('Validation Error', validation.error || 'Invalid image file');
+        return;
+      }
+
+      try {
+        setImageUploading(true);
+        const imageId = `camp_image_${Date.now()}`;
+
+        const result = await uploadImageToCloudinary(file, 'camp', imageId, 3);
+
+        setImagePreview(result.url);
+        setUploadedImagePublicId(result.publicId);
+
         setFormData((prev) => ({
           ...prev,
-          image: reader.result as string,
+          image: result.url,
         }));
-      };
-      reader.readAsDataURL(file);
+      } catch (error: any) {
+        const errorMsg =
+          error instanceof Error
+            ? error.message
+            : 'Failed to upload image';
+        toastError('Upload Error', errorMsg);
+        console.error('Image upload error:', error);
+      } finally {
+        setImageUploading(false);
+      }
     }
   };
 
-  const handleRemoveImage = () => {
+  const handleRemoveImage = async () => {
+    if (uploadedImagePublicId) {
+      try {
+        await deleteImageFromCloudinary(uploadedImagePublicId);
+        console.log('Image deleted from Cloudinary');
+      } catch (error) {
+        console.error('Error deleting image from Cloudinary:', error);
+      }
+    }
+
     setImagePreview("");
+    setUploadedImagePublicId("");
     setFormData((prev) => ({
       ...prev,
       image: "",
@@ -460,7 +497,8 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({ campId, onBack,
                         <button
                           type="button"
                           onClick={handleRemoveImage}
-                          className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
+                          disabled={imageUploading}
+                          className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 disabled:opacity-50"
                           title="Remove image"
                         >
                           <X size={16} />
@@ -469,17 +507,30 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({ campId, onBack,
                     )}
 
                     {/* Upload Button */}
-                    <label className="flex items-center justify-center px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition-colors">
+                    <label
+                      className="flex items-center justify-center px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition-colors"
+                      style={{ pointerEvents: imageUploading ? "none" : "auto", opacity: imageUploading ? 0.6 : 1 }}
+                    >
                       <div className="flex items-center gap-2">
-                        <Upload size={18} className="text-gray-500" />
-                        <span className="text-sm font-medium text-gray-700">
-                          {imagePreview || formData.image ? "Change Image" : "Upload Image"}
-                        </span>
+                        {imageUploading ? (
+                          <>
+                            <Loader size={18} className="text-blue-500 animate-spin" />
+                            <span className="text-sm font-medium text-gray-700">Uploading...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Upload size={18} className="text-gray-500" />
+                            <span className="text-sm font-medium text-gray-700">
+                              {imagePreview || formData.image ? "Change Image" : "Upload Image"}
+                            </span>
+                          </>
+                        )}
                       </div>
                       <input
                         type="file"
                         accept="image/*"
                         onChange={handleImageUpload}
+                        disabled={imageUploading}
                         className="hidden"
                       />
                     </label>
