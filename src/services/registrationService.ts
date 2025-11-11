@@ -1,6 +1,23 @@
 import axiosInstance from "../config/axios";
 import { RegistrationStatus } from "../enums/registration-status.enum";
 
+// Camper info response
+export interface CamperDto {
+  camperId: number;
+  camperName: string;
+  gender: string;
+  dob: string;
+  groupId?: number | null;
+  avatar?: string;
+}
+
+// Promotion info response
+export interface PromotionDto {
+  promotionId: number;
+  name: string;
+  percent: number;
+}
+
 export interface Registration {
   registrationId: number;
   userId: number;
@@ -28,13 +45,14 @@ export interface UpdateRegistrationRequestDto {
 
 export interface RegistrationResponseDto {
   registrationId: number;
-  userId: number;
-  campId: number;
-  status: RegistrationStatus;
-  registrationDate: string;
-  appliedPromotionId?: number | null;
+  campName?: string;
+  registrationCreateAt: string;
   note?: string | null;
-  camperIds?: number[] | null;
+  status: string;
+  finalPrice?: number;
+  appliedPromotion?: PromotionDto | null;
+  campers?: CamperDto[];
+  optionalChoices?: any[];
 }
 
 export interface GeneratePaymentLinkRequestDto {
