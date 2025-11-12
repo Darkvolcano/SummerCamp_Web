@@ -4,20 +4,19 @@ import axiosInstance from "../config/axios";
 export enum LocationType {
   CAMP = "Camp",
   IN_CAMP = "In_camp",
+  PICKUP_POINT = "Pickup_point",
 }
 
-// Request DTO (for POST/PUT)
 export interface LocationRequestDto {
   name: string;
   locationType: string;
-  address: string;
+  address: string | null;
   latitude: number | null;
   longitude: number | null;
-  parentLocationId?: number | null;
+  parentLocationId: number | null;
   isActive?: boolean;
 }
 
-// Response DTO (from GET)
 export interface LocationResponseDto {
   locationId: number;
   name: string;
@@ -70,6 +69,7 @@ const locationService = {
       address: location.address,
       latitude: location.latitude,
       longitude: location.longitude,
+      parentLocationId: location.parentLocationId,
     };
 
     const response = await axiosInstance.put(`/location/${id}`, requestPayload);
@@ -107,6 +107,36 @@ const locationService = {
     console.log(`[locationService] GET /location/parent/${parentLocationId}`);
     const response = await axiosInstance.get(`/location/parent/${parentLocationId}`);
     return response.data as LocationResponseDto[];
+  },
+
+  // Create In-Camp Location
+  createInCampLocation: async (name: string, description: string | null, parentLocationId: number | null): Promise<LocationResponseDto> => {
+    console.log("[locationService] POST /location (In-Camp Location)");
+    const requestPayload = {
+      name: name,
+      locationType: "In_camp",
+      address: description,
+      latitude: null,
+      longitude: null,
+      parentLocationId: parentLocationId,
+    };
+    const response = await axiosInstance.post("/location", requestPayload);
+    return response.data as LocationResponseDto;
+  },
+
+  // Create Pickup Point
+  createPickupPoint: async (name: string, address: string, latitude: number, longitude: number): Promise<LocationResponseDto> => {
+    console.log("[locationService] POST /location (Pickup Point)");
+    const requestPayload = {
+      name: name,
+      locationType: "Pickup_point",
+      address: address,
+      latitude: latitude,
+      longitude: longitude,
+      parentLocationId: null,
+    };
+    const response = await axiosInstance.post("/location", requestPayload);
+    return response.data as LocationResponseDto;
   },
 
 };
