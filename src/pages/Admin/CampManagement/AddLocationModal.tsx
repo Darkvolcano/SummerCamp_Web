@@ -17,7 +17,7 @@ const AddLocationModal: React.FC<AddLocationModalProps> = ({
   onSuccess,
 }) => {
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState<Omit<LocationRequestDto, 'locationType' | 'latitude' | 'longitude'>>({
+  const [formData, setFormData] = useState({
     name: "",
     address: "",
   });
@@ -47,6 +47,7 @@ const AddLocationModal: React.FC<AddLocationModalProps> = ({
         latitude: null,
         longitude: null,
         parentLocationId: null,
+        isActive: true,
       };
 
       await locationService.createLocation(newLocation);

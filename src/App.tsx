@@ -28,7 +28,7 @@ import StaffLayout from "./layouts/StaffLayout";
 import RegistrationPage from "./pages/Registration/RegistrationPage";
 import RegistrationSuccess from "./pages/RegistrationSuccess/RegistrationSuccess";
 import CampDetailPage from "./pages/Admin/CampManagement/CampDetailPage/CampDetailPage";
-
+import InCampLocationManagement from "./pages/Manager/Locations/InCampLocationManagement";
 function App() {
   return (
     <Router>
@@ -138,7 +138,7 @@ function App() {
             />
             <Route
               path={PagePath.MANAGER_LOCATIONS}
-              element={<div>Manager Locations</div>}
+              element={<InCampLocationManagement />}
             />
             <Route
               path={PagePath.MANAGER_ACCOMODATION}
