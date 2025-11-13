@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { Spin } from 'antd';
 import CampDetailNavbar from './CampDetailNavbar';
 import CampDetailOverview from './CampDetailOverview';
 import CampDetailSchedule from './CampDetailSchedule';
@@ -74,7 +75,7 @@ const CampDetailPage: React.FC = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#6366F1]"></div>
+        <Spin size="large" tip="Loading camp..." />
       </div>
     );
   }

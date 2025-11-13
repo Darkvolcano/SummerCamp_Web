@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Edit2, Trash2, CheckCircle, XCircle, Upload, Plus, Loader } from 'lucide-react';
-import { DatePicker, Popover, Button } from 'antd';
+import { DatePicker, Popover, Button, Spin } from 'antd';
 import dayjs from 'dayjs';
 import useCustomNotification from '../../../../hooks/useCustomNotification';
 import campService, { type CampResponseDto, type CampRequestDto } from '../../../../services/campService';
@@ -243,7 +243,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({ campId, onBack,
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#6366F1]"></div>
+        <Spin size="large" tip="Loading camp details..." />
       </div>
     );
   }
