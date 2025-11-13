@@ -59,6 +59,7 @@ export enum PagePath {
   MANAGER_CALENDAR = "/manager/calendar",
   MANAGER_INCIDENTS = "/manager/incidents",
   MANAGER_LOCATIONS = "/manager/locations",
+  MANAGER_STAFFS = "/manager/staffs",
 
   //Driver Routes
   DRIVER_CALENDAR = "/driver/locations",

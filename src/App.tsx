@@ -30,6 +30,9 @@ import RegistrationPage from "./pages/Registration/RegistrationPage";
 import RegistrationSuccess from "./pages/RegistrationSuccess/RegistrationSuccess";
 import CampDetailPage from "./pages/Admin/CampManagement/CampDetailPage/CampDetailPage";
 import InCampLocationManagement from "./pages/Manager/Locations/InCampLocationManagement";
+import CamperManagement from "./pages/Manager/Campers/CamperManagement";
+import GroupManagement from "./pages/Manager/Groups/GroupManagement";
+import CampStaffManagement from "./pages/Manager/Staffs/CampStaffManagement";
 function App() {
   return (
     <Router>
@@ -119,12 +122,16 @@ function App() {
               element={<ManagerDashboard />}
             />
             <Route
+              path={PagePath.MANAGER_STAFFS}
+              element={<CampStaffManagement />}
+            />
+            <Route
               path={PagePath.MANAGER_REGIS}
               element={<ManagerRegistrationsPage />}
             />
             <Route
               path={PagePath.MANAGER_CAMPERS}
-              element={<div>Manager Campers</div>}
+              element={<CamperManagement />}
             />
             <Route
               path={PagePath.MANAGER_ACTIVITIES}
@@ -132,7 +139,7 @@ function App() {
             />
             <Route
               path={PagePath.MANAGER_GROUPS}
-              element={<div>Manager Groups</div>}
+              element={<GroupManagement />}
             />
             <Route
               path={PagePath.MANAGER_TRANSPORTATION}
