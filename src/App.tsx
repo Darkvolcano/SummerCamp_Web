@@ -13,6 +13,7 @@ import StaffSchedule from "./pages/Staff/MySchedule/MySchedule";
 import MyCamps from "./pages/Staff/MyCamps/MyCamps";
 import MyBlogs from "./pages/Staff/MyBlogs/MyBlogs";
 import { AuthGuardProvider } from "./contexts/AuthGuardContext";
+import { NotificationProvider } from "./contexts/NotificationContext";
 import { PagePath } from "./enums/page-path.enum";
 import VerifyOtp from "./pages/Otp/OtpVerification";
 import MainLayout from "./layouts/MainLayout";
@@ -32,8 +33,9 @@ import InCampLocationManagement from "./pages/Manager/Locations/InCampLocationMa
 function App() {
   return (
     <Router>
-      <AuthGuardProvider>
-        <Routes>
+      <NotificationProvider>
+        <AuthGuardProvider>
+          <Routes>
           {/* Public Routes */}
           <Route path={PagePath.LOGIN} element={<Login />} />
           <Route path={PagePath.REGISTER} element={<Register />} />
@@ -187,7 +189,8 @@ function App() {
           {/* User Profile Route - Protected */}
           <Route path="/profile" element={<UserProfile />} />
         </Routes>
-      </AuthGuardProvider>
+        </AuthGuardProvider>
+      </NotificationProvider>
     </Router>
   );
 }
