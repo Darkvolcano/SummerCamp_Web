@@ -85,6 +85,17 @@ const campStaffService = {
     console.log(`[campStaffService] DELETE /campstaffassignment/${assignmentId}`);
     await axiosInstance.delete(`/campstaffassignment/${assignmentId}`);
   },
+
+  /**
+   * GET /campstaffassignment/availableStaff/{campId}
+   */
+  getAvailableStaff: async (campId: number): Promise<StaffInfo[]> => {
+    console.log(`[campStaffService] GET /campstaffassignment/availableStaff/${campId}`);
+    const response = await axiosInstance.get<StaffInfo[]>(
+      `/campstaffassignment/availableStaff/${campId}`
+    );
+    return response.data;
+  },
 };
 
 export default campStaffService;
