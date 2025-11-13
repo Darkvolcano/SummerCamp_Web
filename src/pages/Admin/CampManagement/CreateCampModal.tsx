@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { X, Plus, Upload, Loader } from "lucide-react";
 import { DatePicker } from "antd";
 import dayjs from "dayjs";
-import useCustomNotification from "../../../hooks/useCustomNotification";
+import { useNotification } from "../../../contexts/NotificationContext";
 import campService, {
   type CampRequestDto,
 } from "../../../services/campService";
@@ -33,11 +33,12 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
   onClose,
   onSuccess,
 }) => {
-  const { contextHolder, toastSuccess, toastError } = useCustomNotification();
+  const { toastSuccess, toastError } = useNotification();
   const [loading, setLoading] = useState(false);
   const [imageUploading, setImageUploading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string>("");
-  const [uploadedImagePublicId, setUploadedImagePublicId] = useState<string>("");
+  const [uploadedImagePublicId, setUploadedImagePublicId] =
+    useState<string>("");
   const [campTypes, setCampTypes] = useState<CampTypeResponseDto[]>([]);
   const [locations, setLocations] = useState<LocationResponseDto[]>([]);
   const [promotions, setPromotions] = useState<PromotionResponseDto[]>([]);
@@ -126,7 +127,6 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
   };
 
   const handleCreate = async () => {
-
     // Validation
     if (
       !formData.name.trim() ||
@@ -140,7 +140,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
       !formData.campTypeId ||
       !formData.locationId
     ) {
-      toastError('Validation Error', 'Please fill in all required fields');
+      toastError("Validation Error", "Please fill in all required fields");
       return;
     }
 
@@ -148,7 +148,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
       setLoading(true);
       await campService.createCamp(formData);
 
-      toastSuccess('Success', 'Camp created successfully!');
+      toastSuccess("Success", "Camp created successfully!");
       handleClose();
       onSuccess();
     } catch (error: any) {
@@ -158,7 +158,9 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
       if (error.response?.status === 401) {
         errorMsg = "Session expired. Please login again.";
       } else if (error.response?.status === 400) {
-        errorMsg = error.response.data?.message || "Validation error. Please check your input.";
+        errorMsg =
+          error.response.data?.message ||
+          "Validation error. Please check your input.";
       } else if (error.response?.status === 403) {
         errorMsg = "You don't have permission to create camps.";
       } else if (error instanceof Error) {
@@ -166,7 +168,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
       }
 
       // Show error notification
-      toastError('Error', errorMsg);
+      toastError("Error", errorMsg);
     } finally {
       setLoading(false);
     }
@@ -208,7 +210,10 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
       // Validate file
       const validation = validateImageFile(file, 10); // Max 10MB
       if (!validation.valid) {
-        toastError("Validation Error", validation.error || "Invalid image file");
+        toastError(
+          "Validation Error",
+          validation.error || "Invalid image file"
+        );
         return;
       }
 
@@ -232,9 +237,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
         }));
       } catch (error: any) {
         const errorMsg =
-          error instanceof Error
-            ? error.message
-            : "Failed to upload image";
+          error instanceof Error ? error.message : "Failed to upload image";
         toastError("Upload Error", errorMsg);
         console.error("Image upload error:", error);
       } finally {
@@ -268,7 +271,6 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
 
   return (
     <>
-      {contextHolder}
       {/* Modal Overlay */}
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-1000">
         {/* Modal Content */}
@@ -278,7 +280,9 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
         >
           {/* Header */}
           <div className="flex justify-between items-center px-6 py-6 border-b border-gray-200">
-            <h2 className="text-2xl font-bold text-gray-900">Create New Camp</h2>
+            <h2 className="text-2xl font-bold text-gray-900">
+              Create New Camp
+            </h2>
             <button
               onClick={handleClose}
               className="text-gray-400 hover:text-gray-900 transition-colors"
@@ -399,13 +403,21 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
                       {/* Upload Button */}
                       <label
                         className="flex items-center justify-center px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition-colors"
-                        style={{ pointerEvents: imageUploading ? "none" : "auto", opacity: imageUploading ? 0.6 : 1 }}
+                        style={{
+                          pointerEvents: imageUploading ? "none" : "auto",
+                          opacity: imageUploading ? 0.6 : 1,
+                        }}
                       >
                         <div className="flex items-center gap-2">
                           {imageUploading ? (
                             <>
-                              <Loader size={18} className="text-blue-500 animate-spin" />
-                              <span className="text-sm font-medium text-gray-700">Uploading...</span>
+                              <Loader
+                                size={18}
+                                className="text-blue-500 animate-spin"
+                              />
+                              <span className="text-sm font-medium text-gray-700">
+                                Uploading...
+                              </span>
                             </>
                           ) : (
                             <>
@@ -426,7 +438,6 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
                       </label>
                     </div>
                   </div>
-
                 </div>
               </div>
 
@@ -444,7 +455,9 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
                       </label>
                       <DatePicker
                         showTime
-                        value={formData.startDate ? dayjs(formData.startDate) : null}
+                        value={
+                          formData.startDate ? dayjs(formData.startDate) : null
+                        }
                         onChange={(date) =>
                           setFormData({
                             ...formData,
@@ -462,7 +475,9 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
                       </label>
                       <DatePicker
                         showTime
-                        value={formData.endDate ? dayjs(formData.endDate) : null}
+                        value={
+                          formData.endDate ? dayjs(formData.endDate) : null
+                        }
                         onChange={(date) =>
                           setFormData({
                             ...formData,
@@ -483,11 +498,17 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
                       </label>
                       <DatePicker
                         showTime
-                        value={formData.registrationStartDate ? dayjs(formData.registrationStartDate) : null}
+                        value={
+                          formData.registrationStartDate
+                            ? dayjs(formData.registrationStartDate)
+                            : null
+                        }
                         onChange={(date) =>
                           setFormData({
                             ...formData,
-                            registrationStartDate: date ? date.toISOString() : "",
+                            registrationStartDate: date
+                              ? date.toISOString()
+                              : "",
                           })
                         }
                         format="YYYY-MM-DD HH:mm:ss"
@@ -501,7 +522,11 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
                       </label>
                       <DatePicker
                         showTime
-                        value={formData.registrationEndDate ? dayjs(formData.registrationEndDate) : null}
+                        value={
+                          formData.registrationEndDate
+                            ? dayjs(formData.registrationEndDate)
+                            : null
+                        }
                         onChange={(date) =>
                           setFormData({
                             ...formData,
@@ -637,7 +662,6 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
                       </button>
                     </div>
                   </div>
-
                 </div>
               </div>
 

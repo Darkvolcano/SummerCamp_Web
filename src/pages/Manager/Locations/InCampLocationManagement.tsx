@@ -1,27 +1,38 @@
-import React, { useEffect, useState } from 'react';
-import { Spin, message, Modal, Form, Input } from 'antd';
-import { Search, Plus, Edit2 } from 'lucide-react';
-import { useManagerContext } from '../../../hooks/useManagerContext';
-import useCustomNotification from '../../../hooks/useCustomNotification';
-import DeletePopover from '../../../components/DeletePopover';
-import campService, { type CampResponseDto } from '../../../services/campService';
-import locationService, { type LocationResponseDto } from '../../../services/LocationService';
+import React, { useEffect, useState } from "react";
+import { Spin, Modal, Form, Input } from "antd";
+import { Search, Plus, Edit2 } from "lucide-react";
+import { useManagerContext } from "../../../hooks/useManagerContext";
+import { useNotification } from "../../../contexts/NotificationContext";
+import DeletePopover from "../../../components/DeletePopover";
+import campService, {
+  type CampResponseDto,
+} from "../../../services/campService";
+import locationService, {
+  type LocationResponseDto,
+} from "../../../services/LocationService";
 
 const InCampLocationManagement: React.FC = () => {
   const { selectedCampId } = useManagerContext();
-  const { contextHolder, toastSuccess, toastError } = useCustomNotification();
-  const [selectedCamp, setSelectedCamp] = useState<CampResponseDto | null>(null);
+  const { toastSuccess, toastError } = useNotification();
+  const [selectedCamp, setSelectedCamp] = useState<CampResponseDto | null>(
+    null
+  );
   const [parentLocationId, setParentLocationId] = useState<number | null>(null);
-  const [inCampLocations, setInCampLocations] = useState<LocationResponseDto[]>([]);
+  const [inCampLocations, setInCampLocations] = useState<LocationResponseDto[]>(
+    []
+  );
   const [loading, setLoading] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Modal state
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [editingLocation, setEditingLocation] = useState<LocationResponseDto | null>(null);
+  const [editingLocation, setEditingLocation] =
+    useState<LocationResponseDto | null>(null);
   const [form] = Form.useForm();
   const [submitting, setSubmitting] = useState(false);
-  const [openDeletePopover, setOpenDeletePopover] = useState<number | null>(null);
+  const [openDeletePopover, setOpenDeletePopover] = useState<number | null>(
+    null
+  );
 
   // Fetch camp and in-camp locations
   useEffect(() => {
@@ -44,14 +55,16 @@ const InCampLocationManagement: React.FC = () => {
 
         if (locId) {
           const locations = await locationService.getLocationsByParent(locId);
-          const inCampLocs = locations.filter(loc => loc.locationType === 'In_camp');
+          const inCampLocs = locations.filter(
+            (loc) => loc.locationType === "In_camp"
+          );
           setInCampLocations(inCampLocs);
         } else {
           setInCampLocations([]);
         }
       } catch (error) {
-        console.error('Failed to load data:', error);
-        message.error('Unable to load data');
+        console.error("Failed to load data:", error);
+        toastError("Error", "Unable to load data");
       } finally {
         setLoading(false);
       }
@@ -78,7 +91,7 @@ const InCampLocationManagement: React.FC = () => {
     setEditingLocation(location);
     form.setFieldsValue({
       name: location.name,
-      description: location.address || '',
+      description: location.address || "",
     });
     setIsModalVisible(true);
   };
@@ -92,13 +105,16 @@ const InCampLocationManagement: React.FC = () => {
         // Update location
         await locationService.updateLocation(editingLocation.locationId, {
           name: values.name,
-          locationType: 'In_camp',
+          locationType: "In_camp",
           address: values.description || null,
           latitude: null,
           longitude: null,
           parentLocationId: parentLocationId,
         });
-        toastSuccess('Location Updated', 'Location has been updated successfully');
+        toastSuccess(
+          "Location Updated",
+          "Location has been updated successfully"
+        );
       } else {
         // Create new
         await locationService.createInCampLocation(
@@ -106,21 +122,28 @@ const InCampLocationManagement: React.FC = () => {
           values.description || null,
           parentLocationId
         );
-        toastSuccess('Location Added', 'New location has been created successfully');
+        toastSuccess(
+          "Location Added",
+          "New location has been created successfully"
+        );
       }
 
       // Refresh locations
       if (parentLocationId) {
-        const locations = await locationService.getLocationsByParent(parentLocationId);
-        const inCampLocs = locations.filter(loc => loc.locationType === 'In_camp');
+        const locations = await locationService.getLocationsByParent(
+          parentLocationId
+        );
+        const inCampLocs = locations.filter(
+          (loc) => loc.locationType === "In_camp"
+        );
         setInCampLocations(inCampLocs);
       }
 
       setIsModalVisible(false);
       form.resetFields();
     } catch (error) {
-      console.error('Error submitting location:', error);
-      message.error('Failed to save location');
+      console.error("Error submitting location:", error);
+      toastError("Error", "Failed to save location");
     } finally {
       setSubmitting(false);
     }
@@ -131,17 +154,27 @@ const InCampLocationManagement: React.FC = () => {
     try {
       setSubmitting(true);
       await locationService.deleteLocation(locationId);
-      toastSuccess('Location Deleted', 'Location has been deleted successfully');
+      toastSuccess(
+        "Location Deleted",
+        "Location has been deleted successfully"
+      );
 
       if (selectedCamp?.location?.id) {
-        const locations = await locationService.getLocationsByParent(selectedCamp.location.id);
-        const inCampLocs = locations.filter(loc => loc.locationType === 'In_camp');
+        const locations = await locationService.getLocationsByParent(
+          selectedCamp.location.id
+        );
+        const inCampLocs = locations.filter(
+          (loc) => loc.locationType === "In_camp"
+        );
         setInCampLocations(inCampLocs);
       }
       setOpenDeletePopover(null);
     } catch (error) {
-      console.error('Error deleting location:', error);
-      toastError('Failed to Delete', 'Unable to delete location. Please try again.');
+      console.error("Error deleting location:", error);
+      toastError(
+        "Failed to Delete",
+        "Unable to delete location. Please try again."
+      );
     } finally {
       setSubmitting(false);
     }
@@ -151,8 +184,12 @@ const InCampLocationManagement: React.FC = () => {
     return (
       <div className="p-6 flex items-center justify-center min-h-[500px]">
         <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-indigo-200 p-12 rounded-2xl text-center shadow-lg hover:shadow-xl transition-shadow duration-300 max-w-md">
-          <h3 className="text-xl font-bold text-indigo-900 mb-2">Select Camp</h3>
-          <p className="text-indigo-700 text-base leading-relaxed">Please select a camp from the left sidebar to manage locations</p>
+          <h3 className="text-xl font-bold text-indigo-900 mb-2">
+            Select Camp
+          </h3>
+          <p className="text-indigo-700 text-base leading-relaxed">
+            Please select a camp from the left sidebar to manage locations
+          </p>
         </div>
       </div>
     );
@@ -160,12 +197,13 @@ const InCampLocationManagement: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#F9FAFB] p-6">
-      {contextHolder}
       {/* Header */}
       <div className="mb-4">
         <div className="flex justify-between items-start">
           <div>
-            <h1 className="text-2xl font-bold text-[#111827]">In-Camp Locations</h1>
+            <h1 className="text-2xl font-bold text-[#111827]">
+              In-Camp Locations
+            </h1>
             <p className="text-xs text-[#6B7280] mt-0.5">
               {selectedCamp?.name} - {selectedCamp?.location?.name}
             </p>
@@ -200,7 +238,6 @@ const InCampLocationManagement: React.FC = () => {
                   />
                 </div>
               </div>
-
 
               {/* Add Button */}
               <button
@@ -269,17 +306,17 @@ const InCampLocationManagement: React.FC = () => {
                             {location.name}
                           </td>
                           <td className="px-6 py-4 text-sm text-[#6B7280] max-w-xs truncate">
-                            {location.address || '-'}
+                            {location.address || "-"}
                           </td>
                           <td className="px-6 py-4">
                             <span
                               className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                                 location.isActive
-                                  ? 'bg-green-100 text-green-700'
-                                  : 'bg-gray-100 text-gray-700'
+                                  ? "bg-green-100 text-green-700"
+                                  : "bg-gray-100 text-gray-700"
                               }`}
                             >
-                              {location.isActive ? 'Active' : 'Inactive'}
+                              {location.isActive ? "Active" : "Inactive"}
                             </span>
                           </td>
                           <td className="px-6 py-4 text-right">
@@ -294,12 +331,18 @@ const InCampLocationManagement: React.FC = () => {
                                 Edit
                               </button>
                               <DeletePopover
-                                onConfirm={() => handleDelete(location.locationId)}
+                                onConfirm={() =>
+                                  handleDelete(location.locationId)
+                                }
                                 message="Delete this location?"
                                 disabled={submitting}
-                                isOpen={openDeletePopover === location.locationId}
+                                isOpen={
+                                  openDeletePopover === location.locationId
+                                }
                                 onOpenChange={(open) =>
-                                  setOpenDeletePopover(open ? location.locationId : null)
+                                  setOpenDeletePopover(
+                                    open ? location.locationId : null
+                                  )
                                 }
                               />
                             </div>
@@ -317,7 +360,9 @@ const InCampLocationManagement: React.FC = () => {
 
       {/* Add/Edit Modal */}
       <Modal
-        title={editingLocation ? 'Edit In-Camp Location' : 'Add In-Camp Location'}
+        title={
+          editingLocation ? "Edit In-Camp Location" : "Add In-Camp Location"
+        }
         open={isModalVisible}
         onOk={handleSubmit}
         onCancel={() => {
@@ -325,7 +370,7 @@ const InCampLocationManagement: React.FC = () => {
           form.resetFields();
           setEditingLocation(null);
         }}
-        okText={editingLocation ? 'Update' : 'Add'}
+        okText={editingLocation ? "Update" : "Add"}
         cancelText="Cancel"
         confirmLoading={submitting}
       >
@@ -333,7 +378,7 @@ const InCampLocationManagement: React.FC = () => {
           <Form.Item
             label="Location Name"
             name="name"
-            rules={[{ required: true, message: 'Please enter location name' }]}
+            rules={[{ required: true, message: "Please enter location name" }]}
           >
             <Input placeholder="e.g., Dining Area, Sports Field, etc." />
           </Form.Item>
