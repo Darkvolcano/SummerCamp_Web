@@ -348,7 +348,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({ campId, onBack,
               <Popover
                 content={
                   <div className="space-y-2">
-                    <p className="text-sm font-medium">Delete this camp?</p>
+                    <p className="text-sm font-medium">Cancel this camp?</p>
                     <div className="flex gap-2">
                       <Button
                         size="small"
