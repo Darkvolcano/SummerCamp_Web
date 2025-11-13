@@ -6,6 +6,7 @@ import {
   Users,
   SmilePlus,
   UsersRound,
+  UserRoundPlus,
   Bus,
   Bed,
   CreditCard,
@@ -15,7 +16,7 @@ import {
   ChevronUp,
   LogOut,
   UserCircle,
-  MapPinHouse, 
+  MapPinHouse,
 } from "lucide-react";
 import { useAuthStore } from "../../../services/userService";
 import { ManagerContext } from "../../../contexts/ManagerContext";
@@ -66,6 +67,11 @@ const ManagerSidebar: React.FC<ManagerSidebarProps> = ({
       path: PagePath.MANAGER_DASHBOARD,
       label: "Dashboard",
       icon: <LayoutDashboard size={20} />,
+    },
+    {
+      path: PagePath.MANAGER_STAFFS,
+      label: "Staffs",
+      icon: <UserRoundPlus size={20} />,
     },
     {
       path: PagePath.MANAGER_REGIS,
