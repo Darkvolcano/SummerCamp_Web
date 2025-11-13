@@ -33,6 +33,7 @@ export interface CamperResponseDto {
     userId?: number;
     isActive?: boolean;
     healthRecord?: HealthRecord;
+    camperRegistrationStatus?: string;
 }
 
 export interface HealthRecord {
@@ -128,6 +129,27 @@ const camperService = {
     getCampersByActivityScheduleId: async (id: number): Promise<CamperResponseDto[]> => {
         console.log(`[camperService] GET /Camper/activityScheduleId${id}`);
         const response = await axiosInstance.get(`/Camper/activityScheduleId${id}`);
+        return response.data as CamperResponseDto[];
+    },
+
+    // Get camper by ID and camp ID
+    getCamperByIdAndCampId: async (camperId: number, campId: number): Promise<CamperResponseDto> => {
+        console.log(`[camperService] GET /Camper/${camperId}/camp/${campId}`);
+        const response = await axiosInstance.get(`/Camper/${camperId}/camp/${campId}`);
+        return response.data as CamperResponseDto;
+    },
+
+    // Get campers by optional activity ID
+    getCampersByOptionalActivityId: async (optionalActivityId: number): Promise<CamperResponseDto[]> => {
+        console.log(`[camperService] GET /Camper/optionalActivities/${optionalActivityId}/campers`);
+        const response = await axiosInstance.get(`/Camper/optionalActivities/${optionalActivityId}/campers`);
+        return response.data as CamperResponseDto[];
+    },
+
+    // Get campers by core activity ID
+    getCampersByCoreActivityId: async (coreActivityId: number): Promise<CamperResponseDto[]> => {
+        console.log(`[camperService] GET /Camper/coreActivities/${coreActivityId}/campers`);
+        const response = await axiosInstance.get(`/Camper/coreActivities/${coreActivityId}/campers`);
         return response.data as CamperResponseDto[];
     },
 };
