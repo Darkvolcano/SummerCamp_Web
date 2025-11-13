@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
 import Home from "./pages/Home/Home";
@@ -28,8 +28,20 @@ import StaffLayout from "./layouts/StaffLayout";
 import RegistrationPage from "./pages/Registration/RegistrationPage";
 import RegistrationSuccess from "./pages/RegistrationSuccess/RegistrationSuccess";
 import CampDetailPage from "./pages/Admin/CampManagement/CampDetailPage/CampDetailPage";
+import { ChatBubble } from "./components/ChatBubble";
 
-function App() {
+// Component to conditionally render ChatBubble
+function ChatBubbleWrapper() {
+  const location = useLocation();
+  const hideChatPaths = [PagePath.LOGIN, PagePath.REGISTER, PagePath.VERIFY_OTP];
+
+  // Hide chat bubble on login, register, and OTP pages
+  if (hideChatPaths.includes(location.pathname as PagePath)) {
+    return null;
+  }
+
+  return <ChatBubble />;
+} function App() {
   return (
     <Router>
       <AuthGuardProvider>
@@ -187,6 +199,9 @@ function App() {
           {/* User Profile Route - Protected */}
           <Route path="/profile" element={<UserProfile />} />
         </Routes>
+
+        {/* AI Chatbot - Available on all pages except login/register */}
+        <ChatBubbleWrapper />
       </AuthGuardProvider>
     </Router>
   );
