@@ -1,5 +1,6 @@
 import Navbar from "../components/Navbar/Navbar";
 import Footer from "../components/Footer/Footer";
+import { ChatBubble } from "../components/ChatBubble";
 
 export default function MainLayout({
   children,
@@ -11,6 +12,7 @@ export default function MainLayout({
       <Navbar />
       <main className="flex-1 bg-white ">{children}</main>
       <Footer />
+      <ChatBubble />
     </div>
   );
 }
