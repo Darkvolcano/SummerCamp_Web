@@ -33,6 +33,8 @@ import InCampLocationManagement from "./pages/Manager/Locations/InCampLocationMa
 import CamperManagement from "./pages/Manager/Campers/CamperManagement";
 import GroupManagement from "./pages/Manager/Groups/GroupManagement";
 import CampStaffManagement from "./pages/Manager/Staffs/CampStaffManagement";
+import ActivityScheduleManagement from "./pages/Manager/Activities/activityScheduleManagement";
+import AccommodationManagement from "./pages/Manager/Accomodation/AccommodationManagement";
 function App() {
   return (
     <Router>
@@ -135,7 +137,7 @@ function App() {
             />
             <Route
               path={PagePath.MANAGER_ACTIVITIES}
-              element={<div>Manager Activities</div>}
+              element={<ActivityScheduleManagement />}
             />
             <Route
               path={PagePath.MANAGER_GROUPS}
@@ -151,7 +153,7 @@ function App() {
             />
             <Route
               path={PagePath.MANAGER_ACCOMODATION}
-              element={<div>Manager Accommodation</div>}
+              element={<AccommodationManagement />}
             />
             <Route
               path={PagePath.MANAGER_PAYMENTS}
