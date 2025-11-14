@@ -161,44 +161,48 @@ export default function ChatBubble() {
                             {/* New Conversation Button */}
                             <button
                                 onClick={handleNewConversation}
-                                className="w-8 h-8 sm:w-9 sm:h-9 hover:bg-white/20 active:bg-white/30 rounded-lg flex items-center justify-center transition-all touch-manipulation group"
+                                className="w-8 h-8 sm:w-9 sm:h-9 hover:bg-white/20 active:bg-white/30 rounded-lg flex items-center justify-center transition-all touch-manipulation !bg-transparent !border-0 !p-0"
                                 title="Bắt đầu cuộc trò chuyện mới"
                                 aria-label="Bắt đầu cuộc trò chuyện mới"
+                                style={{ background: 'transparent', border: 'none', padding: 0 }}
                             >
                                 <svg
-                                    className="w-5 h-5 sm:w-5 sm:h-5 text-white"
-                                    fill="none"
-                                    stroke="currentColor"
+                                    width="20"
+                                    height="20"
                                     viewBox="0 0 24 24"
+                                    fill="none"
                                     xmlns="http://www.w3.org/2000/svg"
                                 >
                                     <path
+                                        d="M12 4v16m8-8H4"
+                                        stroke="#FFFFFF"
+                                        strokeWidth="2.5"
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
-                                        strokeWidth={2.5}
-                                        d="M12 4v16m8-8H4"
                                     />
                                 </svg>
                             </button>
                             {/* Close Button */}
                             <button
                                 onClick={toggleChat}
-                                className="w-8 h-8 sm:w-9 sm:h-9 hover:bg-white/20 active:bg-white/30 rounded-lg flex items-center justify-center transition-all touch-manipulation group"
+                                className="w-8 h-8 sm:w-9 sm:h-9 hover:bg-white/20 active:bg-white/30 rounded-lg flex items-center justify-center transition-all touch-manipulation !bg-transparent !border-0 !p-0"
                                 aria-label="Đóng chat"
                                 title="Đóng chat"
+                                style={{ background: 'transparent', border: 'none', padding: 0 }}
                             >
                                 <svg
-                                    className="w-5 h-5 sm:w-5 sm:h-5 text-white"
-                                    fill="none"
-                                    stroke="currentColor"
+                                    width="20"
+                                    height="20"
                                     viewBox="0 0 24 24"
+                                    fill="none"
                                     xmlns="http://www.w3.org/2000/svg"
                                 >
                                     <path
+                                        d="M6 18L18 6M6 6l12 12"
+                                        stroke="#FFFFFF"
+                                        strokeWidth="2.5"
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
-                                        strokeWidth={2.5}
-                                        d="M6 18L18 6M6 6l12 12"
                                     />
                                 </svg>
                             </button>

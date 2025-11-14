@@ -33,10 +33,24 @@ import { ChatBubble } from "./components/ChatBubble";
 // Component to conditionally render ChatBubble
 function ChatBubbleWrapper() {
   const location = useLocation();
-  const hideChatPaths = [PagePath.LOGIN, PagePath.REGISTER, PagePath.VERIFY_OTP];
 
-  // Hide chat bubble on login, register, and OTP pages
-  if (hideChatPaths.includes(location.pathname as PagePath)) {
+  // Hide chat bubble on authentication pages
+  const hideChatPaths = [
+    PagePath.LOGIN,
+    PagePath.REGISTER,
+    PagePath.VERIFY_OTP,
+    PagePath.VERIFY_EMAIL,
+    PagePath.RESET_PASSWORD,
+  ];
+
+  // Hide chat bubble on admin/staff/manager/driver pages
+  const hideOnRolePaths = location.pathname.startsWith('/admin') ||
+    location.pathname.startsWith('/staff') ||
+    location.pathname.startsWith('/manager') ||
+    location.pathname.startsWith('/driver');
+
+  // Only show chat bubble for guest and regular users
+  if (hideChatPaths.includes(location.pathname as PagePath) || hideOnRolePaths) {
     return null;
   }
 
