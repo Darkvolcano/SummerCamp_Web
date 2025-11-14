@@ -15,6 +15,7 @@ const CampDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
   const [campName, setCampName] = useState('Loading...');
+  const [campStatus, setCampStatus] = useState('DRAFT');
   const [isLoading, setIsLoading] = useState(true);
 
   const numericCampId = parseInt(campId || '0', 10);
@@ -31,6 +32,7 @@ const CampDetailPage: React.FC = () => {
       setIsLoading(true);
       const camp = await campService.getCampById(numericCampId);
       setCampName(camp.name);
+      setCampStatus(camp.status);
     } catch (error) {
       console.error('Error fetching camp:', error);
       setCampName('Camp Not Found');
@@ -58,15 +60,15 @@ const CampDetailPage: React.FC = () => {
           />
         );
       case 'schedule':
-        return <CampDetailSchedule campId={numericCampId} />;
+        return <CampDetailSchedule campId={numericCampId} campStatus={campStatus} />;
       case 'staff':
         return <CampDetailStaffAssignment campId={numericCampId} />;
       case 'group':
-        return <CampDetailGroup campId={numericCampId} />;
+        return <CampDetailGroup campId={numericCampId} campStatus={campStatus} />;
       case 'accommodation':
-        return <CampDetailAccommodation campId={numericCampId} />;
+        return <CampDetailAccommodation campId={numericCampId} campStatus={campStatus} />;
       case 'dashboard':
-        return <CampDetailDashboard campId={numericCampId} />;
+        return <CampDetailDashboard campId={numericCampId} campStatus={campStatus} />;
       default:
         return <CampDetailOverview campId={numericCampId} onBack={handleBack} />;
     }
