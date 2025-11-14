@@ -295,7 +295,7 @@ export default function ChatBubble() {
                                 placeholder="Nhập tin nhắn..."
                                 disabled={isLoading}
                                 autoComplete="off"
-                                className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed text-sm placeholder:text-gray-400 transition-shadow"
+                                className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed text-sm text-gray-900 placeholder:text-gray-400 transition-shadow"
                             />
                             <button
                                 onClick={handleSendMessage}
