@@ -190,6 +190,7 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
           PagePath.MANAGER_CALENDAR,
           PagePath.MANAGER_INCIDENTS,
           PagePath.MANAGER_LOCATIONS,
+          PagePath.MANAGER_STAFFS,
           "/profile",
         ],
         admin: [

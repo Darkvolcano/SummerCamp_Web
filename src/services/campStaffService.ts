@@ -1,25 +1,21 @@
 import axiosInstance from "../config/axios";
 
-// Staff info trong response
 export interface StaffInfo {
   userId: number;
   fullName: string;
   role: string;
 }
 
-// Camp info trong response
 export interface CampInfo {
   campId: number;
   name: string;
 }
 
-// Request body để phân công staff
 export interface CampStaffAssignmentRequest {
   staffId: number;
   campId: number;
 }
 
-// Response từ API
 export interface CampStaffAssignmentResponse {
   campStaffAssignmentId: number;
   staff: StaffInfo;
@@ -85,6 +81,33 @@ const campStaffService = {
     console.log(`[campStaffService] DELETE /campstaffassignment/${assignmentId}`);
     await axiosInstance.delete(`/campstaffassignment/${assignmentId}`);
   },
+
+  /**
+   * GET /campstaffassignment/availableStaff/{campId}
+   */
+  getAvailableStaff: async (campId: number): Promise<StaffInfo[]> => {
+    console.log(`[campStaffService] GET /campstaffassignment/availableStaff/${campId}`);
+    const response = await axiosInstance.get<StaffInfo[]>(
+      `/campstaffassignment/availableStaff/${campId}`
+    );
+    return response.data;
+  },
+
+    getAvailableStaffForManager: async (campId: number): Promise<StaffInfo[]> => {
+    console.log(`[campStaffService] GET /campstaffassignment/availableStaff/${campId}`);
+    const response = await axiosInstance.get<StaffInfo[]>(
+      `/campstaffassignment/availableStaff/${campId}`
+    );
+    return response.data.filter(staff => staff.role === "Staff");
+  },
+
+    getStaffByCampForManager: async (campId: number): Promise<CampStaffAssignmentResponse[]> => {
+    console.log(`[campStaffService] GET /campstaffassignment/camp/${campId} (Staff only)`);
+    const response = await axiosInstance.get<CampStaffAssignmentResponse[]>(
+      `/campstaffassignment/camp/${campId}`
+    );
+    return response.data.filter(assignment => assignment.staff.role === "Staff");
+},
 };
 
 export default campStaffService;

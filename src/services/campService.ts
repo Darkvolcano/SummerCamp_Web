@@ -286,6 +286,45 @@ const campService = {
     );
     return publishedCamps;
   },
+
+  // Approve camp
+  approveCamp: async (campId: number): Promise<CampResponseDto> => {
+    console.log(`[campService] PUT /camp/${campId}/approve`);
+    const response = await axiosInstance.put(`/camp/${campId}/approve`);
+    const mapped = mapBackendToFrontend(response.data as BackendCampResponse);
+    return mapped;
+  },
+
+  // Reject camp
+  rejectCamp: async (campId: number): Promise<CampResponseDto> => {
+    console.log(`[campService] PUT /camp/${campId}/reject`);
+    const response = await axiosInstance.put(`/camp/${campId}/reject`);
+    const mapped = mapBackendToFrontend(response.data as BackendCampResponse);
+    return mapped;
+  },
+
+  // Update camp status
+  updateCampStatus: async (
+    campId: number,
+    status: CampStatus
+  ): Promise<CampResponseDto> => {
+    console.log(`[campService] PATCH /camp/${campId}/status`);
+    const response = await axiosInstance.patch(`/camp/${campId}/status`, {
+      status,
+    });
+    const mapped = mapBackendToFrontend(response.data as BackendCampResponse);
+    return mapped;
+  },
+
+  // Submit camp for approval
+  submitCampForApproval: async (campId: number): Promise<CampResponseDto> => {
+    console.log(`[campService] PATCH /camp/${campId}/submit-for-approval`);
+    const response = await axiosInstance.patch(
+      `/camp/${campId}/submit-for-approval`
+    );
+    const mapped = mapBackendToFrontend(response.data as BackendCampResponse);
+    return mapped;
+  },
 };
 
 export default campService;

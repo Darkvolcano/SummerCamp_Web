@@ -6,7 +6,6 @@ import {
   Select,
   Checkbox,
   Input,
-  message,
   Spin,
   Modal,
   Upload,
@@ -25,13 +24,13 @@ import promotionService, {
   type PromotionResponseDto,
 } from "../../services/promotionService";
 import { useAuthStore } from "../../services/userService";
-import useCustomNotification from "../../hooks/useCustomNotification";
+import { useNotification } from "../../contexts/NotificationContext";
 import "./RegistrationPage.css";
 
 const RegistrationPage: React.FC = () => {
   const { campId } = useParams<{ campId: string }>();
   const { user } = useAuthStore();
-  const { toastSuccess, toastError, contextHolder } = useCustomNotification();
+  const { toastSuccess, toastError } = useNotification();
   const [form] = Form.useForm();
 
   // State for campers
@@ -98,14 +97,14 @@ const RegistrationPage: React.FC = () => {
         }
       } catch (error) {
         console.error("Error fetching initial data:", error);
-        message.error("Không thể tải dữ liệu");
+        toastError("Lỗi", "Không thể tải dữ liệu");
       } finally {
         setLoading(false);
       }
     };
 
     fetchInitialData();
-  }, [campId]);
+  }, [campId, toastError]);
 
   // Calculate age from DOB
   const calculateAge = (dob: string): number => {
@@ -152,7 +151,7 @@ const RegistrationPage: React.FC = () => {
       setRegistrationCampers(newRegistrationCampers);
     } catch (error) {
       console.error("Error fetching camper details:", error);
-      message.error("Không thể tải thông tin trại viên");
+      toastError("Lỗi", "Không thể tải thông tin trại viên");
     }
   };
 
@@ -253,17 +252,17 @@ const RegistrationPage: React.FC = () => {
   // Handle registration submission
   const handleSubmit = async () => {
     if (!selectedCampId) {
-      message.error("Vui lòng chọn trại hè");
+      toastError("Lỗi", "Vui lòng chọn trại hè");
       return;
     }
 
     if (!agreeTerms) {
-      message.error("Vui lòng đồng ý với quy định");
+      toastError("Lỗi", "Vui lòng đồng ý với quy định");
       return;
     }
 
     if (registrationCampers.some((c) => !c.camperName)) {
-      message.error("Vui lòng điền đầy đủ thông tin tất cả trại viên");
+      toastError("Lỗi", "Vui lòng điền đầy đủ thông tin tất cả trại viên");
       return;
     }
 
@@ -285,7 +284,8 @@ const RegistrationPage: React.FC = () => {
       const result = await registrationService.createRegistration(
         registrationData
       );
-      message.success(
+      toastSuccess(
+        "Thành công",
         "Đăng ký đã được gửi phê duyệt! Vui lòng chờ xác nhận từ nhà trường."
       );
 
@@ -297,7 +297,7 @@ const RegistrationPage: React.FC = () => {
       // navigate(PagePath.MY_REGISTRATIONS);
     } catch (error) {
       console.error("Error creating registration:", error);
-      message.error("Không thể tạo đăng ký");
+      toastError("Lỗi", "Không thể tạo đăng ký");
     } finally {
       setSubmitting(false);
     }
@@ -321,7 +321,6 @@ const RegistrationPage: React.FC = () => {
 
   return (
     <>
-      {contextHolder}
       <div className="registration-page min-h-screen bg-gray-50 py-20">
       <div className="max-w-4xl mx-auto px-4">
         <h1 className="text-4xl font-bold text-gray-900 mb-8">

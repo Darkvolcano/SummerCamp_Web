@@ -162,16 +162,47 @@
   background-color: #eff6ff;
 }
 
+/* Month view date cell hover */
+.rbc-month-view .rbc-date-cell {
+  transition: background-color 0.2s ease;
+}
+
+.rbc-month-view .rbc-date-cell:hover {
+  background-color: #f0f9ff !important;
+}
+
+.rbc-month-view .rbc-day-bg:hover {
+  background-color: #f0f9ff !important;
+}
+
+/* Week view time slot hover line */
+.rbc-time-slot:hover {
+  background-color: #eff6ff;
+}
+
+.rbc-time-content .rbc-current-time-indicator:hover::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #3b82f6;
+  z-index: 3;
+}
+
 .rbc-event {
   padding: 4px 8px;
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
   border: none !important;
+  transition: all 0.2s ease;
 }
 
 .rbc-event:hover {
-  opacity: 0.8;
+  opacity: 1;
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .rbc-time-slot {

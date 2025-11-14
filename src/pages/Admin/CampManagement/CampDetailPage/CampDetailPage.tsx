@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { Spin } from 'antd';
 import CampDetailNavbar from './CampDetailNavbar';
 import CampDetailOverview from './CampDetailOverview';
 import CampDetailSchedule from './CampDetailSchedule';
@@ -14,6 +15,7 @@ const CampDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
   const [campName, setCampName] = useState('Loading...');
+  const [campStatus, setCampStatus] = useState('DRAFT');
   const [isLoading, setIsLoading] = useState(true);
 
   const numericCampId = parseInt(campId || '0', 10);
@@ -30,6 +32,7 @@ const CampDetailPage: React.FC = () => {
       setIsLoading(true);
       const camp = await campService.getCampById(numericCampId);
       setCampName(camp.name);
+      setCampStatus(camp.status);
     } catch (error) {
       console.error('Error fetching camp:', error);
       setCampName('Camp Not Found');
@@ -57,15 +60,15 @@ const CampDetailPage: React.FC = () => {
           />
         );
       case 'schedule':
-        return <CampDetailSchedule campId={numericCampId} />;
+        return <CampDetailSchedule campId={numericCampId} campStatus={campStatus} />;
       case 'staff':
         return <CampDetailStaffAssignment campId={numericCampId} />;
       case 'group':
-        return <CampDetailGroup campId={numericCampId} />;
+        return <CampDetailGroup campId={numericCampId} campStatus={campStatus} />;
       case 'accommodation':
-        return <CampDetailAccommodation campId={numericCampId} />;
+        return <CampDetailAccommodation campId={numericCampId} campStatus={campStatus} />;
       case 'dashboard':
-        return <CampDetailDashboard campId={numericCampId} />;
+        return <CampDetailDashboard campId={numericCampId} campStatus={campStatus} />;
       default:
         return <CampDetailOverview campId={numericCampId} onBack={handleBack} />;
     }
@@ -74,7 +77,7 @@ const CampDetailPage: React.FC = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#6366F1]"></div>
+        <Spin size="large" tip="Loading camp..." />
       </div>
     );
   }

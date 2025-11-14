@@ -13,6 +13,7 @@ import StaffSchedule from "./pages/Staff/MySchedule/MySchedule";
 import MyCamps from "./pages/Staff/MyCamps/MyCamps";
 import MyBlogs from "./pages/Staff/MyBlogs/MyBlogs";
 import { AuthGuardProvider } from "./contexts/AuthGuardContext";
+import { NotificationProvider } from "./contexts/NotificationContext";
 import { PagePath } from "./enums/page-path.enum";
 import VerifyOtp from "./pages/Otp/OtpVerification";
 import MainLayout from "./layouts/MainLayout";
@@ -28,12 +29,18 @@ import StaffLayout from "./layouts/StaffLayout";
 import RegistrationPage from "./pages/Registration/RegistrationPage";
 import RegistrationSuccess from "./pages/RegistrationSuccess/RegistrationSuccess";
 import CampDetailPage from "./pages/Admin/CampManagement/CampDetailPage/CampDetailPage";
-
+import InCampLocationManagement from "./pages/Manager/Locations/InCampLocationManagement";
+import CamperManagement from "./pages/Manager/Campers/CamperManagement";
+import GroupManagement from "./pages/Manager/Groups/GroupManagement";
+import CampStaffManagement from "./pages/Manager/Staffs/CampStaffManagement";
+import ActivityScheduleManagement from "./pages/Manager/Activities/activityScheduleManagement";
+import AccommodationManagement from "./pages/Manager/Accomodation/AccommodationManagement";
 function App() {
   return (
     <Router>
-      <AuthGuardProvider>
-        <Routes>
+      <NotificationProvider>
+        <AuthGuardProvider>
+          <Routes>
           {/* Public Routes */}
           <Route path={PagePath.LOGIN} element={<Login />} />
           <Route path={PagePath.REGISTER} element={<Register />} />
@@ -117,20 +124,24 @@ function App() {
               element={<ManagerDashboard />}
             />
             <Route
+              path={PagePath.MANAGER_STAFFS}
+              element={<CampStaffManagement />}
+            />
+            <Route
               path={PagePath.MANAGER_REGIS}
               element={<ManagerRegistrationsPage />}
             />
             <Route
               path={PagePath.MANAGER_CAMPERS}
-              element={<div>Manager Campers</div>}
+              element={<CamperManagement />}
             />
             <Route
               path={PagePath.MANAGER_ACTIVITIES}
-              element={<div>Manager Activities</div>}
+              element={<ActivityScheduleManagement />}
             />
             <Route
               path={PagePath.MANAGER_GROUPS}
-              element={<div>Manager Groups</div>}
+              element={<GroupManagement />}
             />
             <Route
               path={PagePath.MANAGER_TRANSPORTATION}
@@ -138,11 +149,11 @@ function App() {
             />
             <Route
               path={PagePath.MANAGER_LOCATIONS}
-              element={<div>Manager Locations</div>}
+              element={<InCampLocationManagement />}
             />
             <Route
               path={PagePath.MANAGER_ACCOMODATION}
-              element={<div>Manager Accommodation</div>}
+              element={<AccommodationManagement />}
             />
             <Route
               path={PagePath.MANAGER_PAYMENTS}
@@ -187,7 +198,8 @@ function App() {
           {/* User Profile Route - Protected */}
           <Route path="/profile" element={<UserProfile />} />
         </Routes>
-      </AuthGuardProvider>
+        </AuthGuardProvider>
+      </NotificationProvider>
     </Router>
   );
 }

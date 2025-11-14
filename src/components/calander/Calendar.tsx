@@ -25,7 +25,19 @@ export interface Activity {
   participants?: number;
 }
 
-const Calendar: React.FC = () => {
+interface CalendarProps {
+  activities?: Activity[];
+  onSelectSchedule?: (schedule: any) => void;
+  onAddClick?: () => void;
+  readOnly?: boolean;
+}
+
+const Calendar: React.FC<CalendarProps> = ({
+  activities: externalActivities,
+  onSelectSchedule,
+  onAddClick,
+  readOnly = false,
+}) => {
   const [view, setView] = useState<View>("month");
   const [date, setDate] = useState(new Date());
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(
@@ -93,12 +105,19 @@ const Calendar: React.FC = () => {
     };
   };
 
+  // Use external activities if provided
+  const displayActivities = externalActivities || activities;
+
   // Handle select event
   const handleSelectEvent = useCallback((event: Activity) => {
-    setSelectedActivity(event);
-    setShowActivityDetail(true);
-    setShowActivityForm(false);
-  }, []);
+    if (onSelectSchedule && externalActivities) {
+      onSelectSchedule(event);
+    } else {
+      setSelectedActivity(event);
+      setShowActivityDetail(true);
+      setShowActivityForm(false);
+    }
+  }, [externalActivities, onSelectSchedule]);
 
   // Handle select slot
   const handleSelectSlot = useCallback((slotInfo: SlotInfo) => {
@@ -113,14 +132,18 @@ const Calendar: React.FC = () => {
 
   // Handle add event button
   const handleAddEvent = () => {
-    const now = new Date();
-    setFormInitialDate({
-      start: now,
-      end: new Date(now.getTime() + 2 * 60 * 60 * 1000), // +2 hours
-    });
-    setShowActivityForm(true);
-    setShowActivityDetail(false);
-    setSelectedActivity(null);
+    if (onAddClick && externalActivities) {
+      onAddClick();
+    } else {
+      const now = new Date();
+      setFormInitialDate({
+        start: now,
+        end: new Date(now.getTime() + 2 * 60 * 60 * 1000), // +2 hours
+      });
+      setShowActivityForm(true);
+      setShowActivityDetail(false);
+      setSelectedActivity(null);
+    }
   };
 
   // Handle save activity
@@ -241,7 +264,7 @@ const Calendar: React.FC = () => {
       <div className="calendar-main">
         <BigCalendar
           localizer={localizer}
-          events={activities}
+          events={displayActivities}
           startAccessor="start"
           endAccessor="end"
           view={view}
@@ -249,8 +272,8 @@ const Calendar: React.FC = () => {
           date={date}
           onNavigate={setDate}
           onSelectEvent={handleSelectEvent}
-          onSelectSlot={handleSelectSlot}
-          selectable
+          onSelectSlot={!readOnly ? handleSelectSlot : undefined}
+          selectable={!readOnly}
           eventPropGetter={eventStyleGetter}
           components={{
             toolbar: CustomToolbar,

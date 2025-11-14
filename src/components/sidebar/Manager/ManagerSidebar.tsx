@@ -4,8 +4,9 @@ import {
   LayoutDashboard,
   ClipboardList,
   Users,
-  Activity,
+  SmilePlus,
   UsersRound,
+  UserRoundPlus,
   Bus,
   Bed,
   CreditCard,
@@ -15,6 +16,7 @@ import {
   ChevronUp,
   LogOut,
   UserCircle,
+  MapPinHouse,
 } from "lucide-react";
 import { useAuthStore } from "../../../services/userService";
 import { ManagerContext } from "../../../contexts/ManagerContext";
@@ -45,11 +47,11 @@ const ManagerSidebar: React.FC<ManagerSidebarProps> = ({
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Get camps and loading state from context (cached at ManagerLayout)
+  // Get camps and loading state from context
   const camps = context?.camps || [];
   const isLoadingCamps = context?.isLoadingCamps || false;
 
-  // Restore selected camp name from localStorage after camps are loaded
+  // Restore selected camp name 
   useEffect(() => {
     if (camps.length > 0) {
       const savedCampName = localStorage.getItem("selectedCampName");
@@ -67,6 +69,11 @@ const ManagerSidebar: React.FC<ManagerSidebarProps> = ({
       icon: <LayoutDashboard size={20} />,
     },
     {
+      path: PagePath.MANAGER_STAFFS,
+      label: "Staffs",
+      icon: <UserRoundPlus size={20} />,
+    },
+    {
       path: PagePath.MANAGER_REGIS,
       label: "Registrations",
       icon: <ClipboardList size={20} />,
@@ -79,7 +86,7 @@ const ManagerSidebar: React.FC<ManagerSidebarProps> = ({
     {
       path: PagePath.MANAGER_ACTIVITIES,
       label: "Activities",
-      icon: <Activity size={20} />,
+      icon: <SmilePlus  size={20} />,
     },
     {
       path: PagePath.MANAGER_GROUPS,
@@ -94,7 +101,7 @@ const ManagerSidebar: React.FC<ManagerSidebarProps> = ({
     {
       path: PagePath.MANAGER_LOCATIONS,
       label: "Locations",
-      icon: <Bed size={20} />,
+      icon: <MapPinHouse  size={20} />,
     },
     {
       path: PagePath.MANAGER_ACCOMODATION,
@@ -121,7 +128,6 @@ const ManagerSidebar: React.FC<ManagerSidebarProps> = ({
     },
   ];
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (

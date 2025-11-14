@@ -1,19 +1,37 @@
-import React, { useState, useEffect } from 'react';
-import { X, Edit2, Trash2, CheckCircle, XCircle, Upload, Plus, Loader } from 'lucide-react';
-import { DatePicker, Popover, Button } from 'antd';
-import dayjs from 'dayjs';
-import useCustomNotification from '../../../../hooks/useCustomNotification';
-import campService, { type CampResponseDto, type CampRequestDto } from '../../../../services/campService';
-import campTypeService, { type CampTypeResponseDto } from '../../../../services/campTypeService';
-import locationService, { type LocationResponseDto } from '../../../../services/LocationService';
-import promotionService, { type PromotionResponseDto } from '../../../../services/promotionService';
+import React, { useState, useEffect } from "react";
+import {
+  X,
+  Edit2,
+  Trash2,
+  CheckCircle,
+  XCircle,
+  Upload,
+  Plus,
+  Loader,
+} from "lucide-react";
+import { DatePicker, Popover, Button, Spin } from "antd";
+import dayjs from "dayjs";
+import { useNotification } from "../../../../contexts/NotificationContext";
+import campService, {
+  type CampResponseDto,
+  type CampRequestDto,
+} from "../../../../services/campService";
+import campTypeService, {
+  type CampTypeResponseDto,
+} from "../../../../services/campTypeService";
+import locationService, {
+  type LocationResponseDto,
+} from "../../../../services/LocationService";
+import promotionService, {
+  type PromotionResponseDto,
+} from "../../../../services/promotionService";
 import {
   uploadImageToCloudinary,
   validateImageFile,
   deleteImageFromCloudinary,
-} from '../../../../services/uploadService';
-import { CampStatus } from '../../../../enums/camp-status.enum';
-import AddLocationModal from '../AddLocationModal';
+} from "../../../../services/uploadService";
+import { CampStatus } from "../../../../enums/camp-status.enum";
+import AddLocationModal from "../AddLocationModal";
 
 interface CampDetailOverviewProps {
   campId: number;
@@ -21,14 +39,19 @@ interface CampDetailOverviewProps {
   onUpdate?: () => void;
 }
 
-const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({ campId, onBack, onUpdate }) => {
-  const { contextHolder, toastSuccess, toastError } = useCustomNotification();
+const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
+  campId,
+  onBack,
+  onUpdate,
+}) => {
+  const { toastSuccess, toastError } = useNotification();
   const [camp, setCamp] = useState<CampResponseDto | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [imageUploading, setImageUploading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string>("");
-  const [uploadedImagePublicId, setUploadedImagePublicId] = useState<string>("");
+  const [uploadedImagePublicId, setUploadedImagePublicId] =
+    useState<string>("");
   const [campTypes, setCampTypes] = useState<CampTypeResponseDto[]>([]);
   const [locations, setLocations] = useState<LocationResponseDto[]>([]);
   const [promotions, setPromotions] = useState<PromotionResponseDto[]>([]);
@@ -38,24 +61,24 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({ campId, onBack,
   const [showAddLocation, setShowAddLocation] = useState(false);
 
   const [formData, setFormData] = useState<CampRequestDto>({
-    name: '',
-    description: '',
-    place: '',
-    address: '',
+    name: "",
+    description: "",
+    place: "",
+    address: "",
     minParticipants: 0,
     maxParticipants: 0,
     minAge: 0,
     maxAge: 0,
-    startDate: '',
-    endDate: '',
-    image: '',
+    startDate: "",
+    endDate: "",
+    image: "",
     campTypeId: null,
     locationId: null,
     promotionId: null,
     price: 0,
-    status: 'DRAFT',
-    registrationStartDate: '',
-    registrationEndDate: '',
+    status: "DRAFT",
+    registrationStartDate: "",
+    registrationEndDate: "",
   });
 
   // Fetch camp data and related data
@@ -66,12 +89,13 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({ campId, onBack,
   const fetchCampData = async () => {
     try {
       setLoading(true);
-      const [campData, typesData, locationsData, promotionsData] = await Promise.all([
-        campService.getCampById(campId),
-        campTypeService.getAllCampTypes(),
-        locationService.getAllLocations(),
-        promotionService.getAllPromotions(),
-      ]);
+      const [campData, typesData, locationsData, promotionsData] =
+        await Promise.all([
+          campService.getCampById(campId),
+          campTypeService.getAllCampTypes(),
+          locationService.getAllLocations(),
+          promotionService.getAllPromotions(),
+        ]);
 
       setCamp(campData);
       setCampTypes(typesData);
@@ -101,29 +125,31 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({ campId, onBack,
         registrationEndDate: campData.registrationEndDate,
       });
     } catch (error) {
-      console.error('Error fetching camp data:', error);
-      toastError('Error', 'Failed to load camp details');
+      console.error("Error fetching camp data:", error);
+      toastError("Error", "Failed to load camp details");
     } finally {
       setLoading(false);
     }
   };
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]:
-        name === 'campTypeId' ||
-        name === 'locationId' ||
-        name === 'promotionId' ||
-        name === 'minParticipants' ||
-        name === 'maxParticipants' ||
-        name === 'minAge' ||
-        name === 'maxAge' ||
-        name === 'price'
-          ? value === ''
+        name === "campTypeId" ||
+        name === "locationId" ||
+        name === "promotionId" ||
+        name === "minParticipants" ||
+        name === "maxParticipants" ||
+        name === "minAge" ||
+        name === "maxAge" ||
+        name === "price"
+          ? value === ""
             ? null
             : Number(value)
           : value,
@@ -140,37 +166,37 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({ campId, onBack,
         !formData.endDate ||
         formData.price <= 0
       ) {
-        toastError('Validation Error', 'Please fill in all required fields');
+        toastError("Validation Error", "Please fill in all required fields");
         return;
       }
 
       await campService.updateCamp(campId, formData);
-      toastSuccess('Success', 'Camp updated successfully!');
+      toastSuccess("Success", "Camp updated successfully!");
       setIsEditing(false);
       fetchCampData();
       onUpdate?.();
     } catch (error: any) {
-      let errorMsg = 'Failed to update camp';
+      let errorMsg = "Failed to update camp";
       if (error.response?.data?.message) {
         errorMsg = error.response.data.message;
       }
-      toastError('Error', errorMsg);
+      toastError("Error", errorMsg);
     }
   };
 
   const handleDelete = async () => {
-    if (!window.confirm('Are you sure you want to delete this camp?')) return;
+    if (!window.confirm("Are you sure you want to delete this camp?")) return;
 
     try {
       await campService.deleteCamp(campId);
-      toastSuccess('Success', 'Camp deleted successfully!');
+      toastSuccess("Success", "Camp deleted successfully!");
       onBack();
     } catch (error: any) {
-      let errorMsg = 'Failed to delete camp';
+      let errorMsg = "Failed to delete camp";
       if (error.response?.data?.message) {
         errorMsg = error.response.data.message;
       }
-      toastError('Error', errorMsg);
+      toastError("Error", errorMsg);
     }
   };
 
@@ -187,7 +213,10 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({ campId, onBack,
     if (file) {
       const validation = validateImageFile(file, 10);
       if (!validation.valid) {
-        toastError('Validation Error', validation.error || 'Invalid image file');
+        toastError(
+          "Validation Error",
+          validation.error || "Invalid image file"
+        );
         return;
       }
 
@@ -195,7 +224,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({ campId, onBack,
         setImageUploading(true);
         const imageId = `camp_image_${Date.now()}`;
 
-        const result = await uploadImageToCloudinary(file, 'camp', imageId, 3);
+        const result = await uploadImageToCloudinary(file, "camp", imageId, 3);
 
         setImagePreview(result.url);
         setUploadedImagePublicId(result.publicId);
@@ -206,11 +235,9 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({ campId, onBack,
         }));
       } catch (error: any) {
         const errorMsg =
-          error instanceof Error
-            ? error.message
-            : 'Failed to upload image';
-        toastError('Upload Error', errorMsg);
-        console.error('Image upload error:', error);
+          error instanceof Error ? error.message : "Failed to upload image";
+        toastError("Upload Error", errorMsg);
+        console.error("Image upload error:", error);
       } finally {
         setImageUploading(false);
       }
@@ -221,9 +248,9 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({ campId, onBack,
     if (uploadedImagePublicId) {
       try {
         await deleteImageFromCloudinary(uploadedImagePublicId);
-        console.log('Image deleted from Cloudinary');
+        console.log("Image deleted from Cloudinary");
       } catch (error) {
-        console.error('Error deleting image from Cloudinary:', error);
+        console.error("Error deleting image from Cloudinary:", error);
       }
     }
 
@@ -243,7 +270,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({ campId, onBack,
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#6366F1]"></div>
+        <Spin size="large" tip="Loading camp details..." />
       </div>
     );
   }
@@ -254,7 +281,6 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({ campId, onBack,
 
   return (
     <>
-      {contextHolder}
       <div className="pb-12">
         {/* Action Buttons */}
         <div className="mb-6 flex gap-3 justify-end">
@@ -290,9 +316,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({ campId, onBack,
                 open={openApprovePopover}
                 onOpenChange={setOpenApprovePopover}
               >
-                <button
-                  className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-medium"
-                >
+                <button className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-medium">
                   <CheckCircle size={18} />
                   Approve & Publish
                 </button>
@@ -327,62 +351,63 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({ campId, onBack,
                 open={openRejectPopover}
                 onOpenChange={setOpenRejectPopover}
               >
-                <button
-                  className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all font-medium"
-                >
+                <button className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all font-medium">
                   <XCircle size={18} />
                   Reject
                 </button>
               </Popover>
             </>
           )}
-          {!isEditing && [CampStatus.DRAFT, CampStatus.PENDING_APPOVAL, CampStatus.CANCELED].includes(camp.status as CampStatus) && (
-            <>
-              <button
-                onClick={() => setIsEditing(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-medium"
-              >
-                <Edit2 size={18} />
-                Update
-              </button>
-              <Popover
-                content={
-                  <div className="space-y-2">
-                    <p className="text-sm font-medium">Delete this camp?</p>
-                    <div className="flex gap-2">
-                      <Button
-                        size="small"
-                        danger
-                        onClick={() => {
-                          handleDelete();
-                          setOpenDeletePopover(false);
-                        }}
-                      >
-                        Yes
-                      </Button>
-                      <Button
-                        size="small"
-                        onClick={() => setOpenDeletePopover(false)}
-                      >
-                        No
-                      </Button>
-                    </div>
-                  </div>
-                }
-                title="Confirm Delete"
-                trigger="click"
-                open={openDeletePopover}
-                onOpenChange={setOpenDeletePopover}
-              >
+          {!isEditing &&
+            [
+              CampStatus.DRAFT,
+              CampStatus.PENDING_APPOVAL,
+              CampStatus.CANCELED,
+            ].includes(camp.status as CampStatus) && (
+              <>
                 <button
-                  className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all font-medium"
+                  onClick={() => setIsEditing(true)}
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-medium"
                 >
-                  <Trash2 size={18} />
-                  Cancel
+                  <Edit2 size={18} />
+                  Update
                 </button>
-              </Popover>
-            </>
-          )}
+                <Popover
+                  content={
+                    <div className="space-y-2">
+                      <p className="text-sm font-medium">Cancel this camp?</p>
+                      <div className="flex gap-2">
+                        <Button
+                          size="small"
+                          danger
+                          onClick={() => {
+                            handleDelete();
+                            setOpenDeletePopover(false);
+                          }}
+                        >
+                          Yes
+                        </Button>
+                        <Button
+                          size="small"
+                          onClick={() => setOpenDeletePopover(false)}
+                        >
+                          No
+                        </Button>
+                      </div>
+                    </div>
+                  }
+                  title="Confirm Delete"
+                  trigger="click"
+                  open={openDeletePopover}
+                  onOpenChange={setOpenDeletePopover}
+                >
+                  <button className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all font-medium">
+                    <Trash2 size={18} />
+                    Cancel
+                  </button>
+                </Popover>
+              </>
+            )}
           {isEditing && (
             <>
               <button
@@ -509,19 +534,29 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({ campId, onBack,
                     {/* Upload Button */}
                     <label
                       className="flex items-center justify-center px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition-colors"
-                      style={{ pointerEvents: imageUploading ? "none" : "auto", opacity: imageUploading ? 0.6 : 1 }}
+                      style={{
+                        pointerEvents: imageUploading ? "none" : "auto",
+                        opacity: imageUploading ? 0.6 : 1,
+                      }}
                     >
                       <div className="flex items-center gap-2">
                         {imageUploading ? (
                           <>
-                            <Loader size={18} className="text-blue-500 animate-spin" />
-                            <span className="text-sm font-medium text-gray-700">Uploading...</span>
+                            <Loader
+                              size={18}
+                              className="text-blue-500 animate-spin"
+                            />
+                            <span className="text-sm font-medium text-gray-700">
+                              Uploading...
+                            </span>
                           </>
                         ) : (
                           <>
                             <Upload size={18} className="text-gray-500" />
                             <span className="text-sm font-medium text-gray-700">
-                              {imagePreview || formData.image ? "Change Image" : "Upload Image"}
+                              {imagePreview || formData.image
+                                ? "Change Image"
+                                : "Upload Image"}
                             </span>
                           </>
                         )}
@@ -553,17 +588,19 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({ campId, onBack,
                   </label>
                   <DatePicker
                     showTime
-                    value={formData.startDate ? dayjs(formData.startDate) : null}
+                    value={
+                      formData.startDate ? dayjs(formData.startDate) : null
+                    }
                     onChange={(date) =>
                       setFormData({
                         ...formData,
-                        startDate: date ? date.toISOString() : '',
+                        startDate: date ? date.toISOString() : "",
                       })
                     }
                     disabled={!isEditing}
                     format="YYYY-MM-DD HH:mm:ss"
                     className="w-full"
-                    style={{ width: '100%' }}
+                    style={{ width: "100%" }}
                   />
                 </div>
                 <div>
@@ -576,13 +613,13 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({ campId, onBack,
                     onChange={(date) =>
                       setFormData({
                         ...formData,
-                        endDate: date ? date.toISOString() : '',
+                        endDate: date ? date.toISOString() : "",
                       })
                     }
                     disabled={!isEditing}
                     format="YYYY-MM-DD HH:mm:ss"
                     className="w-full"
-                    style={{ width: '100%' }}
+                    style={{ width: "100%" }}
                   />
                 </div>
               </div>
@@ -594,17 +631,21 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({ campId, onBack,
                   </label>
                   <DatePicker
                     showTime
-                    value={formData.registrationStartDate ? dayjs(formData.registrationStartDate) : null}
+                    value={
+                      formData.registrationStartDate
+                        ? dayjs(formData.registrationStartDate)
+                        : null
+                    }
                     onChange={(date) =>
                       setFormData({
                         ...formData,
-                        registrationStartDate: date ? date.toISOString() : '',
+                        registrationStartDate: date ? date.toISOString() : "",
                       })
                     }
                     disabled={!isEditing}
                     format="YYYY-MM-DD HH:mm:ss"
                     className="w-full"
-                    style={{ width: '100%' }}
+                    style={{ width: "100%" }}
                   />
                 </div>
                 <div>
@@ -613,17 +654,21 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({ campId, onBack,
                   </label>
                   <DatePicker
                     showTime
-                    value={formData.registrationEndDate ? dayjs(formData.registrationEndDate) : null}
+                    value={
+                      formData.registrationEndDate
+                        ? dayjs(formData.registrationEndDate)
+                        : null
+                    }
                     onChange={(date) =>
                       setFormData({
                         ...formData,
-                        registrationEndDate: date ? date.toISOString() : '',
+                        registrationEndDate: date ? date.toISOString() : "",
                       })
                     }
                     disabled={!isEditing}
                     format="YYYY-MM-DD HH:mm:ss"
                     className="w-full"
-                    style={{ width: '100%' }}
+                    style={{ width: "100%" }}
                   />
                 </div>
               </div>
@@ -712,7 +757,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({ campId, onBack,
                 </label>
                 <select
                   name="campTypeId"
-                  value={formData.campTypeId || ''}
+                  value={formData.campTypeId || ""}
                   onChange={handleInputChange}
                   disabled={!isEditing}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-black disabled:bg-gray-100 disabled:cursor-not-allowed"
@@ -732,7 +777,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({ campId, onBack,
                 <div className="flex gap-2">
                   <select
                     name="locationId"
-                    value={formData.locationId || ''}
+                    value={formData.locationId || ""}
                     onChange={handleInputChange}
                     disabled={!isEditing}
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-black disabled:bg-gray-100 disabled:cursor-not-allowed"
@@ -785,7 +830,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({ campId, onBack,
                 </label>
                 <select
                   name="promotionId"
-                  value={formData.promotionId || ''}
+                  value={formData.promotionId || ""}
                   onChange={handleInputChange}
                   disabled={!isEditing}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-black disabled:bg-gray-100 disabled:cursor-not-allowed"
@@ -803,7 +848,9 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({ campId, onBack,
 
           {/* Status */}
           <div className="mt-6 pt-6 border-t border-[#E5E7EB]">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Status
+            </label>
             <select
               name="status"
               value={formData.status}
@@ -814,7 +861,9 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({ campId, onBack,
               <option value="DRAFT">Draft</option>
               <option value="PENDING_APPOVAL">Pending Approval</option>
               <option value="IN_PROGRESS">In Progress</option>
-              <option value="OPEN_FOR_REGISTRATION">Open for Registration</option>
+              <option value="OPEN_FOR_REGISTRATION">
+                Open for Registration
+              </option>
               <option value="COMPLETED">Completed</option>
               <option value="CANCELED">Canceled</option>
             </select>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Search, Eye, HousePlus  } from "lucide-react";
-import { DatePicker } from "antd";
+import { Search, Eye, HousePlus } from "lucide-react";
+import { DatePicker, Spin } from "antd";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import campService, {
@@ -402,7 +402,7 @@ const CampPrograms: React.FC = () => {
                 <tr>
                   <td colSpan={11} className="px-6 py-12 text-center">
                     <div className="flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#6366F1]"></div>
+                      <Spin size="large" tip="Loading programs..." />
                     </div>
                   </td>
                 </tr>
