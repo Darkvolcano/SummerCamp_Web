@@ -286,7 +286,13 @@ const CampStaffManagement: React.FC = () => {
                 </div>
 
                 {/* Staff Checkboxes */}
-                <div className="divide-y divide-[#E5E7EB] max-h-96 overflow-y-auto">
+                <div
+                  className="divide-y divide-[#E5E7EB] max-h-[200px] overflow-y-auto"
+                  style={{
+                    scrollbarColor: '#ffffff #f0f0f0',
+                    scrollbarWidth: 'thin'
+                  }}
+                >
                   {filteredAvailableStaff.length === 0 ? (
                     <div className="px-6 py-8 text-center text-xs text-[#6B7280]">
                       No available staff
