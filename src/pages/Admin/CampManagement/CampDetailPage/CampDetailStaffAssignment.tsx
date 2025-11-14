@@ -259,7 +259,13 @@ const CampDetailStaffAssignment: React.FC<CampDetailStaffAssignmentProps> = ({
             </div>
 
             {/* Staff List */}
-            <div className="overflow-y-auto max-h-[600px]">
+            <div
+              className="overflow-y-auto max-h-[200px]"
+              style={{
+                scrollbarColor: '#ffffff #f0f0f0',
+                scrollbarWidth: 'thin'
+              }}
+            >
               {filteredAvailableStaff.length === 0 ? (
                 <div className="px-6 py-8 text-center text-[#6B7280] text-sm">
                   No available staff
