@@ -3,13 +3,10 @@ import {
   Calendar as BigCalendar,
   momentLocalizer,
   type View,
-  type SlotInfo,
 } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "./Calendar.css";
-import ActivityForm from "./ActivityForm";
-import ActivityDetail from "./ActivityDetail";
 
 moment.locale("vi");
 const localizer = momentLocalizer(moment);
@@ -27,62 +24,23 @@ export interface Activity {
 
 interface CalendarProps {
   activities?: Activity[];
+  userRole?: 'manager' | 'staff' | 'driver' | 'admin';
   onSelectSchedule?: (schedule: any) => void;
   onAddClick?: () => void;
-  readOnly?: boolean;
+  onSelectSlot?: (slotInfo: { start: Date; end: Date; view: View }) => void;
 }
 
 const Calendar: React.FC<CalendarProps> = ({
   activities: externalActivities,
+  userRole = 'admin',
   onSelectSchedule,
   onAddClick,
-  readOnly = false,
+  onSelectSlot,
 }) => {
+  // Determine permissions based on userRole
+  const canManage = userRole === 'manager';
   const [view, setView] = useState<View>("month");
   const [date, setDate] = useState(new Date());
-  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(
-    null
-  );
-  const [showActivityDetail, setShowActivityDetail] = useState(false);
-  const [showActivityForm, setShowActivityForm] = useState(false);
-  const [formInitialDate, setFormInitialDate] = useState<{
-    start: Date;
-    end: Date;
-  } | null>(null);
-
-  // Mock activities data
-  const [activities, setActivities] = useState<Activity[]>([
-    {
-      id: "1",
-      title: "Product demo",
-      start: new Date(2025, 0, 10, 13, 30),
-      end: new Date(2025, 0, 10, 15, 30),
-      type: "Core",
-      description: "Product demo for the new dashboard and Q&A session",
-      location: "Zoom Meeting",
-      participants: 6,
-    },
-    {
-      id: "2",
-      title: "Team Building",
-      start: new Date(2025, 0, 15, 9, 0),
-      end: new Date(2025, 0, 15, 17, 0),
-      type: "Core-Optional",
-      description: "Outdoor team building activities",
-      location: "Camp Ground A",
-      participants: 25,
-    },
-    {
-      id: "3",
-      title: "Art Workshop",
-      start: new Date(2025, 0, 20, 14, 0),
-      end: new Date(2025, 0, 20, 16, 0),
-      type: "Optional",
-      description: "Creative arts and crafts session",
-      location: "Art Room",
-      participants: 15,
-    },
-  ]);
 
   // Event style getter
   const eventStyleGetter = (event: Activity) => {
@@ -105,80 +63,30 @@ const Calendar: React.FC<CalendarProps> = ({
     };
   };
 
-  // Use external activities if provided
-  const displayActivities = externalActivities || activities;
-
   // Handle select event
   const handleSelectEvent = useCallback((event: Activity) => {
     if (onSelectSchedule && externalActivities) {
       onSelectSchedule(event);
-    } else {
-      setSelectedActivity(event);
-      setShowActivityDetail(true);
-      setShowActivityForm(false);
     }
   }, [externalActivities, onSelectSchedule]);
 
-  // Handle select slot
-  const handleSelectSlot = useCallback((slotInfo: SlotInfo) => {
-    setFormInitialDate({
-      start: slotInfo.start,
-      end: slotInfo.end,
-    });
-    setShowActivityForm(true);
-    setShowActivityDetail(false);
-    setSelectedActivity(null);
-  }, []);
-
   // Handle add event button
   const handleAddEvent = () => {
-    if (onAddClick && externalActivities) {
+    if (onAddClick) {
       onAddClick();
-    } else {
-      const now = new Date();
-      setFormInitialDate({
-        start: now,
-        end: new Date(now.getTime() + 2 * 60 * 60 * 1000), // +2 hours
-      });
-      setShowActivityForm(true);
-      setShowActivityDetail(false);
-      setSelectedActivity(null);
     }
   };
 
-  // Handle save activity
-  const handleSaveActivity = (activity: Activity) => {
-    if (selectedActivity) {
-      // Update existing
-      setActivities((prev) =>
-        prev.map((a) => (a.id === activity.id ? activity : a))
-      );
-    } else {
-      // Add new
-      setActivities((prev) => [
-        ...prev,
-        { ...activity, id: Date.now().toString() },
-      ]);
-    }
-    setShowActivityForm(false);
-  };
+  // Handle slot selection (clicking on empty time slot)
+  const handleSelectSlot = useCallback(
+    (slotInfo: { start: Date; end: Date }) => {
+      if (onSelectSlot) {
+        onSelectSlot({ start: slotInfo.start, end: slotInfo.end, view });
+      }
+    },
+    [view, onSelectSlot]
+  );
 
-  // Handle delete activity
-  const handleDeleteActivity = (id: string) => {
-    setActivities((prev) => prev.filter((a) => a.id !== id));
-    setShowActivityDetail(false);
-  };
-
-  // Handle edit activity
-  const handleEditActivity = (activity: Activity) => {
-    setSelectedActivity(activity);
-    setFormInitialDate({
-      start: activity.start,
-      end: activity.end,
-    });
-    setShowActivityDetail(false);
-    setShowActivityForm(true);
-  };
 
   // Custom toolbar
   const CustomToolbar = (toolbar: any) => {
@@ -231,49 +139,67 @@ const Calendar: React.FC<CalendarProps> = ({
         </div>
 
         <div className="toolbar-right">
-          <div className="view-switcher">
+          <div className="flex gap-2">
             <button
-              className={view === "month" ? "active" : ""}
-              onClick={() => setView("month")}
+              className={`px-4 py-2 text-sm font-medium rounded-lg border transition-all ${
+                view === "month"
+                  ? "bg-blue-50 text-blue-600 border-blue-500"
+                  : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50 hover:border-gray-400"
+              }`}
+              onClick={() => toolbar.onView("month")}
             >
               Month view
             </button>
             <button
-              className={view === "week" ? "active" : ""}
-              onClick={() => setView("week")}
+              className={`px-4 py-2 text-sm font-medium rounded-lg border transition-all ${
+                view === "week"
+                  ? "bg-blue-50 text-blue-600 border-blue-500"
+                  : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50 hover:border-gray-400"
+              }`}
+              onClick={() => toolbar.onView("week")}
             >
               Week view
             </button>
             <button
-              className={view === "agenda" ? "active" : ""}
-              onClick={() => setView("agenda")}
+              className={`px-4 py-2 text-sm font-medium rounded-lg border transition-all ${
+                view === "agenda"
+                  ? "bg-blue-50 text-blue-600 border-blue-500"
+                  : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50 hover:border-gray-400"
+              }`}
+              onClick={() => toolbar.onView("agenda")}
             >
               Agenda
             </button>
           </div>
-          <button className="add-event-btn" onClick={handleAddEvent}>
-            + Add event
-          </button>
+          {canManage && (
+            <button
+              className="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all font-medium text-sm"
+              onClick={handleAddEvent}
+            >
+              + Add schedule
+            </button>
+          )}
         </div>
       </div>
     );
   };
 
   return (
-    <div className="calendar-container">
-      <div className="calendar-main">
+    <div className="flex h-full rounded-2xl bg-gray-50 relative">
+      <div className="flex-1 overflow-hidden">
         <BigCalendar
           localizer={localizer}
-          events={displayActivities}
+          events={externalActivities || []}
           startAccessor="start"
           endAccessor="end"
           view={view}
           onView={setView}
+          views={["month", "week", "agenda"]}
           date={date}
           onNavigate={setDate}
           onSelectEvent={handleSelectEvent}
-          onSelectSlot={!readOnly ? handleSelectSlot : undefined}
-          selectable={!readOnly}
+          onSelectSlot={handleSelectSlot}
+          selectable={true}
           eventPropGetter={eventStyleGetter}
           components={{
             toolbar: CustomToolbar,
@@ -281,26 +207,6 @@ const Calendar: React.FC<CalendarProps> = ({
           style={{ height: "calc(100vh - 100px)" }}
         />
       </div>
-
-      {/* Activity Detail Sidebar */}
-      {showActivityDetail && selectedActivity && (
-        <ActivityDetail
-          activity={selectedActivity}
-          onClose={() => setShowActivityDetail(false)}
-          onEdit={handleEditActivity}
-          onDelete={handleDeleteActivity}
-        />
-      )}
-
-      {/* Activity Form Sidebar */}
-      {showActivityForm && (
-        <ActivityForm
-          activity={selectedActivity}
-          initialDate={formInitialDate}
-          onClose={() => setShowActivityForm(false)}
-          onSave={handleSaveActivity}
-        />
-      )}
     </div>
   );
 };
