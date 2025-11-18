@@ -180,6 +180,12 @@ const activityScheduleService = {
       params: { status: status },
     });
   },
+
+  // Delete activity schedule
+  deleteActivitySchedule: async (id: number): Promise<void> => {
+    console.log(`[activityScheduleService] DELETE /ActivitySchedule/${id}`);
+    await axiosInstance.delete(`/ActivitySchedule/${id}`);
+  },
 };
 
 export default activityScheduleService;
