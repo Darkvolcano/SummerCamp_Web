@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Modal, Form, Input, Select, DatePicker, InputNumber, Button, Spin, Checkbox } from "antd";
 import { Plus, X } from "lucide-react";
 import dayjs from "dayjs";
-import type { ActivityResponseDto } from "../../services/activityService";
+import activityService, { type ActivityResponseDto } from "../../services/activityService";
 import type { ActivityScheduleResponseDto } from "../../services/activityScheduleService";
 import { useNotification } from "../../contexts/NotificationContext";
 import "./ScheduleForm.css";
@@ -12,7 +12,8 @@ interface ScheduleFormProps {
   activities: ActivityResponseDto[];
   campId: number;
   onClose: () => void;
-  onSave: (scheduleData: any, newActivityData?: any) => void;
+  onSave: (scheduleData: any) => void;
+  onActivityCreated?: (activity: ActivityResponseDto) => void;
   initialStartTime?: Date;
   initialEndTime?: Date;
 }
@@ -20,22 +21,23 @@ interface ScheduleFormProps {
 const ScheduleForm: React.FC<ScheduleFormProps> = ({
   schedule,
   activities,
-  // campId is reserved for future validation use
+  campId,
   onClose,
   onSave,
+  onActivityCreated,
   initialStartTime,
   initialEndTime,
 }) => {
-  const { toastError } = useNotification();
+  const { toastError, toastSuccess } = useNotification();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [showNewActivityForm, setShowNewActivityForm] = useState(false);
   const [newActivityForm] = Form.useForm();
-  const [pendingNewActivity, setPendingNewActivity] = useState<any>(null);
+  const [creatingActivity, setCreatingActivity] = useState(false);
 
   useEffect(() => {
     if (schedule) {
-      // Editing existing schedule
+      // Editing 
       form.setFieldsValue({
         activityId: activities.find((a) => a.name === schedule.activity?.name)?.activityId,
         staffId: schedule.staffId,
@@ -47,7 +49,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
         locationId: schedule.locationId,
       });
     } else if (initialStartTime && initialEndTime) {
-      // Creating new schedule from slot selection
+      // Creating
       form.setFieldsValue({
         startTime: dayjs(initialStartTime),
         endTime: dayjs(initialEndTime),
@@ -57,22 +59,31 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
 
   const handleAddNewActivity = async () => {
     try {
+      setCreatingActivity(true);
       const values = await newActivityForm.validateFields();
-      const newActivityData = {
+
+      const newActivity = await activityService.createActivity({
         name: values.activityName,
         description: values.description || null,
         activityType: values.activityType || "Core",
-      };
+        campId: campId,
+      });
 
-      setPendingNewActivity(newActivityData);
       setShowNewActivityForm(false);
       newActivityForm.resetFields();
 
       form.setFieldsValue({
-        activityId: `[NEW] ${newActivityData.name}`,
+        activityId: newActivity.activityId,
       });
+
+      onActivityCreated?.(newActivity);
+
+      toastSuccess("Success", `Activity "${newActivity.name}" created successfully`);
     } catch (error) {
-      console.error("Error validating form:", error);
+      console.error("Error creating activity:", error);
+      toastError("Error", "Failed to create activity");
+    } finally {
+      setCreatingActivity(false);
     }
   };
 
@@ -95,8 +106,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
         locationId: parseInt(values.locationId, 10),
       };
 
-      onSave(scheduleData, pendingNewActivity || undefined);
-      setPendingNewActivity(null);
+      onSave(scheduleData);
     } catch (error) {
       console.error("Error submitting form:", error);
       toastError("Error", "Failed to submit form");
@@ -128,8 +138,54 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
             >
               <Select
                 placeholder="Select activity"
+                showSearch
+                filterOption={(input, option) =>
+                  (option?.label ?? "")
+                    .toString()
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
+                }
+                optionRender={(option: any) => {
+                  const activity = activities.find(a => a.activityId === option.data.value);
+                  if (!activity) return option.label;
+
+                  const getTypeBadgeStyle = (type: string) => {
+                    switch (type) {
+                      case "Core":
+                        return { background: "#dbeafe", color: "#1e40af", border: "1px solid #3b82f6" };
+                      case "Optional":
+                        return { background: "#fef3c7", color: "#b45309", border: "1px solid #f59e0b" };
+                      case "Resting":
+                        return { background: "#e0e7ff", color: "#3730a3", border: "1px solid #6366f1" };
+                      case "CheckIn":
+                        return { background: "#dcfce7", color: "#166534", border: "1px solid #10b981" };
+                      case "CheckOut":
+                        return { background: "#fecaca", color: "#991b1b", border: "1px solid #ef4444" };
+                      default:
+                        return { background: "#f3f4f6", color: "#374151", border: "1px solid #d1d5db" };
+                    }
+                  };
+
+                  const badgeStyle = getTypeBadgeStyle(activity.activityType);
+
+                  return (
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>
+                      <span>{activity.name}</span>
+                      <span style={{
+                        ...badgeStyle,
+                        padding: "2px 8px",
+                        borderRadius: "4px",
+                        fontSize: "12px",
+                        fontWeight: "600",
+                        whiteSpace: "nowrap"
+                      }}>
+                        {activity.activityType}
+                      </span>
+                    </div>
+                  );
+                }}
                 options={activities.map((a) => ({
-                  label: a.name,
+                  label: `${a.name} (${a.activityType})`,
                   value: a.activityId,
                 }))}
                 dropdownRender={(menu) => (
@@ -215,8 +271,10 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
       <Modal
         title="Create New Activity"
         open={showNewActivityForm}
-        onCancel={() => setShowNewActivityForm(false)}
+        onCancel={() => !creatingActivity && setShowNewActivityForm(false)}
         onOk={handleAddNewActivity}
+        okButtonProps={{ loading: creatingActivity }}
+        cancelButtonProps={{ disabled: creatingActivity }}
         width={400}
       >
         <Form form={newActivityForm} layout="vertical">
@@ -238,6 +296,9 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
               options={[
                 { label: "Core", value: "Core" },
                 { label: "Optional", value: "Optional" },
+                { label: "Resting", value: "Resting" },
+                { label: "Check In", value: "CheckIn" },
+                { label: "Check Out", value: "CheckOut" },
               ]}
             />
           </Form.Item>
