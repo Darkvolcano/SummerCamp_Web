@@ -1,6 +1,5 @@
 import axiosInstance from "../config/axios";
-
-export type ActivityScheduleStatus = "NotYet" | "Completed" | "Cancelled" | "PendingAttendance";
+import { ActivitySchedule as ActivityScheduleStatus } from "../enums/activitySechedule-status.enum";
 
 export interface ActivityInfo {
   name: string;
@@ -11,14 +10,16 @@ export interface ActivitySchedule {
   activityScheduleId: number;
   activity: ActivityInfo | null;
   staffId: number;
+  staffName: string;
   startTime: string;
   endTime: string;
-  status: ActivityScheduleStatus;
+  status: string;
   isLivestream: boolean;
   roomId: number | null;
   maxCapacity: number | null;
   isOptional: boolean;
   locationId: number;
+  locationName: string;
   currentCapacity: number | null;
 }
 
@@ -47,14 +48,16 @@ export interface ActivityScheduleResponseDto {
   activityScheduleId: number;
   activity: ActivityInfo | null;
   staffId: number;
+  staffName: string;
   startTime: string;
   endTime: string;
-  status: ActivityScheduleStatus;
+  status: string;
   isLivestream: boolean;
   roomId: number | null;
   maxCapacity: number | null;
   isOptional: boolean;
   locationId: number;
+  locationName: string;
   currentCapacity: number | null;
 }
 
@@ -73,10 +76,17 @@ const activityScheduleService = {
     return response.data as ActivityScheduleResponseDto[];
   },
 
+  // Get activity schedule by ID
+  getActivityScheduleById: async (id: number): Promise<ActivityScheduleResponseDto> => {
+    console.log(`[activityScheduleService] GET /ActivitySchedule/${id}`);
+    const response = await axiosInstance.get(`/ActivitySchedule/${id}`);
+    return response.data as ActivityScheduleResponseDto;
+  },
+
   // Get activity schedules by camper and camp
-  getActivitySchedulesByCamperAndCamp: async (camperId: number, campId: number): Promise<ActivityScheduleResponseDto[]> => {
-    console.log(`[activityScheduleService] GET /ActivitySchedule/camper/${camperId}/camp/${campId}`);
-    const response = await axiosInstance.get(`/ActivitySchedule/camper/${camperId}/camp/${campId}`);
+  getActivitySchedulesByCamperAndCamp: async (campId: number, camperId: number): Promise<ActivityScheduleResponseDto[]> => {
+    console.log(`[activityScheduleService] GET /ActivitySchedule/camp/${campId}/camper/${camperId}`);
+    const response = await axiosInstance.get(`/ActivitySchedule/camp/${campId}/camper/${camperId}`);
     return response.data as ActivityScheduleResponseDto[];
   },
 
@@ -167,7 +177,7 @@ const activityScheduleService = {
   updateActivityScheduleStatus: async (activityScheduleId: number, status: ActivityScheduleStatus): Promise<void> => {
     console.log(`[activityScheduleService] PUT /ActivitySchedule/${activityScheduleId}/status`);
     await axiosInstance.put(`/ActivitySchedule/${activityScheduleId}/status`, null, {
-      params: { status },
+      params: { status: status },
     });
   },
 };
