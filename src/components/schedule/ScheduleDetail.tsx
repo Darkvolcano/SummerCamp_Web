@@ -48,9 +48,26 @@ const ScheduleDetail: React.FC<ScheduleDetailProps> = ({
         return "blue";
       case "Optional":
         return "gold";
+      case "Resting":
+        return "purple";
+      case "CheckIn":
+        return "green";
+      case "CheckOut":
+        return "red";
       default:
         return "default";
     }
+  };
+
+  const formatDateTime = (dateString: string) => {
+    return new Date(dateString).toLocaleString("vi-VN", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
   };
 
   return (
@@ -77,6 +94,12 @@ const ScheduleDetail: React.FC<ScheduleDetailProps> = ({
           />
         </Descriptions.Item>
 
+        {schedule.activity?.description && (
+          <Descriptions.Item label="Description">
+            <span className="text-sm">{schedule.activity.description}</span>
+          </Descriptions.Item>
+        )}
+
         <Descriptions.Item label="Status">
           <Badge
             status={getStatusColor(schedule.status) as any}
@@ -86,13 +109,13 @@ const ScheduleDetail: React.FC<ScheduleDetailProps> = ({
 
         <Descriptions.Item label="Start Time">
           <span className="font-mono">
-            {new Date(schedule.startTime).toLocaleString()}
+            {formatDateTime(schedule.startTime)}
           </span>
         </Descriptions.Item>
 
         <Descriptions.Item label="End Time">
           <span className="font-mono">
-            {new Date(schedule.endTime).toLocaleString()}
+            {formatDateTime(schedule.endTime)}
           </span>
         </Descriptions.Item>
 
@@ -134,13 +157,6 @@ const ScheduleDetail: React.FC<ScheduleDetailProps> = ({
             </span>
           </Descriptions.Item>
         )}
-
-        <Descriptions.Item label="Activity Type">
-          <Badge
-            color={schedule.isOptional ? "gold" : "blue"}
-            text={schedule.isOptional ? "Optional" : "Mandatory"}
-          />
-        </Descriptions.Item>
       </Descriptions>
       </div>
 

@@ -16,7 +16,7 @@ export interface Activity {
   title: string;
   start: Date;
   end: Date;
-  type: "Core" | "Core-Optional" | "Optional";
+  type: "Core" | "Core-Optional" | "Optional" | "Resting" | "CheckIn" | "CheckOut";
   description?: string;
   location?: string;
   participants?: number;
@@ -45,10 +45,22 @@ const Calendar: React.FC<CalendarProps> = ({
   // Event style getter
   const eventStyleGetter = (event: Activity) => {
     let backgroundColor = "#3b82f6"; // Core - Blue
-    if (event.type === "Core-Optional") {
-      backgroundColor = "#10b981"; // Core-Optional - Green
-    } else if (event.type === "Optional") {
-      backgroundColor = "#f59e0b"; // Optional - Yellow/Orange
+    switch (event.type) {
+      case "Core-Optional":
+        backgroundColor = "#10b981"; // Core-Optional - Green
+        break;
+      case "Optional":
+        backgroundColor = "#f59e0b"; // Optional - Yellow/Orange
+        break;
+      case "Resting":
+        backgroundColor = "#8b5cf6"; // Resting - Purple
+        break;
+      case "CheckIn":
+        backgroundColor = "#10b981"; // CheckIn - Green
+        break;
+      case "CheckOut":
+        backgroundColor = "#ef4444"; // CheckOut - Red
+        break;
     }
 
     return {

@@ -2,8 +2,10 @@ import axiosInstance from "../config/axios";
 import { ActivitySchedule as ActivityScheduleStatus } from "../enums/activitySechedule-status.enum";
 
 export interface ActivityInfo {
+  activityId?: number;
   name: string;
-  activityType: "Core" | "Optional";
+  description?: string | null;
+  activityType: "Core" | "Optional" | "Resting" | "CheckIn" | "CheckOut";
 }
 
 export interface ActivitySchedule {

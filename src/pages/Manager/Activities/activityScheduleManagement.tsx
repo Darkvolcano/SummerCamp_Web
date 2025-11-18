@@ -79,9 +79,18 @@ const ActivityScheduleManagement: React.FC = () => {
   };
 
   // Handle view schedule detail
-  const handleViewSchedule = (schedule: ActivityScheduleResponseDto) => {
-    setSelectedSchedule(schedule);
-    setShowScheduleDetail(true);
+  const handleViewSchedule = (event: any) => {
+    // Calendar passes Activity object with id field
+    // We need to find the actual schedule from schedules array by ID
+    const scheduleId = parseInt(event.id, 10);
+    const selectedSchedule = schedules.find(s => s.activityScheduleId === scheduleId);
+
+    if (selectedSchedule) {
+      setSelectedSchedule(selectedSchedule);
+      setShowScheduleDetail(true);
+    } else {
+      toastError("Error", "Schedule not found");
+    }
   };
 
   // Handle edit schedule
@@ -91,29 +100,13 @@ const ActivityScheduleManagement: React.FC = () => {
   };
 
   // Handle save schedule
-  const handleSaveSchedule = async (
-    scheduleData: any,
-    newActivityData?: any
-  ) => {
+  const handleSaveSchedule = async (scheduleData: any) => {
     try {
       setLoading(true);
 
-      let activityId = scheduleData.activityId;
+      const activityId = scheduleData.activityId;
 
-      // If creating a new activity first
-      if (newActivityData && selectedCampId) {
-        const newActivity = await activityService.createActivity({
-          name: newActivityData.name,
-          description: newActivityData.description,
-          activityType: newActivityData.activityType,
-          campId: selectedCampId,
-        });
-        activityId = newActivity.activityId;
-        setActivities((prev) => [...prev, newActivity]);
-        toastSuccess("Success", `Activity "${newActivity.name}" created successfully`);
-      }
-
-      // Now create or update the schedule
+      // Create or update the schedule
       if (selectedSchedule) {
         // Update existing schedule
         const updatedData: any = {
@@ -215,7 +208,7 @@ const ActivityScheduleManagement: React.FC = () => {
     title: schedule.activity?.name || "Untitled",
     start: new Date(schedule.startTime),
     end: new Date(schedule.endTime),
-    type: (schedule.activity?.activityType || "Core") as "Core" | "Core-Optional" | "Optional",
+    type: (schedule.activity?.activityType || "Core") as "Core" | "Core-Optional" | "Optional" | "Resting" | "CheckIn" | "CheckOut",
     description: `Status: ${schedule.status}`,
     location: `Location ${schedule.locationId}`,
     participants: schedule.currentCapacity || 0,
@@ -256,6 +249,10 @@ const ActivityScheduleManagement: React.FC = () => {
             setSelectedSlot(null);
           }}
           onSave={handleSaveSchedule}
+          onActivityCreated={(newActivity) => {
+            // Update activities list
+            setActivities((prev) => [...prev, newActivity]);
+          }}
         />
       )}
 
