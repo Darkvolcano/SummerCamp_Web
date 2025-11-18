@@ -1,0 +1,141 @@
+.schedule-form-sidebar {
+  width: 400px;
+  height: 100vh;
+  background: white;
+  border-left: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  right: 0;
+  top: 0;
+  box-shadow: -4px 0 12px rgba(0, 0, 0, 0.1);
+  animation: slideInRight 0.3s ease;
+  z-index: 50;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.form-header {
+  padding: 24px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.form-header h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.schedule-form {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  padding: 20px 24px;
+  border-top: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.btn-cancel,
+.btn-save {
+  flex: 1;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-cancel {
+  background: white;
+  border: 1px solid #e5e7eb;
+  color: #374151;
+}
+
+.btn-cancel:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
+
+.btn-save {
+  background: #3b82f6;
+  border: none;
+  color: white;
+}
+
+.btn-save:hover {
+  background: #2563eb;
+}
+
+.ant-form-item-label > label {
+  font-weight: 600;
+  color: #374151;
+}
+
+.ant-input,
+.ant-input-number,
+.ant-select-selector,
+.ant-picker {
+  border-color: #e5e7eb !important;
+  border-radius: 6px !important;
+}
+
+.ant-input:focus,
+.ant-input-number-focused .ant-input-number-input,
+.ant-select-focused .ant-select-selector,
+.ant-picker-focused .ant-picker-input {
+  border-color: #6366f1 !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
+}
+
+.ant-btn {
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.ant-btn-primary {
+  background-color: #3b82f6 !important;
+  border-color: #3b82f6 !important;
+}
+
+.ant-btn-primary:hover {
+  background-color: #2563eb !important;
+  border-color: #2563eb !important;
+}
+
+.ant-btn-default {
+  border-color: #e5e7eb !important;
+  color: #374151;
+}
+
+.ant-btn-default:hover {
+  border-color: #d1d5db !important;
+  color: #111827;
+}

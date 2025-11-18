@@ -35,6 +35,7 @@ import GroupManagement from "./pages/Manager/Groups/GroupManagement";
 import CampStaffManagement from "./pages/Manager/Staffs/CampStaffManagement";
 import ActivityScheduleManagement from "./pages/Manager/Activities/activityScheduleManagement";
 import AccommodationManagement from "./pages/Manager/Accomodation/AccommodationManagement";
+import CampTypePage from "./pages/Admin/CampTypeManagement/CampTypePage";
 function App() {
   return (
     <Router>
@@ -95,6 +96,7 @@ function App() {
             />
             <Route path={PagePath.ADMIN_CAMPS} element={<CampManagement />} />
             <Route path={PagePath.ADMIN_BLOGS} element={<BlogManagement />} />
+            <Route path={PagePath.ADMIN_CAMPTYPES} element={<CampTypePage />} />
             <Route
               path={PagePath.ADMIN_CAMPS_DETAIL}
               element={<CampDetailPage />}

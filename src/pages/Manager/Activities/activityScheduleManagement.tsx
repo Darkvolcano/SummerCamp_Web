@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Spin, Button, Modal, Tabs, Empty } from "antd";
-import { Plus } from "lucide-react";
+import { Spin } from "antd";
 import { useManagerContext } from "../../../hooks/useManagerContext";
 import activityService, {
   type ActivityResponseDto,
@@ -10,9 +9,8 @@ import activityScheduleService, {
 } from "../../../services/activityScheduleService";
 import { useNotification } from "../../../contexts/NotificationContext";
 import Calendar from "../../../components/calander/Calendar";
-import ActivityScheduleForm from "./ActivityScheduleForm";
-import ActivityScheduleDetail from "./ActivityScheduleDetail";
-import "./ActivityScheduleManagement.css";
+import ScheduleForm from "../../../components/schedule/ScheduleForm";
+import ScheduleDetail from "../../../components/schedule/ScheduleDetail";
 
 const ActivityScheduleManagement: React.FC = () => {
   const { selectedCampId } = useManagerContext();
@@ -23,10 +21,13 @@ const ActivityScheduleManagement: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
   const [showScheduleForm, setShowScheduleForm] = useState(false);
-  const [showScheduleDetail, setShowScheduleDetail] =
-    useState(false);
+  const [showScheduleDetail, setShowScheduleDetail] = useState(false);
   const [selectedSchedule, setSelectedSchedule] =
     useState<ActivityScheduleResponseDto | null>(null);
+  const [selectedSlot, setSelectedSlot] = useState<{
+    startTime: Date;
+    endTime: Date;
+  } | null>(null);
 
   // Fetch activities and schedules
   useEffect(() => {
@@ -59,45 +60,53 @@ const ActivityScheduleManagement: React.FC = () => {
   // Handle add schedule
   const handleAddSchedule = () => {
     setSelectedSchedule(null);
+    setSelectedSlot(null);
     setShowScheduleForm(true);
   };
 
-  // Handle edit schedule
-  const handleEditSchedule = (schedule: ActivityScheduleResponseDto) => {
-    setSelectedSchedule(schedule);
+  // Handle slot selection from calendar
+  const handleSelectSlot = (slotInfo: {
+    start: Date;
+    end: Date;
+    view: string;
+  }) => {
+    setSelectedSchedule(null);
+    setSelectedSlot({
+      startTime: slotInfo.start,
+      endTime: slotInfo.end,
+    });
     setShowScheduleForm(true);
   };
 
   // Handle view schedule detail
-  const handleViewSchedule = (schedule: ActivityScheduleResponseDto) => {
-    setSelectedSchedule(schedule);
-    setShowScheduleDetail(true);
+  const handleViewSchedule = (event: any) => {
+    // Calendar passes Activity object with id field
+    // We need to find the actual schedule from schedules array by ID
+    const scheduleId = parseInt(event.id, 10);
+    const selectedSchedule = schedules.find(s => s.activityScheduleId === scheduleId);
+
+    if (selectedSchedule) {
+      setSelectedSchedule(selectedSchedule);
+      setShowScheduleDetail(true);
+    } else {
+      toastError("Error", "Schedule not found");
+    }
+  };
+
+  // Handle edit schedule
+  const handleEditSchedule = () => {
+    setShowScheduleDetail(false);
+    setShowScheduleForm(true);
   };
 
   // Handle save schedule
-  const handleSaveSchedule = async (
-    scheduleData: any,
-    newActivityData?: any
-  ) => {
+  const handleSaveSchedule = async (scheduleData: any) => {
     try {
       setLoading(true);
 
-      let activityId = scheduleData.activityId;
+      const activityId = scheduleData.activityId;
 
-      // If creating a new activity first
-      if (newActivityData && selectedCampId) {
-        const newActivity = await activityService.createActivity({
-          name: newActivityData.name,
-          description: newActivityData.description,
-          activityType: newActivityData.activityType,
-          campId: selectedCampId,
-        });
-        activityId = newActivity.activityId;
-        setActivities((prev) => [...prev, newActivity]);
-        toastSuccess("Success", `Activity "${newActivity.name}" created successfully`);
-      }
-
-      // Now create or update the schedule
+      // Create or update the schedule
       if (selectedSchedule) {
         // Update existing schedule
         const updatedData: any = {
@@ -154,27 +163,20 @@ const ActivityScheduleManagement: React.FC = () => {
 
   // Handle delete schedule
   const handleDeleteSchedule = async (scheduleId: number) => {
-    Modal.confirm({
-      title: "Delete Schedule",
-      content: "Are you sure you want to delete this schedule?",
-      okText: "Delete",
-      okType: "danger",
-      onOk: async () => {
-        try {
-          setLoading(true);
-          // Note: You may need to add a delete method to activityScheduleService
-          setSchedules((prev) =>
-            prev.filter((s) => s.activityScheduleId !== scheduleId)
-          );
-          toastSuccess("Success", "Schedule deleted successfully");
-        } catch (error) {
-          console.error("Failed to delete schedule:", error);
-          toastError("Error", "Failed to delete schedule");
-        } finally {
-          setLoading(false);
-        }
-      },
-    });
+    try {
+      setLoading(true);
+      await activityScheduleService.deleteActivitySchedule(scheduleId);
+      setSchedules((prev) =>
+        prev.filter((s) => s.activityScheduleId !== scheduleId)
+      );
+      setShowScheduleDetail(false);
+      toastSuccess("Success", "Schedule deleted successfully");
+    } catch (error) {
+      console.error("Failed to delete schedule:", error);
+      toastError("Error", "Failed to delete schedule");
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (!selectedCampId) {
@@ -206,121 +208,11 @@ const ActivityScheduleManagement: React.FC = () => {
     title: schedule.activity?.name || "Untitled",
     start: new Date(schedule.startTime),
     end: new Date(schedule.endTime),
-    type: (schedule.activity?.activityType || "Core") as "Core" | "Core-Optional" | "Optional",
+    type: (schedule.activity?.activityType || "Core") as "Core" | "Core-Optional" | "Optional" | "Resting" | "CheckIn" | "CheckOut",
     description: `Status: ${schedule.status}`,
     location: `Location ${schedule.locationId}`,
     participants: schedule.currentCapacity || 0,
   }));
-
-  const tabItems = [
-    {
-      key: "calendar",
-      label: "Calendar View",
-      children: (
-        <div className="activity-schedule-calendar">
-          <div className="mb-4 flex justify-between items-center">
-            <h2 className="text-lg font-bold text-[#111827]">Activity Schedule</h2>
-            <Button
-              type="primary"
-              icon={<Plus size={16} />}
-              onClick={handleAddSchedule}
-              className="bg-blue-600 hover:bg-blue-700"
-            >
-              Add Schedule
-            </Button>
-          </div>
-          <Calendar
-            activities={calendarActivities}
-            onSelectSchedule={handleViewSchedule}
-            onAddClick={handleAddSchedule}
-            readOnly={true}
-          />
-        </div>
-      ),
-    },
-    {
-      key: "list",
-      label: "List View",
-      children: (
-        <div className="activity-schedule-list">
-          <div className="mb-4 flex justify-between items-center">
-            <h2 className="text-lg font-bold text-[#111827]">All Schedules</h2>
-            <Button
-              type="primary"
-              icon={<Plus size={16} />}
-              onClick={handleAddSchedule}
-              className="bg-blue-600 hover:bg-blue-700"
-            >
-              Add Schedule
-            </Button>
-          </div>
-
-          {schedules.length === 0 ? (
-            <Empty description="No schedules found" />
-          ) : (
-            <div className="grid grid-cols-1 gap-4">
-              {schedules.map((schedule) => (
-                <div
-                  key={schedule.activityScheduleId}
-                  className="bg-white rounded-lg border border-[#E5E7EB] p-4 hover:shadow-md transition-shadow cursor-pointer"
-                  onClick={() => handleViewSchedule(schedule)}
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-[#111827] text-base">
-                        {schedule.activity?.name || "N/A"}
-                      </h3>
-                      <p className="text-sm text-[#6B7280] mt-1">
-                        {new Date(schedule.startTime).toLocaleDateString()} |{" "}
-                        {new Date(schedule.startTime).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}{" "}
-                        -{" "}
-                        {new Date(schedule.endTime).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </p>
-                      <div className="mt-2 flex gap-2">
-                        <span className="inline-block px-2 py-1 text-xs rounded bg-blue-100 text-blue-700">
-                          {schedule.activity?.activityType || "Core"}
-                        </span>
-                        <span className="inline-block px-2 py-1 text-xs rounded bg-gray-100 text-gray-700">
-                          {schedule.status}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button
-                        size="small"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEditSchedule(schedule);
-                        }}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        size="small"
-                        danger
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteSchedule(schedule.activityScheduleId);
-                        }}
-                      >
-                        Delete
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      ),
-    },
-  ];
 
   return (
     <div className="p-6">
@@ -333,34 +225,47 @@ const ActivityScheduleManagement: React.FC = () => {
         </p>
       </div>
 
-      <Tabs items={tabItems} />
+      <div className="activity-schedule-calendar">
+        <Calendar
+          activities={calendarActivities}
+          userRole="manager"
+          onSelectSchedule={handleViewSchedule}
+          onAddClick={handleAddSchedule}
+          onSelectSlot={handleSelectSlot}
+        />
+      </div>
 
-      {/* Activity Schedule Form Modal */}
+      {/* Schedule Form Modal */}
       {showScheduleForm && (
-        <ActivityScheduleForm
+        <ScheduleForm
           schedule={selectedSchedule}
           activities={activities}
           campId={selectedCampId}
+          initialStartTime={selectedSlot?.startTime}
+          initialEndTime={selectedSlot?.endTime}
           onClose={() => {
             setShowScheduleForm(false);
             setSelectedSchedule(null);
+            setSelectedSlot(null);
           }}
           onSave={handleSaveSchedule}
+          onActivityCreated={(newActivity) => {
+            // Update activities list
+            setActivities((prev) => [...prev, newActivity]);
+          }}
         />
       )}
 
-      {/* Activity Schedule Detail Modal */}
+      {/* Schedule Detail Modal */}
       {showScheduleDetail && selectedSchedule && (
-        <ActivityScheduleDetail
+        <ScheduleDetail
           schedule={selectedSchedule}
+          userRole="manager"
           onClose={() => {
             setShowScheduleDetail(false);
             setSelectedSchedule(null);
           }}
-          onEdit={() => {
-            setShowScheduleDetail(false);
-            setShowScheduleForm(true);
-          }}
+          onEdit={handleEditSchedule}
           onDelete={() => {
             handleDeleteSchedule(selectedSchedule.activityScheduleId);
             setShowScheduleDetail(false);
