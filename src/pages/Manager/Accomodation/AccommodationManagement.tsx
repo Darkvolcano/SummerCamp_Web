@@ -382,7 +382,13 @@ const AccommodationManagement: React.FC = () => {
                               </span>
                             </td>
                             <td className="px-6 py-4 text-sm text-[#6B7280]">
-                              {accommodation.supervisor?.fullName || 'N/A'}
+                              {accommodation.supervisor?.fullName ? (
+                                accommodation.supervisor.fullName
+                              ) : (
+                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">
+                                  Unassigned
+                                </span>
+                              )}
                             </td>
                             <td className="px-6 py-4 text-sm">
                               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${accommodation.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
@@ -519,6 +525,7 @@ const AccommodationManagement: React.FC = () => {
             rules={[
               { required: true, message: 'Please select a supervisor!' },
             ]}
+            help={!editingAccommodation?.supervisor ? '⚠️ No supervisor assigned' : ''}
           >
             <Select
               placeholder="Select a supervisor"

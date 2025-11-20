@@ -4,7 +4,8 @@ import { Search, Plus, Edit2 } from 'lucide-react';
 import { useManagerContext } from '../../../hooks/useManagerContext';
 import { useNotification } from '../../../contexts/NotificationContext';
 import camperGroupService, { type CamperGroupResponseDto, type CamperGroupRequestDto } from '../../../services/camperGroupService';
-import campStaffService, { type StaffInfo } from '../../../services/campStaffService';
+import staffService, { type StaffInfo } from '../../../services/staffService';
+import campService, { type CampResponseDto } from '../../../services/campService';
 import DeletePopover from '../../../components/DeletePopover';
 
 const GroupManagement: React.FC = () => {
@@ -14,6 +15,7 @@ const GroupManagement: React.FC = () => {
   const [groups, setGroups] = useState<CamperGroupResponseDto[]>([]);
   const [loading, setLoading] = useState(false);
   const [staffList, setStaffList] = useState<StaffInfo[]>([]);
+  const [campData, setCampData] = useState<CampResponseDto | null>(null);
 
   // Filters
   const [searchQuery, setSearchQuery] = useState('');
@@ -30,6 +32,7 @@ const GroupManagement: React.FC = () => {
   useEffect(() => {
     if (!selectedCampId) {
       setGroups([]);
+      setCampData(null);
       return;
     }
 
@@ -40,9 +43,9 @@ const GroupManagement: React.FC = () => {
         const groupsData = await camperGroupService.getCamperGroupsByCampId(selectedCampId);
         setGroups(groupsData);
 
-        // Fetch available staff
-        const staffData = await campStaffService.getAvailableStaff(selectedCampId);
-        setStaffList(staffData);
+        // Fetch camp data
+        const campInfo = await campService.getCampById(selectedCampId);
+        setCampData(campInfo);
       } catch (error) {
         console.error('Failed to load data:', error);
         message.error('Unable to load groups');
@@ -53,6 +56,23 @@ const GroupManagement: React.FC = () => {
 
     fetchData();
   }, [selectedCampId]);
+
+  // Fetch available staff when modal opens
+  useEffect(() => {
+    if (isModalVisible && selectedCampId) {
+      const fetchStaff = async () => {
+        try {
+          const staffData = await staffService.getAvailableGroupStaff(selectedCampId);
+          setStaffList(staffData);
+        } catch (error) {
+          console.error('Failed to load staff:', error);
+          toastError('Error', 'Unable to load supervisors');
+        }
+      };
+
+      fetchStaff();
+    }
+  }, [isModalVisible, selectedCampId, toastError]);
 
   if (!selectedCampId) {
     return (
@@ -85,17 +105,29 @@ const GroupManagement: React.FC = () => {
   };
 
   // Handle edit group
-  const handleEditClick = (group: CamperGroupResponseDto) => {
-    setEditingGroup(group);
-    form.setFieldsValue({
-      groupName: group.groupName,
-      description: group.description,
-      maxSize: group.maxSize,
-      supervisorId: group.supervisorId,
-      minAge: group.minAge,
-      maxAge: group.maxAge,
-    });
-    setIsModalVisible(true);
+  const handleEditClick = async (group: CamperGroupResponseDto) => {
+    try {
+      // Fetch complete group data
+      const fullGroupData = await camperGroupService.getCamperGroupById(group.camperGroupId);
+      setEditingGroup(fullGroupData);
+      form.setFieldsValue({
+        groupName: fullGroupData.groupName,
+        description: fullGroupData.description,
+        maxSize: fullGroupData.maxSize,
+        supervisorId: fullGroupData.supervisorId,
+        minAge: fullGroupData.minAge,
+        maxAge: fullGroupData.maxAge,
+      });
+      setIsModalVisible(true);
+    } catch (error) {
+      console.error('Failed to load group details:', error);
+      toastError('Error', 'Failed to load group details');
+    }
+  };
+
+  // Calculate total max size of groups
+  const getTotalMaxSize = () => {
+    return groups.reduce((sum, group) => sum + group.maxSize, 0);
   };
 
   // Handle form submit
@@ -171,17 +203,6 @@ const GroupManagement: React.FC = () => {
         <div className="flex justify-center items-center h-96">
           <Spin size="large" />
         </div>
-      ) : groups.length === 0 ? (
-        <div className="bg-white rounded-xl shadow-sm border border-[#E5E7EB] p-12 text-center">
-          <p className="text-[#6B7280] text-lg mb-4">No groups found for this camp</p>
-          <button
-            onClick={handleAddClick}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-all font-medium text-sm"
-          >
-            <Plus size={16} />
-            Add Group
-          </button>
-        </div>
       ) : (
         <>
           {/* Filters and Table Section */}
@@ -189,13 +210,10 @@ const GroupManagement: React.FC = () => {
             {/* Left Sidebar - Filters */}
             <div className="lg:col-span-1">
               <div className="bg-white rounded-xl shadow-sm border border-[#E5E7EB] p-6 sticky top-6">
-                <h3 className="text-lg font-bold text-[#111827] mb-4">Filters</h3>
+                <h3 className="text-lg font-bold text-[#111827] mb-4">Search</h3>
 
                 {/* Search */}
                 <div className="mb-6">
-                  <label className="block text-xs font-semibold text-[#374151] mb-2 uppercase tracking-wider">
-                    Search
-                  </label>
                   <div className="relative">
                     <Search
                       className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9CA3AF]"
@@ -211,6 +229,17 @@ const GroupManagement: React.FC = () => {
                   </div>
                 </div>
 
+                {/* Max Size Info */}
+                {campData && (
+                  <div className="mb-6">
+                    <p className="text-xs font-medium text-[#6B7280] mb-1">Capacity</p>
+                    <div className="flex items-center gap-1">
+                      <span className="text-2xl font-bold text-[#111827]">{getTotalMaxSize()}</span>
+                      <span className="text-xs text-[#6B7280]">/ {campData.maxParticipants} max</span>
+                    </div>
+                  </div>
+                )}
+
                 {/* Add Button */}
                 <button
                   onClick={handleAddClick}
@@ -220,23 +249,6 @@ const GroupManagement: React.FC = () => {
                   Add Group
                 </button>
 
-                {/* Summary Stats */}
-                <div className="mt-6 pt-6 border-t border-[#E5E7EB]">
-                  <div className="space-y-3">
-                    <div>
-                      <span className="text-xs text-[#6B7280]">Total: </span>
-                      <span className="text-lg font-bold text-[#111827]">
-                        {groups.length}
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-xs text-[#6B7280]">Found: </span>
-                      <span className="text-lg font-bold text-[#6366F1]">
-                        {filteredGroups.length}
-                      </span>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
 
@@ -309,7 +321,13 @@ const GroupManagement: React.FC = () => {
                               </span>
                             </td>
                             <td className="px-6 py-4 text-sm text-[#6B7280]">
-                              {group.supervisorName}
+                              {group.supervisorName ? (
+                                group.supervisorName
+                              ) : (
+                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">
+                                  Unassigned
+                                </span>
+                              )}
                             </td>
                             <td className="px-6 py-4 text-right">
                               <div className="flex items-center justify-end gap-2">
@@ -401,6 +419,7 @@ const GroupManagement: React.FC = () => {
             rules={[
               { required: false },
             ]}
+            help={!editingGroup?.supervisorName ? '⚠️ No supervisor assigned' : ''}
           >
             <Select
               placeholder="Select a supervisor (optional)"
