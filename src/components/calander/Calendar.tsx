@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   Calendar as BigCalendar,
   momentLocalizer,
@@ -22,8 +22,16 @@ export interface Activity {
   participants?: number;
 }
 
+export interface CampInfo {
+  campId: number;
+  name: string;
+  startDate: string;
+  endDate: string;
+}
+
 interface CalendarProps {
   activities?: Activity[];
+  campInfo?: CampInfo;
   userRole?: 'manager' | 'staff' | 'driver' | 'admin';
   onSelectSchedule?: (schedule: any) => void;
   onAddClick?: () => void;
@@ -32,6 +40,7 @@ interface CalendarProps {
 
 const Calendar: React.FC<CalendarProps> = ({
   activities: externalActivities,
+  campInfo,
   userRole = 'admin',
   onSelectSchedule,
   onAddClick,
@@ -42,7 +51,14 @@ const Calendar: React.FC<CalendarProps> = ({
   const [view, setView] = useState<View>("month");
   const [date, setDate] = useState(new Date());
 
-  // Event style getter
+  // Jump to camp start
+  useEffect(() => {
+    if (campInfo) {
+      setDate(moment(campInfo.startDate).toDate());
+    }
+  }, [campInfo]);
+
+  // Event style
   const eventStyleGetter = (event: Activity) => {
     let backgroundColor = "#3b82f6"; // Core - Blue
     switch (event.type) {
@@ -75,6 +91,29 @@ const Calendar: React.FC<CalendarProps> = ({
     };
   };
 
+  // Get camp date range style
+  const dayStyleGetter = (date: Date) => {
+    const today = moment().startOf('day');
+    const currentDate = moment(date).startOf('day');
+
+    const style: any = {};
+
+    if (currentDate.isSame(today)) {
+      style.fontWeight = 'bold';
+    }
+
+    if (campInfo) {
+      const campStart = moment(campInfo.startDate).startOf('day');
+      const campEnd = moment(campInfo.endDate).startOf('day');
+
+      if (currentDate.isSameOrAfter(campStart) && currentDate.isSameOrBefore(campEnd)) {
+        style.backgroundColor = '#f0f9ff'; // bg-blue-50
+      }
+    }
+
+    return { style };
+  };
+
   // Handle select event
   const handleSelectEvent = useCallback((event: Activity) => {
     if (onSelectSchedule && externalActivities) {
@@ -92,6 +131,8 @@ const Calendar: React.FC<CalendarProps> = ({
   // Handle slot selection (clicking on empty time slot)
   const handleSelectSlot = useCallback(
     (slotInfo: { start: Date; end: Date }) => {
+      // Update toolbar date to selected date
+      setDate(slotInfo.start);
       if (onSelectSlot) {
         onSelectSlot({ start: slotInfo.start, end: slotInfo.end, view });
       }
@@ -213,6 +254,7 @@ const Calendar: React.FC<CalendarProps> = ({
           onSelectSlot={handleSelectSlot}
           selectable={true}
           eventPropGetter={eventStyleGetter}
+          dayPropGetter={dayStyleGetter}
           components={{
             toolbar: CustomToolbar,
           }}
