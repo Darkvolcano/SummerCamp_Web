@@ -101,10 +101,26 @@ const accommodationService = {
     return response.data as AccommodationResponseDto;
   },
 
+  // Update accommodation status (activate/deactivate)
+  updateAccommodationStatus: async (accommodationId: number, isActive: boolean): Promise<AccommodationResponseDto> => {
+    console.log(`[accommodationService] PATCH /Accommodation/${accommodationId}/status?isActive=${isActive}`);
+    const response = await axiosInstance.patch(
+      `/Accommodation/${accommodationId}/status`,
+      null,
+      { params: { isActive } }
+    );
+    return response.data as AccommodationResponseDto;
+  },
+
   // Deactivate accommodation
-  deactivateAccommodation: async (accommodationId: number): Promise<void> => {
-    console.log(`[accommodationService] PUT /Accommodation/deactivate/${accommodationId}`);
-    await axiosInstance.put(`/Accommodation/deactivate/${accommodationId}`);
+  deactivateAccommodation: async (accommodationId: number): Promise<AccommodationResponseDto> => {
+    console.log(`[accommodationService] PATCH /Accommodation/${accommodationId}/status?isActive=false`);
+    const response = await axiosInstance.patch(
+      `/Accommodation/${accommodationId}/status`,
+      null,
+      { params: { isActive: false } }
+    );
+    return response.data as AccommodationResponseDto;
   },
 };
 
