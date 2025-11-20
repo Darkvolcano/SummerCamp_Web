@@ -130,6 +130,19 @@ const GroupManagement: React.FC = () => {
     return groups.reduce((sum, group) => sum + group.maxSize, 0);
   };
 
+  // Get supervisor name by ID
+  const getSupervisorName = (userId: number) => {
+    const supervisor = staffList.find((staff) => staff.userId === userId);
+    if (supervisor) {
+      return supervisor.fullName;
+    }
+    // If not in staff list, try to get from editing group
+    if (editingGroup?.supervisorId === userId && editingGroup?.supervisorName) {
+      return editingGroup.supervisorName;
+    }
+    return '';
+  };
+
   // Handle form submit
   const handleSubmit = async () => {
     try {
@@ -424,10 +437,17 @@ const GroupManagement: React.FC = () => {
             <Select
               placeholder="Select a supervisor (optional)"
               allowClear
+              optionLabelProp="label"
               options={staffList.map((staff) => ({
                 label: staff.fullName,
                 value: staff.userId,
               }))}
+              labelRender={(props) => {
+                if (props.value) {
+                  return getSupervisorName(Number(props.value));
+                }
+                return props.label;
+              }}
             />
           </Form.Item>
 
