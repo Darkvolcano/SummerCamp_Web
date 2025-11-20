@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import {
   Calendar as BigCalendar,
   momentLocalizer,
@@ -50,13 +50,6 @@ const Calendar: React.FC<CalendarProps> = ({
   const canManage = userRole === 'manager';
   const [view, setView] = useState<View>("month");
   const [date, setDate] = useState(new Date());
-
-  // Jump to camp start
-  useEffect(() => {
-    if (campInfo) {
-      setDate(moment(campInfo.startDate).toDate());
-    }
-  }, [campInfo]);
 
   // Event style
   const eventStyleGetter = (event: Activity) => {
@@ -140,6 +133,13 @@ const Calendar: React.FC<CalendarProps> = ({
     [view, onSelectSlot]
   );
 
+  // Handle camp period button click
+  const handleCampPeriod = () => {
+    if (campInfo) {
+      setDate(moment(campInfo.startDate).toDate());
+    }
+  };
+
 
   // Custom toolbar
   const CustomToolbar = (toolbar: any) => {
@@ -186,6 +186,11 @@ const Calendar: React.FC<CalendarProps> = ({
           <button onClick={goToToday} className="toolbar-today-btn">
             Today
           </button>
+          {campInfo && (
+            <button onClick={handleCampPeriod} className="toolbar-camp-btn">
+              Camp Period
+            </button>
+          )}
           <button onClick={goToNext} className="toolbar-nav-btn">
             →
           </button>

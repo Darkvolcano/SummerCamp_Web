@@ -94,6 +94,24 @@
   color: #059669;
 }
 
+.toolbar-camp-btn {
+  padding: 8px 16px;
+  border: 1px solid #0ea5e9;
+  background: white;
+  color: #0ea5e9;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.toolbar-camp-btn:hover {
+  background: #ecf7ff;
+  border-color: #0284c7;
+  color: #0284c7;
+}
+
 .toolbar-right {
   display: flex;
   gap: 12px;
