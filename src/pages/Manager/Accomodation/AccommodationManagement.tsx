@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Spin, Modal, Form, Input, InputNumber, Select } from 'antd';
-import { Search, Plus, Edit2 } from 'lucide-react';
+import { Search, Plus, Edit2, Check, X } from 'lucide-react';
 import { useManagerContext } from '../../../hooks/useManagerContext';
 import { useNotification } from '../../../contexts/NotificationContext';
 import accommodationService, { type AccommodationResponseDto, type AccommodationRequestDto } from '../../../services/accommodationService';
@@ -199,11 +199,12 @@ const AccommodationManagement: React.FC = () => {
     }
   };
 
-  // Handle delete accommodation
-  const handleDelete = async (accommodationId: number) => {
+  // Handle deactivate/activate accommodation
+  const handleToggleStatus = async (accommodationId: number, isActive: boolean) => {
     try {
-      await accommodationService.deactivateAccommodation(accommodationId);
-      toastSuccess('Success', 'Accommodation deleted successfully');
+      const newStatus = !isActive;
+      await accommodationService.updateAccommodationStatus(accommodationId, newStatus);
+      toastSuccess('Success', `Accommodation ${newStatus ? 'activated' : 'deactivated'} successfully`);
       // Refresh accommodations
       if (selectedCampId) {
         const accommodationsData = await accommodationService.getAccommodationsByCampId(selectedCampId);
@@ -211,8 +212,8 @@ const AccommodationManagement: React.FC = () => {
       }
       setDeletePopoverOpen(null);
     } catch (error) {
-      console.error('Failed to delete accommodation:', error);
-      toastError('Error', 'Failed to delete accommodation');
+      console.error('Failed to toggle accommodation status:', error);
+      toastError('Error', 'Failed to update accommodation status');
     }
   };
 
@@ -405,16 +406,27 @@ const AccommodationManagement: React.FC = () => {
                                   <Edit2 size={16} />
                                   Edit
                                 </button>
-                                <DeletePopover
-                                  onConfirm={() => handleDelete(accommodation.accommodationId)}
-                                  title="Delete Accommodation"
-                                  message={`Are you sure you want to delete "${accommodation.name}"?`}
-                                  buttonText="Delete"
-                                  isOpen={deletePopoverOpen === accommodation.accommodationId}
-                                  onOpenChange={(open) =>
-                                    setDeletePopoverOpen(open ? accommodation.accommodationId : null)
-                                  }
-                                />
+                                {accommodation.isActive ? (
+                                  <DeletePopover
+                                    onConfirm={() => handleToggleStatus(accommodation.accommodationId, accommodation.isActive)}
+                                    title="Deactivate Accommodation"
+                                    message={`Are you sure you want to deactivate "${accommodation.name}"?`}
+                                    buttonText="Deactivate"
+                                    isOpen={deletePopoverOpen === accommodation.accommodationId}
+                                    onOpenChange={(open) =>
+                                      setDeletePopoverOpen(open ? accommodation.accommodationId : null)
+                                    }
+                                  />
+                                ) : (
+                                  <button
+                                    onClick={() => handleToggleStatus(accommodation.accommodationId, accommodation.isActive)}
+                                    className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-all font-medium text-sm"
+                                    title="Activate Accommodation"
+                                  >
+                                    <Check size={16} />
+                                    Activate
+                                  </button>
+                                )}
                               </div>
                             </td>
                           </tr>
