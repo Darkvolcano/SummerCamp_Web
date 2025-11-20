@@ -6,6 +6,7 @@ import { useNotification } from '../../../contexts/NotificationContext';
 import accommodationService, { type AccommodationResponseDto, type AccommodationRequestDto } from '../../../services/accommodationService';
 import accommodationTypeService, { type AccommodationTypeResponseDto } from '../../../services/accommodationTypeService';
 import staffService, { type StaffInfo } from '../../../services/staffService';
+import campService, { type CampResponseDto } from '../../../services/campService';
 import DeletePopover from '../../../components/DeletePopover';
 
 const AccommodationManagement: React.FC = () => {
@@ -16,6 +17,7 @@ const AccommodationManagement: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [accommodationTypes, setAccommodationTypes] = useState<AccommodationTypeResponseDto[]>([]);
   const [staffList, setStaffList] = useState<StaffInfo[]>([]);
+  const [campData, setCampData] = useState<CampResponseDto | null>(null);
 
   // Filters
   const [searchQuery, setSearchQuery] = useState('');
@@ -38,6 +40,7 @@ const AccommodationManagement: React.FC = () => {
   useEffect(() => {
     if (!selectedCampId) {
       setAccommodations([]);
+      setCampData(null);
       return;
     }
 
@@ -51,6 +54,9 @@ const AccommodationManagement: React.FC = () => {
         // Fetch accommodation types
         const typesData = await accommodationTypeService.getAllAccommodationTypes();
         setAccommodationTypes(typesData);
+
+        const campInfo = await campService.getCampById(selectedCampId);
+        setCampData(campInfo);
       } catch (error) {
         console.error('Failed to load data:', error);
         toastError('Error', 'Unable to load accommodations');
@@ -146,6 +152,11 @@ const AccommodationManagement: React.FC = () => {
       return editingAccommodation.supervisor.fullName;
     }
     return '';
+  };
+
+  // Calculate total capacity of accommodations
+  const getTotalCapacity = () => {
+    return accommodations.reduce((sum, acc) => sum + acc.capacity, 0);
   };
 
   // Handle form submit
@@ -275,6 +286,17 @@ const AccommodationManagement: React.FC = () => {
                     />
                   </div>
                 </div>
+
+                {/* Capacity Info */}
+                {campData && (
+                  <div className="mb-6">
+                    <p className="text-xs font-medium text-[#6B7280] mb-1">Capacity</p>
+                    <div className="flex items-center gap-1">
+                      <span className="text-2xl font-bold text-[#111827]">{getTotalCapacity()}</span>
+                      <span className="text-xs text-[#6B7280]">/ {campData.maxParticipants} max capacity</span>
+                    </div>
+                  </div>
+                )}
 
                 {/* Add Button */}
                 <button
