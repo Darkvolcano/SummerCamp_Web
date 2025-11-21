@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { Spin, Empty, Collapse } from "antd";
 import type { CollapseProps } from "antd";
-import { CreditCardOutlined, SearchOutlined } from "@ant-design/icons";
+import { CreditCardOutlined, SearchOutlined, CaretRightOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../../services/userService";
@@ -134,30 +134,33 @@ const MyRegistration: React.FC = () => {
     <div className="min-h-screen bg-white py-12">
       {/* Header */}
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-semibold text-gray-900 mb-2">
+        <h1 className="text-5xl font-bold text-gray-900 mb-2">
           Danh sách đăng ký của tôi
         </h1>
-        <p className="text-gray-600 mb-8">
+        <p className="text-xl text-gray-600 mb-8">
           Quản lý các đơn đăng ký trại hè của bạn
         </p>
 
         {/* Search & Filter Section */}
         <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
           {/* Search */}
-          <div className="mb-4 relative">
-            <SearchOutlined className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" style={{ color: "gray" }}/>
-            <input
-              type="text"
-              placeholder="Tìm kiếm theo tên trại hè..."
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF8F50] focus:border-transparent"
-            />
+          <div className="mb-6">
+            <p className="text-sm font-bold text-gray-900 mb-3">Tìm kiếm:</p>
+            <div className="relative">
+              <SearchOutlined className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" style={{ color: "gray" }}/>
+              <input
+                type="text"
+                placeholder="Tìm kiếm theo tên trại hè..."
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF8F50] focus:border-transparent"
+              />
+            </div>
           </div>
 
           {/* Status Filter */}
           <div>
-            <p className="text-sm font-medium text-gray-700 mb-3">Trạng thái:</p>
+            <p className="text-sm font-bold text-gray-900 mb-3">Trạng thái:</p>
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => setSelectedStatuses([])}
@@ -212,25 +215,53 @@ const MyRegistration: React.FC = () => {
           </div>
         ) : (
           <Collapse
+            bordered={false}
+            expandIcon={({ isActive }) => (
+              <CaretRightOutlined
+                rotate={isActive ? 90 : 0}
+                style={{ color: "#FF8F50", fontSize: "16px", transition: "transform 0.3s" }}
+              />
+            )}
             items={filteredRegistrations.map((registration) => ({
               key: registration.registrationId.toString(),
+              style: {
+                marginBottom: 16,
+                background: "white",
+                borderRadius: "8px",
+                border: "1px solid #e5e7eb",
+              },
               label: (
-                <div className="flex-1 flex items-center gap-3">
-                  <h3 className="text-base font-semibold text-gray-900">
-                    {registration.campName || "Trại hè"}
-                  </h3>
-                  <span
-                    className={`text-xs font-medium px-3 py-1 rounded-full ${getStatusInfo(
-                      registration.status
-                    ).bg} ${getStatusInfo(registration.status).text}`}
-                  >
-                    {getStatusLabel(registration.status)}
-                  </span>
-                  <span className="text-sm text-gray-600 ml-auto">
-                    {dayjs(registration.registrationCreateAt).format(
-                      "DD/MM/YYYY HH:mm"
-                    )}
-                  </span>
+                <div className="flex-1 flex items-center gap-6 py-2">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs text-gray-500 font-medium mb-1">TÊN TRẠI HÈ</p>
+                    <h3 className="text-base font-semibold text-gray-900 truncate">
+                      {registration.campName || "Trại hè"}
+                    </h3>
+                  </div>
+                  <div className="flex-shrink-0">
+                    <p className="text-xs text-gray-500 font-medium mb-1">TRẠNG THÁI</p>
+                    <span
+                      className={`text-xs font-medium px-3 py-1 rounded-full block ${getStatusInfo(
+                        registration.status
+                      ).bg} ${getStatusInfo(registration.status).text}`}
+                    >
+                      {getStatusLabel(registration.status)}
+                    </span>
+                  </div>
+                  <div className="flex-shrink-0 text-right">
+                    <p className="text-xs text-gray-500 font-medium mb-1">NGÀY ĐĂNG KÝ</p>
+                    <p className="text-sm text-gray-900 font-medium">
+                      {dayjs(registration.registrationCreateAt).format(
+                        "DD/MM/YYYY"
+                      )}
+                    </p>
+                  </div>
+                  <div className="flex-shrink-0 text-right">
+                    <p className="text-xs text-gray-500 font-medium mb-1">GIÁ</p>
+                    <p className="text-sm font-bold text-[#FF8F50]">
+                      {registration.finalPrice?.toLocaleString("vi-VN")} ₫
+                    </p>
+                  </div>
                 </div>
               ),
               children: (
@@ -323,7 +354,7 @@ const MyRegistration: React.FC = () => {
                 </div>
               ),
             }))}
-            className="collapse-custom"
+            style={{ background: "transparent" }}
           />
         )}
       </div>
