@@ -219,6 +219,10 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
           "/payment-cancel",
           "/profile",
           PagePath.REGISTER_SUCCESS,
+          PagePath.USER_MYPROFILE,
+          PagePath.USER_MYREGISTRATIONS,
+          PagePath.USER_PAYMENT_HISTORY,
+          PagePath.USER_MYCAMPERS,
         ],
       };
 
