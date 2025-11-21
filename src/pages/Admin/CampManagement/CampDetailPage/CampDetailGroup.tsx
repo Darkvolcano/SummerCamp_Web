@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { Spin } from 'antd';
 import { Search } from 'lucide-react';
 import camperGroupService, { type CamperGroupResponseDto } from '../../../../services/camperGroupService';
+import campService, { type CampResponseDto } from '../../../../services/campService';
 import { useNotification } from '../../../../contexts/NotificationContext';
 
 interface CampDetailGroupProps {
@@ -12,14 +13,19 @@ interface CampDetailGroupProps {
 const CampDetailGroup: React.FC<CampDetailGroupProps> = ({ campId, campStatus }) => {
   const { toastError } = useNotification();
   const [groups, setGroups] = useState<CamperGroupResponseDto[]>([]);
+  const [campData, setCampData] = useState<CampResponseDto | null>(null);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
   const fetchGroups = useCallback(async () => {
     try {
       setLoading(true);
-      const groupsData = await camperGroupService.getCamperGroupsByCampId(campId);
+      const [groupsData, campInfo] = await Promise.all([
+        camperGroupService.getCamperGroupsByCampId(campId),
+        campService.getCampById(campId),
+      ]);
       setGroups(groupsData);
+      setCampData(campInfo);
     } catch (error) {
       console.error('Failed to load groups:', error);
       toastError('Error', 'Failed to load groups');
@@ -33,6 +39,11 @@ const CampDetailGroup: React.FC<CampDetailGroupProps> = ({ campId, campStatus })
       fetchGroups();
     }
   }, [campId, campStatus, fetchGroups]);
+
+  // Calculate total max size of groups
+  const getTotalMaxSize = () => {
+    return groups.reduce((sum, group) => sum + group.maxSize, 0);
+  };
 
   // Filter groups
   const filteredGroups = groups.filter((group) => {
@@ -79,7 +90,7 @@ const CampDetailGroup: React.FC<CampDetailGroupProps> = ({ campId, campStatus })
               </div>
 
               {/* Search Input */}
-              <div className="px-6 py-4">
+              <div className="px-6 py-4 border-b border-[#E5E7EB]">
                 <div className="relative">
                   <Search
                     className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9CA3AF]"
@@ -94,6 +105,17 @@ const CampDetailGroup: React.FC<CampDetailGroupProps> = ({ campId, campStatus })
                   />
                 </div>
               </div>
+
+              {/* Capacity Info */}
+              {campData && (
+                <div className="px-6 py-4">
+                  <p className="text-xs font-medium text-[#6B7280] mb-1">Capacity</p>
+                  <div className="flex items-center gap-1">
+                    <span className="text-2xl font-bold text-[#111827]">{getTotalMaxSize()}</span>
+                    <span className="text-xs text-[#6B7280]">/ {campData.maxParticipants} max</span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
