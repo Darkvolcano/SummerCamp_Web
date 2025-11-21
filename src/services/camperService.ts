@@ -42,7 +42,39 @@ export interface CamperResponseDto {
     userId?: number;
     isActive?: boolean;
     healthRecord?: HealthRecord;
+}
+
+export interface CamperCampResponseDto {
+    camperId: number;
+    camperName: string;
+    gender: string;
+    dob: string;
+    groupId?: number | null;
+    avatar?: string | null;
     camperRegistrationStatus?: string;
+}
+
+export interface CamperActivityResponseDto {
+    camperId: number;
+    camperName: string;
+    gender: string;
+    dob: string;
+    avatar?: string | null;
+    attendanceLogId?: number;
+    status?: string;
+}
+
+export interface CamperGuardianResponseDto {
+    camperId: number;
+    camperName: string;
+    guardians: Guardian[];
+}
+
+export interface Guardian {
+    guardianId: number;
+    fullName: string;
+    title: string;
+    gender: string;
 }
 
 export interface HealthRecord {
@@ -120,7 +152,7 @@ const camperService = {
         console.log(`[camperService] PUT /Camper/${id}`);
 
         // Build query parameters for text fields
-        const params = {
+        const params: any = {
             camperName: camper.camperName,
             gender: camper.gender,
         };
@@ -174,52 +206,52 @@ const camperService = {
     },
 
     // Get campers by camp ID
-    getCampersByCampId: async (campId: number): Promise<CamperResponseDto[]> => {
+    getCampersByCampId: async (campId: number): Promise<CamperCampResponseDto[]> => {
         console.log(`[camperService] GET /Camper/camp/${campId}`);
         const response = await axiosInstance.get(`/Camper/camp/${campId}`);
-        return response.data as CamperResponseDto[];
+        return response.data as CamperCampResponseDto[];
     },
 
     // Get my campers (current user's campers)
-    getMyCampers: async (): Promise<CamperResponseDto[]> => {
+    getMyCampers: async (): Promise<CamperCampResponseDto[]> => {
         console.log("[camperService] GET /Camper/my-campers");
         const response = await axiosInstance.get("/Camper/my-campers");
-        return response.data as CamperResponseDto[];
+        return response.data as CamperCampResponseDto[];
     },
 
     // Get guardians of a camper
-    getCamperGuardians: async (camperId: number): Promise<any[]> => {
+    getCamperGuardians: async (camperId: number): Promise<CamperGuardianResponseDto[]> => {
         console.log(`[camperService] GET /Camper/${camperId}/guardians`);
         const response = await axiosInstance.get(`/Camper/${camperId}/guardians`);
-        return response.data as any[];
+        return response.data as CamperGuardianResponseDto[];
     },
 
     // Get campers by activity schedule ID
-    getCampersByActivityScheduleId: async (id: number): Promise<CamperResponseDto[]> => {
+    getCampersByActivityScheduleId: async (id: number): Promise<CamperActivityResponseDto[]> => {
         console.log(`[camperService] GET /Camper/activityScheduleId${id}`);
         const response = await axiosInstance.get(`/Camper/activityScheduleId${id}`);
-        return response.data as CamperResponseDto[];
+        return response.data as CamperActivityResponseDto[];
     },
 
     // Get camper by ID and camp ID
-    getCamperByIdAndCampId: async (camperId: number, campId: number): Promise<CamperResponseDto> => {
+    getCamperByIdAndCampId: async (camperId: number, campId: number): Promise<CamperCampResponseDto> => {
         console.log(`[camperService] GET /Camper/${camperId}/camp/${campId}`);
         const response = await axiosInstance.get(`/Camper/${camperId}/camp/${campId}`);
-        return response.data as CamperResponseDto;
+        return response.data as CamperCampResponseDto;
     },
 
     // Get campers by optional activity ID
-    getCampersByOptionalActivityId: async (optionalActivityId: number): Promise<CamperResponseDto[]> => {
+    getCampersByOptionalActivityId: async (optionalActivityId: number): Promise<CamperActivityResponseDto[]> => {
         console.log(`[camperService] GET /Camper/optionalActivities/${optionalActivityId}/campers`);
         const response = await axiosInstance.get(`/Camper/optionalActivities/${optionalActivityId}/campers`);
-        return response.data as CamperResponseDto[];
+        return response.data as CamperActivityResponseDto[];
     },
 
     // Get campers by core activity ID
-    getCampersByCoreActivityId: async (coreActivityId: number): Promise<CamperResponseDto[]> => {
+    getCampersByCoreActivityId: async (coreActivityId: number): Promise<CamperActivityResponseDto[]> => {
         console.log(`[camperService] GET /Camper/coreActivities/${coreActivityId}/campers`);
         const response = await axiosInstance.get(`/Camper/coreActivities/${coreActivityId}/campers`);
-        return response.data as CamperResponseDto[];
+        return response.data as CamperActivityResponseDto[];
     },
 };
 
