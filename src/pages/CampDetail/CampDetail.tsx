@@ -156,7 +156,7 @@ const CampDetail: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 pt-24 pb-1">
         <button
           onClick={() => navigate("/camp")}
-          className="flex bg-[#FF8F50] text-white items-center gap-2 hover:text-[#ffffff] transition-colors font-semibold group"
+          className="flex bg-[#FF8F50] text-white items-center gap-2 hover:text-[#ffffff] font-semibold group px-6 py-2 rounded-full hover:shadow-lg hover:bg-[#ff7e3d] transition-all"
         >
           <ArrowLeftOutlined className="group-hover:-translate-x-1 transition-transform" />
           <span>Quay lại danh sách</span>
@@ -209,21 +209,6 @@ const CampDetail: React.FC = () => {
                 {camp.name}
               </h1>
 
-              {/* Location & Place */}
-              <div className="flex flex-wrap items-center gap-4 mb-6 pb-6 border-b border-gray-200">
-                <div className="flex items-center gap-2 text-gray-600">
-                  <EnvironmentOutlined className="text-[#FF8F50] text-xl" />
-                  <span className="text-lg font-semibold">
-                    {camp.location?.name || camp.place}
-                  </span>
-                </div>
-                {camp.location && camp.place !== camp.location.name && (
-                  <span className="text-gray-500">•</span>
-                )}
-                {camp.location && camp.place !== camp.location.name && (
-                  <span className="text-gray-600 text-base">{camp.place}</span>
-                )}
-              </div>
 
               <p className="text-gray-700 leading-relaxed text-lg">
                 {camp.description}
@@ -299,7 +284,7 @@ const CampDetail: React.FC = () => {
                       Địa điểm tổ chức
                     </p>
                     <p className="text-lg font-semibold text-gray-900">
-                      {camp.address}
+                      {camp.location?.name || camp.place} - {camp.address}
                     </p>
                   </div>
                 </div>
