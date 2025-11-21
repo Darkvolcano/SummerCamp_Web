@@ -14,13 +14,23 @@ export enum PagePath {
   CAMP_DETAIL = "/camp/:campId",
   BLOG = "/blog",
   BLOG_DETAIL = "/blog/:blogId",
-  REGISTRATION_FORM = "/register-camp/:campId",
   CHAT = "/chat",
   ANY = "*",
   FORBIDDEN = "/403",
   ROOT = "/",
   ABOUT = "/about",
   REGISTER_SUCCESS = "/register-success/:registrationId",
+
+  //User Routes
+  USER_MYPROFILE = "/user/my-profile",
+  USER_MYREGISTRATIONS = "/user/my-registrations",
+  USER_MYREGISTRATIONS_DETAIL = "/user/my-registrations/:registrationId",
+  USER_PAYMENT_HISTORY = "/user/payment-history",
+  USER_PAYMENT_HISTORY_DETAIL = "/user/payment-history/:transactionId",
+  USER_MYCAMPERS = "/user/my-campers",
+  REGISTRATION_FORM = "/register-camp/:campId",
+
+
 
   // Admin Routes
   ADMIN_DASHBOARD = "/admin/dashboard",
