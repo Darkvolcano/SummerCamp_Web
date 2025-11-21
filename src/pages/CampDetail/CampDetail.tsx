@@ -238,7 +238,7 @@ const CampDetail: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Start Date */}
                 <div className="flex items-start gap-4 p-4 rounded-2xl hover:bg-orange-50 transition-colors">
-                  <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0">
+                  <div className="w-12 h-12 rounded-full bg-orange-200 flex items-center justify-center flex-shrink-0">
                     <CalendarOutlined className="text-[#FF8F50] text-xl" />
                   </div>
                   <div>
@@ -251,7 +251,7 @@ const CampDetail: React.FC = () => {
 
                 {/* End Date */}
                 <div className="flex items-start gap-4 p-4 rounded-2xl hover:bg-orange-50 transition-colors">
-                  <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0">
+                  <div className="w-12 h-12 rounded-full bg-orange-200 flex items-center justify-center flex-shrink-0">
                     <CalendarOutlined className="text-[#FF8F50] text-xl" />
                   </div>
                   <div>
@@ -264,7 +264,7 @@ const CampDetail: React.FC = () => {
 
                 {/* Duration */}
                 <div className="flex items-start gap-4 p-4 rounded-2xl hover:bg-orange-50 transition-colors">
-                  <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0">
+                  <div className="w-12 h-12 rounded-full bg-orange-200 flex items-center justify-center flex-shrink-0">
                     <ClockCircleOutlined className="text-[#FF8F50] text-xl" />
                   </div>
                   <div>
@@ -278,7 +278,7 @@ const CampDetail: React.FC = () => {
 
                 {/* Participants */}
                 <div className="flex items-start gap-4 p-4 rounded-2xl hover:bg-orange-50 transition-colors">
-                  <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0">
+                  <div className="w-12 h-12 rounded-full bg-orange-200 flex items-center justify-center flex-shrink-0">
                     <UsergroupAddOutlined className="text-[#FF8F50] text-xl" />
                   </div>
                   <div>
@@ -293,7 +293,7 @@ const CampDetail: React.FC = () => {
               {/* Address */}
               <div className="mt-8 p-6 bg-gradient-to-r from-orange-50 to-yellow-50 rounded-2xl border-2 border-orange-200">
                 <div className="flex items-start gap-4">
-                  <EnvironmentOutlined className="text-[#FF8F50] text-2xl mt-1" />
+                  <EnvironmentOutlined className="text-2xl mt-1" style={{ color: '#6B7280' }} />
                   <div className="flex-1">
                     <p className="text-sm text-gray-500 mb-2">
                       Địa điểm tổ chức
@@ -324,7 +324,7 @@ const CampDetail: React.FC = () => {
                     key={index}
                     className="flex items-center gap-3 p-3 rounded-xl hover:bg-green-50 transition-colors group"
                   >
-                    <CheckCircleFilled className="text-green-500 text-xl group-hover:scale-110 transition-transform" />
+                    <CheckCircleFilled className="text-xl group-hover:scale-110 transition-transform" style={{ color: '#10b981' }} />
                     <span className="text-gray-700 font-medium">{feature}</span>
                   </div>
                 ))}
