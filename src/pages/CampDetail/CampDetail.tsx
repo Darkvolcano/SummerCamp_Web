@@ -156,7 +156,7 @@ const CampDetail: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 pt-24 pb-1">
         <button
           onClick={() => navigate("/camp")}
-          className="flex bg-[#FF8F50] text-white items-center gap-2 text-gray-600 hover:text-[#ffffff] transition-colors font-semibold group"
+          className="flex bg-[#FF8F50] text-white items-center gap-2 hover:text-[#ffffff] transition-colors font-semibold group"
         >
           <ArrowLeftOutlined className="group-hover:-translate-x-1 transition-transform" />
           <span>Quay lại danh sách</span>
