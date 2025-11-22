@@ -22,9 +22,6 @@ import registrationService, {
   type CreateRegistrationRequestDto,
 } from "../../services/registrationService";
 import campService, { type CampResponseDto } from "../../services/campService";
-import promotionService, {
-  type PromotionResponseDto,
-} from "../../services/promotionService";
 import guardianService, {
   type GuardianResponseDto,
 } from "../../services/guardianService";
@@ -57,7 +54,6 @@ const RegistrationPage: React.FC = () => {
   );
 
   // State for promotions
-  const [promotions, setPromotions] = useState<PromotionResponseDto[]>([]);
   const [selectedPromotionId, setSelectedPromotionId] = useState<number | null>(
     null
   );
@@ -89,14 +85,12 @@ const RegistrationPage: React.FC = () => {
     const fetchInitialData = async () => {
       try {
         setLoading(true);
-        const [campsData, promotionsData, myCampersData] = await Promise.all([
-          campService.getAllCamps(),
-          promotionService.getAllPromotions(),
+        const [campsData, myCampersData] = await Promise.all([
+          campService.getCampsByStatus("OpenForRegistration"),
           camperService.getMyCampers(),
         ]);
 
         setCamps(campsData);
-        setPromotions(promotionsData);
         setMyCampers(myCampersData);
 
         // Set selected camp if campId from URL
@@ -410,15 +404,17 @@ const RegistrationPage: React.FC = () => {
         title: values.title || undefined,
         gender: values.gender || undefined,
         dob: dobValue || undefined,
-        answer: values.answer || undefined,
-        category: values.category || undefined,
+        email: values.email || undefined,
+        phoneNumber: values.phoneNumber || undefined,
       };
 
       setGuardianAdding(true);
 
       if (applyToAllCampers) {
-        // Apply to all selected campers
+        // Apply to all selected campers - gọi API lần lượt cho từng camper
         const newGuardians = [...guardiansByIndex];
+        let successCount = 0;
+        let failCount = 0;
 
         for (let i = 0; i < selectedCamperIds.length; i++) {
           const camperId = selectedCamperIds[i];
@@ -429,13 +425,22 @@ const RegistrationPage: React.FC = () => {
                 guardianData
               );
               newGuardians[i] = [...newGuardians[i], newGuardian];
+              successCount++;
             } catch (error) {
               console.error(`Error adding guardian to camper ${i + 1}:`, error);
+              failCount++;
             }
           }
         }
         setGuardiansByIndex(newGuardians);
-        toastSuccess("Thành công", "Thêm người giám hộ cho tất cả trại viên thành công!");
+
+        if (failCount === 0) {
+          toastSuccess("Thành công", `Thêm người giám hộ cho ${successCount} trại viên thành công!`);
+        } else if (successCount === 0) {
+          toastError("Lỗi", `Không thể thêm người giám hộ cho ${failCount} trại viên`);
+        } else {
+          toastSuccess("Thành công", `Thêm người giám hộ cho ${successCount} trại viên, ${failCount} trại viên thất bại`);
+        }
       } else {
         // Apply to single camper
         const camperId = selectedCamperIds[guardianModalIndex];
@@ -508,12 +513,9 @@ const RegistrationPage: React.FC = () => {
   const calculateTotalPrice = () => {
     if (!selectedCamp) return 0;
     let total = selectedCamp.price * numCampers;
-    if (selectedPromotionId) {
-      const promotion = promotions.find((p) => p.id === selectedPromotionId);
-      if (promotion) {
-        const discount = (total * promotion.percent) / 100;
-        total -= Math.min(discount, promotion.maxDiscountAmount);
-      }
+    if (selectedPromotionId && selectedCamp.promotion) {
+      const discount = (total * selectedCamp.promotion.percent) / 100;
+      total -= Math.min(discount, selectedCamp.promotion.maxDiscountAmount || 0);
     }
     return total;
   };
@@ -644,7 +646,13 @@ const RegistrationPage: React.FC = () => {
                       }
                       className="flex-1"
                     >
-                      {myCampers.map((camper) => (
+                      {myCampers
+                        .filter((camper) =>
+                          // Show camper if: not selected OR is currently selected in this index
+                          !selectedCamperIds.includes(camper.camperId) ||
+                          selectedCamperIds[index] === camper.camperId
+                        )
+                        .map((camper) => (
                         <Select.Option
                           key={camper.camperId}
                           value={camper.camperId}
@@ -808,11 +816,11 @@ const RegistrationPage: React.FC = () => {
                                 </p>
                               </>
                             )}
-                            {guardian.category && (
+                            {guardian.phoneNumber && (
                               <>
-                                <p className="text-sm text-gray-600">Danh mục</p>
+                                <p className="text-sm text-gray-600">Số điện thoại</p>
                                 <p className="font-semibold text-gray-900">
-                                  {guardian.category}
+                                  {guardian.phoneNumber}
                                 </p>
                               </>
                             )}
@@ -938,15 +946,14 @@ const RegistrationPage: React.FC = () => {
                 placeholder="Chọn mã khuyến mãi (tùy chọn)"
                 allowClear
                 onChange={setSelectedPromotionId}
+                disabled={!selectedCamp || !selectedCamp.promotion}
               >
-                {promotions
-                  .filter((p) => p.status === "Active")
-                  .map((promo) => (
-                    <Select.Option key={promo.id} value={promo.id}>
-                      {promo.name} - {promo.percent}% Off (Max:{" "}
-                      {promo.maxDiscountAmount?.toLocaleString()} VNĐ)
-                    </Select.Option>
-                  ))}
+                {selectedCamp && selectedCamp.promotion && (
+                  <Select.Option key={selectedCamp.promotion.id} value={selectedCamp.promotion.id}>
+                    {selectedCamp.promotion.name} - {selectedCamp.promotion.percent}% Off (Max:{" "}
+                    {selectedCamp.promotion.maxDiscountAmount?.toLocaleString()} VNĐ)
+                  </Select.Option>
+                )}
               </Select>
             </Form.Item>
 
@@ -1266,20 +1273,17 @@ const RegistrationPage: React.FC = () => {
           </Form.Item>
 
           <Form.Item
-            label="Danh mục"
-            name="category"
+            label="Email"
+            name="email"
           >
-            <Input placeholder="Nhập danh mục" />
+            <Input type="email" placeholder="Nhập email" />
           </Form.Item>
 
           <Form.Item
-            label="Câu trả lời"
-            name="answer"
+            label="Số điện thoại"
+            name="phoneNumber"
           >
-            <Input.TextArea
-              placeholder="Nhập câu trả lời hoặc ghi chú"
-              rows={3}
-            />
+            <Input placeholder="Nhập số điện thoại" />
           </Form.Item>
         </Form>
       </Modal>
