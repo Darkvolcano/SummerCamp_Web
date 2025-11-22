@@ -182,26 +182,10 @@ const RegistrationPage: React.FC = () => {
         return newLoading;
       });
 
-      // Fetch camper data and guardians in parallel
+      // Fetch camper data first (required)
       const selectedCamper = await camperService.getCamperById(camperId);
-      const camperGuardiansResponse = await camperService.getCamperGuardians(camperId);
 
-      // Extract guardians from response and map to GuardianResponseDto
-      const guardiansList = camperGuardiansResponse.length > 0 ? camperGuardiansResponse[0]?.guardians || [] : [];
-      const camperGuardians: GuardianResponseDto[] = guardiansList.map(g => ({
-        guardianId: g.guardianId,
-        camperId: camperId,
-        userId: 0, // Not available from Guardian type, using default
-        fullName: g.fullName,
-        title: g.title,
-        gender: g.gender,
-        dob: undefined,
-        answer: undefined,
-        category: undefined,
-        isActive: true, // Default to active
-      }));
-
-      // Update all states at once
+      // Update camper info immediately (don't block on guardian fetch error)
       setCampers((prev) => {
         const newCampers = [...prev];
         newCampers[index] = selectedCamper;
@@ -225,11 +209,38 @@ const RegistrationPage: React.FC = () => {
         return newRegistrationCampers;
       });
 
-      setGuardiansByIndex((prev) => {
-        const newGuardians = [...prev];
-        newGuardians[index] = camperGuardians;
-        return newGuardians;
-      });
+      // Try to fetch guardians, but don't fail if error
+      try {
+        const camperGuardiansResponse = await camperService.getCamperGuardians(camperId);
+        const guardiansList = camperGuardiansResponse.length > 0 ? camperGuardiansResponse[0]?.guardians || [] : [];
+
+        const camperGuardians: GuardianResponseDto[] = guardiansList.map(g => ({
+          guardianId: g.guardianId,
+          camperId: camperId,
+          userId: 0,
+          fullName: g.fullName,
+          title: g.title,
+          gender: g.gender,
+          dob: undefined,
+          answer: undefined,
+          category: undefined,
+          isActive: true,
+        }));
+
+        setGuardiansByIndex((prev) => {
+          const newGuardians = [...prev];
+          newGuardians[index] = camperGuardians;
+          return newGuardians;
+        });
+      } catch (guardianError) {
+        console.error("Error fetching guardians:", guardianError);
+        // Initialize empty guardians list if fetch fails
+        setGuardiansByIndex((prev) => {
+          const newGuardians = [...prev];
+          newGuardians[index] = [];
+          return newGuardians;
+        });
+      }
 
       // Clear loading state
       setGuardianLoadingByIndex((prev) => {
@@ -241,11 +252,30 @@ const RegistrationPage: React.FC = () => {
       console.error("Error fetching camper details:", error);
       toastError("Lỗi", "Không thể tải thông tin trại viên");
 
-      // Clear loading state on error
+      // Clear loading state and reset selections on critical error
       setGuardianLoadingByIndex((prev) => {
         const newLoading = [...prev];
         newLoading[index] = false;
         return newLoading;
+      });
+
+      // Reset this camper selection on error
+      setSelectedCamperIds((prev) => {
+        const newSelectedIds = [...prev];
+        newSelectedIds[index] = null;
+        return newSelectedIds;
+      });
+
+      setCampers((prev) => {
+        const newCampers = [...prev];
+        newCampers[index] = null;
+        return newCampers;
+      });
+
+      setGuardiansByIndex((prev) => {
+        const newGuardians = [...prev];
+        newGuardians[index] = [];
+        return newGuardians;
       });
     }
   };

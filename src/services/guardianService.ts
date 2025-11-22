@@ -13,7 +13,6 @@ export interface Guardian {
     isActive: boolean;
 }
 
-// Request DTO (for POST)
 export interface GuardianCreateDto {
     fullName?: string | null;
     title?: string | null;
@@ -23,7 +22,6 @@ export interface GuardianCreateDto {
     category?: string | null;
 }
 
-// Request DTO (for PUT)
 export interface GuardianUpdateDto {
     fullName?: string | null;
     title?: string | null;
@@ -34,7 +32,6 @@ export interface GuardianUpdateDto {
     isActive: boolean;
 }
 
-// Response DTO (from GET)
 export interface GuardianResponseDto {
     guardianId: number;
     camperId: number;
