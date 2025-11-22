@@ -16,7 +16,8 @@ const axiosInstance = axios.create({
 // Request interceptor - Add JWT token to requests
 axiosInstance.interceptors.request.use(
   async (config) => {
-    const token = localStorage.getItem("token");
+    // Check both localStorage and sessionStorage for token
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token");
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -39,8 +40,13 @@ axiosInstance.interceptors.response.use(
       const currentPath = window.location.pathname;
       // Only redirect to login if not already on login or register pages
       if (currentPath !== "/login" && currentPath !== "/register") {
+        // Clear tokens from both storages
         localStorage.removeItem("token");
         localStorage.removeItem("user");
+        localStorage.removeItem("refreshToken");
+        sessionStorage.removeItem("token");
+        sessionStorage.removeItem("user");
+        sessionStorage.removeItem("refreshToken");
         window.location.href = "/login";
       }
     }

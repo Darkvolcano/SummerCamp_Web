@@ -7,10 +7,12 @@ import {
   Calendar,
   FileText,
   CreditCard,
+  LayoutDashboard,
 } from "lucide-react";
 import Logoforblack from "../../assets/Logo.png";
 import { useAuthStore } from "../../services/userService";
 import { PagePath } from "../../enums/page-path.enum";
+import { jwtDecode } from "jwt-decode";
 
 export default function Navbar() {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -19,7 +21,42 @@ export default function Navbar() {
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const { user, logout } = useAuthStore();
+  const { user, logout, token } = useAuthStore();
+
+  // Get user role from token
+  const getUserRole = (): string | null => {
+    if (!token) return null;
+    try {
+      const storedToken = localStorage.getItem("token") || sessionStorage.getItem("token");
+      if (!storedToken) return null;
+      const decoded = jwtDecode<{ role: string }>(storedToken);
+      return decoded.role?.toLowerCase() || null;
+    } catch (error) {
+      console.error("Error decoding token:", error);
+      return null;
+    }
+  };
+
+  // Get dashboard path based on user role
+  const getDashboardPath = (): { path: string; label: string } | null => {
+    const role = getUserRole();
+    if (!role) return null;
+
+    switch (role) {
+      case "admin":
+        return { path: PagePath.ADMIN_DASHBOARD, label: "Quản trị" };
+      case "staff":
+        return { path: PagePath.STAFF_SCHEDULE, label: "Nhân viên" };
+      case "manager":
+        return { path: PagePath.MANAGER_DASHBOARD, label: "Quản lý" };
+      case "driver":
+        return { path: PagePath.DRIVER_CALENDAR, label: "Tài xế" };
+      default:
+        return null;
+    }
+  };
+
+  const dashboardInfo = getDashboardPath();
 
   const handleMobileLinkClick = () => setShowMobileMenu(false);
 
@@ -76,6 +113,16 @@ export default function Navbar() {
           <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-orange-400 transition-all duration-300 group-hover:w-full"></span>
         </Link>
       ))}
+      {dashboardInfo && (
+        <Link
+          to={dashboardInfo.path}
+          className="text-white hover:text-orange-400 transition-colors duration-300 relative group px-2 py-1 flex items-center gap-1"
+        >
+          <LayoutDashboard size={16} />
+          {dashboardInfo.label}
+          <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-orange-400 transition-all duration-300 group-hover:w-full"></span>
+        </Link>
+      )}
     </div>
   );
 
@@ -87,13 +134,22 @@ export default function Navbar() {
           key={link.to}
           to={link.to}
           onClick={handleMobileLinkClick}
-          className={`block px-3 py-2 text-white hover:bg-orange-500/20 hover:text-orange-400 transition-colors text-xs ${
-            index < navLinks.length - 1 ? "border-b border-gray-700/50" : ""
-          }`}
+          className={`block px-3 py-2 text-white hover:bg-orange-500/20 hover:text-orange-400 transition-colors text-xs ${index < navLinks.length - 1 ? "border-b border-gray-700/50" : ""
+            }`}
         >
           {link.label}
         </Link>
       ))}
+      {dashboardInfo && (
+        <Link
+          to={dashboardInfo.path}
+          onClick={handleMobileLinkClick}
+          className="block px-3 py-2 text-white hover:bg-orange-500/20 hover:text-orange-400 transition-colors text-xs border-b border-gray-700/50 flex items-center gap-2"
+        >
+          <LayoutDashboard size={16} />
+          {dashboardInfo.label}
+        </Link>
+      )}
       <div className="px-3 py-2 border-t border-gray-700/50">
         {user ? (
           <>
@@ -105,6 +161,18 @@ export default function Navbar() {
                 {user?.email || ""}
               </p>
             </div>
+            {dashboardInfo && (
+              <button
+                onClick={() => {
+                  handleMobileLinkClick();
+                  navigate(dashboardInfo.path);
+                }}
+                className="block w-full text-center bg-gradient-to-r from-orange-400 to-yellow-400 hover:from-orange-500 hover:to-yellow-500 text-white font-bold py-1.5 rounded-md transition-all duration-300 shadow-lg text-xs mb-2 flex items-center justify-center gap-1"
+              >
+                <LayoutDashboard size={14} />
+                Dashboard {dashboardInfo.label}
+              </button>
+            )}
             <button
               onClick={() => {
                 handleMobileLinkClick();
@@ -140,11 +208,10 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`text-white px-2 md:px-4 py-1 md:py-2 flex justify-between items-center fixed top-0 w-full z-50 transition-all duration-500 ${
-        isScrolled
+      className={`text-white px-2 md:px-4 py-1 md:py-2 flex justify-between items-center fixed top-0 w-full z-50 transition-all duration-500 ${isScrolled
           ? "bg-[#0F0E0E]/90 backdrop-blur-md shadow-lg"
           : "bg-[#0F0E0E]/40 backdrop-blur-md shadow-lg"
-      }`}
+        }`}
     >
       {/* Logo*/}
       <div className="text-lg font-bold transition-transform duration-300 hover:scale-105">
@@ -174,9 +241,8 @@ export default function Navbar() {
               </span>
               <ChevronDown
                 size={14}
-                className={`transition-transform duration-300 text-orange-400 ${
-                  showUserDropdown ? "rotate-180" : ""
-                }`}
+                className={`transition-transform duration-300 text-orange-400 ${showUserDropdown ? "rotate-180" : ""
+                  }`}
               />
             </button>
 
@@ -192,6 +258,19 @@ export default function Navbar() {
                 </div>
 
                 <div className="py-1">
+                  {dashboardInfo && (
+                    <button
+                      onClick={() => {
+                        setShowUserDropdown(false);
+                        navigate(dashboardInfo.path);
+                      }}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-800 bg-gradient-to-r from-orange-50 to-yellow-50 hover:from-orange-100 hover:to-yellow-100 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-3 font-semibold"
+                    >
+                      <LayoutDashboard size={18} className="text-orange-500" />
+                      <span>Dashboard {dashboardInfo.label}</span>
+                    </button>
+                  )}
+
                   <button
                     onClick={() => {
                       setShowUserDropdown(false);
@@ -203,38 +282,43 @@ export default function Navbar() {
                     <span>Thông tin cá nhân</span>
                   </button>
 
-                  <button
-                    onClick={() => {
-                      setShowUserDropdown(false);
-                      navigate(PagePath.USER_MYREGISTRATIONS);
-                    }}
-                    className="w-full text-left px-4 py-2 text-sm text-gray-800 bg-white hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-3"
-                  >
-                    <Calendar size={18} className="text-gray-600" />
-                    <span>Đăng ký của tôi</span>
-                  </button>
+                  {/* User-exclusive items - only show for parent/user roles */}
+                  {(!getUserRole() || ["parent", "user"].includes(getUserRole() || "")) && (
+                    <>
+                      <button
+                        onClick={() => {
+                          setShowUserDropdown(false);
+                          navigate(PagePath.USER_MYREGISTRATIONS);
+                        }}
+                        className="w-full text-left px-4 py-2 text-sm text-gray-800 bg-white hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-3"
+                      >
+                        <Calendar size={18} className="text-gray-600" />
+                        <span>Đăng ký của tôi</span>
+                      </button>
 
-                  <button
-                    onClick={() => {
-                      setShowUserDropdown(false);
-                      navigate(PagePath.USER_PAYMENT_HISTORY);
-                    }}
-                    className="w-full text-left px-4 py-2 text-sm text-gray-800 bg-white hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-3"
-                  >
-                    <FileText size={18} className="text-gray-600" />
-                    <span>Lịch sử giao dịch</span>
-                  </button>
+                      <button
+                        onClick={() => {
+                          setShowUserDropdown(false);
+                          navigate(PagePath.USER_PAYMENT_HISTORY);
+                        }}
+                        className="w-full text-left px-4 py-2 text-sm text-gray-800 bg-white hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-3"
+                      >
+                        <FileText size={18} className="text-gray-600" />
+                        <span>Lịch sử giao dịch</span>
+                      </button>
 
-                  <button
-                    onClick={() => {
-                      setShowUserDropdown(false);
-                      navigate(PagePath.USER_MYCAMPERS);
-                    }}
-                    className="w-full text-left px-4 py-2 text-sm text-gray-800 bg-white hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-3"
-                  >
-                    <CreditCard size={18} className="text-gray-600" />
-                    <span>Trạng thái trại viên</span>
-                  </button>
+                      <button
+                        onClick={() => {
+                          setShowUserDropdown(false);
+                          navigate(PagePath.USER_MYCAMPERS);
+                        }}
+                        className="w-full text-left px-4 py-2 text-sm text-gray-800 bg-white hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-3"
+                      >
+                        <CreditCard size={18} className="text-gray-600" />
+                        <span>Trạng thái trại viên</span>
+                      </button>
+                    </>
+                  )}
                 </div>
 
                 <div className="px-4 py-2 border-t border-gray-100">
@@ -272,9 +356,8 @@ export default function Navbar() {
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className={`h-5 w-5 text-white transition-transform duration-300 ${
-              showMobileMenu ? "rotate-90" : ""
-            }`}
+            className={`h-5 w-5 text-white transition-transform duration-300 ${showMobileMenu ? "rotate-90" : ""
+              }`}
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
