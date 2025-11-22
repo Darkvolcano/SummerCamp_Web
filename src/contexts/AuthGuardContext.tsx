@@ -74,6 +74,7 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
       PagePath.BLOG_DETAIL,
       PagePath.ABOUT,
       PagePath.HOME,
+      PagePath.CONTACT,
     ];
 
     const isPublicRoute = publicRoutes.some((route) => {
@@ -203,6 +204,11 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
           PagePath.ADMIN_VEHICLE_TYPES,
           PagePath.ADMIN_SETTINGS,
           PagePath.ADMIN_CAMPTYPES,
+          PagePath.ADMIN_USERS,
+          PagePath.ADMIN_FAQS,
+          PagePath.ADMIN_TRANSACTIONS,
+          PagePath.ADMIN_CALENDAR,
+          PagePath.ADMIN_REPORTS,
           "/admin/profile",
           "/profile",
         ],
