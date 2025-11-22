@@ -108,7 +108,7 @@ export default function Navbar() {
             <button
               onClick={() => {
                 handleMobileLinkClick();
-                navigate(PagePath.ROOT + "profile");
+                navigate(PagePath.USER_MYPROFILE);
               }}
               className="block w-full text-center bg-gradient-to-r from-orange-400 to-yellow-400 hover:from-orange-500 hover:to-yellow-500 text-white font-bold py-1.5 rounded-md transition-all duration-300 shadow-lg text-xs mb-2"
             >
@@ -195,7 +195,7 @@ export default function Navbar() {
                   <button
                     onClick={() => {
                       setShowUserDropdown(false);
-                      navigate(PagePath.ROOT + "profile");
+                      navigate(PagePath.USER_MYPROFILE);
                     }}
                     className="w-full text-left px-4 py-2 text-sm text-gray-800 bg-white hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-3"
                   >
@@ -206,7 +206,7 @@ export default function Navbar() {
                   <button
                     onClick={() => {
                       setShowUserDropdown(false);
-                      navigate(PagePath.ROOT + "my-registrations");
+                      navigate(PagePath.USER_MYREGISTRATIONS);
                     }}
                     className="w-full text-left px-4 py-2 text-sm text-gray-800 bg-white hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-3"
                   >
@@ -217,7 +217,7 @@ export default function Navbar() {
                   <button
                     onClick={() => {
                       setShowUserDropdown(false);
-                      navigate(PagePath.ROOT + "transaction-history");
+                      navigate(PagePath.USER_PAYMENT_HISTORY);
                     }}
                     className="w-full text-left px-4 py-2 text-sm text-gray-800 bg-white hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-3"
                   >
@@ -228,7 +228,7 @@ export default function Navbar() {
                   <button
                     onClick={() => {
                       setShowUserDropdown(false);
-                      navigate(PagePath.ROOT + "camper-status");
+                      navigate(PagePath.USER_MYCAMPERS);
                     }}
                     className="w-full text-left px-4 py-2 text-sm text-gray-800 bg-white hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-3"
                   >

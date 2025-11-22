@@ -223,7 +223,7 @@ const InCampLocationManagement: React.FC = () => {
               <h3 className="text-lg font-bold text-[#111827] mb-4">Search</h3>
 
               {/* Search Input */}
-              <div className="mb-6">
+              <div className="">
                 <div className="relative">
                   <Search
                     className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9CA3AF]"
@@ -373,7 +373,26 @@ const InCampLocationManagement: React.FC = () => {
         okText={editingLocation ? "Update" : "Add"}
         cancelText="Cancel"
         confirmLoading={submitting}
+        centered
+        styles={{
+          body: {
+            padding: "16px 16px",
+          },
+        }}
+        classNames={{
+          header: "!pb-3",
+          content: "location-modal",
+        }}
       >
+        <style>{`
+          .location-modal .ant-modal-header {
+            border-bottom: none;
+          }
+          .location-modal .ant-modal-title {
+            font-size: 16px;
+            font-weight: 600;
+          }
+        `}</style>
         <Form form={form} layout="vertical" className="mt-4">
           <Form.Item
             label="Location Name"

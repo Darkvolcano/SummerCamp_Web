@@ -201,11 +201,33 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
   };
 
   const handleApprove = async () => {
-    // TODO: Implement approval logic
+    try {
+      await campService.approveCamp(campId);
+      toastSuccess('Success', 'Camp approved and published successfully!');
+      fetchCampData();
+      onUpdate?.();
+    } catch (error: any) {
+      let errorMsg = 'Failed to approve camp';
+      if (error.response?.data?.message) {
+        errorMsg = error.response.data.message;
+      }
+      toastError('Error', errorMsg);
+    }
   };
 
   const handleReject = async () => {
-    // TODO: Implement rejection logic
+    try {
+      await campService.rejectCamp(campId);
+      toastSuccess('Success', 'Camp rejected successfully!');
+      fetchCampData();
+      onUpdate?.();
+    } catch (error: any) {
+      let errorMsg = 'Failed to reject camp';
+      if (error.response?.data?.message) {
+        errorMsg = error.response.data.message;
+      }
+      toastError('Error', errorMsg);
+    }
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {

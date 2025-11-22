@@ -1,5 +1,10 @@
 import axiosInstance from "../config/axios";
 
+export interface SupervisorInfo {
+  userId: number;
+  fullName: string;
+}
+
 export interface Accommodation {
   accommodationId: number;
   campId: number;
@@ -7,7 +12,7 @@ export interface Accommodation {
   name: string;
   capacity: number;
   isActive: boolean;
-  supervisorId: number;
+  supervisor: SupervisorInfo | null;
 }
 
 export interface AccommodationRequestDto {
@@ -15,7 +20,7 @@ export interface AccommodationRequestDto {
   accommodationTypeId: number;
   name: string;
   capacity: number;
-  supervisorId: number;
+  supervisorId?: number | null;
 }
 
 export interface AccommodationResponseDto {
@@ -25,7 +30,7 @@ export interface AccommodationResponseDto {
   name: string;
   capacity: number;
   isActive: boolean;
-  supervisorId: number;
+  supervisor: SupervisorInfo | null;
 }
 
 const accommodationService = {
@@ -59,6 +64,13 @@ const accommodationService = {
     return response.data as AccommodationResponseDto[];
   },
 
+  // Get active accommodations
+  getActiveAccommodations: async (): Promise<AccommodationResponseDto[]> => {
+    console.log("[accommodationService] GET /Accommodation/active");
+    const response = await axiosInstance.get("/Accommodation/active");
+    return response.data as AccommodationResponseDto[];
+  },
+
   // Create accommodation
   createAccommodation: async (accommodation: AccommodationRequestDto): Promise<AccommodationResponseDto> => {
     console.log("[accommodationService] POST /Accommodation");
@@ -67,7 +79,7 @@ const accommodationService = {
       accommodationTypeId: accommodation.accommodationTypeId,
       name: accommodation.name,
       capacity: accommodation.capacity,
-      supervisorId: accommodation.supervisorId,
+      supervisorId: accommodation.supervisorId ?? null,
     };
 
     const response = await axiosInstance.post("/Accommodation", requestPayload);
@@ -82,17 +94,33 @@ const accommodationService = {
       accommodationTypeId: accommodation.accommodationTypeId,
       name: accommodation.name,
       capacity: accommodation.capacity,
-      supervisorId: accommodation.supervisorId,
+      supervisorId: accommodation.supervisorId ?? null,
     };
 
     const response = await axiosInstance.put(`/Accommodation/${accommodationId}`, requestPayload);
     return response.data as AccommodationResponseDto;
   },
 
+  // Update accommodation status (activate/deactivate)
+  updateAccommodationStatus: async (accommodationId: number, isActive: boolean): Promise<AccommodationResponseDto> => {
+    console.log(`[accommodationService] PATCH /Accommodation/${accommodationId}/status?isActive=${isActive}`);
+    const response = await axiosInstance.patch(
+      `/Accommodation/${accommodationId}/status`,
+      null,
+      { params: { isActive } }
+    );
+    return response.data as AccommodationResponseDto;
+  },
+
   // Deactivate accommodation
-  deactivateAccommodation: async (accommodationId: number): Promise<void> => {
-    console.log(`[accommodationService] PUT /Accommodation/deactivate/${accommodationId}`);
-    await axiosInstance.put(`/Accommodation/deactivate/${accommodationId}`);
+  deactivateAccommodation: async (accommodationId: number): Promise<AccommodationResponseDto> => {
+    console.log(`[accommodationService] PATCH /Accommodation/${accommodationId}/status?isActive=false`);
+    const response = await axiosInstance.patch(
+      `/Accommodation/${accommodationId}/status`,
+      null,
+      { params: { isActive: false } }
+    );
+    return response.data as AccommodationResponseDto;
   },
 };
 

@@ -63,9 +63,9 @@ const guardianService = {
         return response.data as GuardianResponseDto;
     },
 
-    // Create guardian
-    createGuardian: async (guardian: GuardianCreateDto): Promise<GuardianResponseDto> => {
-        console.log("[guardianService] POST /Guardian");
+    // Create guardian for a camper
+    createGuardianForCamper: async (camperId: number, guardian: GuardianCreateDto): Promise<GuardianResponseDto> => {
+        console.log(`[guardianService] POST /Guardian/campers/${camperId}`);
         const requestPayload = {
             fullName: guardian.fullName || null,
             title: guardian.title || null,
@@ -75,7 +75,7 @@ const guardianService = {
             category: guardian.category || null,
         };
 
-        const response = await axiosInstance.post("/Guardian", requestPayload);
+        const response = await axiosInstance.post(`/Guardian/campers/${camperId}`, requestPayload);
         return response.data as GuardianResponseDto;
     },
 

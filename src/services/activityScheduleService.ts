@@ -27,23 +27,27 @@ export interface ActivitySchedule {
 
 export interface ActivityScheduleCreateDto {
   activityId: number;
-  staffId: number;
+  staffId?: number | null;
+  locationId?: number | null;
   startTime: string;
   endTime: string;
-  isLivestream: boolean;
-  roomId?: number | null;
-  maxCapacity?: number | null;
-  locationId: number;
+  isOptional?: boolean | null;
+}
+
+export interface CoreActivityScheduleUpdateDto {
+  activityId: number;
+  staffId?: number | null;
+  locationId?: number | null;
+  startTime: string;
+  endTime: string;
+  isOptional?: boolean | null;
 }
 
 export interface OptionalScheduleCreateDto {
   activityId: number;
-  startTime: string;
-  endTime: string;
-  isLivestream: boolean;
-  roomId?: number | null;
+  staffId?: number | null;
   maxCapacity?: number | null;
-  locationId: number;
+  locationId?: number | null;
 }
 
 export interface ActivityScheduleResponseDto {
@@ -127,13 +131,11 @@ const activityScheduleService = {
     console.log("[activityScheduleService] POST /ActivitySchedule/core");
     const requestPayload = {
       activityId: schedule.activityId,
-      staffId: schedule.staffId,
+      staffId: schedule.staffId ?? null,
+      locationId: schedule.locationId ?? null,
       startTime: schedule.startTime,
       endTime: schedule.endTime,
-      isLivestream: schedule.isLivestream,
-      roomId: schedule.roomId ?? null,
-      maxCapacity: schedule.maxCapacity ?? null,
-      locationId: schedule.locationId,
+      isOptional: schedule.isOptional ?? null,
     };
 
     const response = await axiosInstance.post("/ActivitySchedule/core", requestPayload);
@@ -145,12 +147,9 @@ const activityScheduleService = {
     console.log(`[activityScheduleService] POST /ActivitySchedule/optional/${coreScheduleId}`);
     const requestPayload = {
       activityId: schedule.activityId,
-      startTime: schedule.startTime,
-      endTime: schedule.endTime,
-      isLivestream: schedule.isLivestream,
-      roomId: schedule.roomId ?? null,
+      staffId: schedule.staffId ?? null,
       maxCapacity: schedule.maxCapacity ?? null,
-      locationId: schedule.locationId,
+      locationId: schedule.locationId ?? null,
     };
 
     const response = await axiosInstance.post(`/ActivitySchedule/optional/${coreScheduleId}`, requestPayload);
@@ -158,17 +157,15 @@ const activityScheduleService = {
   },
 
   // Update core activity schedule
-  updateCoreActivitySchedule: async (id: number, schedule: ActivityScheduleCreateDto): Promise<ActivityScheduleResponseDto> => {
+  updateCoreActivitySchedule: async (id: number, schedule: CoreActivityScheduleUpdateDto): Promise<ActivityScheduleResponseDto> => {
     console.log(`[activityScheduleService] PUT /ActivitySchedule/core/${id}`);
     const requestPayload = {
       activityId: schedule.activityId,
-      staffId: schedule.staffId,
+      staffId: schedule.staffId ?? null,
+      locationId: schedule.locationId ?? null,
       startTime: schedule.startTime,
       endTime: schedule.endTime,
-      isLivestream: schedule.isLivestream,
-      roomId: schedule.roomId ?? null,
-      maxCapacity: schedule.maxCapacity ?? null,
-      locationId: schedule.locationId,
+      isOptional: schedule.isOptional ?? null,
     };
 
     const response = await axiosInstance.put(`/ActivitySchedule/core/${id}`, requestPayload);

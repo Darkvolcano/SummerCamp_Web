@@ -36,6 +36,8 @@ import CampStaffManagement from "./pages/Manager/Staffs/CampStaffManagement";
 import ActivityScheduleManagement from "./pages/Manager/Activities/activityScheduleManagement";
 import AccommodationManagement from "./pages/Manager/Accomodation/AccommodationManagement";
 import CampTypePage from "./pages/Admin/CampTypeManagement/CampTypePage";
+import MyProfile from "./pages/Parent/MyProfile/MyProfile";
+import MyRegistration from "./pages/Parent/MyRegistration/MyRegistration";
 function App() {
   return (
     <Router>
@@ -193,6 +195,22 @@ function App() {
             element={
               <MainLayout>
                 <Home />
+              </MainLayout>
+            }
+          />
+          <Route
+            path={PagePath.USER_MYPROFILE}
+            element={
+              <MainLayout>
+                <MyProfile />
+              </MainLayout>
+            }
+          />
+          <Route
+            path={PagePath.USER_MYREGISTRATIONS}
+            element={
+              <MainLayout>
+                <MyRegistration />
               </MainLayout>
             }
           />

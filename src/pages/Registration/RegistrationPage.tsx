@@ -9,12 +9,14 @@ import {
   Spin,
   Modal,
   Upload,
+  DatePicker,
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { useParams } from "react-router-dom";
 import camperService, {
   type CamperResponseDto,
   type CamperRequestDto,
+  type HealthRecordCreateDto,
 } from "../../services/camperService";
 import registrationService, {
   type CreateRegistrationRequestDto,
@@ -23,13 +25,14 @@ import campService, { type CampResponseDto } from "../../services/campService";
 import promotionService, {
   type PromotionResponseDto,
 } from "../../services/promotionService";
-import { useAuthStore } from "../../services/userService";
+import guardianService, {
+  type GuardianResponseDto,
+} from "../../services/guardianService";
 import { useNotification } from "../../contexts/NotificationContext";
 import "./RegistrationPage.css";
 
 const RegistrationPage: React.FC = () => {
   const { campId } = useParams<{ campId: string }>();
-  const { user } = useAuthStore();
   const { toastSuccess, toastError } = useNotification();
   const [form] = Form.useForm();
 
@@ -40,6 +43,9 @@ const RegistrationPage: React.FC = () => {
   const [registrationCampers, setRegistrationCampers] = useState<
     CamperRequestDto[]
   >([]);
+  const [selectedCamperIds, setSelectedCamperIds] = useState<(number | null)[]>([null]);
+  const [guardiansByIndex, setGuardiansByIndex] = useState<GuardianResponseDto[][]>([[]]);
+  const [guardianLoadingByIndex, setGuardianLoadingByIndex] = useState<boolean[]>([false]);
 
   // State for camp selection
   const [camps, setCamps] = useState<CampResponseDto[]>([]);
@@ -70,6 +76,13 @@ const RegistrationPage: React.FC = () => {
   const [camperAvatarPreview, setCamperAvatarPreview] = useState<string | null>(
     null
   );
+
+  // Modal for new guardian registration
+  const [isGuardianModalVisible, setIsGuardianModalVisible] = useState(false);
+  const [newGuardianForm] = Form.useForm();
+  const [guardianModalIndex, setGuardianModalIndex] = useState<number | null>(null);
+  const [guardianAdding, setGuardianAdding] = useState(false);
+  const [applyToAllCampers, setApplyToAllCampers] = useState(false);
 
   // Fetch initial data
   useEffect(() => {
@@ -128,30 +141,112 @@ const RegistrationPage: React.FC = () => {
       const newCampers = new Array(value).fill(null);
       setCampers(newCampers);
       setRegistrationCampers(new Array(value).fill({}));
+      setSelectedCamperIds(new Array(value).fill(null));
+      setGuardiansByIndex(new Array(value).fill([]));
+      setGuardianLoadingByIndex(new Array(value).fill(false));
     }
   };
 
   // Handle selecting existing camper
-  const handleSelectExistingCamper = async (index: number, camperId: number) => {
-    try {
-      const selectedCamper = await camperService.getCamperById(camperId);
-
+  const handleSelectExistingCamper = async (index: number, camperId: number | null | undefined) => {
+    if (!camperId) {
+      // Clear selection
       const newCampers = [...campers];
-      newCampers[index] = selectedCamper;
+      newCampers[index] = null;
       setCampers(newCampers);
+
+      const newSelectedIds = [...selectedCamperIds];
+      newSelectedIds[index] = null;
+      setSelectedCamperIds(newSelectedIds);
 
       const newRegistrationCampers = [...registrationCampers];
       newRegistrationCampers[index] = {
-        camperName: selectedCamper.camperName,
-        gender: selectedCamper.gender,
-        dob: selectedCamper.dob,
-        groupId: selectedCamper.groupId,
-        avatar: selectedCamper.avatar,
+        camperName: "",
+        gender: "",
+        dob: "",
+        groupId: null,
       };
       setRegistrationCampers(newRegistrationCampers);
+
+      const newGuardians = [...guardiansByIndex];
+      newGuardians[index] = [];
+      setGuardiansByIndex(newGuardians);
+      return;
+    }
+
+    try {
+      // Set loading state immediately
+      setGuardianLoadingByIndex((prev) => {
+        const newLoading = [...prev];
+        newLoading[index] = true;
+        return newLoading;
+      });
+
+      // Fetch camper data and guardians in parallel
+      const selectedCamper = await camperService.getCamperById(camperId);
+      const camperGuardiansResponse = await camperService.getCamperGuardians(camperId);
+
+      // Extract guardians from response and map to GuardianResponseDto
+      const guardiansList = camperGuardiansResponse.length > 0 ? camperGuardiansResponse[0]?.guardians || [] : [];
+      const camperGuardians: GuardianResponseDto[] = guardiansList.map(g => ({
+        guardianId: g.guardianId,
+        camperId: camperId,
+        userId: 0, // Not available from Guardian type, using default
+        fullName: g.fullName,
+        title: g.title,
+        gender: g.gender,
+        dob: undefined,
+        answer: undefined,
+        category: undefined,
+        isActive: true, // Default to active
+      }));
+
+      // Update all states at once
+      setCampers((prev) => {
+        const newCampers = [...prev];
+        newCampers[index] = selectedCamper;
+        return newCampers;
+      });
+
+      setSelectedCamperIds((prev) => {
+        const newSelectedIds = [...prev];
+        newSelectedIds[index] = camperId;
+        return newSelectedIds;
+      });
+
+      setRegistrationCampers((prev) => {
+        const newRegistrationCampers = [...prev];
+        newRegistrationCampers[index] = {
+          camperName: selectedCamper.camperName,
+          gender: selectedCamper.gender,
+          dob: selectedCamper.dob,
+          groupId: selectedCamper.groupId,
+        };
+        return newRegistrationCampers;
+      });
+
+      setGuardiansByIndex((prev) => {
+        const newGuardians = [...prev];
+        newGuardians[index] = camperGuardians;
+        return newGuardians;
+      });
+
+      // Clear loading state
+      setGuardianLoadingByIndex((prev) => {
+        const newLoading = [...prev];
+        newLoading[index] = false;
+        return newLoading;
+      });
     } catch (error) {
       console.error("Error fetching camper details:", error);
       toastError("Lỗi", "Không thể tải thông tin trại viên");
+
+      // Clear loading state on error
+      setGuardianLoadingByIndex((prev) => {
+        const newLoading = [...prev];
+        newLoading[index] = false;
+        return newLoading;
+      });
     }
   };
 
@@ -164,12 +259,37 @@ const RegistrationPage: React.FC = () => {
   const handleNewCamperOk = async () => {
     try {
       const values = await newCamperForm.validateFields();
+
+      // Convert DatePicker value to string format (YYYY-MM-DD)
+      let dobValue = '';
+      if (values.dob) {
+        // Check if it's a dayjs object or string
+        if (typeof values.dob === 'string') {
+          dobValue = values.dob;
+        } else if (values.dob.format) {
+          // It's a dayjs object
+          dobValue = values.dob.format('YYYY-MM-DD');
+        }
+      }
+
+      // Build health record if any fields are provided
+      const healthRecord: HealthRecordCreateDto | undefined =
+        values.condition || values.allergies || values.isAllergy !== undefined || values.healthNote
+          ? {
+              condition: values.condition || undefined,
+              allergies: values.allergies || undefined,
+              isAllergy: values.isAllergy || undefined,
+              note: values.healthNote || undefined,
+            }
+          : undefined;
+
       const newCamperData: CamperRequestDto = {
         camperName: values.camperName,
         gender: values.gender,
-        dob: values.dob,
+        dob: dobValue,
         groupId: values.groupId || null,
-        avatar: values.avatar || null,
+        avatar: values.avatarFile ? (values.avatarFile as File) : null,
+        healthRecord,
       };
 
       // Call API to create camper
@@ -185,18 +305,21 @@ const RegistrationPage: React.FC = () => {
           gender: createdCamper.gender,
           dob: createdCamper.dob,
           groupId: createdCamper.groupId,
-          avatar: createdCamper.avatar,
         };
         setRegistrationCampers(newRegistrationCampers);
 
         // Set the actual created camper with ID from API
         newCampers[newCamperIndex] = createdCamper;
         setCampers(newCampers);
+
+        // Set the newly created camper as selected in the Select
+        const newSelectedIds = [...selectedCamperIds];
+        newSelectedIds[newCamperIndex] = createdCamper.camperId;
+        setSelectedCamperIds(newSelectedIds);
       }
 
-      // Refresh the camper list
-      const updatedMyCampers = await camperService.getMyCampers();
-      setMyCampers(updatedMyCampers);
+      // Add the newly created camper to the dropdown list immediately
+      setMyCampers((prevMyCampers) => [...prevMyCampers, createdCamper]);
 
       setIsModalVisible(false);
       newCamperForm.resetFields();
@@ -222,10 +345,126 @@ const RegistrationPage: React.FC = () => {
     const reader = new FileReader();
     reader.onload = (e) => {
       setCamperAvatarPreview(e.target?.result as string);
-      // Store base64 or file URL in form
-      newCamperForm.setFieldValue("avatar", e.target?.result as string);
     };
     reader.readAsDataURL(file);
+
+    // Store the actual file in form for upload
+    newCamperForm.setFieldValue("avatarFile", file);
+  };
+
+  // Show guardian modal
+  const showGuardianModal = (index: number) => {
+    setGuardianModalIndex(index);
+    setIsGuardianModalVisible(true);
+  };
+
+  // Handle add guardian
+  const handleAddGuardian = async () => {
+    try {
+      if (guardianModalIndex === null) return;
+
+      const values = await newGuardianForm.validateFields();
+
+      // Convert DOB to YYYY-MM-DD format
+      let dobValue = '';
+      if (values.dob) {
+        if (typeof values.dob === 'string') {
+          dobValue = values.dob;
+        } else if (values.dob.format) {
+          dobValue = values.dob.format('YYYY-MM-DD');
+        }
+      }
+
+      const guardianData = {
+        fullName: values.fullName || undefined,
+        title: values.title || undefined,
+        gender: values.gender || undefined,
+        dob: dobValue || undefined,
+        answer: values.answer || undefined,
+        category: values.category || undefined,
+      };
+
+      setGuardianAdding(true);
+
+      if (applyToAllCampers) {
+        // Apply to all selected campers
+        const newGuardians = [...guardiansByIndex];
+
+        for (let i = 0; i < selectedCamperIds.length; i++) {
+          const camperId = selectedCamperIds[i];
+          if (camperId) {
+            try {
+              const newGuardian = await guardianService.createGuardianForCamper(
+                camperId,
+                guardianData
+              );
+              newGuardians[i] = [...newGuardians[i], newGuardian];
+            } catch (error) {
+              console.error(`Error adding guardian to camper ${i + 1}:`, error);
+            }
+          }
+        }
+        setGuardiansByIndex(newGuardians);
+        toastSuccess("Thành công", "Thêm người giám hộ cho tất cả trại viên thành công!");
+      } else {
+        // Apply to single camper
+        const camperId = selectedCamperIds[guardianModalIndex];
+
+        if (!camperId) {
+          toastError("Lỗi", "Vui lòng chọn trại viên trước");
+          setGuardianAdding(false);
+          return;
+        }
+
+        const newGuardian = await guardianService.createGuardianForCamper(
+          camperId,
+          guardianData
+        );
+
+        // Update guardians list
+        const newGuardians = [...guardiansByIndex];
+        newGuardians[guardianModalIndex] = [
+          ...newGuardians[guardianModalIndex],
+          newGuardian,
+        ];
+        setGuardiansByIndex(newGuardians);
+        toastSuccess("Thành công", "Thêm người giám hộ thành công!");
+      }
+
+      setIsGuardianModalVisible(false);
+      newGuardianForm.resetFields();
+      setApplyToAllCampers(false);
+    } catch (error) {
+      console.error("Error adding guardian:", error);
+      toastError("Lỗi", "Không thể thêm người giám hộ");
+    } finally {
+      setGuardianAdding(false);
+    }
+  };
+
+  // Handle cancel guardian modal
+  const handleGuardianCancel = () => {
+    setIsGuardianModalVisible(false);
+    newGuardianForm.resetFields();
+  };
+
+  // Handle delete guardian
+  const handleDeleteGuardian = async (index: number, guardianId: number) => {
+    try {
+      await guardianService.deleteGuardian(guardianId);
+
+      // Remove guardian from list
+      const newGuardians = [...guardiansByIndex];
+      newGuardians[index] = newGuardians[index].filter(
+        (g) => g.guardianId !== guardianId
+      );
+      setGuardiansByIndex(newGuardians);
+
+      toastSuccess("Thành công", "Xoá người giám hộ thành công!");
+    } catch (error) {
+      console.error("Error deleting guardian:", error);
+      toastError("Lỗi", "Không thể xoá người giám hộ");
+    }
   };
 
   // Handle camp selection
@@ -286,7 +525,7 @@ const RegistrationPage: React.FC = () => {
       );
       toastSuccess(
         "Thành công",
-        "Đăng ký đã được gửi phê duyệt! Vui lòng chờ xác nhận từ nhà trường."
+        "Đăng ký đã được gửi phê duyệt! Vui lòng chờ xác nhận từ trại hè."
       );
 
       // Reset form and redirect
@@ -358,21 +597,22 @@ const RegistrationPage: React.FC = () => {
                 {Array.from({ length: numCampers }).map((_, index) => (
                 <div
                   key={index}
-                  className="border-l-4 border-[#FF8F50] pl-6 py-4 bg-gray-50 rounded"
+                  className="border-l-4 border-[#FF8F50] pl-6 pr-6 py-4 bg-gray-50 rounded"
                 >
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">
                     Trại viên {index + 1}
                   </h3>
 
-                  <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div className="mb-4 flex gap-4">
                     <Select
                       placeholder="Chọn trại viên đã có"
                       allowClear
                       optionLabelProp="label"
+                      value={selectedCamperIds[index]}
                       onChange={(value) =>
                         handleSelectExistingCamper(index, value)
                       }
-                      className="col-span-2"
+                      className="flex-1"
                     >
                       {myCampers.map((camper) => (
                         <Select.Option
@@ -393,6 +633,14 @@ const RegistrationPage: React.FC = () => {
                         </Select.Option>
                       ))}
                     </Select>
+                    <Button
+                      type="primary"
+                      icon={<PlusOutlined />}
+                      onClick={() => showNewCamperModal(index)}
+                      className="bg-[#FF8F50] border-[#FF8F50] whitespace-nowrap"
+                    >
+                      Đăng ký mới
+                    </Button>
                   </div>
 
                   {campers[index] && (
@@ -468,16 +716,6 @@ const RegistrationPage: React.FC = () => {
                       )}
                     </div>
                   )}
-
-                  <Button
-                    type="primary"
-                    icon={<PlusOutlined />}
-                    block
-                    onClick={() => showNewCamperModal(index)}
-                    className="bg-[#FF8F50] border-[#FF8F50]"
-                  >
-                    Đăng ký trại viên mới
-                  </Button>
                 </div>
               ))}
               </div>
@@ -489,32 +727,104 @@ const RegistrationPage: React.FC = () => {
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
               2. Thông tin người giám hộ
             </h2>
-            <div className="bg-blue-50 p-4 rounded mb-4">
-              <p className="text-sm text-blue-800">
-                ℹ️ Hiện tại, thông tin người giám hộ sẽ được lấy từ tài khoản
-                của bạn. Nếu cần thay đổi, vui lòng cập nhật thông tin cá nhân.
-              </p>
-            </div>
-            {user && (
-              <div className="p-4 bg-gray-50 rounded border border-gray-200">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-gray-600">Tên</p>
-                    <p className="font-semibold text-gray-900">
-                      {user.fullName}
-                    </p>
+
+            {/* Show guardians for each camper */}
+            {campers.map((camper, index) => {
+              const selectedCamperId = selectedCamperIds[index];
+              const guardians = guardiansByIndex[index] || [];
+              const isLoading = guardianLoadingByIndex[index] || false;
+
+              if (!selectedCamperId) {
+                return null;
+              }
+
+              return (
+                <div key={index} className="mb-6">
+                  {/* Camper Name as Header */}
+                  <div className="mb-4">
+                    <h3 className="text-lg font-bold text-gray-900">
+                      {index + 1}. {camper?.camperName}
+                    </h3>
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Email</p>
-                    <p className="font-semibold text-gray-900">{user.email}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Số điện thoại</p>
-                    <p className="font-semibold text-gray-900">
-                      {user.phone_number || "Chưa cập nhật"}
-                    </p>
-                  </div>
+
+                  {/* Guardians List */}
+                  {isLoading ? (
+                    <div className="flex justify-center items-center h-32">
+                      <Spin size="large" />
+                    </div>
+                  ) : guardians.length === 0 ? (
+                    <div className="p-4 bg-yellow-50 rounded border border-yellow-200 mb-4">
+                      <p className="text-sm text-yellow-800">
+                        Chưa có người giám hộ nào.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3 mb-4">
+                      {guardians.map((guardian) => (
+                        <div
+                          key={guardian.guardianId}
+                          className="p-4 bg-gray-50 rounded border border-gray-200 flex justify-between items-start"
+                        >
+                          <div className="flex-1">
+                            <p className="text-sm text-gray-600">Tên</p>
+                            <p className="font-semibold text-gray-900 mb-2">
+                              {guardian.fullName || "N/A"}
+                            </p>
+                            {guardian.title && (
+                              <>
+                                <p className="text-sm text-gray-600">Chức danh</p>
+                                <p className="font-semibold text-gray-900 mb-2">
+                                  {guardian.title}
+                                </p>
+                              </>
+                            )}
+                            {guardian.category && (
+                              <>
+                                <p className="text-sm text-gray-600">Danh mục</p>
+                                <p className="font-semibold text-gray-900">
+                                  {guardian.category}
+                                </p>
+                              </>
+                            )}
+                          </div>
+                          <Button
+                            danger
+                            size="small"
+                            onClick={() =>
+                              handleDeleteGuardian(index, guardian.guardianId)
+                            }
+                          >
+                            ✕
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Add Guardian Button */}
+                  <Button
+                    type="primary"
+                    icon={<PlusOutlined />}
+                    onClick={() => showGuardianModal(index)}
+                    className="w-full"
+                  >
+                    Thêm người giám hộ
+                  </Button>
+
+                  {/* Divider */}
+                  {index < campers.length - 1 && (
+                    <div className="border-t border-gray-200 my-6"></div>
+                  )}
                 </div>
+              );
+            })}
+
+            {/* No campers selected message */}
+            {campers.every((camper) => !selectedCamperIds[campers.indexOf(camper)]) && (
+              <div className="p-4 bg-blue-50 rounded border border-blue-200">
+                <p className="text-sm text-blue-800">
+                  ℹ️ Vui lòng chọn trại viên.
+                </p>
               </div>
             )}
           </div>
@@ -590,7 +900,7 @@ const RegistrationPage: React.FC = () => {
           {/* Step 4: Summary & Promotion */}
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              4. Tóm tắt & Khuyến mãi
+              4. Chi tiết thanh toán
             </h2>
 
             <Form.Item label="Áp dụng mã khuyến mãi" name="promotionId">
@@ -720,6 +1030,7 @@ const RegistrationPage: React.FC = () => {
         onCancel={handleNewCamperCancel}
         okText="Thêm"
         cancelText="Hủy"
+        width={700}
       >
         <Form form={newCamperForm} layout="vertical">
           <Form.Item
@@ -747,10 +1058,18 @@ const RegistrationPage: React.FC = () => {
             name="dob"
             rules={[{ required: true, message: "Vui lòng chọn ngày sinh" }]}
           >
-            <Input type="date" />
+            <DatePicker
+              format="DD/MM/YYYY"
+              placeholder="Chọn ngày sinh"
+              className="w-full"
+            />
           </Form.Item>
 
-          <Form.Item label="Ảnh đại diện" name="avatar">
+          <Form.Item
+            label="Ảnh đại diện"
+            name="avatarFile"
+            rules={[{ required: true, message: "Vui lòng chọn ảnh đại diện" }]}
+          >
             <div className="space-y-4">
               {camperAvatarPreview ? (
                 <div className="flex flex-col items-center gap-4">
@@ -763,7 +1082,7 @@ const RegistrationPage: React.FC = () => {
                     type="button"
                     onClick={() => {
                       setCamperAvatarPreview(null);
-                      newCamperForm.setFieldValue("avatar", undefined);
+                      newCamperForm.setFieldValue("avatarFile", undefined);
                     }}
                     className="text-sm text-red-500 hover:text-red-700"
                   >
@@ -777,7 +1096,7 @@ const RegistrationPage: React.FC = () => {
                 </div>
               )}
               <Upload
-                name="avatar"
+                name="avatarFile"
                 accept="image/*"
                 beforeUpload={() => false}
                 onChange={handleCamperAvatarChange}
@@ -786,6 +1105,151 @@ const RegistrationPage: React.FC = () => {
                 <Button block>Chọn ảnh</Button>
               </Upload>
             </div>
+          </Form.Item>
+
+          {/* Health Record Section */}
+          <div className="border-t border-gray-200 pt-4 mt-4">
+            <h3 className="text-base font-semibold text-gray-900 mb-4">
+              Thông tin sức khỏe (Tùy chọn)
+            </h3>
+
+            <Form.Item
+              label="Tình trạng sức khỏe"
+              name="condition"
+            >
+              <Input.TextArea
+                placeholder="VD: Hen phế quản, tiểu đường, v.v..."
+                rows={2}
+              />
+            </Form.Item>
+
+            <Form.Item
+              label="Dị ứng"
+              name="allergies"
+            >
+              <Input.TextArea
+                placeholder="VD: Dị ứng với dâu tây, các loại cá, v.v..."
+                rows={2}
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="isAllergy"
+              valuePropName="checked"
+            >
+              <Checkbox>
+                Trại viên có dị ứng
+              </Checkbox>
+            </Form.Item>
+
+            <Form.Item
+              label="Ghi chú thêm"
+              name="healthNote"
+            >
+              <Input.TextArea
+                placeholder="Các thông tin y tế khác cần lưu ý..."
+                rows={2}
+              />
+            </Form.Item>
+          </div>
+        </Form>
+      </Modal>
+
+      {/* Modal for New Guardian Registration */}
+      <Modal
+        title="Thêm người giám hộ"
+        open={isGuardianModalVisible}
+        onOk={handleAddGuardian}
+        onCancel={handleGuardianCancel}
+        okText="Thêm"
+        cancelText="Hủy"
+        confirmLoading={guardianAdding}
+        width={600}
+      >
+        <Form form={newGuardianForm} layout="vertical">
+          {/* Camper Name Display */}
+          {guardianModalIndex !== null && (
+            <div className="mb-4">
+              <p className="text-sm font-bold text-gray-900">
+                Trại viên: {campers[guardianModalIndex]?.camperName}
+              </p>
+            </div>
+          )}
+
+          {/* Apply to All Campers Switch */}
+          <Form.Item label="Áp dụng cho tất cả trại viên" className="mb-4">
+            <div className="flex items-center gap-2">
+              <Checkbox
+                checked={applyToAllCampers}
+                onChange={(e) => setApplyToAllCampers(e.target.checked)}
+              >
+                <span className="text-sm text-gray-700">
+                  Thêm người giám hộ này cho tất cả trại viên
+                </span>
+              </Checkbox>
+            </div>
+          </Form.Item>
+
+          <Form.Item
+            label="Tên người giám hộ"
+            name="fullName"
+            rules={[{ required: true, message: "Vui lòng nhập tên người giám hộ" }]}
+          >
+            <Input placeholder="Nhập tên người giám hộ" />
+          </Form.Item>
+
+          <Form.Item
+            label="Chức danh"
+            name="title"
+          >
+            <Select placeholder="Chọn chức danh">
+              <Select.Option value="Bố">Bố</Select.Option>
+              <Select.Option value="Mẹ">Mẹ</Select.Option>
+              <Select.Option value="Ông">Ông</Select.Option>
+              <Select.Option value="Bà">Bà</Select.Option>
+              <Select.Option value="Anh">Anh</Select.Option>
+              <Select.Option value="Chị">Chị</Select.Option>
+              <Select.Option value="Người giám hộ khác">Người giám hộ khác</Select.Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item
+            label="Giới tính"
+            name="gender"
+          >
+            <Select placeholder="Chọn giới tính">
+              <Select.Option value="Nam">Nam</Select.Option>
+              <Select.Option value="Nữ">Nữ</Select.Option>
+              <Select.Option value="Khác">Khác</Select.Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item
+            label="Ngày sinh"
+            name="dob"
+          >
+            <DatePicker
+              format="DD/MM/YYYY"
+              placeholder="Chọn ngày sinh"
+              className="w-full"
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Danh mục"
+            name="category"
+          >
+            <Input placeholder="Nhập danh mục" />
+          </Form.Item>
+
+          <Form.Item
+            label="Câu trả lời"
+            name="answer"
+          >
+            <Input.TextArea
+              placeholder="Nhập câu trả lời hoặc ghi chú"
+              rows={3}
+            />
           </Form.Item>
         </Form>
       </Modal>

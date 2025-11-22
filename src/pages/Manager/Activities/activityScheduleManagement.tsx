@@ -7,6 +7,7 @@ import activityService, {
 import activityScheduleService, {
   type ActivityScheduleResponseDto,
 } from "../../../services/activityScheduleService";
+import campService, { type CampResponseDto } from "../../../services/campService";
 import { useNotification } from "../../../contexts/NotificationContext";
 import Calendar from "../../../components/calander/Calendar";
 import ScheduleForm from "../../../components/schedule/ScheduleForm";
@@ -18,6 +19,7 @@ const ActivityScheduleManagement: React.FC = () => {
 
   const [activities, setActivities] = useState<ActivityResponseDto[]>([]);
   const [schedules, setSchedules] = useState<ActivityScheduleResponseDto[]>([]);
+  const [campData, setCampData] = useState<CampResponseDto | null>(null);
   const [loading, setLoading] = useState(false);
 
   const [showScheduleForm, setShowScheduleForm] = useState(false);
@@ -34,18 +36,21 @@ const ActivityScheduleManagement: React.FC = () => {
     if (!selectedCampId) {
       setActivities([]);
       setSchedules([]);
+      setCampData(null);
       return;
     }
 
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [activitiesData, schedulesData] = await Promise.all([
+        const [activitiesData, schedulesData, campInfo] = await Promise.all([
           activityService.getActivitiesByCampId(selectedCampId),
           activityScheduleService.getActivitySchedulesByCamp(selectedCampId),
+          campService.getCampById(selectedCampId),
         ]);
         setActivities(activitiesData);
         setSchedules(schedulesData);
+        setCampData(campInfo);
       } catch (error) {
         console.error("Failed to load activities and schedules:", error);
         toastError("Error", "Unable to load activities and schedules");
@@ -228,6 +233,12 @@ const ActivityScheduleManagement: React.FC = () => {
       <div className="activity-schedule-calendar">
         <Calendar
           activities={calendarActivities}
+          campInfo={campData ? {
+            campId: campData.campId,
+            name: campData.name,
+            startDate: campData.startDate,
+            endDate: campData.endDate,
+          } : undefined}
           userRole="manager"
           onSelectSchedule={handleViewSchedule}
           onAddClick={handleAddSchedule}

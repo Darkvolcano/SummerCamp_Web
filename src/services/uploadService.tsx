@@ -1,4 +1,5 @@
 import axios, { AxiosError } from "axios";
+import axiosInstance from "../config/axios";
 import { CLOUDINARY_CONFIG } from "../config/cloudinary.config";
 
 export interface UploadResponse {
@@ -277,6 +278,69 @@ export const getTransformedImageUrl = (
   return `${baseUrl}/${transformString}/${publicId}`;
 };
 
+export const uploadMyAvatar = async (file: File): Promise<UploadResponse> => {
+  console.log("[uploadService] POST /api/upload/my-avatar");
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await axiosInstance.post("/upload/my-avatar", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+  return {
+    url: response.data.url,
+    publicId: response.data.publicId,
+    format: response.data.format,
+    width: response.data.width,
+    height: response.data.height,
+    bytes: response.data.bytes,
+  };
+};
+
+export const uploadStaffAvatar = async (userId: number, file: File): Promise<UploadResponse> => {
+  console.log(`[uploadService] POST /api/upload/admin/staff/${userId}/avatar`);
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await axiosInstance.post(`/upload/admin/staff/${userId}/avatar`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+  return {
+    url: response.data.url,
+    publicId: response.data.publicId,
+    format: response.data.format,
+    width: response.data.width,
+    height: response.data.height,
+    bytes: response.data.bytes,
+  };
+};
+
+export const uploadDriverAvatar = async (userId: number, file: File): Promise<UploadResponse> => {
+  console.log(`[uploadService] POST /api/upload/admin/driver/${userId}/avatar`);
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await axiosInstance.post(`/upload/admin/driver/${userId}/avatar`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+  return {
+    url: response.data.url,
+    publicId: response.data.publicId,
+    format: response.data.format,
+    width: response.data.width,
+    height: response.data.height,
+    bytes: response.data.bytes,
+  };
+};
+
 export default {
   uploadImageToCloudinary,
   uploadMultipleImages,
@@ -284,4 +348,7 @@ export default {
   validateImageFile,
   getTransformedImageUrl,
   uploadController,
+  uploadMyAvatar,
+  uploadStaffAvatar,
+  uploadDriverAvatar,
 };
