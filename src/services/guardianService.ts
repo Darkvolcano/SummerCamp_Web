@@ -8,8 +8,8 @@ export interface Guardian {
     title?: string | null;
     gender?: string | null;
     dob?: string | null;
-    answer?: string | null;
-    category?: string | null;
+    email?: string | null;
+    phoneNumber?: string | null;
     isActive: boolean;
 }
 
@@ -18,8 +18,8 @@ export interface GuardianCreateDto {
     title?: string | null;
     gender?: string | null;
     dob?: string | null;
-    answer?: string | null;
-    category?: string | null;
+    email?: string | null;
+    phoneNumber?: string | null;
 }
 
 export interface GuardianUpdateDto {
@@ -27,8 +27,8 @@ export interface GuardianUpdateDto {
     title?: string | null;
     gender?: string | null;
     dob?: string | null;
-    answer?: string | null;
-    category?: string | null;
+    email?: string | null;
+    phoneNumber?: string | null;
     isActive: boolean;
 }
 
@@ -40,8 +40,8 @@ export interface GuardianResponseDto {
     title?: string | null;
     gender?: string | null;
     dob?: string | null;
-    answer?: string | null;
-    category?: string | null;
+    email?: string | null;
+    phoneNumber?: string | null;
     isActive: boolean;
 }
 
@@ -68,8 +68,8 @@ const guardianService = {
             title: guardian.title || null,
             gender: guardian.gender || null,
             dob: guardian.dob || null,
-            answer: guardian.answer || null,
-            category: guardian.category || null,
+            email: guardian.email || null,
+            phoneNumber: guardian.phoneNumber || null,
         };
 
         const response = await axiosInstance.post(`/Guardian/campers/${camperId}`, requestPayload);
@@ -84,8 +84,8 @@ const guardianService = {
             title: guardian.title || null,
             gender: guardian.gender || null,
             dob: guardian.dob || null,
-            answer: guardian.answer || null,
-            category: guardian.category || null,
+            email: guardian.email || null,
+            phoneNumber: guardian.phoneNumber || null,
             isActive: guardian.isActive,
         };
 
