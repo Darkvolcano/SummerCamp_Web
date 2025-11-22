@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { Spin, Empty, Collapse } from "antd";
-import type { CollapseProps } from "antd";
 import { CreditCardOutlined, SearchOutlined, CaretRightOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
@@ -9,6 +8,7 @@ import { useNotification } from "../../../contexts/NotificationContext";
 import registrationService, {
   type RegistrationResponseDto,
 } from "../../../services/registrationService";
+import CompleteRegistrationModal from "./CompleteRegistrationModal";
 
 const STATUS_OPTIONS = [
   { key: "PendingApproval", label: "Chờ duyệt" },
@@ -33,6 +33,8 @@ const MyRegistration: React.FC = () => {
   const [searchText, setSearchText] = useState("");
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
   const [paymentLoading, setPaymentLoading] = useState(false);
+  const [completeModalVisible, setCompleteModalVisible] = useState(false);
+  const [selectedRegistration, setSelectedRegistration] = useState<RegistrationResponseDto | null>(null);
 
   // Fetch registration history
   useEffect(() => {
@@ -60,7 +62,7 @@ const MyRegistration: React.FC = () => {
   // Filter registrations
   const filteredRegistrations = useMemo(() => {
     return registrations.filter((reg) => {
-      const matchSearch = (reg.campName || "")
+      const matchSearch = (reg.camp?.name || "")
         .toLowerCase()
         .includes(searchText.toLowerCase());
       const matchStatus = selectedStatuses.length === 0 || selectedStatuses.includes(reg.status);
@@ -71,6 +73,32 @@ const MyRegistration: React.FC = () => {
   // Count registrations by status
   const getStatusCount = (status: string) => {
     return registrations.filter((reg) => reg.status === status).length;
+  };
+
+  // Handle complete registration
+  const handleOpenCompleteModal = (registration: RegistrationResponseDto) => {
+    setSelectedRegistration(registration);
+    setCompleteModalVisible(true);
+  };
+
+  const handleCloseCompleteModal = () => {
+    setCompleteModalVisible(false);
+    setSelectedRegistration(null);
+  };
+
+  const handleCompleteSuccess = () => {
+    // Refresh registrations list
+    const fetchRegistrations = async () => {
+      try {
+        const data = await registrationService.getRegistrationHistory();
+        setRegistrations(data);
+      } catch (error: any) {
+        const errorMessage =
+          error.response?.data?.message || "Không thể tải danh sách đăng ký";
+        toastError("Lỗi", errorMessage);
+      }
+    };
+    fetchRegistrations();
   };
 
   // Handle payment
@@ -208,7 +236,7 @@ const MyRegistration: React.FC = () => {
             />
             <button
               onClick={() => navigate("/camps")}
-              className="mt-6 px-6 py-2 bg-[#FF8F50] text-white rounded-full font-medium hover:bg-orange-600 transition-colors"
+              className="mt-6 px-6 py-2 bg-[#FF8F50] text-white rounded-full font-medium hover:bg-[#ff7e3d] transition-colors"
             >
               Khám phá trại hè
             </button>
@@ -235,7 +263,7 @@ const MyRegistration: React.FC = () => {
                   <div className="flex-1 min-w-0">
                     <p className="text-xs text-gray-500 font-medium mb-1">TÊN TRẠI HÈ</p>
                     <h3 className="text-base font-semibold text-gray-900 truncate">
-                      {registration.campName || "Trại hè"}
+                      {registration.camp?.name || "Trại hè"}
                     </h3>
                   </div>
                   <div className="flex-shrink-0">
@@ -341,16 +369,26 @@ const MyRegistration: React.FC = () => {
                   )}
 
                   {/* Actions */}
-                  {registration.status === "PendingPayment" && (
-                    <button
-                      onClick={() => handlePayment(registration)}
-                      disabled={paymentLoading}
-                      className="w-full flex items-center justify-center gap-2 bg-[#FF8F50] text-white font-medium py-3 rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <CreditCardOutlined />
-                      Thanh toán ngay
-                    </button>
-                  )}
+                  <div className="space-y-3">
+                    {registration.status === "Approved" && (
+                      <button
+                        onClick={() => handleOpenCompleteModal(registration)}
+                        className="w-full flex items-center justify-center gap-2 bg-[#FF8F50] text-white font-medium py-3 rounded-lg hover:bg-[#ff7e3d] transition-colors"
+                      >
+                        Hoàn thiện & Thanh toán
+                      </button>
+                    )}
+                    {registration.status === "PendingPayment" && (
+                      <button
+                        onClick={() => handlePayment(registration)}
+                        disabled={paymentLoading}
+                        className="w-full flex items-center justify-center gap-2 bg-[#FF8F50] text-white font-medium py-3 rounded-lg hover:bg-[#ff7e3d] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <CreditCardOutlined />
+                        Thanh toán ngay
+                      </button>
+                    )}
+                  </div>
                 </div>
               ),
             }))}
@@ -358,6 +396,14 @@ const MyRegistration: React.FC = () => {
           />
         )}
       </div>
+
+      {/* Complete Registration Modal */}
+      <CompleteRegistrationModal
+        visible={completeModalVisible}
+        registration={selectedRegistration}
+        onClose={handleCloseCompleteModal}
+        onSuccess={handleCompleteSuccess}
+      />
     </div>
   );
 };

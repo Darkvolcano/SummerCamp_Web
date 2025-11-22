@@ -11,6 +11,12 @@ export interface CamperDto {
   avatar?: string;
 }
 
+// Camp info response
+export interface CampDto {
+  campId: number;
+  name: string;
+}
+
 // Promotion info response
 export interface PromotionDto {
   promotionId: number;
@@ -45,14 +51,14 @@ export interface UpdateRegistrationRequestDto {
 
 export interface RegistrationResponseDto {
   registrationId: number;
-  campName?: string;
+  camp: CampDto;
   registrationCreateAt: string;
   note?: string | null;
   status: string;
   finalPrice?: number;
   appliedPromotion?: PromotionDto | null;
   campers?: CamperDto[];
-  optionalChoices?: any[];
+  optionalChoices?: OptionalChoiceDto[];
 }
 
 export interface GeneratePaymentLinkRequestDto {
@@ -60,7 +66,8 @@ export interface GeneratePaymentLinkRequestDto {
 }
 
 export interface OptionalChoiceDto {
-  [key: string]: any;
+  camperId: number;
+  activityScheduleId: number;
 }
 
 const registrationService = {
@@ -152,16 +159,20 @@ const registrationService = {
   // Generate payment link for registration
   generatePaymentLink: async (
     id: number,
-    paymentData: GeneratePaymentLinkRequestDto
+    paymentData: GeneratePaymentLinkRequestDto,
+    isMobile: boolean = false
   ): Promise<any> => {
-    console.log(`[registrationService] POST /registration/${id}/payment-link`);
+    console.log(`[registrationService] POST /registration/${id}/payment-link?isMobile=${isMobile}`);
     const requestPayload = {
       optionalChoices: paymentData.optionalChoices || null,
     };
 
     const response = await axiosInstance.post(
       `/registration/${id}/payment-link`,
-      requestPayload
+      requestPayload,
+      {
+        params: { isMobile },
+      }
     );
     return response.data;
   },
