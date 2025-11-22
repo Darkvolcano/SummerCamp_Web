@@ -19,6 +19,8 @@ export enum PagePath {
   FORBIDDEN = "/403",
   ROOT = "/",
   ABOUT = "/about",
+  CONTACT = "/contact",
+  FAQ = "/faq",
   REGISTER_SUCCESS = "/register-success/:registrationId",
 
   //User Routes
