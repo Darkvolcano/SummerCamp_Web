@@ -36,6 +36,7 @@ import CampStaffManagement from "./pages/Manager/Staffs/CampStaffManagement";
 import ActivityScheduleManagement from "./pages/Manager/Activities/activityScheduleManagement";
 import AccommodationManagement from "./pages/Manager/Accomodation/AccommodationManagement";
 import CampTypePage from "./pages/Admin/CampTypeManagement/CampTypePage";
+import TransactionPage from "./pages/Admin/TransactionManagement/TransactionPage";
 import MyProfile from "./pages/Parent/MyProfile/MyProfile";
 import MyRegistration from "./pages/Parent/MyRegistration/MyRegistration";
 function App() {
@@ -44,180 +45,181 @@ function App() {
       <NotificationProvider>
         <AuthGuardProvider>
           <Routes>
-          {/* Public Routes */}
-          <Route path={PagePath.LOGIN} element={<Login />} />
-          <Route path={PagePath.REGISTER} element={<Register />} />
-          <Route path={PagePath.VERIFY_OTP} element={<VerifyOtp />} />
-          <Route path={PagePath.FORBIDDEN} element={<Forbidden />} />
-          <Route
-            path={PagePath.CAMP}
-            element={
-              <MainLayout>
-                <ListCamp />
-              </MainLayout>
-            }
-          />
-          <Route
-            path={PagePath.CAMP_DETAIL}
-            element={
-              <MainLayout>
-                <CampDetail />
-              </MainLayout>
-            }
-          />
-          <Route
-            path={PagePath.ABOUT}
-            element={
-              <MainLayout>
-                <About />
-              </MainLayout>
-            }
-          />
-          <Route
-            path={PagePath.REGISTRATION_FORM}
-            element={
-              <MainLayout>
-                <RegistrationPage />
-              </MainLayout>
-            }
-          />
-          <Route
-            path={PagePath.REGISTER_SUCCESS}
-            element={
-              <MainLayout>
-                <RegistrationSuccess />
-              </MainLayout>
-            }
-          />
+            {/* Public Routes */}
+            <Route path={PagePath.LOGIN} element={<Login />} />
+            <Route path={PagePath.REGISTER} element={<Register />} />
+            <Route path={PagePath.VERIFY_OTP} element={<VerifyOtp />} />
+            <Route path={PagePath.FORBIDDEN} element={<Forbidden />} />
+            <Route
+              path={PagePath.CAMP}
+              element={
+                <MainLayout>
+                  <ListCamp />
+                </MainLayout>
+              }
+            />
+            <Route
+              path={PagePath.CAMP_DETAIL}
+              element={
+                <MainLayout>
+                  <CampDetail />
+                </MainLayout>
+              }
+            />
+            <Route
+              path={PagePath.ABOUT}
+              element={
+                <MainLayout>
+                  <About />
+                </MainLayout>
+              }
+            />
+            <Route
+              path={PagePath.REGISTRATION_FORM}
+              element={
+                <MainLayout>
+                  <RegistrationPage />
+                </MainLayout>
+              }
+            />
+            <Route
+              path={PagePath.REGISTER_SUCCESS}
+              element={
+                <MainLayout>
+                  <RegistrationSuccess />
+                </MainLayout>
+              }
+            />
 
-          {/* Admin Routes - Protected */}
-          <Route element={<AdminLayout />}>
-            <Route
-              path={PagePath.ADMIN_DASHBOARD}
-              element={<AdminDashboard />}
-            />
-            <Route path={PagePath.ADMIN_CAMPS} element={<CampManagement />} />
-            <Route path={PagePath.ADMIN_BLOGS} element={<BlogManagement />} />
-            <Route path={PagePath.ADMIN_CAMPTYPES} element={<CampTypePage />} />
-            <Route
-              path={PagePath.ADMIN_CAMPS_DETAIL}
-              element={<CampDetailPage />}
-            />
-            <Route
-              path={PagePath.ADMIN_VEHICLES}
-              element={<VehicleManagement />}
-            />
-            <Route
-              path={PagePath.ADMIN_VEHICLE_TYPES}
-              element={<VehicleTypeManagement />}
-            />
-          </Route>
+            {/* Admin Routes - Protected */}
+            <Route element={<AdminLayout />}>
+              <Route
+                path={PagePath.ADMIN_DASHBOARD}
+                element={<AdminDashboard />}
+              />
+              <Route path={PagePath.ADMIN_CAMPS} element={<CampManagement />} />
+              <Route path={PagePath.ADMIN_BLOGS} element={<BlogManagement />} />
+              <Route path={PagePath.ADMIN_CAMPTYPES} element={<CampTypePage />} />
+              <Route path={PagePath.ADMIN_TRANSACTIONS} element={<TransactionPage />} />
+              <Route
+                path={PagePath.ADMIN_CAMPS_DETAIL}
+                element={<CampDetailPage />}
+              />
+              <Route
+                path={PagePath.ADMIN_VEHICLES}
+                element={<VehicleManagement />}
+              />
+              <Route
+                path={PagePath.ADMIN_VEHICLE_TYPES}
+                element={<VehicleTypeManagement />}
+              />
+            </Route>
 
-          {/* Staff Routes - Protected */}
-          <Route element={<StaffLayout />}>
+            {/* Staff Routes - Protected */}
+            <Route element={<StaffLayout />}>
+              <Route path={PagePath.STAFF_SCHEDULE} element={<StaffSchedule />} />
+            </Route>
             <Route path={PagePath.STAFF_SCHEDULE} element={<StaffSchedule />} />
-          </Route>
-          <Route path={PagePath.STAFF_SCHEDULE} element={<StaffSchedule />} />
-          <Route path={PagePath.STAFF_CAMPS} element={<MyCamps />} />
-          <Route path={PagePath.STAFF_BLOGS} element={<MyBlogs />} />
+            <Route path={PagePath.STAFF_CAMPS} element={<MyCamps />} />
+            <Route path={PagePath.STAFF_BLOGS} element={<MyBlogs />} />
 
-          {/* Manager Routes - Protected */}
-          <Route element={<ManagerLayout />}>
-            <Route
-              path={PagePath.MANAGER_DASHBOARD}
-              element={<ManagerDashboard />}
-            />
-            <Route
-              path={PagePath.MANAGER_STAFFS}
-              element={<CampStaffManagement />}
-            />
-            <Route
-              path={PagePath.MANAGER_REGIS}
-              element={<ManagerRegistrationsPage />}
-            />
-            <Route
-              path={PagePath.MANAGER_CAMPERS}
-              element={<CamperManagement />}
-            />
-            <Route
-              path={PagePath.MANAGER_ACTIVITIES}
-              element={<ActivityScheduleManagement />}
-            />
-            <Route
-              path={PagePath.MANAGER_GROUPS}
-              element={<GroupManagement />}
-            />
-            <Route
-              path={PagePath.MANAGER_TRANSPORTATION}
-              element={<div>Manager Transportation</div>}
-            />
-            <Route
-              path={PagePath.MANAGER_LOCATIONS}
-              element={<InCampLocationManagement />}
-            />
-            <Route
-              path={PagePath.MANAGER_ACCOMODATION}
-              element={<AccommodationManagement />}
-            />
-            <Route
-              path={PagePath.MANAGER_PAYMENTS}
-              element={<div>Manager Payments</div>}
-            />
-            <Route
-              path={PagePath.MANAGER_CALENDAR}
-              element={<div>Manager Calendar</div>}
-            />
-            <Route
-              path={PagePath.MANAGER_INCIDENTS}
-              element={<div>Manager Incidents</div>}
-            />
-          </Route>
+            {/* Manager Routes - Protected */}
+            <Route element={<ManagerLayout />}>
+              <Route
+                path={PagePath.MANAGER_DASHBOARD}
+                element={<ManagerDashboard />}
+              />
+              <Route
+                path={PagePath.MANAGER_STAFFS}
+                element={<CampStaffManagement />}
+              />
+              <Route
+                path={PagePath.MANAGER_REGIS}
+                element={<ManagerRegistrationsPage />}
+              />
+              <Route
+                path={PagePath.MANAGER_CAMPERS}
+                element={<CamperManagement />}
+              />
+              <Route
+                path={PagePath.MANAGER_ACTIVITIES}
+                element={<ActivityScheduleManagement />}
+              />
+              <Route
+                path={PagePath.MANAGER_GROUPS}
+                element={<GroupManagement />}
+              />
+              <Route
+                path={PagePath.MANAGER_TRANSPORTATION}
+                element={<div>Manager Transportation</div>}
+              />
+              <Route
+                path={PagePath.MANAGER_LOCATIONS}
+                element={<InCampLocationManagement />}
+              />
+              <Route
+                path={PagePath.MANAGER_ACCOMODATION}
+                element={<AccommodationManagement />}
+              />
+              <Route
+                path={PagePath.MANAGER_PAYMENTS}
+                element={<div>Manager Payments</div>}
+              />
+              <Route
+                path={PagePath.MANAGER_CALENDAR}
+                element={<div>Manager Calendar</div>}
+              />
+              <Route
+                path={PagePath.MANAGER_INCIDENTS}
+                element={<div>Manager Incidents</div>}
+              />
+            </Route>
 
-          {/* Driver Route - Protected */}
-          <Route element={<DriverLayout />}>
+            {/* Driver Route - Protected */}
+            <Route element={<DriverLayout />}>
+              <Route
+                path={PagePath.DRIVER_CALENDAR}
+                element={<div>DRIVER_CALENDAR</div>}
+              />
+            </Route>
+
+            {/* Home Route - Protected */}
             <Route
-              path={PagePath.DRIVER_CALENDAR}
-              element={<div>DRIVER_CALENDAR</div>}
+              path={PagePath.HOME}
+              element={
+                <MainLayout>
+                  <Home />
+                </MainLayout>
+              }
             />
-          </Route>
+            <Route
+              path={PagePath.ROOT}
+              element={
+                <MainLayout>
+                  <Home />
+                </MainLayout>
+              }
+            />
+            <Route
+              path={PagePath.USER_MYPROFILE}
+              element={
+                <MainLayout>
+                  <MyProfile />
+                </MainLayout>
+              }
+            />
+            <Route
+              path={PagePath.USER_MYREGISTRATIONS}
+              element={
+                <MainLayout>
+                  <MyRegistration />
+                </MainLayout>
+              }
+            />
 
-          {/* Home Route - Protected */}
-          <Route
-            path={PagePath.HOME}
-            element={
-              <MainLayout>
-                <Home />
-              </MainLayout>
-            }
-          />
-          <Route
-            path={PagePath.ROOT}
-            element={
-              <MainLayout>
-                <Home />
-              </MainLayout>
-            }
-          />
-          <Route
-            path={PagePath.USER_MYPROFILE}
-            element={
-              <MainLayout>
-                <MyProfile />
-              </MainLayout>
-            }
-          />
-          <Route
-            path={PagePath.USER_MYREGISTRATIONS}
-            element={
-              <MainLayout>
-                <MyRegistration />
-              </MainLayout>
-            }
-          />
-
-          {/* User Profile Route - Protected */}
-          <Route path="/profile" element={<UserProfile />} />
-        </Routes>
+            {/* User Profile Route - Protected */}
+            <Route path="/profile" element={<UserProfile />} />
+          </Routes>
         </AuthGuardProvider>
       </NotificationProvider>
     </Router>
