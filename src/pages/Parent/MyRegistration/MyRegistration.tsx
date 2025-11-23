@@ -189,7 +189,7 @@ const MyRegistration: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white py-12">
+    <div className="min-h-screen bg-white py-20">
       {/* Header */}
       <div className="max-w-4xl mx-auto px-4 py-8">
         <h1 className="text-5xl font-bold text-gray-900 mb-2">
@@ -336,7 +336,7 @@ const MyRegistration: React.FC = () => {
                   {/* Price */}
                   <div>
                     <p className="text-xs text-gray-600 font-medium mb-1">
-                      GIÁ CUỐI CÙNG
+                      TỔNG THANH TOÁN
                     </p>
                     <p className="text-2xl font-bold text-[#FF8F50]">
                       {registration.finalPrice?.toLocaleString("vi-VN")} ₫
@@ -361,7 +361,7 @@ const MyRegistration: React.FC = () => {
                     registration.campers.length > 0 && (
                       <div>
                         <p className="text-xs text-gray-600 font-medium mb-2">
-                          NGƯỜI THAM GIA ({registration.campers.length})
+                          TRẠI VIÊN: ({registration.campers.length})
                         </p>
                         <div className="space-y-2">
                           {registration.campers.map((camper) => (

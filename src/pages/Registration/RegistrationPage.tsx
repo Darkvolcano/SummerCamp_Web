@@ -901,7 +901,7 @@ const RegistrationPage: React.FC = () => {
             </Form.Item>
 
             {selectedCamp && (
-              <div className="p-4 bg-blue-50 rounded border border-blue-200 mt-4">
+              <div className="p-4 bg-gray-50 rounded border border-gray-200 mt-4">
                 <h3 className="font-semibold text-gray-900 mb-2">
                   {selectedCamp.name}
                 </h3>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button, Spin, Modal, Form, Input } from "antd";
-import { ArrowLeftOutlined, CreditCardOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { ArrowLeftOutlined, CreditCardOutlined, EditOutlined } from "@ant-design/icons";
 import { useNavigate, useParams } from "react-router-dom";
 import dayjs from "dayjs";
 import { useNotification } from "../../../contexts/NotificationContext";
@@ -153,28 +153,67 @@ const RegistrationDetail: React.FC = () => {
   const isCancelable = CANCELABLE_STATUSES.includes(registration.status);
 
   return (
-    <div className="min-h-screen bg-white py-12">
+    <div className="min-h-screen bg-white py-20">
       <div className="max-w-4xl mx-auto px-4">
         {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
-          <Button
-            type="text"
-            icon={<ArrowLeftOutlined />}
-            onClick={() => navigate("/my-registrations")}
-            className="text-gray-600 hover:text-gray-900"
+        <div className="mb-8">
+          <button
+            onClick={() => navigate("/user/my-registrations")}
+            className="flex bg-[#FF8F50] text-white items-center gap-2 hover:text-[#ffffff] font-semibold group px-6 py-2 rounded-full hover:shadow-lg hover:bg-[#ff7e3d] transition-all mb-6"
           >
-            Quay lại
-          </Button>
+            <ArrowLeftOutlined className="group-hover:-translate-x-1 transition-transform" />
+            <span>Quay lại danh sách</span>
+          </button>
           <h1 className="text-4xl font-bold text-gray-900">Chi tiết đơn đăng ký</h1>
         </div>
 
-        {/* Status Badge */}
-        <div className="mb-8">
-          <span
-            className={`text-lg font-bold px-6 py-2 rounded-full ${statusInfo.bg} ${statusInfo.text}`}
-          >
-            {statusInfo.label}
-          </span>
+        {/* Registration Information */}
+        <div className="bg-white rounded-lg p-6 mb-8 border border-gray-200">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Thông tin đăng ký</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <p className="text-sm text-gray-600 font-medium mb-1">Mã đơn đăng ký</p>
+              <p className="text-lg font-semibold text-gray-900">
+                #{registration.registrationId}
+              </p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600 font-medium mb-1">Trạng thái</p>
+              <span
+                className={`inline-block text-base font-bold px-4 py-1.5 rounded-full ${statusInfo.bg} ${statusInfo.text}`}
+              >
+                {statusInfo.label}
+              </span>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600 font-medium mb-1">Ngày đăng ký</p>
+              <p className="text-lg font-semibold text-gray-900">
+                {dayjs(registration.registrationCreateAt).format("DD/MM/YYYY HH:mm")}
+              </p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600 font-medium mb-1">Tổng thanh toán</p>
+              <p className="text-2xl font-bold text-[#FF8F50]">
+                {registration.finalPrice?.toLocaleString("vi-VN")} ₫
+              </p>
+            </div>
+            {registration.appliedPromotion && (
+              <div className="md:col-span-2">
+                <p className="text-sm text-gray-600 font-medium mb-1">Khuyến mãi</p>
+                <p className="text-lg font-semibold text-gray-900">
+                  {registration.appliedPromotion.name} ({registration.appliedPromotion.percent}%)
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Note */}
+          {registration.note && (
+            <div className="mt-6 bg-blue-50 p-4 rounded-lg border border-blue-200">
+              <p className="text-sm text-gray-600 font-medium mb-1">Ghi chú</p>
+              <p className="text-gray-900 italic">"{registration.note}"</p>
+            </div>
+          )}
         </div>
 
         {/* Camp Information */}
@@ -222,47 +261,6 @@ const RegistrationDetail: React.FC = () => {
           </div>
         )}
 
-        {/* Registration Information */}
-        <div className="bg-white rounded-lg p-6 mb-8 border border-gray-200">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Thông tin đăng ký</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <p className="text-sm text-gray-600 font-medium mb-1">Mã đơn đăng ký</p>
-              <p className="text-lg font-semibold text-gray-900">
-                #{registration.registrationId}
-              </p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600 font-medium mb-1">Ngày đăng ký</p>
-              <p className="text-lg font-semibold text-gray-900">
-                {dayjs(registration.registrationCreateAt).format("DD/MM/YYYY HH:mm")}
-              </p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600 font-medium mb-1">Giá cuối cùng</p>
-              <p className="text-2xl font-bold text-[#FF8F50]">
-                {registration.finalPrice?.toLocaleString("vi-VN")} ₫
-              </p>
-            </div>
-            {registration.appliedPromotion && (
-              <div>
-                <p className="text-sm text-gray-600 font-medium mb-1">Khuyến mãi</p>
-                <p className="text-lg font-semibold text-gray-900">
-                  {registration.appliedPromotion.name} ({registration.appliedPromotion.percent}%)
-                </p>
-              </div>
-            )}
-          </div>
-
-          {/* Note */}
-          {registration.note && (
-            <div className="mt-6 bg-blue-50 p-4 rounded-lg border border-blue-200">
-              <p className="text-sm text-gray-600 font-medium mb-1">Ghi chú</p>
-              <p className="text-gray-900 italic">"{registration.note}"</p>
-            </div>
-          )}
-        </div>
-
         {/* Campers */}
         {registration.campers && registration.campers.length > 0 && (
           <div className="bg-white rounded-lg p-6 mb-8 border border-gray-200">
@@ -301,57 +299,44 @@ const RegistrationDetail: React.FC = () => {
         )}
 
         {/* Action Buttons */}
-        <div className="space-y-3 mb-8">
+        <div className="flex flex-wrap gap-3 mb-8 justify-end">
           {registration.status === "Approved" && (
-            <Button
-              type="primary"
-              size="large"
-              block
+            <button
               onClick={() => setCompleteModalVisible(true)}
-              className="bg-[#FF8F50] border-[#FF8F50] h-12 text-base font-medium"
+              className="flex items-center justify-center gap-1 bg-[#FF8F50] text-white font-medium py-1.5 px-4 rounded-full text-sm hover:bg-[#ff7e3d] transition-colors"
             >
               Hoàn tất & Thanh toán
-            </Button>
+            </button>
           )}
 
           {registration.status === "PendingPayment" && (
-            <Button
-              type="primary"
-              size="large"
-              block
-              loading={paymentLoading}
+            <button
+              disabled={paymentLoading}
               onClick={handlePayment}
-              icon={<CreditCardOutlined />}
-              className="bg-[#FF8F50] border-[#FF8F50] h-12 text-base font-medium"
+              className="flex items-center justify-center gap-1 bg-[#FF8F50] text-white font-medium py-1.5 px-4 rounded-full text-sm hover:bg-[#ff7e3d] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
+              <CreditCardOutlined />
               Thanh toán ngay
-            </Button>
+            </button>
           )}
 
           {registration.status === "PendingApproval" && (
-            <Button
-              type="default"
-              size="large"
-              block
-              icon={<EditOutlined />}
-              className="border-gray-300 h-12 text-base font-medium"
+            <button
+              onClick={() => {}}
+              className="flex items-center justify-center gap-1 bg-[#FF8F50] text-white font-medium py-1.5 px-4 rounded-full text-sm hover:bg-[#ff7e3d] transition-colors"
             >
+              <EditOutlined />
               Chỉnh sửa đơn đăng ký
-            </Button>
+            </button>
           )}
 
           {isCancelable && (
-            <Button
-              type="default"
-              size="large"
-              block
-              danger
-              icon={<DeleteOutlined />}
+            <button
               onClick={() => setCancelConfirmModal(true)}
-              className="border-red-300 text-red-600 h-12 text-base font-medium hover:text-red-700 hover:border-red-400"
+              className="flex items-center justify-center gap-1 bg-red-500 text-white font-medium py-1.5 px-4 rounded-full text-sm hover:bg-red-600 transition-colors"
             >
               Hủy đơn đăng ký
-            </Button>
+            </button>
           )}
         </div>
       </div>
