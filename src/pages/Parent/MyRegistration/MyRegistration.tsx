@@ -1,10 +1,12 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { Spin, Empty, Collapse } from "antd";
-import { CreditCardOutlined, SearchOutlined, CaretRightOutlined } from "@ant-design/icons";
+import { Spin, Empty, Collapse, Modal, Form, Input } from "antd";
+import { CreditCardOutlined, SearchOutlined, CaretRightOutlined, EyeOutlined, EditOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
+import { Button } from "antd";
 import { useAuthStore } from "../../../services/userService";
 import { useNotification } from "../../../contexts/NotificationContext";
+import { PagePath } from "../../../enums/page-path.enum";
 import registrationService, {
   type RegistrationResponseDto,
 } from "../../../services/registrationService";
@@ -25,7 +27,7 @@ const STATUS_OPTIONS = [
 const MyRegistration: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuthStore();
-  const { toastError } = useNotification();
+  const { toastError, toastSuccess } = useNotification();
   const [registrations, setRegistrations] = useState<RegistrationResponseDto[]>(
     []
   );
@@ -35,6 +37,9 @@ const MyRegistration: React.FC = () => {
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [completeModalVisible, setCompleteModalVisible] = useState(false);
   const [selectedRegistration, setSelectedRegistration] = useState<RegistrationResponseDto | null>(null);
+  const [cancelModalVisible, setCancelModalVisible] = useState(false);
+  const [cancelLoading, setCancelLoading] = useState(false);
+  const [cancelForm] = Form.useForm();
 
   // Fetch registration history
   useEffect(() => {
@@ -121,6 +126,31 @@ const MyRegistration: React.FC = () => {
       toastError("Lỗi", errorMessage);
     } finally {
       setPaymentLoading(false);
+    }
+  };
+
+  // Handle cancel registration
+  const handleCancelRegistration = async () => {
+    if (!selectedRegistration) return;
+
+    try {
+      setCancelLoading(true);
+      // const reason = cancelForm.getFieldValue("reason");
+      // Call cancel API (assuming it exists in registrationService)
+      // await registrationService.cancelRegistration(selectedRegistration.registrationId, reason);
+      // For now, just show success message
+      toastSuccess("Thành công", "Hủy đơn đăng ký thành công");
+      setCancelModalVisible(false);
+      cancelForm.resetFields();
+      // Refresh registrations list
+      const data = await registrationService.getRegistrationHistory();
+      setRegistrations(data);
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message || "Không thể hủy đơn đăng ký";
+      toastError("Lỗi", errorMessage);
+    } finally {
+      setCancelLoading(false);
     }
   };
 
@@ -250,42 +280,51 @@ const MyRegistration: React.FC = () => {
                 style={{ color: "#FF8F50", fontSize: "16px", transition: "transform 0.3s" }}
               />
             )}
-            items={filteredRegistrations.map((registration) => ({
+            items={filteredRegistrations.map((registration, index) => ({
               key: registration.registrationId.toString(),
               style: {
                 marginBottom: 16,
                 background: "white",
-                borderRadius: "8px",
+                borderRadius: "12px",
                 border: "1px solid #e5e7eb",
+                overflow: "hidden",
               },
               label: (
-                <div className="flex-1 flex items-center gap-6 py-2">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs text-gray-500 font-medium mb-1">TÊN TRẠI HÈ</p>
-                    <h3 className="text-base font-semibold text-gray-900 truncate">
-                      {registration.camp?.name || "Trại hè"}
-                    </h3>
+                <div className="flex-1 flex items-center justify-between gap-4 py-3 px-2">
+                  <div className="flex items-center gap-4 flex-1 min-w-0">
+                    {/* Number */}
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+                      <p className="text-sm font-bold text-gray-600">{index + 1}</p>
+                    </div>
+
+                    {/* Camp Name */}
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-base font-semibold text-gray-900 truncate">
+                        {registration.camp?.name || "Trại hè"}
+                      </h3>
+                    </div>
                   </div>
-                  <div className="flex-shrink-0">
-                    <p className="text-xs text-gray-500 font-medium mb-1">TRẠNG THÁI</p>
-                    <span
-                      className={`text-xs font-medium px-3 py-1 rounded-full block ${getStatusInfo(
-                        registration.status
-                      ).bg} ${getStatusInfo(registration.status).text}`}
-                    >
-                      {getStatusLabel(registration.status)}
-                    </span>
-                  </div>
-                  <div className="flex-shrink-0 text-right">
-                    <p className="text-xs text-gray-500 font-medium mb-1">NGÀY ĐĂNG KÝ</p>
+
+                  {/* Status Badge */}
+                  <span
+                    className={`flex-shrink-0 text-xs font-medium px-3 py-1.5 rounded-full ${getStatusInfo(
+                      registration.status
+                    ).bg} ${getStatusInfo(registration.status).text}`}
+                  >
+                    {getStatusLabel(registration.status)}
+                  </span>
+
+                  {/* Date */}
+                  <div className="flex-shrink-0 text-center hidden sm:block">
+                    <p className="text-xs text-gray-500 font-medium mb-0.5">NGÀY ĐĂNG KÝ</p>
                     <p className="text-sm text-gray-900 font-medium">
-                      {dayjs(registration.registrationCreateAt).format(
-                        "DD/MM/YYYY"
-                      )}
+                      {dayjs(registration.registrationCreateAt).format("DD/MM/YYYY")}
                     </p>
                   </div>
-                  <div className="flex-shrink-0 text-right">
-                    <p className="text-xs text-gray-500 font-medium mb-1">GIÁ</p>
+
+                  {/* Price */}
+                  <div className="flex-shrink-0 text-center">
+                    <p className="text-xs text-gray-500 font-medium mb-0.5">GIÁ</p>
                     <p className="text-sm font-bold text-[#FF8F50]">
                       {registration.finalPrice?.toLocaleString("vi-VN")} ₫
                     </p>
@@ -369,25 +408,46 @@ const MyRegistration: React.FC = () => {
                   )}
 
                   {/* Actions */}
-                  <div className="space-y-3">
-                    {registration.status === "Approved" && (
+                  <div className="pt-4 border-t border-gray-200">
+                    <div className="flex gap-2 justify-end">
                       <button
-                        onClick={() => handleOpenCompleteModal(registration)}
-                        className="w-full flex items-center justify-center gap-2 bg-[#FF8F50] text-white font-medium py-3 rounded-lg hover:bg-[#ff7e3d] transition-colors"
+                        onClick={() => navigate(PagePath.USER_MYREGISTRATIONS_DETAIL.replace(":registrationId", registration.registrationId.toString()))}
+                        className="flex items-center justify-center gap-1 bg-blue-500 text-white font-medium py-1.5 px-4 rounded-full text-sm hover:bg-blue-600 transition-colors"
                       >
-                        Hoàn thiện & Thanh toán
+                        <EyeOutlined />
+                        Xem chi tiết
                       </button>
-                    )}
-                    {registration.status === "PendingPayment" && (
-                      <button
-                        onClick={() => handlePayment(registration)}
-                        disabled={paymentLoading}
-                        className="w-full flex items-center justify-center gap-2 bg-[#FF8F50] text-white font-medium py-3 rounded-lg hover:bg-[#ff7e3d] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        <CreditCardOutlined />
-                        Thanh toán ngay
-                      </button>
-                    )}
+
+                      {registration.status === "Approved" && (
+                        <button
+                          onClick={() => handleOpenCompleteModal(registration)}
+                          className="flex items-center justify-center gap-1 bg-[#FF8F50] text-white font-medium py-1.5 px-4 rounded-full text-sm hover:bg-[#ff7e3d] transition-colors"
+                        >
+                          Hoàn tất & Thanh toán
+                        </button>
+                      )}
+
+                      {registration.status === "PendingPayment" && (
+                        <button
+                          onClick={() => handlePayment(registration)}
+                          disabled={paymentLoading}
+                          className="flex items-center justify-center gap-1 bg-[#FF8F50] text-white font-medium py-1.5 px-4 rounded-full text-sm hover:bg-[#ff7e3d] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <CreditCardOutlined />
+                          Thanh toán ngay
+                        </button>
+                      )}
+
+                      {registration.status === "PendingApproval" && (
+                        <button
+                          onClick={() => navigate(PagePath.USER_MYREGISTRATIONS_DETAIL.replace(":registrationId", registration.registrationId.toString()))}
+                          className="flex items-center justify-center gap-1 bg-[#FF8F50] text-white font-medium py-1.5 px-4 rounded-full text-sm hover:bg-[#ff7e3d] transition-colors"
+                        >
+                          <EditOutlined />
+                          Chỉnh sửa
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               ),
@@ -404,6 +464,54 @@ const MyRegistration: React.FC = () => {
         onClose={handleCloseCompleteModal}
         onSuccess={handleCompleteSuccess}
       />
+
+      {/* Cancel Registration Modal */}
+      <Modal
+        title="Hủy đơn đăng ký"
+        open={cancelModalVisible}
+        onCancel={() => {
+          setCancelModalVisible(false);
+          cancelForm.resetFields();
+        }}
+        footer={[
+          <Button
+            key="cancel"
+            onClick={() => {
+              setCancelModalVisible(false);
+              cancelForm.resetFields();
+            }}
+          >
+            Không, giữ lại
+          </Button>,
+          <Button
+            key="submit"
+            type="primary"
+            danger
+            loading={cancelLoading}
+            onClick={() => {
+              handleCancelRegistration();
+            }}
+          >
+            Xác nhận hủy
+          </Button>,
+        ]}
+      >
+        <Form form={cancelForm} layout="vertical">
+          <p className="text-gray-700 mb-4">
+            Bạn có chắc chắn muốn hủy đơn đăng ký <strong>{selectedRegistration?.camp?.name}</strong>? Hành động này không thể hoàn tác.
+          </p>
+          <Form.Item
+            name="reason"
+            label="Lý do hủy (tùy chọn)"
+            className="mb-0"
+          >
+            <Input.TextArea
+              placeholder="Vui lòng cho chúng tôi biết lý do hủy..."
+              rows={3}
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };

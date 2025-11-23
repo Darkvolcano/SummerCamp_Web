@@ -229,6 +229,7 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
           PagePath.USER_MYREGISTRATIONS,
           PagePath.USER_PAYMENT_HISTORY,
           PagePath.USER_MYCAMPERS,
+          PagePath.USER_MYREGISTRATIONS_DETAIL,
         ],
       };
 
