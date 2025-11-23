@@ -7,14 +7,23 @@ export enum LocationType {
   PICKUP_POINT = "Pickup_point",
 }
 
-export interface LocationRequestDto {
+export interface LocationCreateDto {
   name: string;
   locationType: string;
   address: string | null;
   latitude: number | null;
   longitude: number | null;
   parentLocationId: number | null;
-  isActive?: boolean;
+}
+
+export interface LocationUpdateDto {
+  name: string | null;
+  locationType: string;
+  isActive: boolean | null;
+  address: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  parentLocationId: number | null;
 }
 
 export interface LocationResponseDto {
@@ -46,7 +55,7 @@ const locationService = {
   },
 
   // Create location
-  createLocation: async (location: LocationRequestDto): Promise<LocationResponseDto> => {
+  createLocation: async (location: LocationCreateDto): Promise<LocationResponseDto> => {
     console.log("[locationService] POST /location");
     const requestPayload = {
       name: location.name,
@@ -54,6 +63,7 @@ const locationService = {
       address: location.address,
       latitude: location.latitude,
       longitude: location.longitude,
+      parentLocationId: location.parentLocationId,
     };
 
     const response = await axiosInstance.post("/location", requestPayload);
@@ -61,11 +71,12 @@ const locationService = {
   },
 
   // Update location
-  updateLocation: async (id: number, location: LocationRequestDto): Promise<LocationResponseDto> => {
+  updateLocation: async (id: number, location: LocationUpdateDto): Promise<LocationResponseDto> => {
     console.log(`[locationService] PUT /location/${id}`);
     const requestPayload = {
       name: location.name,
       locationType: location.locationType,
+      isActive: location.isActive,
       address: location.address,
       latitude: location.latitude,
       longitude: location.longitude,
@@ -137,6 +148,25 @@ const locationService = {
     };
     const response = await axiosInstance.post("/location", requestPayload);
     return response.data as LocationResponseDto;
+  },
+
+  // Get locations by camp ID and time range
+  getLocationsByCampIdAndTime: async (
+    campId: number,
+    startTime: string,
+    endTime: string
+  ): Promise<LocationResponseDto[]> => {
+    console.log(`[locationService] GET /location/camps/${campId}/by-time`);
+    const response = await axiosInstance.get(
+      `/location/camps/${campId}/by-time`,
+      {
+        params: {
+          startTime,
+          endTime,
+        },
+      }
+    );
+    return response.data as LocationResponseDto[];
   },
 
 };

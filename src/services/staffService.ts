@@ -72,6 +72,27 @@ const staffService = {
     );
     return response.data as StaffInfo[];
   },
+
+  // Get available staff in a time range
+  getAvailableStaffInTime: async (
+    campId: number,
+    startTime: string,
+    endTime: string
+  ): Promise<StaffInfo[]> => {
+    console.log(
+      `[staffService] GET /Staff/camps/${campId}/available-in-time`
+    );
+    const response = await axiosInstance.get(
+      `/Staff/camps/${campId}/available-in-time`,
+      {
+        params: {
+          startTime,
+          endTime,
+        },
+      }
+    );
+    return response.data as StaffInfo[];
+  },
 };
 
 export default staffService;
