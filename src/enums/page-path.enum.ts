@@ -30,6 +30,8 @@ export enum PagePath {
   USER_PAYMENT_HISTORY = "/user/payment-history",
   USER_PAYMENT_HISTORY_DETAIL = "/user/payment-history/:transactionId",
   USER_MYCAMPERS = "/user/my-campers",
+  USER_CAMPER_DETAIL = "/user/my-campers/:camperId",
+  USER_CAMPER_EDIT = "/user/my-campers/edit/:camperId",
   REGISTRATION_FORM = "/register-camp/:campId",
 
 

@@ -40,6 +40,8 @@ import TransactionPage from "./pages/Admin/TransactionManagement/TransactionPage
 import MyProfile from "./pages/Parent/MyProfile/MyProfile";
 import MyRegistration from "./pages/Parent/MyRegistration/MyRegistration";
 import RegistrationDetail from "./pages/Parent/MyRegistration/RegistrationDetail";
+import MyCampers from "./pages/Parent/MyCampers/MyCampers";
+import CamperDetail from "./pages/Parent/MyCampers/CamperDetail";
 function App() {
   return (
     <Router>
@@ -225,7 +227,22 @@ function App() {
                 </MainLayout>
               }
             />
-
+            <Route
+              path={PagePath.USER_MYCAMPERS}
+              element={
+                <MainLayout>
+                  <MyCampers />
+                </MainLayout>
+              }
+            />
+            <Route
+              path={PagePath.USER_CAMPER_DETAIL}
+              element={
+                <MainLayout>
+                  <CamperDetail />
+                </MainLayout>
+              }
+            />
             {/* User Profile Route - Protected */}
             <Route path="/profile" element={<UserProfile />} />
           </Routes>
