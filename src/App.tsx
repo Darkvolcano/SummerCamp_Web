@@ -39,6 +39,7 @@ import CampTypePage from "./pages/Admin/CampTypeManagement/CampTypePage";
 import TransactionPage from "./pages/Admin/TransactionManagement/TransactionPage";
 import MyProfile from "./pages/Parent/MyProfile/MyProfile";
 import MyRegistration from "./pages/Parent/MyRegistration/MyRegistration";
+import RegistrationDetail from "./pages/Parent/MyRegistration/RegistrationDetail";
 function App() {
   return (
     <Router>
@@ -213,6 +214,14 @@ function App() {
               element={
                 <MainLayout>
                   <MyRegistration />
+                </MainLayout>
+              }
+            />
+            <Route
+              path={PagePath.USER_MYREGISTRATIONS_DETAIL}
+              element={
+                <MainLayout>
+                  <RegistrationDetail />
                 </MainLayout>
               }
             />
