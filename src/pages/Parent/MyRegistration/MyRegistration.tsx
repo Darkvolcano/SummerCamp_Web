@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { Spin, Empty, Collapse, Modal, Form, Input } from "antd";
-import { CreditCardOutlined, SearchOutlined, CaretRightOutlined, EyeOutlined, EditOutlined } from "@ant-design/icons";
+import { CreditCardOutlined, SearchOutlined, CaretRightOutlined, EyeOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 import { Button } from "antd";
@@ -17,7 +17,7 @@ const STATUS_OPTIONS = [
   { key: "Rejected", label: "Bị từ chối" },
   { key: "Approved", label: "Được duyệt" },
   { key: "PendingPayment", label: "Chờ thanh toán" },
-  { key: "Confirmed", label: "Xác nhận" },
+  { key: "Confirmed", label: "Đã xác nhận" },
   { key: "PendingRefund", label: "Chờ hoàn tiền" },
   { key: "OnGoing", label: "Đang diễn ra" },
   { key: "Completed", label: "Hoàn thành" },
@@ -438,15 +438,6 @@ const MyRegistration: React.FC = () => {
                         </button>
                       )}
 
-                      {registration.status === "PendingApproval" && (
-                        <button
-                          onClick={() => navigate(PagePath.USER_MYREGISTRATIONS_DETAIL.replace(":registrationId", registration.registrationId.toString()))}
-                          className="flex items-center justify-center gap-1 bg-[#FF8F50] text-white font-medium py-1.5 px-4 rounded-full text-sm hover:bg-[#ff7e3d] transition-colors"
-                        >
-                          <EditOutlined />
-                          Chỉnh sửa
-                        </button>
-                      )}
                     </div>
                   </div>
                 </div>
