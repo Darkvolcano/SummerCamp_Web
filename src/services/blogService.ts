@@ -38,14 +38,10 @@ interface MutationVariables {
 export interface CreateBlog {
   title: string;
   content: string;
-  image: string;
+  imageUrl?: File; 
   authorId?: number;
 }
 
-/**
- * Backend blog response interface
- * Backend returns "blogId" instead of "id"
- */
 interface BackendBlogDto {
   blogId?: number;
   id?: number;
@@ -68,10 +64,6 @@ interface BackendBlogDto {
   } | null;
 }
 
-/**
- * Maps backend blog response to frontend BlogDto interface
- * Handles field name discrepancies (blogId -> id)
- */
 const mapBlogResponse = (blog: BackendBlogDto): BlogDto => ({
   id: blog.blogId || blog.id || 0,
   title: blog.title,
@@ -84,10 +76,6 @@ const mapBlogResponse = (blog: BackendBlogDto): BlogDto => ({
   Author: (blog.Author || blog.author) as BlogDto["Author"]
 });
 
-/**
- * Fetches all blog posts from the API
- * @returns Array of blog posts
- */
 const fetchBlogs = async (): Promise<BlogDto[]> => {
   const response = await axiosInstance.get("blog");
   const blogs = response.data;
@@ -96,7 +84,6 @@ const fetchBlogs = async (): Promise<BlogDto[]> => {
     return blogs.map(mapBlogResponse);
   }
 
-  // Fallback: check if it's wrapped in BlogApiResponse format
   const wrappedData = response.data as BlogApiResponse;
   if (wrappedData.blogs && Array.isArray(wrappedData.blogs)) {
     return wrappedData.blogs.map(mapBlogResponse);
@@ -132,16 +119,24 @@ export const useBlogActive = () => {
   });
 };
 
-/**
- * React Query hook for creating a new blog post
- */
 export const useCreateBlogs = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (newBlog: CreateBlog) => {
       try {
-        const response = await axiosInstance.post(`blog`, newBlog);
+        const formData = new FormData();
+        formData.append("title", newBlog.title);
+        formData.append("content", newBlog.content);
+        if (newBlog.imageUrl) {
+          formData.append("imageUrl", newBlog.imageUrl);
+        }
+
+        const response = await axiosInstance.post(`blog`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
         return response.data as BlogDetailApiResponse;
       } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
@@ -157,9 +152,6 @@ export const useCreateBlogs = () => {
   });
 };
 
-/**
- * React Query hook for fetching a single blog post by ID
- */
 export const useGetBlogById = (id: number) => {
   return useQuery<BlogDto, Error>({
     queryKey: ["blog", id],
@@ -180,15 +172,23 @@ export const useGetBlogById = (id: number) => {
   });
 };
 
-/**
- * React Query hook for updating an existing blog post
- */
 export const useUpdateBlogs = () => {
   const queryClient = useQueryClient();
 
   return useMutation<void, Error, MutationVariables>({
     mutationFn: async ({ id, blog }: MutationVariables): Promise<void> => {
-      await axiosInstance.put(`blog/${id}`, blog);
+      const formData = new FormData();
+      formData.append("title", blog.title);
+      formData.append("content", blog.content);
+      if (blog.imageUrl) {
+        formData.append("imageUrl", blog.imageUrl);
+      }
+
+      await axiosInstance.put(`blog/${id}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["blog"] });
@@ -196,9 +196,6 @@ export const useUpdateBlogs = () => {
   });
 };
 
-/**
- * React Query hook for deleting a blog post
- */
 export const useDeleteBlogs = () => {
   const queryClient = useQueryClient();
 
