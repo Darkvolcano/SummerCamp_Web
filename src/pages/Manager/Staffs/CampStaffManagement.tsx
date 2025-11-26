@@ -196,7 +196,13 @@ const CampStaffManagement: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F9FAFB] p-6">
+    <div className="min-h-screen bg-[#F9FAFB] p-6 relative">
+      {assigning && (
+        <div className="absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center z-50">
+          <Spin size="large" tip="Assigning staff..." />
+        </div>
+      )}
+
       {/* Header */}
       <div className="mb-4">
         <h1 className="text-2xl font-bold text-[#111827]">Staff Management</h1>
