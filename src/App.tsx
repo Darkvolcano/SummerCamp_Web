@@ -39,9 +39,10 @@ import CampTypePage from "./pages/Admin/CampTypeManagement/CampTypePage";
 import TransactionPage from "./pages/Admin/TransactionManagement/TransactionPage";
 import MyProfile from "./pages/Parent/MyProfile/MyProfile";
 import MyRegistration from "./pages/Parent/MyRegistration/MyRegistration";
-import RegistrationDetail from "./pages/Parent/MyRegistration/RegistrationDetail";
+import RegistrationDetail from "./pages/Parent/MyRegistration/MyRegistrationDetail";
 import MyCampers from "./pages/Parent/MyCampers/MyCampers";
 import CamperDetail from "./pages/Parent/MyCampers/CamperDetail";
+import MyTransaction from "./pages/Parent/MyTransaction/MyTransaction";
 function App() {
   return (
     <Router>
@@ -240,6 +241,14 @@ function App() {
               element={
                 <MainLayout>
                   <CamperDetail />
+                </MainLayout>
+              }
+            />
+            <Route
+              path={PagePath.USER_PAYMENT_HISTORY}
+              element={
+                <MainLayout>
+                  <MyTransaction />
                 </MainLayout>
               }
             />
