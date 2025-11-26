@@ -221,8 +221,8 @@ const campService = {
 
   // Get camps by status
   getCampsByStatus: async (status: string): Promise<CampResponseDto[]> => {
-    console.log(`[campService] GET /camp?status=${status}`);
-    const response = await axiosInstance.get("/camp", {
+    console.log(`[campService] GET /camp/status?status=${status}`);
+    const response = await axiosInstance.get("/camp/status", {
       params: { status },
     });
 

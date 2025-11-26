@@ -30,6 +30,8 @@ const ActivityScheduleManagement: React.FC = () => {
     startTime: Date;
     endTime: Date;
   } | null>(null);
+  const [scheduleFormMode, setScheduleFormMode] = useState<"create-core" | "create-optional">("create-core");
+  const [selectedCoreScheduleId, setSelectedCoreScheduleId] = useState<string | null>(null);
 
   // Fetch activities and schedules
   useEffect(() => {
@@ -213,10 +215,11 @@ const ActivityScheduleManagement: React.FC = () => {
     title: schedule.activity?.name || "Untitled",
     start: new Date(schedule.startTime),
     end: new Date(schedule.endTime),
-    type: (schedule.activity?.activityType || "Core") as "Core" | "Core-Optional" | "Optional" | "Resting" | "CheckIn" | "CheckOut",
+    type: (schedule.activity?.activityType || "Core") as "Core" | "Optional" | "Resting" | "CheckIn" | "CheckOut",
     description: `Status: ${schedule.status}`,
     location: `Location ${schedule.locationId}`,
     participants: schedule.currentCapacity || 0,
+    isOptional: schedule.isOptional,
   }));
 
   return (
@@ -243,6 +246,13 @@ const ActivityScheduleManagement: React.FC = () => {
           onSelectSchedule={handleViewSchedule}
           onAddClick={handleAddSchedule}
           onSelectSlot={handleSelectSlot}
+          onCreateOptional={(coreScheduleId: string) => {
+            setSelectedCoreScheduleId(coreScheduleId);
+            setScheduleFormMode("create-optional");
+            setSelectedSchedule(null);
+            setSelectedSlot(null);
+            setShowScheduleForm(true);
+          }}
         />
       </div>
 
@@ -254,15 +264,30 @@ const ActivityScheduleManagement: React.FC = () => {
           campId={selectedCampId}
           initialStartTime={selectedSlot?.startTime}
           initialEndTime={selectedSlot?.endTime}
+          mode={scheduleFormMode}
+          coreScheduleId={selectedCoreScheduleId || undefined}
           onClose={() => {
             setShowScheduleForm(false);
             setSelectedSchedule(null);
             setSelectedSlot(null);
+            setScheduleFormMode("create-core");
+            setSelectedCoreScheduleId(null);
           }}
           onSave={handleSaveSchedule}
           onActivityCreated={(newActivity) => {
             // Update activities list
             setActivities((prev) => [...prev, newActivity]);
+            // Refresh schedules for optional creation
+            if (selectedCoreScheduleId && scheduleFormMode === "create-optional") {
+              if (!selectedCampId) return;
+              activityScheduleService.getActivitySchedulesByCamp(selectedCampId)
+                .then(updatedSchedules => {
+                  setSchedules(updatedSchedules);
+                })
+                .catch(error => {
+                  console.error("Failed to refresh schedules:", error);
+                });
+            }
           }}
         />
       )}

@@ -16,10 +16,11 @@ export interface Activity {
   title: string;
   start: Date;
   end: Date;
-  type: "Core" | "Core-Optional" | "Optional" | "Resting" | "CheckIn" | "CheckOut";
+  type: "Core" | "Optional" | "Resting" | "CheckIn" | "CheckOut";
   description?: string;
   location?: string;
   participants?: number;
+  isOptional?: boolean;
 }
 
 export interface CampInfo {
@@ -36,6 +37,7 @@ interface CalendarProps {
   onSelectSchedule?: (schedule: any) => void;
   onAddClick?: () => void;
   onSelectSlot?: (slotInfo: { start: Date; end: Date; view: View }) => void;
+  onCreateOptional?: (coreScheduleId: string) => void;
 }
 
 const Calendar: React.FC<CalendarProps> = ({
@@ -45,6 +47,7 @@ const Calendar: React.FC<CalendarProps> = ({
   onSelectSchedule,
   onAddClick,
   onSelectSlot,
+  onCreateOptional,
 }) => {
   // Determine permissions based on userRole
   const canManage = userRole === 'manager';
@@ -53,11 +56,22 @@ const Calendar: React.FC<CalendarProps> = ({
 
   // Event style
   const eventStyleGetter = (event: Activity) => {
+    // Core with isOptional=true: Light gray background with dark gray border
+    if (event.type === "Core" && event.isOptional === true) {
+      return {
+        style: {
+          backgroundColor: "#e5e7eb", // Light gray background
+          borderRadius: "4px",
+          opacity: 1,
+          color: "#1f2937", // Dark text for contrast
+          border: "2px solid #9ca3af",
+          display: "block",
+        },
+      };
+    }
+
     let backgroundColor = "#3b82f6"; // Core - Blue
     switch (event.type) {
-      case "Core-Optional":
-        backgroundColor = "#10b981"; // Core-Optional - Green
-        break;
       case "Optional":
         backgroundColor = "#f59e0b"; // Optional - Yellow/Orange
         break;
@@ -242,6 +256,29 @@ const Calendar: React.FC<CalendarProps> = ({
     );
   };
 
+  // Custom event component to show "+ Optional" button for Core with isOptional=true
+  const EventComponent = ({ event }: { event: Activity }) => {
+    const isOptionalContainer = event.type === "Core" && event.isOptional === true;
+
+    return (
+      <div className="flex items-center justify-between w-full h-full px-2">
+        <span className="truncate text-sm">{event.title}</span>
+        {isOptionalContainer && canManage && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onCreateOptional?.(event.id);
+            }}
+            className="ml-2 px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition-all whitespace-nowrap"
+            title="Add Optional Activity"
+          >
+            + Optional
+          </button>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="flex h-full rounded-2xl bg-gray-50 relative">
       <div className="flex-1 overflow-hidden">
@@ -262,6 +299,7 @@ const Calendar: React.FC<CalendarProps> = ({
           dayPropGetter={dayStyleGetter}
           components={{
             toolbar: CustomToolbar,
+            event: EventComponent,
           }}
           style={{ height: "calc(100vh - 100px)" }}
         />

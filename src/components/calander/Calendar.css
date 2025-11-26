@@ -263,9 +263,9 @@
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
-  border: none !important;
   transition: all 0.2s ease;
-  background-color: #3b82f6 !important;
+  display: flex;
+  flex-direction: column;
 }
 
 .rbc-event:hover {
@@ -280,6 +280,10 @@
 
 .rbc-event-content {
   white-space: normal;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 /* Agenda View */

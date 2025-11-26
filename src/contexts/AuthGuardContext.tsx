@@ -50,6 +50,7 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
       const dynamicRoutePattern = routePattern
         .replace(/\//g, "\\/")
         .replace(/:campId/g, "[0-9]+")
+        .replace(/:camperId/g, "[0-9]+")
         .replace(/:userId/g, "[0-9]+")
         .replace(/:blogId/g, "[0-9]+")
         .replace(/:orderId/g, "[0-9]+")
@@ -229,6 +230,9 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
           PagePath.USER_MYREGISTRATIONS,
           PagePath.USER_PAYMENT_HISTORY,
           PagePath.USER_MYCAMPERS,
+          PagePath.USER_MYREGISTRATIONS_DETAIL,
+          PagePath.USER_CAMPER_DETAIL,
+          PagePath.USER_CAMPER_EDIT,
         ],
       };
 

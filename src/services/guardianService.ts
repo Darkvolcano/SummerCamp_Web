@@ -8,33 +8,30 @@ export interface Guardian {
     title?: string | null;
     gender?: string | null;
     dob?: string | null;
-    answer?: string | null;
-    category?: string | null;
+    email?: string | null;
+    phoneNumber?: string | null;
     isActive: boolean;
 }
 
-// Request DTO (for POST)
 export interface GuardianCreateDto {
     fullName?: string | null;
     title?: string | null;
     gender?: string | null;
     dob?: string | null;
-    answer?: string | null;
-    category?: string | null;
+    email?: string | null;
+    phoneNumber?: string | null;
 }
 
-// Request DTO (for PUT)
 export interface GuardianUpdateDto {
     fullName?: string | null;
     title?: string | null;
     gender?: string | null;
     dob?: string | null;
-    answer?: string | null;
-    category?: string | null;
+    email?: string | null;
+    phoneNumber?: string | null;
     isActive: boolean;
 }
 
-// Response DTO (from GET)
 export interface GuardianResponseDto {
     guardianId: number;
     camperId: number;
@@ -43,8 +40,8 @@ export interface GuardianResponseDto {
     title?: string | null;
     gender?: string | null;
     dob?: string | null;
-    answer?: string | null;
-    category?: string | null;
+    email?: string | null;
+    phoneNumber?: string | null;
     isActive: boolean;
 }
 
@@ -71,8 +68,8 @@ const guardianService = {
             title: guardian.title || null,
             gender: guardian.gender || null,
             dob: guardian.dob || null,
-            answer: guardian.answer || null,
-            category: guardian.category || null,
+            email: guardian.email || null,
+            phoneNumber: guardian.phoneNumber || null,
         };
 
         const response = await axiosInstance.post(`/Guardian/campers/${camperId}`, requestPayload);
@@ -87,8 +84,8 @@ const guardianService = {
             title: guardian.title || null,
             gender: guardian.gender || null,
             dob: guardian.dob || null,
-            answer: guardian.answer || null,
-            category: guardian.category || null,
+            email: guardian.email || null,
+            phoneNumber: guardian.phoneNumber || null,
             isActive: guardian.isActive,
         };
 

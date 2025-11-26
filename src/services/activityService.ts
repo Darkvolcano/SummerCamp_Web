@@ -45,6 +45,20 @@ const activityService = {
     return response.data as ActivityResponseDto[];
   },
 
+  // Get main activities by camp ID (excluding Optional type)
+  getMainActivityByCamp: async (campId: number): Promise<ActivityResponseDto[]> => {
+    console.log(`[activityService] GET /Activity/camp/${campId} (excluding Optional type)`);
+    const response = await axiosInstance.get(`/Activity/camp/${campId}`);
+    return (response.data as ActivityResponseDto[]).filter(activity => activity.activityType !== "Optional");
+  },
+
+  // Get optional activities by camp ID
+  getOptionalActivityByCamp: async (campId: number): Promise<ActivityResponseDto[]> => {
+    console.log(`[activityService] GET /Activity/camp/${campId} (Optional type only)`);
+    const response = await axiosInstance.get(`/Activity/camp/${campId}`);
+    return (response.data as ActivityResponseDto[]).filter(activity => activity.activityType === "Optional");
+  },
+
   // Get optional activities
   getOptionalActivities: async (): Promise<ActivityResponseDto[]> => {
     console.log("[activityService] GET /Activity/optional");
