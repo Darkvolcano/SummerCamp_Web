@@ -72,40 +72,166 @@ const ManagerDashboard: React.FC = () => {
     );
   }
 
-  // Draft status message
-  if (camp && (camp.status === "DRAFT" || camp.status === "Draft")) {
+  // Draft or Rejected status message
+  const isDraft = camp && (camp.status === "DRAFT" || camp.status === "Draft");
+  const isRejected = camp && (camp.status === "REJECTED" || camp.status === "Rejected");
+
+  if (isDraft || isRejected) {
     return (
-      <div className="p-6">
-        <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-8">
-          <div className="text-center max-w-2xl mx-auto">
-            <h3 className="text-2xl font-bold text-blue-900 mb-4">
-              Camp Not Published Yet
-            </h3>
-            <p className="text-blue-700 mb-6 text-lg">
-              Your camp is still in Draft status. Please complete the camp setup
-              to publish it for registrations.
-            </p>
-            <div className="bg-blue-100 border border-blue-300 rounded-lg p-6 mb-6">
-              <h4 className="font-semibold text-blue-900 mb-3">
-                Required Setup Steps:
-              </h4>
-              <ul className="text-left text-blue-800 space-y-2 list-disc list-inside">
-                <li>Staff assignments</li>
-                <li>Groups</li>
-                <li>Location and accommodation setup</li>
-                <li>Schedule and activities</li>
-              </ul>
+      <div className="p-6 space-y-6">
+        {/* Status Card - Top - Centered */}
+        <div className="flex justify-center">
+          <div className={`rounded-lg p-4 w-full max-w-2xl ${
+            isRejected
+              ? "bg-red-50 border-2 border-red-200"
+              : "bg-blue-50 border-2 border-blue-200"
+          }`}>
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex-1">
+                <h3 className={`text-base font-bold mb-1 ${
+                  isRejected ? "text-red-900" : "text-blue-900"
+                }`}>
+                  {isRejected ? "⚠️ Approval Required" : "📋 Camp Not Published"}
+                </h3>
+                <p className={`text-xs mb-2 ${
+                  isRejected ? "text-red-700" : "text-blue-700"
+                }`}>
+                  {isRejected
+                    ? "Submission rejected - review and fix required sections below"
+                    : "Complete setup to submit for approval"}
+                </p>
+                <div className={`flex flex-wrap gap-2 text-xs ${
+                  isRejected ? "text-red-800" : "text-blue-800"
+                }`}>
+                  <span>• Staff</span>
+                  <span>• Groups</span>
+                  <span>• Location</span>
+                  <span>• Schedule</span>
+                </div>
+              </div>
+              <Button
+                type="primary"
+                onClick={handleSubmitForApproval}
+                loading={loading}
+                size="middle"
+                className={isRejected
+                  ? "bg-red-600 hover:bg-red-700 text-white flex-shrink-0"
+                  : "bg-blue-600 hover:bg-blue-700 text-white flex-shrink-0"
+                }
+              >
+                Submit
+              </Button>
             </div>
-            <Button
-              type="primary"
-              size="large"
-              onClick={handleSubmitForApproval}
-              loading={loading}
-              className="bg-blue-600 hover:bg-blue-700 px-8 py-2 h-auto text-base"
-            >
-              Submit for Approval
-            </Button>
           </div>
+        </div>
+
+        {/* Camp Info */}
+        <div className="space-y-6">
+            {/* Camp Header */}
+            <div className="bg-white rounded-lg shadow-sm border border-[#E5E7EB] p-6">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1">
+                  <h1 className="text-2xl font-bold text-[#111827] mb-2">
+                    {camp.name}
+                  </h1>
+                  <p className="text-[#6B7280] text-sm mb-4 line-clamp-2">
+                    {camp.description}
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
+                      isRejected
+                        ? "bg-red-100 text-red-700"
+                        : "bg-yellow-100 text-yellow-700"
+                    }`}>
+                      {camp.status}
+                    </span>
+                    <span className="text-[#6B7280] text-xs">
+                      📍 {camp.location?.name || "N/A"}
+                    </span>
+                  </div>
+                </div>
+                {camp.image && (
+                  <img
+                    src={camp.image}
+                    alt={camp.name}
+                    className="w-32 h-32 rounded-lg object-cover flex-shrink-0"
+                  />
+                )}
+              </div>
+            </div>
+
+            {/* Quick Stats */}
+            <div className="grid grid-cols-3 gap-3">
+              <div className="bg-white rounded-lg shadow-sm border border-[#E5E7EB] p-4">
+                <p className="text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-2">
+                  Duration
+                </p>
+                <p className="text-sm font-bold text-[#111827]">
+                  {new Date(camp.startDate).toLocaleDateString("vi-VN")}
+                </p>
+                <p className="text-xs text-[#6B7280] mt-1">
+                  to {new Date(camp.endDate).toLocaleDateString("vi-VN")}
+                </p>
+              </div>
+
+              <div className="bg-white rounded-lg shadow-sm border border-[#E5E7EB] p-4">
+                <p className="text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-2">
+                  Price
+                </p>
+                <p className="text-sm font-bold text-[#111827]">
+                  ${camp.price.toFixed(2)}
+                </p>
+                <p className="text-xs text-[#6B7280] mt-1">Per participant</p>
+              </div>
+
+              <div className="bg-white rounded-lg shadow-sm border border-[#E5E7EB] p-4">
+                <p className="text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-2">
+                  Participants
+                </p>
+                <p className="text-sm font-bold text-[#111827]">
+                  {camp.minParticipants}-{camp.maxParticipants}
+                </p>
+                <p className="text-xs text-[#6B7280] mt-1">Min-Max</p>
+              </div>
+            </div>
+
+            {/* Details Grid */}
+            <div className="bg-white rounded-lg shadow-sm border border-[#E5E7EB] p-6">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-2">
+                    Age Range
+                  </p>
+                  <p className="text-[#111827] font-medium">
+                    {camp.minAge} - {camp.maxAge} years
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-2">
+                    Camp Type
+                  </p>
+                  <p className="text-[#111827] font-medium">
+                    {camp.campType?.name || "N/A"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-2">
+                    Registration Opens
+                  </p>
+                  <p className="text-[#111827] font-medium text-sm">
+                    {new Date(camp.registrationStartDate).toLocaleDateString("vi-VN")}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-2">
+                    Registration Closes
+                  </p>
+                  <p className="text-[#111827] font-medium text-sm">
+                    {new Date(camp.registrationEndDate).toLocaleDateString("vi-VN")}
+                  </p>
+                </div>
+              </div>
+            </div>
         </div>
       </div>
     );

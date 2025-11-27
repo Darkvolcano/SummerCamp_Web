@@ -35,12 +35,11 @@ export interface CampRequestDto {
   maxAge: number;
   startDate: string;
   endDate: string;
-  image: string | null;
+  image?: string | null;
   campTypeId: number | null;
   locationId: number | null;
-  promotionId: number | null;
-  price: number;
-  status?: string;
+  promotionId?: number | null;
+  price?: number | null;
   registrationStartDate: string;
   registrationEndDate: string;
 }
@@ -171,7 +170,6 @@ const campService = {
       locationId: camp.locationId,
       promotionId: camp.promotionId,
       price: camp.price,
-      status: camp.status,
       registrationStartDate: camp.registrationStartDate,
       registrationEndDate: camp.registrationEndDate,
     };
@@ -203,7 +201,6 @@ const campService = {
       locationId: camp.locationId,
       promotionId: camp.promotionId,
       price: camp.price,
-      status: camp.status,
       registrationStartDate: camp.registrationStartDate,
       registrationEndDate: camp.registrationEndDate,
     };

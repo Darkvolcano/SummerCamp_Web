@@ -60,6 +60,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
   const [openRejectPopover, setOpenRejectPopover] = useState(false);
   const [showAddLocation, setShowAddLocation] = useState(false);
 
+  const [campStatus, setCampStatus] = useState<string>("");
   const [formData, setFormData] = useState<CampRequestDto>({
     name: "",
     description: "",
@@ -76,7 +77,6 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
     locationId: null,
     promotionId: null,
     price: 0,
-    status: "DRAFT",
     registrationStartDate: "",
     registrationEndDate: "",
   });
@@ -103,7 +103,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
       setPromotions(promotionsData);
       setImagePreview(""); // Reset preview when loading new camp
 
-      // Set form data
+      // Set form data (without status)
       setFormData({
         name: campData.name,
         description: campData.description,
@@ -120,10 +120,11 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
         locationId: campData.location?.id || null,
         promotionId: campData.promotion?.id || null,
         price: campData.price,
-        status: campData.status,
         registrationStartDate: campData.registrationStartDate,
         registrationEndDate: campData.registrationEndDate,
       });
+      // Set status separately (for display only, not sent to server)
+      setCampStatus(campData.status);
     } catch (error) {
       console.error("Error fetching camp data:", error);
       toastError("Error", "Failed to load camp details");
@@ -164,7 +165,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
         !formData.address.trim() ||
         !formData.startDate ||
         !formData.endDate ||
-        formData.price <= 0
+        !formData.price || formData.price <= 0
       ) {
         toastError("Validation Error", "Please fill in all required fields");
         return;
@@ -527,6 +528,18 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
                 />
               </div>
 
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Status
+                </label>
+                <input
+                  type="text"
+                  value={campStatus}
+                  disabled
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-black bg-gray-100 disabled:cursor-not-allowed"
+                />
+              </div>
+
               {isEditing && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -839,7 +852,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
                 <input
                   type="number"
                   name="price"
-                  value={formData.price}
+                  value={formData.price ?? 0}
                   onChange={handleInputChange}
                   disabled={!isEditing}
                   min="0"
@@ -852,7 +865,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
                 </label>
                 <select
                   name="promotionId"
-                  value={formData.promotionId || ""}
+                  value={formData.promotionId ? formData.promotionId : ""}
                   onChange={handleInputChange}
                   disabled={!isEditing}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-black disabled:bg-gray-100 disabled:cursor-not-allowed"
@@ -866,29 +879,6 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
                 </select>
               </div>
             </div>
-          </div>
-
-          {/* Status */}
-          <div className="mt-6 pt-6 border-t border-[#E5E7EB]">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Status
-            </label>
-            <select
-              name="status"
-              value={formData.status}
-              onChange={handleInputChange}
-              disabled={!isEditing}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-black disabled:bg-gray-100 disabled:cursor-not-allowed"
-            >
-              <option value="DRAFT">Draft</option>
-              <option value="PENDING_APPOVAL">Pending Approval</option>
-              <option value="IN_PROGRESS">In Progress</option>
-              <option value="OPEN_FOR_REGISTRATION">
-                Open for Registration
-              </option>
-              <option value="COMPLETED">Completed</option>
-              <option value="CANCELED">Canceled</option>
-            </select>
           </div>
         </div>
       </div>

@@ -155,7 +155,13 @@ const CampDetailStaffAssignment: React.FC<CampDetailStaffAssignmentProps> = ({
   }
 
   return (
-    <div className="pb-12">
+    <div className="pb-12 relative">
+      {assigning && (
+        <div className="absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center z-50 rounded-xl">
+          <Spin size="large" tip="Assigning staff..." />
+        </div>
+      )}
+      <div>
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Left Sidebar - Available Staff */}
         <div className="lg:col-span-1">
@@ -410,6 +416,7 @@ const CampDetailStaffAssignment: React.FC<CampDetailStaffAssignmentProps> = ({
             </div>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

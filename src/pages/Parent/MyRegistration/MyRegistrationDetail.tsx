@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button, Spin, Modal, Form, Input } from "antd";
-import { ArrowLeftOutlined, CreditCardOutlined, EditOutlined } from "@ant-design/icons";
+import { ArrowLeftOutlined, CreditCardOutlined } from "@ant-design/icons";
 import { useNavigate, useParams } from "react-router-dom";
 import dayjs from "dayjs";
 import { useNotification } from "../../../contexts/NotificationContext";
@@ -115,7 +115,7 @@ const RegistrationDetail: React.FC = () => {
       Rejected: { bg: "bg-red-100", text: "text-red-700", label: "Bị từ chối" },
       Approved: { bg: "bg-green-100", text: "text-green-700", label: "Được duyệt" },
       PendingPayment: { bg: "bg-blue-100", text: "text-blue-700", label: "Chờ thanh toán" },
-      Confirmed: { bg: "bg-green-100", text: "text-green-700", label: "Xác nhận" },
+      Confirmed: { bg: "bg-green-100", text: "text-green-700", label: "Đã xác nhận" },
       PendingRefund: { bg: "bg-yellow-100", text: "text-yellow-700", label: "Chờ hoàn tiền" },
       OnGoing: { bg: "bg-purple-100", text: "text-purple-700", label: "Đang diễn ra" },
       Completed: { bg: "bg-green-100", text: "text-green-700", label: "Hoàn thành" },
@@ -320,15 +320,6 @@ const RegistrationDetail: React.FC = () => {
             </button>
           )}
 
-          {registration.status === "PendingApproval" && (
-            <button
-              onClick={() => {}}
-              className="flex items-center justify-center gap-1 bg-[#FF8F50] text-white font-medium py-1.5 px-4 rounded-full text-sm hover:bg-[#ff7e3d] transition-colors"
-            >
-              <EditOutlined />
-              Chỉnh sửa đơn đăng ký
-            </button>
-          )}
 
           {isCancelable && (
             <button
