@@ -48,6 +48,37 @@ const registrationCamperService = {
       throw error;
     }
   },
+
+  getCampByCamper: async (
+    camperId: number
+  ): Promise<RegistrationCamperResponseDto[]> => {
+    try {
+      const response = await axiosInstance.get(
+        `/RegistrationCamper?camperId=${camperId}`
+      );
+      const data = Array.isArray(response.data)
+        ? response.data
+        : response.data?.data || [];
+      return data
+        .filter(
+          (item: RegistrationCamperResponseDto) =>
+            item.status !== "PendingApproval" && item.status !== "Canceled"
+        )
+        .sort(
+          (a: RegistrationCamperResponseDto, b: RegistrationCamperResponseDto) =>
+            new Date(a.camp.startDate).getTime() -
+            new Date(b.camp.startDate).getTime()
+        );
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw new Error(
+          error.response?.data?.message ||
+            "Failed to fetch camps for camper"
+        );
+      }
+      throw error;
+    }
+  },
 };
 
 export const useRegistrationCampers = (
