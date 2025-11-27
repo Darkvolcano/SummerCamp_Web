@@ -11,18 +11,12 @@ import camperService, {
   type CamperUpdateRequestDto,
   type HealthRecordCreateDto,
 } from "../../../services/camperService";
-import registrationService from "../../../services/registrationService";
+import registrationCamperService, {
+  type RegistrationCamperResponseDto,
+} from "../../../services/registrationCamperService";
 import guardianService, {
   type GuardianResponseDto,
 } from "../../../services/guardianService";
-
-interface CamperRegistration {
-  registrationId: number;
-  campId: number;
-  campName: string;
-  status: string;
-  registrationDate: string;
-}
 
 const CamperDetail: React.FC = () => {
   const navigate = useNavigate();
@@ -31,7 +25,6 @@ const CamperDetail: React.FC = () => {
 
   const [camper, setCamper] = useState<CamperResponseDto | null>(null);
   const [guardians, setGuardians] = useState<GuardianResponseDto[]>([]);
-  const [registrations, setRegistrations] = useState<CamperRegistration[]>([]);
   const [loading, setLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -43,6 +36,11 @@ const CamperDetail: React.FC = () => {
   const [guardianForm] = Form.useForm();
   const [guardianLoading, setGuardianLoading] = useState(false);
   const [deleteGuardianId, setDeleteGuardianId] = useState<number | null>(null);
+
+  // Camp dropdown states
+  const [camps, setCamps] = useState<RegistrationCamperResponseDto[]>([]);
+  const [selectedCampIndex, setSelectedCampIndex] = useState(0);
+  const [campsLoading, setCampsLoading] = useState(false);
 
   // Fetch camper details
   useEffect(() => {
@@ -86,28 +84,6 @@ const CamperDetail: React.FC = () => {
           setGuardians([]);
         }
 
-        // Fetch registrations
-        try {
-          const allRegistrations = await registrationService.getAllRegistrations();
-          const camperRegistrations: CamperRegistration[] = [];
-
-          for (const registration of allRegistrations) {
-            if (registration.campers?.some((c) => c.camperId === camperId_num)) {
-              camperRegistrations.push({
-                registrationId: registration.registrationId,
-                campId: registration.camp.campId,
-                campName: registration.camp.name,
-                status: registration.status,
-                registrationDate: registration.registrationCreateAt,
-              });
-            }
-          }
-
-          setRegistrations(camperRegistrations);
-        } catch (registrationError) {
-          console.warn("Failed to fetch registrations:", registrationError);
-          setRegistrations([]);
-        }
       } catch (error: any) {
         const errorMessage =
           error.response?.data?.message || "Không thể tải thông tin trại viên";
@@ -120,6 +96,45 @@ const CamperDetail: React.FC = () => {
 
     fetchCamperDetails();
   }, [camperId, toastError, navigate, editForm]);
+
+  // Fetch camps for camper
+  useEffect(() => {
+    const fetchCamps = async () => {
+      if (!camperId) return;
+
+      try {
+        setCampsLoading(true);
+        const camperId_num = parseInt(camperId);
+        const campsData = await registrationCamperService.getCampByCamper(camperId_num);
+        setCamps(campsData);
+
+        // Find camp with nearest future startDate
+        if (campsData.length > 0) {
+          const now = dayjs();
+          const futureCamps = campsData.filter(c => dayjs(c.camp.startDate).isAfter(now));
+
+          if (futureCamps.length > 0) {
+            // Sort by startDate and get the nearest one
+            const nearestCamp = futureCamps.sort((a: RegistrationCamperResponseDto, b: RegistrationCamperResponseDto) =>
+              dayjs(a.camp.startDate).diff(dayjs(b.camp.startDate))
+            )[0];
+            const index = campsData.findIndex(c => c.camp.id === nearestCamp.camp.id);
+            setSelectedCampIndex(index >= 0 ? index : 0);
+          } else {
+            // If no future camps, select the first one
+            setSelectedCampIndex(0);
+          }
+        }
+      } catch (error: any) {
+        console.warn("Failed to fetch camps:", error);
+        setCamps([]);
+      } finally {
+        setCampsLoading(false);
+      }
+    };
+
+    fetchCamps();
+  }, [camperId]);
 
   // Handle delete camper
   const handleDeleteCamper = async () => {
@@ -592,54 +607,80 @@ const CamperDetail: React.FC = () => {
       key: "registrations",
       label: "Trạng thái trại hè",
       children: (
-        <div>
-          {registrations.length === 0 ? (
-            <Empty description="Chưa có đơn đăng ký trại hè" />
+        <div className="space-y-4">
+          {camps.length === 0 ? (
+            <Empty description="Chưa có trại hè nào" />
           ) : (
-            <div className="space-y-4">
-              {registrations.map((reg) => {
-                const statusInfo = getStatusInfo(reg.status);
-                return (
-                  <div
-                    key={reg.registrationId}
-                    className="bg-white rounded-lg p-6 border border-gray-200 hover:shadow-lg transition-shadow"
-                  >
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+            <>
+              {/* Camp Dropdown and Navigation */}
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setSelectedCampIndex(Math.max(0, selectedCampIndex - 1))}
+                  disabled={selectedCampIndex === 0 || campsLoading}
+                  className="h-7.75 w-7.75 bg-[#FF8F50] text-white rounded hover:bg-[#ff7e3d] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+                  title="Trại hè trước"
+                >
+                  <ArrowLeftOutlined />
+                </button>
+
+                <Select
+                  value={selectedCampIndex}
+                  onChange={setSelectedCampIndex}
+                  className="flex-1"
+                  loading={campsLoading}
+                  style={{ minWidth: "300px" }}
+                >
+                  {camps.map((camp, index) => (
+                    <Select.Option key={index} value={index}>
+                      {camp.camp.name}
+                    </Select.Option>
+                  ))}
+                </Select>
+
+                <button
+                  onClick={() => setSelectedCampIndex(Math.min(camps.length - 1, selectedCampIndex + 1))}
+                  disabled={selectedCampIndex === camps.length - 1 || campsLoading}
+                  className="h-7.75 w-7.75 bg-[#FF8F50] text-white rounded hover:bg-[#ff7e3d] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+                  title="Trại hè tiếp theo"
+                >
+                  <ArrowLeftOutlined style={{ transform: "rotate(180deg)" }} />
+                </button>
+              </div>
+
+              {/* Selected Camp Details */}
+              {camps[selectedCampIndex] && (
+                <div className="bg-white rounded-lg p-6 border border-gray-200">
+                  <div className="space-y-4">
+                    <div>
+                      <p className="text-sm text-gray-600 font-medium mb-1">Tên trại hè</p>
+                      <p className="text-lg font-semibold text-gray-900">{camps[selectedCampIndex].camp.name}</p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <p className="text-sm text-gray-600 font-medium mb-1">Tên trại hè</p>
-                        <p className="text-lg font-semibold text-gray-900">{reg.campName}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600 font-medium mb-1">Trạng thái</p>
-                        <span
-                          className={`inline-block text-sm font-bold px-4 py-1.5 rounded-full ${statusInfo.bg} ${statusInfo.text}`}
-                        >
-                          {statusInfo.label}
-                        </span>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600 font-medium mb-1">Ngày đăng ký</p>
+                        <p className="text-sm text-gray-600 font-medium mb-1">Ngày bắt đầu</p>
                         <p className="text-gray-900 font-medium">
-                          {dayjs(reg.registrationDate).format("DD/MM/YYYY HH:mm")}
+                          {dayjs(camps[selectedCampIndex].camp.startDate).format("DD/MM/YYYY")}
                         </p>
                       </div>
                       <div>
-                        <p className="text-sm text-gray-600 font-medium mb-1">Mã đơn đăng ký</p>
-                        <p className="text-gray-900 font-medium">#{reg.registrationId}</p>
+                        <p className="text-sm text-gray-600 font-medium mb-1">Ngày kết thúc</p>
+                        <p className="text-gray-900 font-medium">
+                          {dayjs(camps[selectedCampIndex].camp.endDate).format("DD/MM/YYYY")}
+                        </p>
                       </div>
                     </div>
-                    <button
-                      onClick={() =>
-                        navigate(PagePath.USER_MYREGISTRATIONS_DETAIL.replace(":registrationId", reg.registrationId.toString()))
-                      }
-                      className="w-full px-4 py-2 bg-[#FF8F50] text-white rounded-lg font-medium hover:bg-[#ff7e3d] transition-colors"
-                    >
-                      Xem chi tiết đơn đăng ký
-                    </button>
+                    {camps[selectedCampIndex].status && (
+                      <div>
+                        <p className="text-sm text-gray-600 font-medium mb-1">Trạng thái trại viên</p>
+                        <span className={`inline-block text-sm font-bold px-4 py-1.5 rounded-full ${getStatusInfo(camps[selectedCampIndex].status).bg} ${getStatusInfo(camps[selectedCampIndex].status).text}`}>
+                          {getStatusInfo(camps[selectedCampIndex].status).label}
+                        </span>
+                      </div>
+                    )}
                   </div>
-                );
-              })}
-            </div>
+                </div>
+              )}
+            </>
           )}
         </div>
       ),
