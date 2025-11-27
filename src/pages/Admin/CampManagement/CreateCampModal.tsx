@@ -60,7 +60,6 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
     locationId: null,
     promotionId: null,
     price: 0,
-    status: "Draft",
     registrationStartDate: "",
     registrationEndDate: "",
   });
@@ -136,7 +135,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
       !formData.endDate ||
       !formData.registrationStartDate ||
       !formData.registrationEndDate ||
-      formData.price <= 0 ||
+      !formData.price || formData.price <= 0 ||
       !formData.campTypeId ||
       !formData.locationId
     ) {
@@ -186,12 +185,11 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
       maxAge: 0,
       startDate: "",
       endDate: "",
-      image: null,
+      image: "",
       campTypeId: null,
       locationId: null,
       promotionId: null,
       price: 0,
-      status: "DRAFT",
       registrationStartDate: "",
       registrationEndDate: "",
     });
@@ -672,7 +670,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
                 <input
                   type="number"
                   name="price"
-                  value={formData.price}
+                  value={formData.price ?? 0}
                   onChange={handleInputChange}
                   min="0"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
@@ -685,7 +683,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
                 </label>
                 <select
                   name="promotionId"
-                  value={formData.promotionId || ""}
+                  value={formData.promotionId ? formData.promotionId : ""}
                   onChange={handleInputChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 >

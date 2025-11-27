@@ -36,8 +36,8 @@ export interface CampRequestDto {
   startDate: string;
   endDate: string;
   image?: string | null;
-  campTypeId: number;
-  locationId: number;
+  campTypeId: number | null;
+  locationId: number | null;
   promotionId?: number | null;
   price?: number | null;
   registrationStartDate: string;
