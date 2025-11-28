@@ -83,6 +83,10 @@ const ScheduleDetail: React.FC<ScheduleDetailProps> = ({
 
       <div className="schedule-detail-content">
       <Descriptions column={1} bordered>
+        <Descriptions.Item label="Activity Schedule ID">
+          <span className="font-mono">#{schedule.activityScheduleId}</span>
+        </Descriptions.Item>
+
         <Descriptions.Item label="Activity Name">
           <span className="font-medium">{schedule.activity?.name || "N/A"}</span>
         </Descriptions.Item>
@@ -120,15 +124,19 @@ const ScheduleDetail: React.FC<ScheduleDetailProps> = ({
         </Descriptions.Item>
 
         <Descriptions.Item label="Staff ID">
-          <span className="font-mono">#{schedule.staffId}</span>
+          <span className="font-mono">#{schedule.staff?.userId || "N/A"}</span>
         </Descriptions.Item>
 
         <Descriptions.Item label="Staff Name">
-          <span className="font-medium">{schedule.staffName || "N/A"}</span>
+          <span className="font-medium">{schedule.staff?.fullName || "N/A"}</span>
         </Descriptions.Item>
 
-        <Descriptions.Item label="Location">
-          <span className="font-medium">{schedule.locationName || `#${schedule.locationId}`}</span>
+        <Descriptions.Item label="Location ID">
+          <span className="font-mono">#{schedule.location?.id || "N/A"}</span>
+        </Descriptions.Item>
+
+        <Descriptions.Item label="Location Name">
+          <span className="font-medium">{schedule.location?.name || "N/A"}</span>
         </Descriptions.Item>
 
         {schedule.roomId && (
@@ -141,6 +149,13 @@ const ScheduleDetail: React.FC<ScheduleDetailProps> = ({
           <Badge
             color={schedule.isLivestream ? "green" : "red"}
             text={schedule.isLivestream ? "Yes" : "No"}
+          />
+        </Descriptions.Item>
+
+        <Descriptions.Item label="Is Optional">
+          <Badge
+            color={schedule.isOptional ? "gold" : "blue"}
+            text={schedule.isOptional ? "Yes" : "No"}
           />
         </Descriptions.Item>
 

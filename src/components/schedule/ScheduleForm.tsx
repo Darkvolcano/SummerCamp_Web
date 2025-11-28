@@ -50,16 +50,16 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
 
   useEffect(() => {
     if (schedule) {
-      // Editing 
+      // Editing
       form.setFieldsValue({
         activityId: activities.find((a) => a.name === schedule.activity?.name)?.activityId,
-        staffId: schedule.staffId,
+        staffId: schedule.staff?.userId,
         startTime: dayjs(schedule.startTime),
         endTime: dayjs(schedule.endTime),
         isLivestream: schedule.isLivestream,
         roomId: schedule.roomId,
         maxCapacity: schedule.maxCapacity,
-        locationId: schedule.locationId,
+        locationId: schedule.location?.id,
       });
     } else if (initialStartTime && initialEndTime) {
       // Creating
