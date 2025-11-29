@@ -16,7 +16,7 @@ export interface Camper {
 export interface CamperRequestDto {
     camperName: string;
     gender: string;
-    dob: string;
+    dob?: string;
     groupId?: number | null;
     avatar?: File | null;
     healthRecord?: HealthRecordCreateDto;
@@ -107,14 +107,16 @@ const camperService = {
         return response.data as CamperResponseDto;
     },
 
-    // Create camper (multipart/form-data with file upload)
+    // Create camper 
     createCamper: async (camper: CamperRequestDto): Promise<CamperResponseDto> => {
         console.log("[camperService] POST /Camper (multipart/form-data)");
         const formData = new FormData();
 
         formData.append("camperName", camper.camperName);
         formData.append("gender", camper.gender);
-        formData.append("dob", camper.dob);
+        if (camper.dob) {
+            formData.append("dob", camper.dob);
+        }
 
         if (camper.groupId) {
             formData.append("groupId", camper.groupId.toString());
@@ -147,7 +149,7 @@ const camperService = {
         return response.data as CamperResponseDto;
     },
 
-    // Update camper (query params + multipart/form-data for avatar)
+    // Update camper 
     updateCamper: async (id: number, camper: CamperUpdateRequestDto): Promise<CamperResponseDto> => {
         console.log(`[camperService] PUT /Camper/${id}`);
 
@@ -161,7 +163,7 @@ const camperService = {
             params.dob = camper.dob;
         }
 
-        if (camper.groupId) {
+        if (camper.groupId !== undefined && camper.groupId !== null) {
             params.groupId = camper.groupId;
         }
 
@@ -180,7 +182,7 @@ const camperService = {
             }
         }
 
-        // Create FormData for avatar file
+        // Create FormData only for avatar file
         const formData = new FormData();
         if (camper.avatar) {
             formData.append("avatar", camper.avatar);
