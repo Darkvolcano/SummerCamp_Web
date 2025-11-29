@@ -39,7 +39,7 @@ const StaffSidebar: React.FC<StaffSidebarProps> = ({ onCollapsedChange }) => {
       icon: <Calendar size={20} />,
     },
     {
-      path: PagePath.STAFF_ATTENDANCE,
+      path: PagePath.STAFF_ATTENDANCE_CHECKING,
       label: "Attendance Checking",
       icon: <ClipboardCheck size={20} />,
     },

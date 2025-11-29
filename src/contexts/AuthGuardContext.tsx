@@ -55,6 +55,7 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
         .replace(/:blogId/g, "[0-9]+")
         .replace(/:orderId/g, "[0-9]+")
         .replace(/:registrationId/g, "[0-9]+")
+        .replace(/:scheduleId/g, "[0-9]+")
         .replace(/:id/g, "[0-9]+");
       const regex = new RegExp(`^${dynamicRoutePattern}$`);
       return regex.test(path);
@@ -163,6 +164,8 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
           PagePath.STAFF_SCHEDULE,
           PagePath.STAFF_CAMPS,
           PagePath.STAFF_BLOGS,
+          PagePath.STAFF_ATTENDANCE_CHECKING,
+          PagePath.STAFF_ATTENDANCE_CAMPERS,
           "/staff/profile",
           "/staff/chat",
           "/profile",

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Spin } from 'antd';
 import { Search } from 'lucide-react';
-import camperGroupService, { type CamperGroupResponseDto } from '../../../../services/camperGroupService';
+import groupService, { type GroupResponseDto } from '../../../../services/groupService';
 import campService, { type CampResponseDto } from '../../../../services/campService';
 import { useNotification } from '../../../../contexts/NotificationContext';
 
@@ -12,7 +12,7 @@ interface CampDetailGroupProps {
 
 const CampDetailGroup: React.FC<CampDetailGroupProps> = ({ campId, campStatus }) => {
   const { toastError } = useNotification();
-  const [groups, setGroups] = useState<CamperGroupResponseDto[]>([]);
+  const [groups, setGroups] = useState<GroupResponseDto[]>([]);
   const [campData, setCampData] = useState<CampResponseDto | null>(null);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -21,7 +21,7 @@ const CampDetailGroup: React.FC<CampDetailGroupProps> = ({ campId, campStatus })
     try {
       setLoading(true);
       const [groupsData, campInfo] = await Promise.all([
-        camperGroupService.getCamperGroupsByCampId(campId),
+        groupService.getGroupsByCampId(campId),
         campService.getCampById(campId),
       ]);
       setGroups(groupsData);
@@ -50,7 +50,7 @@ const CampDetailGroup: React.FC<CampDetailGroupProps> = ({ campId, campStatus })
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       if (!group.groupName.toLowerCase().includes(query) &&
-          !group.description.toLowerCase().includes(query)) {
+          !(group.description?.toLowerCase().includes(query))) {
         return false;
       }
     }
@@ -167,7 +167,7 @@ const CampDetailGroup: React.FC<CampDetailGroupProps> = ({ campId, campStatus })
                     ) : (
                       filteredGroups.map((group, index) => (
                         <tr
-                          key={group.camperGroupId}
+                          key={group.groupId}
                           className="hover:bg-[#F9FAFB] transition-colors"
                         >
                           <td className="px-6 py-4 text-sm font-mono text-[#6B7280]">

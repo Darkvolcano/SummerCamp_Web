@@ -138,13 +138,25 @@ const Calendar: React.FC<CalendarProps> = ({
   // Handle slot selection (clicking on empty time slot)
   const handleSelectSlot = useCallback(
     (slotInfo: { start: Date; end: Date }) => {
+      // Check if selected slot is within camp period
+      if (campInfo) {
+        const campStart = moment(campInfo.startDate).startOf('day');
+        const campEnd = moment(campInfo.endDate).endOf('day');
+        const slotStart = moment(slotInfo.start);
+
+        // Only allow selection if slot is within camp period
+        if (!slotStart.isSameOrAfter(campStart) || !slotStart.isSameOrBefore(campEnd)) {
+          return;
+        }
+      }
+
       // Update toolbar date to selected date
       setDate(slotInfo.start);
       if (onSelectSlot) {
         onSelectSlot({ start: slotInfo.start, end: slotInfo.end, view });
       }
     },
-    [view, onSelectSlot]
+    [view, onSelectSlot, campInfo]
   );
 
   // Handle camp period button click

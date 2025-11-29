@@ -8,20 +8,28 @@ export interface ActivityInfo {
   activityType: "Core" | "Optional" | "Resting" | "CheckIn" | "CheckOut";
 }
 
+export interface StaffInfo {
+  userId: number;
+  fullName: string;
+}
+
+export interface LocationInfo {
+  id: number;
+  name: string;
+}
+
 export interface ActivitySchedule {
   activityScheduleId: number;
   activity: ActivityInfo | null;
-  staffId: number;
-  staffName: string;
+  staff: StaffInfo | null;
   startTime: string;
   endTime: string;
   status: string;
   isLivestream: boolean;
-  roomId: number | null;
+  roomId?: number | null;
   maxCapacity: number | null;
   isOptional: boolean;
-  locationId: number;
-  locationName: string;
+  location: LocationInfo | null;
   currentCapacity: number | null;
 }
 
@@ -53,17 +61,15 @@ export interface OptionalScheduleCreateDto {
 export interface ActivityScheduleResponseDto {
   activityScheduleId: number;
   activity: ActivityInfo | null;
-  staffId: number;
-  staffName: string;
+  staff: StaffInfo | null;
   startTime: string;
   endTime: string;
   status: string;
   isLivestream: boolean;
-  roomId: number | null;
+  roomId?: number | null;
   maxCapacity: number | null;
   isOptional: boolean;
-  locationId: number;
-  locationName: string;
+  location: LocationInfo | null;
   currentCapacity: number | null;
 }
 

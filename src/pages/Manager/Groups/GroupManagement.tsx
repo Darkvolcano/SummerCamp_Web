@@ -3,7 +3,7 @@ import { Spin, message, Modal, Form, Input, InputNumber, Select } from 'antd';
 import { Search, Plus, Edit2 } from 'lucide-react';
 import { useManagerContext } from '../../../hooks/useManagerContext';
 import { useNotification } from '../../../contexts/NotificationContext';
-import camperGroupService, { type CamperGroupResponseDto, type CamperGroupRequestDto } from '../../../services/camperGroupService';
+import groupService, { type GroupResponseDto, type GroupRequestDto } from '../../../services/groupService';
 import staffService, { type StaffInfo } from '../../../services/staffService';
 import campService, { type CampResponseDto } from '../../../services/campService';
 import DeletePopover from '../../../components/DeletePopover';
@@ -12,7 +12,7 @@ const GroupManagement: React.FC = () => {
   const { selectedCampId } = useManagerContext();
   const { toastSuccess, toastError } = useNotification();
 
-  const [groups, setGroups] = useState<CamperGroupResponseDto[]>([]);
+  const [groups, setGroups] = useState<GroupResponseDto[]>([]);
   const [loading, setLoading] = useState(false);
   const [staffList, setStaffList] = useState<StaffInfo[]>([]);
   const [campData, setCampData] = useState<CampResponseDto | null>(null);
@@ -22,7 +22,7 @@ const GroupManagement: React.FC = () => {
 
   // Modal state
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [editingGroup, setEditingGroup] = useState<CamperGroupResponseDto | null>(null);
+  const [editingGroup, setEditingGroup] = useState<GroupResponseDto | null>(null);
   const [form] = Form.useForm();
   const [submitting, setSubmitting] = useState(false);
 
@@ -40,7 +40,7 @@ const GroupManagement: React.FC = () => {
       try {
         setLoading(true);
         // Fetch groups
-        const groupsData = await camperGroupService.getCamperGroupsByCampId(selectedCampId);
+        const groupsData = await groupService.getGroupsByCampId(selectedCampId);
         setGroups(groupsData);
 
         // Fetch camp data
@@ -90,7 +90,7 @@ const GroupManagement: React.FC = () => {
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       if (!group.groupName.toLowerCase().includes(query) &&
-          !group.description.toLowerCase().includes(query)) {
+          !(group.description?.toLowerCase().includes(query))) {
         return false;
       }
     }
@@ -105,10 +105,10 @@ const GroupManagement: React.FC = () => {
   };
 
   // Handle edit group
-  const handleEditClick = async (group: CamperGroupResponseDto) => {
+  const handleEditClick = async (group: GroupResponseDto) => {
     try {
       // Fetch complete group data
-      const fullGroupData = await camperGroupService.getCamperGroupById(group.camperGroupId);
+      const fullGroupData = await groupService.getGroupById(group.groupId);
       setEditingGroup(fullGroupData);
       form.setFieldsValue({
         groupName: fullGroupData.groupName,
@@ -149,7 +149,7 @@ const GroupManagement: React.FC = () => {
       const values = await form.validateFields();
       setSubmitting(true);
 
-      const payload: CamperGroupRequestDto = {
+      const payload: GroupRequestDto = {
         groupName: values.groupName,
         description: values.description,
         maxSize: values.maxSize,
@@ -161,17 +161,17 @@ const GroupManagement: React.FC = () => {
 
       if (editingGroup) {
         // Update group
-        await camperGroupService.updateCamperGroup(editingGroup.camperGroupId, payload);
+        await groupService.updateGroup(editingGroup.groupId, payload);
         toastSuccess('Success', 'Group updated successfully');
       } else {
         // Create new group
-        await camperGroupService.createCamperGroup(payload);
+        await groupService.createGroup(payload);
         toastSuccess('Success', 'Group created successfully');
       }
 
       // Refresh groups
       if (selectedCampId) {
-        const groupsData = await camperGroupService.getCamperGroupsByCampId(selectedCampId);
+        const groupsData = await groupService.getGroupsByCampId(selectedCampId);
         setGroups(groupsData);
       }
 
@@ -188,11 +188,11 @@ const GroupManagement: React.FC = () => {
   // Handle delete group
   const handleDelete = async (groupId: number) => {
     try {
-      await camperGroupService.deleteCamperGroup(groupId);
+      await groupService.deleteGroup(groupId);
       toastSuccess('Success', 'Group deleted successfully');
       // Refresh groups
       if (selectedCampId) {
-        const groupsData = await camperGroupService.getCamperGroupsByCampId(selectedCampId);
+        const groupsData = await groupService.getGroupsByCampId(selectedCampId);
         setGroups(groupsData);
       }
       setDeletePopoverOpen(null);
@@ -313,7 +313,7 @@ const GroupManagement: React.FC = () => {
                       ) : (
                         filteredGroups.map((group, index) => (
                           <tr
-                            key={group.camperGroupId}
+                            key={group.groupId}
                             className="hover:bg-[#F9FAFB] transition-colors"
                           >
                             <td className="px-6 py-4 text-sm font-mono text-[#6B7280]">
@@ -353,13 +353,13 @@ const GroupManagement: React.FC = () => {
                                   Edit
                                 </button>
                                 <DeletePopover
-                                  onConfirm={() => handleDelete(group.camperGroupId)}
+                                  onConfirm={() => handleDelete(group.groupId)}
                                   title="Delete Group"
                                   message={`Are you sure you want to delete "${group.groupName}"?`}
                                   buttonText="Delete"
-                                  isOpen={deletePopoverOpen === group.camperGroupId}
+                                  isOpen={deletePopoverOpen === group.groupId}
                                   onOpenChange={(open) =>
-                                    setDeletePopoverOpen(open ? group.camperGroupId : null)
+                                    setDeletePopoverOpen(open ? group.groupId : null)
                                   }
                                 />
                               </div>

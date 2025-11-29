@@ -43,6 +43,8 @@ import RegistrationDetail from "./pages/Parent/MyRegistration/MyRegistrationDeta
 import MyCampers from "./pages/Parent/MyCampers/MyCampers";
 import CamperDetail from "./pages/Parent/MyCampers/CamperDetail";
 import MyTransaction from "./pages/Parent/MyTransaction/MyTransaction";
+import AttendanceChecking from "./pages/Staff/AttendanceChecking/AttendanceChecking";
+import AttendanceCamperList from "./pages/Staff/AttendanceChecking/AttendanceCamperList";
 function App() {
   return (
     <Router>
@@ -122,8 +124,9 @@ function App() {
             {/* Staff Routes - Protected */}
             <Route element={<StaffLayout />}>
               <Route path={PagePath.STAFF_SCHEDULE} element={<StaffSchedule />} />
+              <Route path={PagePath.STAFF_ATTENDANCE_CHECKING} element={<AttendanceChecking />} />
+              <Route path={PagePath.STAFF_ATTENDANCE_CAMPERS} element={<AttendanceCamperList />} />
             </Route>
-            <Route path={PagePath.STAFF_SCHEDULE} element={<StaffSchedule />} />
             <Route path={PagePath.STAFF_CAMPS} element={<MyCamps />} />
             <Route path={PagePath.STAFF_BLOGS} element={<MyBlogs />} />
 

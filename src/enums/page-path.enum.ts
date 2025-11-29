@@ -56,10 +56,11 @@ export enum PagePath {
   STAFF_SCHEDULE = "/staff/schedule",
   STAFF_CAMPS = "/staff/camps",
   STAFF_BLOGS = "/staff/blogs",
-  STAFF_ATTENDANCE = "/staff/attendance",
+  STAFF_ATTENDANCE_CHECKING = "/staff/attendance",
+  STAFF_ATTENDANCE_CAMPERS = "/staff/attendance/:scheduleId/campers",
   STAFF_CALENDAR = "/staff/calendar",
   STAFF_PHOTOS = "/staff/photos",
-  STAFF_CHECKIN = "/staff/checkin ",
+  STAFF_CHECKIN = "/staff/check-in",
 
   //Manager Routes
   MANAGER_DASHBOARD = "/manager/dashboard",
