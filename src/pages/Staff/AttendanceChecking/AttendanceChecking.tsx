@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Spin, Empty, Badge, Button, Modal } from "antd";
+import { Spin, Empty, Badge, Button } from "antd";
 import { CheckCircle, Clock, AlertCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useNotification } from "../../../contexts/NotificationContext";
 import activityScheduleService, {
   type ActivityScheduleResponseDto,
@@ -8,14 +9,13 @@ import activityScheduleService, {
 import campService, { type CampResponseDto } from "../../../services/campService";
 
 const AttendanceChecking: React.FC = () => {
-  const { toastSuccess, toastError } = useNotification();
+  const navigate = useNavigate();
+  const { toastError } = useNotification();
 
   const [camps, setCamps] = useState<CampResponseDto[]>([]);
   const [selectedCampId, setSelectedCampId] = useState<number | null>(null);
   const [schedules, setSchedules] = useState<ActivityScheduleResponseDto[]>([]);
   const [loading, setLoading] = useState(false);
-  const [selectedSchedule, setSelectedSchedule] = useState<ActivityScheduleResponseDto | null>(null);
-  const [showDetailModal, setShowDetailModal] = useState(false);
 
   // Fetch camps on mount
   useEffect(() => {
@@ -100,27 +100,11 @@ const AttendanceChecking: React.FC = () => {
     });
   };
 
-  const handleViewDetail = (schedule: ActivityScheduleResponseDto) => {
-    setSelectedSchedule(schedule);
-    setShowDetailModal(true);
-  };
-
-  const handleMarkAttendance = async () => {
-    try {
-      setLoading(true);
-      // Call API to mark attendance
-      // await activityScheduleService.markAttendance(scheduleId);
-      toastSuccess("Success", "Attendance marked successfully");
-      if (selectedCampId) {
-        const attendancesData = await activityScheduleService.getAttendancesByCampId(selectedCampId);
-        setSchedules(attendancesData);
-      }
-    } catch (error) {
-      console.error("Failed to mark attendance:", error);
-      toastError("Error", "Failed to mark attendance");
-    } finally {
-      setLoading(false);
-    }
+  const handleCheckAttendance = (schedule: ActivityScheduleResponseDto) => {
+    // Navigate to camper attendance list page
+    navigate(`/staff/attendance/${schedule.activityScheduleId}/campers`, {
+      state: { schedule },
+    });
   };
 
   if (loading && schedules.length === 0) {
@@ -237,22 +221,15 @@ const AttendanceChecking: React.FC = () => {
                   </div>
 
                   {/* Actions */}
-                  <div className="flex-shrink-0 flex gap-2">
-                    <Button
-                      type="primary"
-                      size="small"
-                      onClick={() => handleViewDetail(schedule)}
-                    >
-                      View
-                    </Button>
+                  <div className="flex-shrink-0">
                     {schedule.status === "PendingAttendance" && (
                       <Button
                         type="primary"
                         style={{ backgroundColor: "#10b981" }}
                         size="small"
-                        onClick={() => handleMarkAttendance()}
+                        onClick={() => handleCheckAttendance(schedule)}
                       >
-                        Mark Done
+                        Check Attendance
                       </Button>
                     )}
                   </div>
@@ -262,126 +239,6 @@ const AttendanceChecking: React.FC = () => {
           })}
         </div>
       )}
-
-      {/* Detail Modal */}
-      <Modal
-        title="Schedule Details"
-        open={showDetailModal}
-        onCancel={() => setShowDetailModal(false)}
-        footer={null}
-        width={600}
-      >
-        {selectedSchedule && (
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Activity Name
-              </label>
-              <p className="mt-1 text-gray-900 font-medium">
-                {selectedSchedule.activity?.name || "N/A"}
-              </p>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Activity Type
-                </label>
-                <p className="mt-1">
-                  <Badge
-                    color={getActivityTypeColor(selectedSchedule.activity?.activityType || "Core")}
-                    text={selectedSchedule.activity?.activityType || "Core"}
-                  />
-                </p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Status
-                </label>
-                <p className="mt-1">
-                  <Badge
-                    status={selectedSchedule.status === "Completed" ? "success" : selectedSchedule.status === "Cancelled" ? "error" : "processing"}
-                    text={selectedSchedule.status}
-                  />
-                </p>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Description
-              </label>
-              <p className="mt-1 text-gray-900">
-                {selectedSchedule.activity?.description || "No description"}
-              </p>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Start Time
-                </label>
-                <p className="mt-1 text-gray-900 font-mono text-sm">
-                  {formatDateTime(selectedSchedule.startTime)}
-                </p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  End Time
-                </label>
-                <p className="mt-1 text-gray-900 font-mono text-sm">
-                  {formatDateTime(selectedSchedule.endTime)}
-                </p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Location
-                </label>
-                <p className="mt-1 text-gray-900">
-                  {selectedSchedule.location?.name || "N/A"}
-                </p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Staff
-                </label>
-                <p className="mt-1 text-gray-900">
-                  {selectedSchedule.staff?.fullName || "N/A"}
-                </p>
-              </div>
-            </div>
-
-            {selectedSchedule.maxCapacity && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Capacity
-                </label>
-                <p className="mt-1 text-gray-900">
-                  {selectedSchedule.currentCapacity || 0} / {selectedSchedule.maxCapacity} people
-                </p>
-              </div>
-            )}
-
-            {selectedSchedule.status === "PendingAttendance" && (
-              <Button
-                type="primary"
-                style={{ backgroundColor: "#10b981" }}
-                block
-                size="large"
-                onClick={() => {
-                  handleMarkAttendance();
-                  setShowDetailModal(false);
-                }}
-              >
-                Mark Attendance as Done
-              </Button>
-            )}
-          </div>
-        )}
-      </Modal>
     </div>
   );
 };
