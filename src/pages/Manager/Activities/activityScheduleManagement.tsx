@@ -7,7 +7,9 @@ import activityService, {
 import activityScheduleService, {
   type ActivityScheduleResponseDto,
 } from "../../../services/activityScheduleService";
-import campService, { type CampResponseDto } from "../../../services/campService";
+import campService, {
+  type CampResponseDto,
+} from "../../../services/campService";
 import { useNotification } from "../../../contexts/NotificationContext";
 import Calendar from "../../../components/calander/Calendar";
 import ScheduleForm from "../../../components/schedule/ScheduleForm";
@@ -30,8 +32,12 @@ const ActivityScheduleManagement: React.FC = () => {
     startTime: Date;
     endTime: Date;
   } | null>(null);
-  const [scheduleFormMode, setScheduleFormMode] = useState<"create-core" | "create-optional">("create-core");
-  const [selectedCoreScheduleId, setSelectedCoreScheduleId] = useState<string | null>(null);
+  const [scheduleFormMode, setScheduleFormMode] = useState<
+    "create-core" | "create-optional"
+  >("create-core");
+  const [selectedCoreScheduleId, setSelectedCoreScheduleId] = useState<
+    string | null
+  >(null);
 
   // Fetch activities and schedules
   useEffect(() => {
@@ -90,7 +96,9 @@ const ActivityScheduleManagement: React.FC = () => {
     // Calendar passes Activity object with id field
     // We need to find the actual schedule from schedules array by ID
     const scheduleId = parseInt(event.id, 10);
-    const selectedSchedule = schedules.find(s => s.activityScheduleId === scheduleId);
+    const selectedSchedule = schedules.find(
+      (s) => s.activityScheduleId === scheduleId
+    );
 
     if (selectedSchedule) {
       setSelectedSchedule(selectedSchedule);
@@ -153,7 +161,9 @@ const ActivityScheduleManagement: React.FC = () => {
         };
 
         const newSchedule =
-          await activityScheduleService.createCoreActivitySchedule(newScheduleData);
+          await activityScheduleService.createCoreActivitySchedule(
+            newScheduleData
+          );
         setSchedules((prev) => [...prev, newSchedule]);
         toastSuccess("Success", "Schedule created successfully");
       }
@@ -215,9 +225,14 @@ const ActivityScheduleManagement: React.FC = () => {
     title: schedule.activity?.name || "Untitled",
     start: new Date(schedule.startTime),
     end: new Date(schedule.endTime),
-    type: (schedule.activity?.activityType || "Core") as "Core" | "Optional" | "Resting" | "CheckIn" | "CheckOut",
+    type: (schedule.activity?.activityType || "Core") as
+      | "Core"
+      | "Optional"
+      | "Resting"
+      | "CheckIn"
+      | "CheckOut",
     description: `Status: ${schedule.status}`,
-    location: `Location ${schedule.locationId}`,
+    location: schedule.location?.name || "No location",
     participants: schedule.currentCapacity || 0,
     isOptional: schedule.isOptional,
   }));
@@ -236,12 +251,16 @@ const ActivityScheduleManagement: React.FC = () => {
       <div className="activity-schedule-calendar">
         <Calendar
           activities={calendarActivities}
-          campInfo={campData ? {
-            campId: campData.campId,
-            name: campData.name,
-            startDate: campData.startDate,
-            endDate: campData.endDate,
-          } : undefined}
+          campInfo={
+            campData
+              ? {
+                  campId: campData.campId,
+                  name: campData.name,
+                  startDate: campData.startDate,
+                  endDate: campData.endDate,
+                }
+              : undefined
+          }
           userRole="manager"
           onSelectSchedule={handleViewSchedule}
           onAddClick={handleAddSchedule}
@@ -278,13 +297,17 @@ const ActivityScheduleManagement: React.FC = () => {
             // Update activities list
             setActivities((prev) => [...prev, newActivity]);
             // Refresh schedules for optional creation
-            if (selectedCoreScheduleId && scheduleFormMode === "create-optional") {
+            if (
+              selectedCoreScheduleId &&
+              scheduleFormMode === "create-optional"
+            ) {
               if (!selectedCampId) return;
-              activityScheduleService.getActivitySchedulesByCamp(selectedCampId)
-                .then(updatedSchedules => {
+              activityScheduleService
+                .getActivitySchedulesByCamp(selectedCampId)
+                .then((updatedSchedules) => {
                   setSchedules(updatedSchedules);
                 })
-                .catch(error => {
+                .catch((error) => {
                   console.error("Failed to refresh schedules:", error);
                 });
             }
