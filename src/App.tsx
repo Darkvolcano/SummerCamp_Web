@@ -35,6 +35,7 @@ import GroupManagement from "./pages/Manager/Groups/GroupManagement";
 import CampStaffManagement from "./pages/Manager/Staffs/CampStaffManagement";
 import ActivityScheduleManagement from "./pages/Manager/Activities/activityScheduleManagement";
 import AccommodationManagement from "./pages/Manager/Accomodation/AccommodationManagement";
+import TransportationManagement from "./pages/Manager/Transportation";
 import CampTypePage from "./pages/Admin/CampTypeManagement/CampTypePage";
 import TransactionPage from "./pages/Admin/TransactionManagement/TransactionPage";
 import MyProfile from "./pages/Parent/MyProfile/MyProfile";
@@ -158,7 +159,7 @@ function App() {
               />
               <Route
                 path={PagePath.MANAGER_TRANSPORTATION}
-                element={<div>Manager Transportation</div>}
+                element={<TransportationManagement />}
               />
               <Route
                 path={PagePath.MANAGER_LOCATIONS}
