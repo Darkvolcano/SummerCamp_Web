@@ -37,6 +37,7 @@ import ActivityScheduleManagement from "./pages/Manager/Activities/activitySched
 import AccommodationManagement from "./pages/Manager/Accomodation/AccommodationManagement";
 import CampTypePage from "./pages/Admin/CampTypeManagement/CampTypePage";
 import TransactionPage from "./pages/Admin/TransactionManagement/TransactionPage";
+import CampJobManagement from "./pages/Admin/CampJobManagement/CampJobManagement";
 import MyProfile from "./pages/Parent/MyProfile/MyProfile";
 import MyRegistration from "./pages/Parent/MyRegistration/MyRegistration";
 function App() {
@@ -101,6 +102,7 @@ function App() {
               <Route path={PagePath.ADMIN_BLOGS} element={<BlogManagement />} />
               <Route path={PagePath.ADMIN_CAMPTYPES} element={<CampTypePage />} />
               <Route path={PagePath.ADMIN_TRANSACTIONS} element={<TransactionPage />} />
+              <Route path={PagePath.ADMIN_CAMP_JOBS} element={<CampJobManagement />} />
               <Route
                 path={PagePath.ADMIN_CAMPS_DETAIL}
                 element={<CampDetailPage />}

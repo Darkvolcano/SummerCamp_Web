@@ -8,6 +8,7 @@ import CampDetailStaffAssignment from './CampDetailStaffAssignment';
 import CampDetailGroup from './CampDetailGroup';
 import CampDetailAccommodation from './CampDetailAccommodation';
 import CampDetailDashboard from './CampDetailDashboard';
+import CampDetailJobs from './CampDetailJobs';
 import campService from '../../../../services/campService';
 
 const CampDetailPage: React.FC = () => {
@@ -69,6 +70,8 @@ const CampDetailPage: React.FC = () => {
         return <CampDetailAccommodation campId={numericCampId} campStatus={campStatus} />;
       case 'dashboard':
         return <CampDetailDashboard campId={numericCampId} campStatus={campStatus} />;
+      case 'jobs':
+        return <CampDetailJobs campId={numericCampId} />;
       default:
         return <CampDetailOverview campId={numericCampId} onBack={handleBack} />;
     }

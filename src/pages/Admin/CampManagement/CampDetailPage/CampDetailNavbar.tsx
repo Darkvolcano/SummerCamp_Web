@@ -19,6 +19,7 @@ const CampDetailNavbar: React.FC<CampDetailNavbarProps> = ({
     { id: 'group', label: 'Group' },
     { id: 'accommodation', label: 'Accommodation' },
     { id: 'dashboard', label: 'Dashboard' },
+    { id: 'jobs', label: 'Job Schedules' },
   ];
 
   return (
@@ -37,11 +38,10 @@ const CampDetailNavbar: React.FC<CampDetailNavbarProps> = ({
         <button
           key={tab.id}
           onClick={() => onTabChange(tab.id)}
-          className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-            activeTab === tab.id
+          className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${activeTab === tab.id
               ? 'bg-[#6366F1] text-white'
               : 'bg-[#e5e6e9] text-[#6B7280] hover:bg-[#E5E7EB]'
-          }`}
+            }`}
         >
           {tab.label}
         </button>

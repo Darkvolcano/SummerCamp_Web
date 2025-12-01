@@ -14,6 +14,7 @@ import {
   UserCircle,
   Shield,
   Logs,
+  Clock,
 } from "lucide-react";
 import { useAuthStore } from "../../../services/userService";
 import "./AdminSidebar.css";
@@ -48,7 +49,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ onCollapsedChange }) => {
       label: "Camp Programs",
       icon: <Tent size={20} />,
     },
-        {
+    {
       path: PagePath.ADMIN_CAMPTYPES,
       label: "Camp Types",
       icon: <Logs size={20} />,
@@ -72,6 +73,11 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ onCollapsedChange }) => {
       path: PagePath.ADMIN_TRANSACTIONS,
       label: "Transactions",
       icon: <CreditCard size={20} />,
+    },
+    {
+      path: PagePath.ADMIN_CAMP_JOBS,
+      label: "Camp Jobs",
+      icon: <Clock size={20} />,
     },
   ];
 
@@ -147,9 +153,8 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ onCollapsedChange }) => {
             <li key={item.path}>
               <Link
                 to={item.path}
-                className={`menu-item ${
-                  location.pathname === item.path ? "active" : ""
-                }`}
+                className={`menu-item ${location.pathname === item.path ? "active" : ""
+                  }`}
                 title={isCollapsed ? item.label : ""}
               >
                 <span className="menu-icon">{item.icon}</span>
@@ -170,9 +175,8 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ onCollapsedChange }) => {
             <li key={item.path}>
               <Link
                 to={item.path}
-                className={`menu-item ${
-                  location.pathname === item.path ? "active" : ""
-                }`}
+                className={`menu-item ${location.pathname === item.path ? "active" : ""
+                  }`}
                 title={isCollapsed ? item.label : ""}
               >
                 <span className="menu-icon">{item.icon}</span>
@@ -203,9 +207,8 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ onCollapsedChange }) => {
               <button className="user-menu-toggle">
                 <ChevronDown
                   size={16}
-                  className={`transition-transform duration-200 ${
-                    showUserDropdown ? "rotate-180" : ""
-                  }`}
+                  className={`transition-transform duration-200 ${showUserDropdown ? "rotate-180" : ""
+                    }`}
                 />
               </button>
             </>
@@ -235,7 +238,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ onCollapsedChange }) => {
             </button>
           </div>
         )}
-        
+
       </div>
     </div>
   );
