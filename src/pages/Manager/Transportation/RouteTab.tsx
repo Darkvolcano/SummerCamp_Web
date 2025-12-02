@@ -844,7 +844,7 @@ const RouteTab: React.FC = () => {
                   </div>
 
                   {/* Route Map */}
-                  <div className="border border-[#E5E7EB] rounded-lg overflow-hidden">
+                  <div className="overflow-hidden">
                     <RouteMapViewer
                       mode="view"
                       routeStops={routeStops.map(stop => ({
