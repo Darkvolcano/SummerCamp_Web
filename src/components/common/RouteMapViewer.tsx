@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMapEvents } from 'react-leaflet';
-import { Input, Button, Modal, Form } from 'antd';
+import { Input, Button, Form } from 'antd';
 import { Search, MapPin } from 'lucide-react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -35,7 +35,8 @@ interface RouteMapViewerProps {
   enableSearch?: boolean;
   enableCreate?: boolean;
   className?: string;
-  availableLocations?: LocationResponseDto[]; // Available pickup points for selection
+  availableLocations?: LocationResponseDto[];
+  onLocationCreated?: (location: LocationResponseDto) => void;
 }
 
 // Map click handler component
@@ -50,6 +51,17 @@ const MapClickHandler: React.FC<{ onClick: (lat: number, lng: number) => void; e
   return null;
 };
 
+// Map center updater component
+const MapUpdater: React.FC<{ center: [number, number] }> = ({ center }) => {
+  const map = useMapEvents({});
+  
+  useEffect(() => {
+    map.setView(center, map.getZoom(), { animate: true });
+  }, [center, map]);
+  
+  return null;
+};
+
 const RouteMapViewer: React.FC<RouteMapViewerProps> = ({
   mode,
   routeStops,
@@ -61,11 +73,11 @@ const RouteMapViewer: React.FC<RouteMapViewerProps> = ({
   enableCreate = mode === 'edit',
   className = '',
   availableLocations = [],
+  onLocationCreated,
 }) => {
   const { toastSuccess, toastError } = useNotification();
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
-  const [isLocationModalVisible, setIsLocationModalVisible] = useState(false);
   const [newLocationCoords, setNewLocationCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [locationForm] = Form.useForm();
   const [mapCenter, setMapCenter] = useState<[number, number]>(center);
@@ -108,24 +120,67 @@ const RouteMapViewer: React.FC<RouteMapViewerProps> = ({
   };
 
   // Handle map click to create new location
-  const handleMapClick = useCallback((lat: number, lng: number) => {
+  const handleMapClick = useCallback(async (lat: number, lng: number) => {
     if (mode !== 'edit' || !enableCreate) return;
 
+    // Set temp marker position
     setNewLocationCoords({ lat, lng });
-    setIsLocationModalVisible(true);
-    locationForm.setFieldsValue({
-      latitude: lat.toFixed(6),
-      longitude: lng.toFixed(6),
-    });
+    
+    // Try to get address via reverse geocoding
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1`
+      );
+      const data = await response.json();
+      
+      if (data && data.display_name) {
+        // Auto-fill with geocoded data
+        locationForm.setFieldsValue({
+          locationName: data.name || data.address?.road || `Location ${lat.toFixed(4)}, ${lng.toFixed(4)}`,
+          address: data.display_name,
+          latitude: lat.toFixed(6),
+          longitude: lng.toFixed(6),
+        });
+      } else {
+        // Fallback: use coordinates
+        locationForm.setFieldsValue({
+          locationName: `Location ${lat.toFixed(4)}, ${lng.toFixed(4)}`,
+          address: '',
+          latitude: lat.toFixed(6),
+          longitude: lng.toFixed(6),
+        });
+      }
+    } catch (error) {
+      console.error('Reverse geocoding failed:', error);
+      // Fallback: use coordinates
+      locationForm.setFieldsValue({
+        locationName: `Location ${lat.toFixed(4)}, ${lng.toFixed(4)}`,
+        address: '',
+        latitude: lat.toFixed(6),
+        longitude: lng.toFixed(6),
+      });
+    }
   }, [mode, enableCreate, locationForm]);
 
   // Handle create new pickup point
-  const handleCreateLocation = async () => {
+  const handleCreateLocation = async (e?: React.MouseEvent) => {
+    e?.preventDefault();
+    e?.stopPropagation();
+    
+    console.log('[RouteMapViewer] handleCreateLocation called');
+    console.log('[RouteMapViewer] newLocationCoords:', newLocationCoords);
+    
     try {
       const values = await locationForm.validateFields();
+      console.log('[RouteMapViewer] Form values:', values);
       
-      if (!newLocationCoords || !onStopsChange) return;
+      if (!newLocationCoords || !onStopsChange) {
+        console.log('[RouteMapViewer] Missing coords or onStopsChange');
+        return;
+      }
 
+      console.log('[RouteMapViewer] Creating location via API...');
+      
       // Create location via API
       const newLocation = await locationService.createPickupPoint(
         values.locationName,
@@ -133,6 +188,13 @@ const RouteMapViewer: React.FC<RouteMapViewerProps> = ({
         newLocationCoords.lat,
         newLocationCoords.lng
       );
+
+      console.log('[RouteMapViewer] Location created:', newLocation);
+
+      // Notify parent about new location
+      if (onLocationCreated) {
+        onLocationCreated(newLocation);
+      }
 
       // Add to route stops
       const newStop: RouteStopItem = {
@@ -142,20 +204,41 @@ const RouteMapViewer: React.FC<RouteMapViewerProps> = ({
         latitude: newLocation.latitude!,
         longitude: newLocation.longitude!,
         stopOrder: routeStops.length + 1,
-        estimatedTime: 5, // Default 5 minutes
+        estimatedTime: 5,
         isNew: true,
       };
 
+      console.log('[RouteMapViewer] Adding stop to route:', newStop);
       onStopsChange([...routeStops, newStop]);
+      
+      console.log('[RouteMapViewer] Showing success toast');
       toastSuccess('Success', `Created pickup point: ${newLocation.name}`);
       
-      setIsLocationModalVisible(false);
-      locationForm.resetFields();
+      // Clear temp marker and form
+      console.log('[RouteMapViewer] Clearing temp marker');
       setNewLocationCoords(null);
+      locationForm.resetFields();
+      
+      console.log('[RouteMapViewer] handleCreateLocation completed successfully');
     } catch (error: any) {
+      console.error('[RouteMapViewer] Error in handleCreateLocation:', error);
+      
+      if (error.errorFields) {
+        console.log('[RouteMapViewer] Form validation error:', error.errorFields);
+        return;
+      }
+      
       const errorMessage = error.response?.data?.message || 'Failed to create location';
       toastError('Error', errorMessage);
     }
+  };
+
+  // Cancel creating location
+  const handleCancelCreateLocation = () => {
+    console.log('[RouteMapViewer] handleCancelCreateLocation called');
+    setNewLocationCoords(null);
+    locationForm.resetFields();
+    console.log('[RouteMapViewer] Temp marker cleared');
   };
 
   // Add existing location to route stops
@@ -246,12 +329,12 @@ const RouteMapViewer: React.FC<RouteMapViewerProps> = ({
       {/* Map Container */}
       <div style={{ height }} className="rounded-lg border border-gray-300 overflow-hidden">
         <MapContainer
-          center={mapCenter}
+          center={center}
           zoom={zoom}
           scrollWheelZoom={mode === 'edit'}
           style={{ height: '100%', width: '100%' }}
-          key={mapCenter.join(',')} // Force re-render when center changes
         >
+          <MapUpdater center={mapCenter} />
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -336,6 +419,82 @@ const RouteMapViewer: React.FC<RouteMapViewerProps> = ({
             />
           )}
 
+          {/* Temporary Marker for Creating New Location */}
+          {newLocationCoords && (
+            <Marker
+              position={[newLocationCoords.lat, newLocationCoords.lng]}
+              icon={L.icon({
+                iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+                iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+                shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34],
+              })}
+            >
+              <Popup closeButton={true}>
+                <div className="p-2 min-w-[250px]">
+                  <h4 className="font-bold text-sm mb-3">Create Pickup Point</h4>
+                  <Form form={locationForm} layout="vertical" size="small">
+                    <Form.Item
+                      label="Location Name"
+                      name="locationName"
+                      rules={[{ required: true, message: 'Required' }]}
+                      className="mb-2"
+                    >
+                      <Input placeholder="e.g., District 1 Center" size="small" />
+                    </Form.Item>
+
+                    <Form.Item label="Address" name="address" className="mb-2">
+                      <Input.TextArea 
+                        placeholder="Auto-filled or enter manually" 
+                        rows={2}
+                        size="small"
+                      />
+                    </Form.Item>
+
+                    <div className="grid grid-cols-2 gap-2 mb-3">
+                      <Form.Item label="Lat" name="latitude" className="mb-0">
+                        <Input disabled size="small" />
+                      </Form.Item>
+                      <Form.Item label="Lng" name="longitude" className="mb-0">
+                        <Input disabled size="small" />
+                      </Form.Item>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <Button 
+                        htmlType="button"
+                        size="small" 
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleCancelCreateLocation();
+                        }}
+                        className="flex-1"
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        htmlType="button"
+                        type="primary"
+                        size="small"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleCreateLocation(e);
+                        }}
+                        className="flex-1 bg-[#6366F1]"
+                      >
+                        Create
+                      </Button>
+                    </div>
+                  </Form>
+                </div>
+              </Popup>
+            </Marker>
+          )}
+
           {/* Map Click Handler - Only in Edit Mode */}
           <MapClickHandler onClick={handleMapClick} enabled={mode === 'edit' && enableCreate} />
         </MapContainer>
@@ -371,47 +530,6 @@ const RouteMapViewer: React.FC<RouteMapViewerProps> = ({
           </div>
         )}
       </div>
-
-      {/* Create Location Modal */}
-      <Modal
-        title="Create Pickup Point"
-        open={isLocationModalVisible}
-        onOk={handleCreateLocation}
-        onCancel={() => {
-          setIsLocationModalVisible(false);
-          locationForm.resetFields();
-          setNewLocationCoords(null);
-        }}
-        okText="Create"
-        cancelText="Cancel"
-      >
-        <Form form={locationForm} layout="vertical" className="mt-4">
-          <Form.Item
-            label="Location Name"
-            name="locationName"
-            rules={[{ required: true, message: 'Please enter location name' }]}
-          >
-            <Input placeholder="e.g., District 1 Shopping Center" />
-          </Form.Item>
-
-          <Form.Item label="Address (Optional)" name="address">
-            <Input.TextArea 
-              placeholder="Enter detailed address (optional)" 
-              rows={2}
-            />
-          </Form.Item>
-
-          <div className="grid grid-cols-2 gap-4">
-            <Form.Item label="Latitude" name="latitude">
-              <Input disabled />
-            </Form.Item>
-
-            <Form.Item label="Longitude" name="longitude">
-              <Input disabled />
-            </Form.Item>
-          </div>
-        </Form>
-      </Modal>
     </div>
   );
 };
