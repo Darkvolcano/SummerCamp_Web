@@ -583,18 +583,20 @@ const RouteTab: React.FC = () => {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <InputNumber
-                          value={stop.estimatedTime}
-                          onChange={(val) => {
-                            const updated = [...newRouteStops];
-                            updated[index].estimatedTime = val || 5;
-                            setNewRouteStops(updated);
-                          }}
-                          addonAfter="min"
-                          min={1}
-                          size="small"
-                          className="w-24"
-                        />
+                        <div className="flex items-center mr-2">
+                          <InputNumber
+                            value={stop.estimatedTime}
+                            onChange={(val) => {
+                              const updated = [...newRouteStops];
+                              updated[index].estimatedTime = val || 5;
+                              setNewRouteStops(updated);
+                            }}
+                            min={1}
+                            size="small"
+                            className="w-16 mr-1"
+                          />
+                          <span className="text-sm text-gray-500">min</span>
+                        </div>
                         <button
                           onClick={() => {
                             const updated = newRouteStops
@@ -602,7 +604,7 @@ const RouteTab: React.FC = () => {
                               .map((s, i) => ({ ...s, stopOrder: i + 1 }));
                             setNewRouteStops(updated);
                           }}
-                          className="p-1.5 text-red-500 hover:bg-red-50 rounded transition-colors"
+                          className="p-1.5 text-red-500 bg-[#f9c7c7] hover:bg-[#f9a6a6] rounded transition-colors"
                         >
                           <Trash2 size={16} />
                         </button>
