@@ -3,18 +3,19 @@ import { RegistrationStatus } from "../enums/registration-status.enum";
 
 // Camper info response
 export interface CamperDto {
+  requestTransport: boolean;
   camperId: number;
   camperName: string;
   gender: string;
   dob: string;
-  groupId?: number | null;
-  avatar?: string;
+  avatar?: string | null;
 }
 
 // Camp info response
 export interface CampDto {
   campId: number;
   name: string;
+  startDate: string;
 }
 
 // Promotion info response
