@@ -101,8 +101,8 @@ const routeService = {
 
   // Get route stops by route ID
   getRouteStopsByRouteId: async (routeId: number): Promise<RouteStopResponseDto[]> => {
-    console.log(`[routeService] GET /routestop/${routeId}`);
-    const response = await axiosInstance.get(`/routestop/${routeId}`);
+    console.log(`[routeService] GET /routestop/route/${routeId}`);
+    const response = await axiosInstance.get(`/routestop/route/${routeId}`);
     return response.data as RouteStopResponseDto[];
   },
 

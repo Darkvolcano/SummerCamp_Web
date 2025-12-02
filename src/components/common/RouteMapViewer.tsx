@@ -7,7 +7,6 @@ import 'leaflet/dist/leaflet.css';
 import locationService, { type LocationResponseDto } from '../../services/LocationService';
 import { useNotification } from '../../contexts/NotificationContext';
 
-// Fix Leaflet default marker icon issue
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
