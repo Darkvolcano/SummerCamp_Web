@@ -231,8 +231,8 @@ const RegistrationPage: React.FC = () => {
             title: g.title,
             gender: g.gender,
             dob: undefined,
-            answer: undefined,
-            category: undefined,
+            email: g.email || undefined,
+            phoneNumber: g.phoneNumber || undefined,
             isActive: true,
           })
         );
@@ -330,12 +330,19 @@ const RegistrationPage: React.FC = () => {
         camperName: values.camperName,
         gender: values.gender,
         dob: dobValue,
-        avatar: values.avatarFile ? (values.avatarFile as File) : null,
         healthRecord,
       };
 
       // Call API to create camper
       const createdCamper = await camperService.createCamper(newCamperData);
+
+      // Upload avatar separately if provided
+      if (values.avatarFile) {
+        await camperService.uploadCamperAvatar(
+          createdCamper.camperId,
+          values.avatarFile as File
+        );
+      }
 
       const newCampers = [...campers];
       const newRegistrationCampers = [...registrationCampers];
@@ -839,32 +846,54 @@ const RegistrationPage: React.FC = () => {
                         {guardians.map((guardian) => (
                           <div
                             key={guardian.guardianId}
-                            className="p-4 bg-gray-50 rounded border border-gray-200 flex justify-between items-start"
+                            className="p-3 bg-gray-50 rounded border border-gray-200 flex justify-between items-start"
                           >
-                            <div className="flex-1">
-                              <p className="text-sm text-gray-600">Tên</p>
-                              <p className="font-semibold text-gray-900 mb-2">
-                                {guardian.fullName || "N/A"}
-                              </p>
+                            <div className="flex-1 grid grid-cols-3 gap-x-4 gap-y-2">
+                              <div>
+                                <p className="text-xs text-gray-500 mb-0.5">Họ tên</p>
+                                <p className="text-sm font-semibold text-gray-900">
+                                  {guardian.fullName || "N/A"}
+                                </p>
+                              </div>
                               {guardian.title && (
-                                <>
-                                  <p className="text-sm text-gray-600">
-                                    Chức danh
-                                  </p>
-                                  <p className="font-semibold text-gray-900 mb-2">
+                                <div>
+                                  <p className="text-xs text-gray-500 mb-0.5">Mối quan hệ</p>
+                                  <p className="text-sm font-semibold text-gray-900">
                                     {guardian.title}
                                   </p>
-                                </>
+                                </div>
+                              )}
+                              {guardian.gender && (
+                                <div>
+                                  <p className="text-xs text-gray-500 mb-0.5">Giới tính</p>
+                                  <p className="text-sm font-semibold text-gray-900">
+                                    {guardian.gender}
+                                  </p>
+                                </div>
                               )}
                               {guardian.phoneNumber && (
-                                <>
-                                  <p className="text-sm text-gray-600">
-                                    Số điện thoại
-                                  </p>
-                                  <p className="font-semibold text-gray-900">
+                                <div>
+                                  <p className="text-xs text-gray-500 mb-0.5">Số điện thoại</p>
+                                  <p className="text-sm font-semibold text-gray-900">
                                     {guardian.phoneNumber}
                                   </p>
-                                </>
+                                </div>
+                              )}
+                              {guardian.email && (
+                                <div>
+                                  <p className="text-xs text-gray-500 mb-0.5">Email</p>
+                                  <p className="text-sm font-semibold text-gray-900 truncate">
+                                    {guardian.email}
+                                  </p>
+                                </div>
+                              )}
+                              {guardian.dob && (
+                                <div>
+                                  <p className="text-xs text-gray-500 mb-0.5">Ngày sinh</p>
+                                  <p className="text-sm font-semibold text-gray-900">
+                                    {new Date(guardian.dob).toLocaleDateString('vi-VN')}
+                                  </p>
+                                </div>
                               )}
                             </div>
                             <Button
@@ -873,6 +902,7 @@ const RegistrationPage: React.FC = () => {
                               onClick={() =>
                                 handleDeleteGuardian(index, guardian.guardianId)
                               }
+                              className="ml-2"
                             >
                               ✕
                             </Button>

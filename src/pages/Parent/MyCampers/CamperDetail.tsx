@@ -186,11 +186,19 @@ const CamperDetail: React.FC = () => {
         camperName: values.camperName,
         gender: values.gender,
         dob: dobValue,
-        avatar: values.avatarFile ? (values.avatarFile as File) : null,
         healthRecord,
       };
 
       const updatedCamper = await camperService.updateCamper(camper.camperId, updateData);
+
+      // Upload avatar separately if provided
+      if (values.avatarFile) {
+        await camperService.uploadCamperAvatar(
+          camper.camperId,
+          values.avatarFile as File
+        );
+      }
+
       setCamper(updatedCamper);
       setIsEditing(false);
       toastSuccess("Thành công", "Cập nhật thông tin trại viên thành công");
