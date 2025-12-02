@@ -35,11 +35,8 @@ export interface CamperResponseDto {
   gender: string;
   dob: string;
   age?: number;
-  groupId?: number | null;
   avatar?: string | null;
-  userId?: number;
-  isActive?: boolean;
-  healthRecord?: HealthRecord;
+  healthRecord?: HealthRecord | null;
 }
 
 export interface CamperCampResponseDto {
@@ -47,7 +44,6 @@ export interface CamperCampResponseDto {
   camperName: string;
   gender: string;
   dob: string;
-  groupId?: number | null;
   avatar?: string | null;
   camperRegistrationStatus?: string;
 }
@@ -73,6 +69,8 @@ export interface Guardian {
   fullName: string;
   title: string;
   gender: string;
+  email?: string | null;
+  phoneNumber?: string | null;
 }
 
 export interface HealthRecord {
@@ -232,14 +230,15 @@ const camperService = {
     return response.data as CamperGuardianResponseDto[];
   },
 
-  // Get campers by activity schedule ID
-  getCampersByActivityScheduleId: async (
-    id: number
-  ): Promise<CamperActivityResponseDto[]> => {
-    console.log(`[camperService] GET /Camper/activityScheduleId${id}`);
-    const response = await axiosInstance.get(`/Camper/activityScheduleId${id}`);
-    return response.data as CamperActivityResponseDto[];
-  },
+  // DEPRECATED: This endpoint doesn't exist in swagger12
+  // Use getCampersByOptionalActivityId or getCampersByCoreActivityId instead
+  // getCampersByActivityScheduleId: async (
+  //   id: number
+  // ): Promise<CamperActivityResponseDto[]> => {
+  //   console.log(`[camperService] GET /Camper/activityScheduleId${id}`);
+  //   const response = await axiosInstance.get(`/Camper/activityScheduleId${id}`);
+  //   return response.data as CamperActivityResponseDto[];
+  // },
 
   // Get camper by ID and camp ID
   getCamperByIdAndCampId: async (
