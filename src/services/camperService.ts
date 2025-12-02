@@ -16,16 +16,14 @@ export interface Camper {
 export interface CamperRequestDto {
   camperName: string;
   gender: string;
-  dob?: string;
-  avatar?: File | null;
+  dob: string;
   healthRecord?: HealthRecordCreateDto;
 }
 
 export interface CamperUpdateRequestDto {
-  camperName: string;
-  gender: string;
+  camperName?: string;
+  gender?: string;
   dob?: string;
-  avatar?: File | null;
   healthRecord?: HealthRecordCreateDto;
 }
 
@@ -107,48 +105,15 @@ const camperService = {
   createCamper: async (
     camper: CamperRequestDto
   ): Promise<CamperResponseDto> => {
-    console.log("[camperService] POST /Camper (multipart/form-data)");
-    const formData = new FormData();
+    console.log("[camperService] POST /Camper");
+    const requestPayload = {
+      camperName: camper.camperName,
+      gender: camper.gender,
+      dob: camper.dob,
+      healthRecord: camper.healthRecord,
+    };
 
-    formData.append("camperName", camper.camperName);
-    formData.append("gender", camper.gender);
-    if (camper.dob) {
-      formData.append("dob", camper.dob);
-    }
-
-    if (camper.avatar) {
-      formData.append("avatar", camper.avatar);
-    }
-
-    if (camper.healthRecord) {
-      if (camper.healthRecord.condition) {
-        formData.append(
-          "healthRecord.condition",
-          camper.healthRecord.condition
-        );
-      }
-      if (camper.healthRecord.allergies) {
-        formData.append(
-          "healthRecord.allergies",
-          camper.healthRecord.allergies
-        );
-      }
-      if (camper.healthRecord.isAllergy !== undefined) {
-        formData.append(
-          "healthRecord.isAllergy",
-          camper.healthRecord.isAllergy.toString()
-        );
-      }
-      if (camper.healthRecord.note) {
-        formData.append("healthRecord.note", camper.healthRecord.note);
-      }
-    }
-
-    const response = await axiosInstance.post("/Camper", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    const response = await axiosInstance.post("/Camper", requestPayload);
     return response.data as CamperResponseDto;
   },
 
@@ -158,44 +123,14 @@ const camperService = {
     camper: CamperUpdateRequestDto
   ): Promise<CamperResponseDto> => {
     console.log(`[camperService] PUT /Camper/${id}`);
+    const requestPayload: any = {};
 
-    // Build query parameters for text fields
-    const params: any = {
-      camperName: camper.camperName,
-      gender: camper.gender,
-    };
+    if (camper.camperName) requestPayload.camperName = camper.camperName;
+    if (camper.gender) requestPayload.gender = camper.gender;
+    if (camper.dob) requestPayload.dob = camper.dob;
+    if (camper.healthRecord) requestPayload.healthRecord = camper.healthRecord;
 
-    if (camper.dob) {
-      params.dob = camper.dob;
-    }
-
-    if (camper.healthRecord) {
-      if (camper.healthRecord.condition) {
-        params["healthRecord.condition"] = camper.healthRecord.condition;
-      }
-      if (camper.healthRecord.allergies) {
-        params["healthRecord.allergies"] = camper.healthRecord.allergies;
-      }
-      if (camper.healthRecord.isAllergy !== undefined) {
-        params["healthRecord.isAllergy"] = camper.healthRecord.isAllergy;
-      }
-      if (camper.healthRecord.note) {
-        params["healthRecord.note"] = camper.healthRecord.note;
-      }
-    }
-
-    // Create FormData only for avatar file
-    const formData = new FormData();
-    if (camper.avatar) {
-      formData.append("avatar", camper.avatar);
-    }
-
-    const response = await axiosInstance.put(`/Camper/${id}`, formData, {
-      params,
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    const response = await axiosInstance.put(`/Camper/${id}`, requestPayload);
     return response.data as CamperResponseDto;
   },
 
@@ -203,6 +138,23 @@ const camperService = {
   deleteCamper: async (id: number): Promise<void> => {
     console.log(`[camperService] DELETE /Camper/${id}`);
     await axiosInstance.delete(`/Camper/${id}`);
+  },
+
+  // Upload camper avatar
+  uploadCamperAvatar: async (
+    camperId: number,
+    file: File
+  ): Promise<CamperResponseDto> => {
+    console.log(`[camperService] PUT /Camper/${camperId}/avatar (multipart/form-data)`);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await axiosInstance.put(`/Camper/${camperId}/avatar`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data as CamperResponseDto;
   },
 
   // Get campers by camp ID
