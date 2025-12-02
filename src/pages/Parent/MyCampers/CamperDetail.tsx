@@ -76,6 +76,8 @@ const CamperDetail: React.FC = () => {
             fullName: g.fullName,
             title: g.title,
             gender: g.gender,
+            email: g.email,
+            phoneNumber: g.phoneNumber,
             isActive: true,
           }));
           setGuardians(guardianResponseList);
@@ -555,7 +557,7 @@ const CamperDetail: React.FC = () => {
                       {guardian.phoneNumber && (
                         <>
                           <p className="text-sm text-gray-600 font-medium mb-1">Số điện thoại</p>
-                          <p className="font-semibold text-gray-900">{guardian.phoneNumber}</p>
+                          <p className="font-semibold text-gray-900 mb-3">{guardian.phoneNumber}</p>
                         </>
                       )}
 
