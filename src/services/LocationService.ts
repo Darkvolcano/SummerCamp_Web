@@ -147,7 +147,8 @@ const locationService = {
       parentLocationId: null,
     };
     const response = await axiosInstance.post("/location", requestPayload);
-    return response.data as LocationResponseDto;
+    // API returns {message, data}, extract data
+    return (response.data.data || response.data) as LocationResponseDto;
   },
 
   // Get locations by camp ID and time range
