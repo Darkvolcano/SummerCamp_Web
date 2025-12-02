@@ -10,7 +10,7 @@ import RouteMapViewer, { type RouteStopItem } from '../../../components/common/R
 
 const { Option } = Select;
 
-const ROUTE_TYPES = ['Pickup', 'Drop-off'];
+const ROUTE_TYPES = ['Shuttle'];
 
 const RouteTab: React.FC = () => {
   const { selectedCampId } = useManagerContext();
@@ -32,6 +32,11 @@ const RouteTab: React.FC = () => {
   // Multi-step route creation states
   const [creationStep, setCreationStep] = useState<'info' | 'stops'>('info');
   const [newRouteStops, setNewRouteStops] = useState<RouteStopItem[]>([]);
+  const [routeFormValues, setRouteFormValues] = useState<{
+    routeName: string;
+    routeType: string;
+    estimateDuration: number;
+  } | null>(null);
 
   // Detail modal states
   const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
@@ -117,6 +122,11 @@ const RouteTab: React.FC = () => {
     }
   };
 
+  const handleLocationCreated = (newLocation: LocationResponseDto) => {
+    console.log('[RouteTab] New location created, adding to availableLocations:', newLocation);
+    setLocations(prev => [...prev, newLocation]);
+  };
+
   const handleDetailClick = async (route: RouteResponseDto) => {
     try {
       setDetailRoute(route);
@@ -183,6 +193,7 @@ const RouteTab: React.FC = () => {
     setEditingRoute(null);
     setCreationStep('info');
     setNewRouteStops([]);
+    setRouteFormValues(null);
   };
 
   const handleSubmit = async () => {
@@ -207,7 +218,8 @@ const RouteTab: React.FC = () => {
         fetchRoutes();
         setSubmitting(false);
       } else {
-        // Creation mode - go to stops configuration
+        // Creation mode - save values and go to stops configuration
+        setRouteFormValues(values);
         setCreationStep('stops');
       }
     } catch (error) {
@@ -220,16 +232,22 @@ const RouteTab: React.FC = () => {
   const handleCreateRouteWithStops = async () => {
     try {
       setSubmitting(true);
-      const values = form.getFieldsValue();
+      
+      // Use saved form values
+      if (!routeFormValues) {
+        toastError('Error', 'Route information is missing');
+        return;
+      }
 
       // Step 1: Create the route
       const routeData: RouteRequestDto = {
         campId: selectedCampId!,
-        routeName: values.routeName,
-        routeType: values.routeType,
-        estimateDuration: values.estimateDuration,
+        routeName: routeFormValues.routeName,
+        routeType: routeFormValues.routeType,
+        estimateDuration: routeFormValues.estimateDuration,
       };
 
+      console.log('[RouteTab] Creating route with data:', routeData);
       const createdRoute = await routeService.createRoute(routeData);
 
       // Step 2: Create route stops
@@ -251,6 +269,7 @@ const RouteTab: React.FC = () => {
       form.resetFields();
       setCreationStep('info');
       setNewRouteStops([]);
+      setRouteFormValues(null);
       fetchRoutes();
     } catch (error: any) {
       console.error('Failed to create route with stops:', error);
@@ -603,6 +622,7 @@ const RouteTab: React.FC = () => {
               enableSearch={true}
               enableCreate={true}
               availableLocations={locations}
+              onLocationCreated={handleLocationCreated}
             />
 
             {/* Footer Buttons */}
