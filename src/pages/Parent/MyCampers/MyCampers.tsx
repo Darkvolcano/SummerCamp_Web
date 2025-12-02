@@ -11,14 +11,14 @@ import { useAuthStore } from "../../../services/userService";
 import { useNotification } from "../../../contexts/NotificationContext";
 import { PagePath } from "../../../enums/page-path.enum";
 import camperService, {
-  type CamperCampResponseDto,
+  type CamperResponseDto,
 } from "../../../services/camperService";
 
 const MyCampers: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const { toastError } = useNotification();
-  const [campers, setCampers] = useState<CamperCampResponseDto[]>([]);
+  const [campers, setCampers] = useState<CamperResponseDto[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
 

@@ -1,15 +1,16 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Spin, Modal, Form, Input, InputNumber, Select } from 'antd';
-import { Search, Plus, Edit2, Clock, Eye, MapPin } from 'lucide-react';
+import { Search, Plus, Edit2, Clock, Eye, MapPin, Trash2 } from 'lucide-react';
 import { useManagerContext } from '../../../hooks/useManagerContext';
 import { useNotification } from '../../../contexts/NotificationContext';
 import routeService, { type RouteResponseDto, type RouteRequestDto, type RouteStopResponseDto } from '../../../services/routeService';
 import locationService, { type LocationResponseDto } from '../../../services/LocationService';
 import DeletePopover from '../../../components/DeletePopover';
+import RouteMapViewer, { type RouteStopItem } from '../../../components/common/RouteMapViewer';
 
 const { Option } = Select;
 
-const ROUTE_TYPES = ['Pickup', 'Drop-off'];
+const ROUTE_TYPES = ['Shuttle'];
 
 const RouteTab: React.FC = () => {
   const { selectedCampId } = useManagerContext();
@@ -27,6 +28,15 @@ const RouteTab: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
 
   const [deletePopoverOpen, setDeletePopoverOpen] = useState<number | null>(null);
+
+  // Multi-step route creation states
+  const [creationStep, setCreationStep] = useState<'info' | 'stops'>('info');
+  const [newRouteStops, setNewRouteStops] = useState<RouteStopItem[]>([]);
+  const [routeFormValues, setRouteFormValues] = useState<{
+    routeName: string;
+    routeType: string;
+    estimateDuration: number;
+  } | null>(null);
 
   // Detail modal states
   const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
@@ -98,6 +108,23 @@ const RouteTab: React.FC = () => {
     setEditingRoute(null);
     form.resetFields();
     setIsModalVisible(true);
+    // Load pickup points for route creation
+    loadPickupPoints();
+  };
+
+  const loadPickupPoints = async () => {
+    try {
+      const pickupPoints = await locationService.getLocationsByType('Pickup_point');
+      console.log('[RouteTab] Loaded pickup points:', pickupPoints.length, pickupPoints);
+      setLocations(pickupPoints);
+    } catch (error) {
+      console.error('Failed to load pickup points:', error);
+    }
+  };
+
+  const handleLocationCreated = (newLocation: LocationResponseDto) => {
+    console.log('[RouteTab] New location created, adding to availableLocations:', newLocation);
+    setLocations(prev => [...prev, newLocation]);
   };
 
   const handleDetailClick = async (route: RouteResponseDto) => {
@@ -164,12 +191,14 @@ const RouteTab: React.FC = () => {
     setIsModalVisible(false);
     form.resetFields();
     setEditingRoute(null);
+    setCreationStep('info');
+    setNewRouteStops([]);
+    setRouteFormValues(null);
   };
 
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
-      setSubmitting(true);
 
       const requestData: RouteRequestDto = {
         campId: selectedCampId!,
@@ -179,20 +208,73 @@ const RouteTab: React.FC = () => {
       };
 
       if (editingRoute) {
+        // Edit mode - update directly
+        setSubmitting(true);
         await routeService.updateRoute(editingRoute.routeId, requestData);
         toastSuccess('Success', 'Route updated successfully');
+        setIsModalVisible(false);
+        form.resetFields();
+        setEditingRoute(null);
+        fetchRoutes();
+        setSubmitting(false);
       } else {
-        await routeService.createRoute(requestData);
-        toastSuccess('Success', 'Route created successfully');
+        // Creation mode - save values and go to stops configuration
+        setRouteFormValues(values);
+        setCreationStep('stops');
       }
-
-      setIsModalVisible(false);
-      form.resetFields();
-      setEditingRoute(null);
-      fetchRoutes();
     } catch (error) {
       console.error('Failed to save route:', error);
       toastError('Error', 'Failed to save route');
+      setSubmitting(false);
+    }
+  };
+
+  const handleCreateRouteWithStops = async () => {
+    try {
+      setSubmitting(true);
+      
+      // Use saved form values
+      if (!routeFormValues) {
+        toastError('Error', 'Route information is missing');
+        return;
+      }
+
+      // Step 1: Create the route
+      const routeData: RouteRequestDto = {
+        campId: selectedCampId!,
+        routeName: routeFormValues.routeName,
+        routeType: routeFormValues.routeType,
+        estimateDuration: routeFormValues.estimateDuration,
+      };
+
+      console.log('[RouteTab] Creating route with data:', routeData);
+      const createdRoute = await routeService.createRoute(routeData);
+
+      // Step 2: Create route stops
+      if (newRouteStops.length > 0) {
+        await Promise.all(
+          newRouteStops.map((stop) =>
+            routeService.createRouteStop({
+              routeId: createdRoute.routeId,
+              locationId: stop.locationId!,
+              stopOrder: stop.stopOrder,
+              estimatedTime: stop.estimatedTime,
+            })
+          )
+        );
+      }
+
+      toastSuccess('Success', `Route created with ${newRouteStops.length} stops`);
+      setIsModalVisible(false);
+      form.resetFields();
+      setCreationStep('info');
+      setNewRouteStops([]);
+      setRouteFormValues(null);
+      fetchRoutes();
+    } catch (error: any) {
+      console.error('Failed to create route with stops:', error);
+      const errorMessage = error.response?.data?.message || 'Failed to create route';
+      toastError('Error', errorMessage);
     } finally {
       setSubmitting(false);
     }
@@ -398,77 +480,179 @@ const RouteTab: React.FC = () => {
       <Modal
         title={
           <div className="text-lg font-bold text-[#111827]">
-            {editingRoute ? 'Edit Route' : 'Add New Route'}
+            {editingRoute ? 'Edit Route' : `Add New Route${creationStep === 'stops' ? ' - Configure Stops' : ''}`}
           </div>
         }
         open={isModalVisible}
         onCancel={handleModalCancel}
         footer={null}
-        width={600}
+        width={creationStep === 'stops' ? 900 : 600}
       >
-        <Form
-          form={form}
-          layout="vertical"
-          className="mt-4"
-          onFinish={handleSubmit}
-        >
-          <Form.Item
-            label={<span className="text-sm font-semibold text-[#374151]">Route Name</span>}
-            name="routeName"
-            rules={[{ required: true, message: 'Please enter route name' }]}
+        {creationStep === 'info' && (
+          <Form
+            form={form}
+            layout="vertical"
+            className="mt-4"
+            onFinish={handleSubmit}
           >
-            <Input 
-              placeholder="Enter route name" 
-              className="rounded-lg"
-            />
-          </Form.Item>
-
-          <Form.Item
-            label={<span className="text-sm font-semibold text-[#374151]">Route Type</span>}
-            name="routeType"
-            rules={[{ required: true, message: 'Please select route type' }]}
-          >
-            <Select placeholder="Select route type" className="rounded-lg">
-              {ROUTE_TYPES.map((type) => (
-                <Option key={type} value={type}>
-                  {type}
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
-
-          <Form.Item
-            label={<span className="text-sm font-semibold text-[#374151]">Estimated Duration (minutes)</span>}
-            name="estimateDuration"
-            rules={[
-              { required: true, message: 'Please enter estimated duration' },
-              { type: 'number', min: 1, message: 'Duration must be at least 1 minute' },
-            ]}
-          >
-            <InputNumber 
-              placeholder="Enter duration in minutes" 
-              className="w-full rounded-lg"
-              min={1}
-            />
-          </Form.Item>
-
-          <div className="flex gap-2 justify-end mt-6">
-            <button
-              type="button"
-              onClick={handleModalCancel}
-              className="px-4 py-2 bg-[#F3F4F6] text-[#6B7280] rounded-lg hover:bg-[#E5E7EB] transition-colors font-medium text-sm"
+            <Form.Item
+              label={<span className="text-sm font-semibold text-[#374151]">Route Name</span>}
+              name="routeName"
+              rules={[{ required: true, message: 'Please enter route name' }]}
             >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={submitting}
-              className="px-4 py-2 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-colors font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              <Input 
+                placeholder="Enter route name" 
+                className="rounded-lg"
+              />
+            </Form.Item>
+
+            <Form.Item
+              label={<span className="text-sm font-semibold text-[#374151]">Route Type</span>}
+              name="routeType"
+              rules={[{ required: true, message: 'Please select route type' }]}
             >
-              {submitting ? 'Saving...' : editingRoute ? 'Update' : 'Create'}
-            </button>
+              <Select placeholder="Select route type" className="rounded-lg">
+                {ROUTE_TYPES.map((type) => (
+                  <Option key={type} value={type}>
+                    {type}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+
+            <Form.Item
+              label={<span className="text-sm font-semibold text-[#374151]">Estimated Duration (minutes)</span>}
+              name="estimateDuration"
+              rules={[
+                { required: true, message: 'Please enter estimated duration' },
+                { type: 'number', min: 1, message: 'Duration must be at least 1 minute' },
+              ]}
+            >
+              <InputNumber 
+                placeholder="Enter duration in minutes" 
+                className="w-full rounded-lg"
+                min={1}
+              />
+            </Form.Item>
+
+            <div className="flex gap-2 justify-end mt-6">
+              <button
+                type="button"
+                onClick={handleModalCancel}
+                className="px-4 py-2 bg-[#F3F4F6] text-[#6B7280] rounded-lg hover:bg-[#E5E7EB] transition-colors font-medium text-sm"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={submitting}
+                className="px-4 py-2 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-colors font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {submitting ? 'Saving...' : editingRoute ? 'Update' : 'Next: Configure Stops'}
+              </button>
+            </div>
+          </Form>
+        )}
+
+        {creationStep === 'stops' && (
+          <div className="space-y-6 mt-4">
+            {/* Route Stops List */}
+            <div className="border border-[#E5E7EB] rounded-lg p-4">
+              <h4 className="text-base font-bold text-[#111827] mb-3">
+                Route Stops ({newRouteStops.length})
+              </h4>
+              {newRouteStops.length === 0 ? (
+                <p className="text-sm text-gray-500 text-center py-4">
+                  Click on the map below to add pickup points
+                </p>
+              ) : (
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {newRouteStops.map((stop, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between bg-[#F9FAFB] p-3 rounded-lg"
+                    >
+                      <div className="flex items-center gap-3 flex-1">
+                        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-[#6366F1] text-white text-xs font-bold">
+                          {stop.stopOrder}
+                        </span>
+                        <MapPin size={16} className="text-[#6B7280]" />
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-[#111827]">{stop.locationName}</p>
+                          <p className="text-xs text-[#6B7280]">{stop.address}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="flex items-center mr-2">
+                          <InputNumber
+                            value={stop.estimatedTime}
+                            onChange={(val) => {
+                              const updated = [...newRouteStops];
+                              updated[index].estimatedTime = val || 5;
+                              setNewRouteStops(updated);
+                            }}
+                            min={1}
+                            size="small"
+                            className="w-16 mr-1"
+                          />
+                          <span className="text-sm text-gray-500">min</span>
+                        </div>
+                        <button
+                          onClick={() => {
+                            const updated = newRouteStops
+                              .filter((_, i) => i !== index)
+                              .map((s, i) => ({ ...s, stopOrder: i + 1 }));
+                            setNewRouteStops(updated);
+                          }}
+                          className="p-1.5 text-red-500 bg-[#f9c7c7] hover:bg-[#f9a6a6] rounded transition-colors"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Map Editor */}
+            <RouteMapViewer
+              mode="edit"
+              routeStops={newRouteStops}
+              onStopsChange={setNewRouteStops}
+              height="450px"
+              enableSearch={true}
+              enableCreate={true}
+              availableLocations={locations}
+              onLocationCreated={handleLocationCreated}
+            />
+
+            {/* Footer Buttons */}
+            <div className="flex gap-2 justify-between">
+              <button
+                onClick={() => setCreationStep('info')}
+                className="px-4 py-2 bg-[#F3F4F6] text-[#6B7280] rounded-lg hover:bg-[#E5E7EB] transition-colors font-medium text-sm"
+              >
+                Back to Route Info
+              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={handleModalCancel}
+                  className="px-4 py-2 bg-[#F3F4F6] text-[#6B7280] rounded-lg hover:bg-[#E5E7EB] transition-colors font-medium text-sm"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleCreateRouteWithStops}
+                  disabled={submitting || newRouteStops.length === 0}
+                  className="px-4 py-2 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-colors font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {submitting ? 'Creating...' : `Create Route (${newRouteStops.length} stops)`}
+                </button>
+              </div>
+            </div>
           </div>
-        </Form>
+        )}
       </Modal>
 
       {/* Detail Modal */}
@@ -485,7 +669,7 @@ const RouteTab: React.FC = () => {
           setRouteStops([]);
         }}
         footer={null}
-        width={800}
+        width={1200}
       >
         {detailRoute && (
           <div className="space-y-6">
@@ -612,57 +796,71 @@ const RouteTab: React.FC = () => {
                   <p>No stops configured for this route</p>
                 </div>
               ) : (
-                <div className="border border-[#E5E7EB] rounded-lg overflow-hidden">
-                  <table className="w-full">
-                    <thead className="bg-[#F9FAFB] border-b border-[#E5E7EB]">
-                      <tr>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Order
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Location
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Estimated Time
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Status
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-[#E5E7EB]">
-                      {routeStops
-                        .sort((a, b) => a.stopOrder - b.stopOrder)
-                        .map((stop) => {
-                          const location = locations.find(loc => loc.locationId === stop.locationId);
-                          return (
-                            <tr key={stop.routeStopId} className="hover:bg-[#F9FAFB]">
-                              <td className="px-4 py-3 text-sm font-mono text-[#6B7280]">
-                                {stop.stopOrder}
-                              </td>
-                              <td className="px-4 py-3 text-sm text-[#374151]">
-                                {location?.name || `Location #${stop.locationId}`}
-                              </td>
-                              <td className="px-4 py-3 text-sm text-[#6B7280]">
-                                <div className="flex items-center gap-1">
-                                  <Clock size={14} className="text-[#9CA3AF]" />
-                                  {stop.estimatedTime} min
-                                </div>
-                              </td>
-                              <td className="px-4 py-3">
-                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                  stop.status === 'Active' 
-                                    ? 'bg-green-100 text-green-700' 
-                                    : 'bg-gray-100 text-gray-700'
-                                }`}>
-                                  {stop.status}
-                                </span>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                    </tbody>
-                  </table>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Route Stops Table */}
+                  <div className="border border-[#E5E7EB] rounded-lg overflow-hidden">
+                    <table className="w-full">
+                      <thead className="bg-[#F9FAFB] border-b border-[#E5E7EB]">
+                        <tr>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                            Order
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                            Location
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                            Time
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-[#E5E7EB]">
+                        {routeStops
+                          .sort((a, b) => a.stopOrder - b.stopOrder)
+                          .map((stop) => {
+                            return (
+                              <tr key={stop.routeStopId} className="hover:bg-[#F9FAFB]">
+                                <td className="px-4 py-3 text-sm font-mono text-[#6B7280]">
+                                  {stop.stopOrder}
+                                </td>
+                                <td className="px-4 py-3">
+                                  <div className="text-sm font-medium text-[#374151]">
+                                    {stop.location?.name || `Location #${stop.location?.id || 'N/A'}`}
+                                  </div>
+                                  <div className="text-xs text-[#9CA3AF] truncate">
+                                    {stop.location?.address || 'No address'}
+                                  </div>
+                                </td>
+                                <td className="px-4 py-3 text-sm text-[#6B7280]">
+                                  <div className="flex items-center gap-1">
+                                    <Clock size={14} className="text-[#9CA3AF]" />
+                                    {stop.estimatedTime} min
+                                  </div>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Route Map */}
+                  <div className="overflow-hidden">
+                    <RouteMapViewer
+                      mode="view"
+                      routeStops={routeStops.map(stop => ({
+                        locationId: stop.location?.id || null,
+                        locationName: stop.location?.name || '',
+                        address: stop.location?.address || '',
+                        latitude: stop.location?.latitude || 0,
+                        longitude: stop.location?.longitude || 0,
+                        stopOrder: stop.stopOrder,
+                        estimatedTime: stop.estimatedTime,
+                      }))}
+                      height="450px"
+                      enableSearch={false}
+                      enableCreate={false}
+                    />
+                  </div>
                 </div>
               )}
             </div>

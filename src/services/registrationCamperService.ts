@@ -3,15 +3,31 @@ import axiosInstance from "../config/axios";
 import axios from "axios";
 
 export interface CampSummaryDto {
-  id: number;
+  campId: number;
   name: string;
   startDate: string;
   endDate: string;
 }
 
+export interface CamperNameDto {
+  camperId: number;
+  camperName: string;
+}
+
+export interface GroupNameDto {
+  groupId: number;
+  groupName: string;
+}
+
+export interface CamperGroupDto {
+  camperName: CamperNameDto;
+  groupName: GroupNameDto;
+}
+
 export interface RegistrationCamperResponseDto {
   registrationId: number;
   camperId: number;
+  camperGroup?: CamperGroupDto;
   status: string | null;
   requestTransport: boolean;
   camp: CampSummaryDto;

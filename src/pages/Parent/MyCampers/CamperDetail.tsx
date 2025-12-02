@@ -76,6 +76,8 @@ const CamperDetail: React.FC = () => {
             fullName: g.fullName,
             title: g.title,
             gender: g.gender,
+            email: g.email,
+            phoneNumber: g.phoneNumber,
             isActive: true,
           }));
           setGuardians(guardianResponseList);
@@ -118,7 +120,7 @@ const CamperDetail: React.FC = () => {
             const nearestCamp = futureCamps.sort((a: RegistrationCamperResponseDto, b: RegistrationCamperResponseDto) =>
               dayjs(a.camp.startDate).diff(dayjs(b.camp.startDate))
             )[0];
-            const index = campsData.findIndex(c => c.camp.id === nearestCamp.camp.id);
+            const index = campsData.findIndex(c => c.camp.campId === nearestCamp.camp.campId);
             setSelectedCampIndex(index >= 0 ? index : 0);
           } else {
             // If no future camps, select the first one
@@ -184,11 +186,19 @@ const CamperDetail: React.FC = () => {
         camperName: values.camperName,
         gender: values.gender,
         dob: dobValue,
-        avatar: values.avatarFile ? (values.avatarFile as File) : null,
         healthRecord,
       };
 
       const updatedCamper = await camperService.updateCamper(camper.camperId, updateData);
+
+      // Upload avatar separately if provided
+      if (values.avatarFile) {
+        await camperService.uploadCamperAvatar(
+          camper.camperId,
+          values.avatarFile as File
+        );
+      }
+
       setCamper(updatedCamper);
       setIsEditing(false);
       toastSuccess("Thành công", "Cập nhật thông tin trại viên thành công");
@@ -555,7 +565,7 @@ const CamperDetail: React.FC = () => {
                       {guardian.phoneNumber && (
                         <>
                           <p className="text-sm text-gray-600 font-medium mb-1">Số điện thoại</p>
-                          <p className="font-semibold text-gray-900">{guardian.phoneNumber}</p>
+                          <p className="font-semibold text-gray-900 mb-3">{guardian.phoneNumber}</p>
                         </>
                       )}
 
@@ -668,6 +678,12 @@ const CamperDetail: React.FC = () => {
                           {dayjs(camps[selectedCampIndex].camp.endDate).format("DD/MM/YYYY")}
                         </p>
                       </div>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600 font-medium mb-1">Nhóm</p>
+                      <p className="text-gray-900 font-medium">
+                        {camps[selectedCampIndex].camperGroup?.groupName?.groupName || "Chưa phân nhóm"}
+                      </p>
                     </div>
                     {camps[selectedCampIndex].status && (
                       <div>

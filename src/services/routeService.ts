@@ -25,10 +25,23 @@ export interface RouteStopRequestDto {
   estimatedTime: number;
 }
 
+export interface RouteInfoDto {
+  routeId: number;
+  routeName: string;
+}
+
+export interface LocationInfoDto {
+  id: number;
+  name: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+}
+
 export interface RouteStopResponseDto {
   routeStopId: number;
-  routeId: number;
-  locationId: number;
+  route: RouteInfoDto;
+  location: LocationInfoDto;
   stopOrder: number;
   estimatedTime: number;
   status: string;
@@ -88,8 +101,8 @@ const routeService = {
 
   // Get route stops by route ID
   getRouteStopsByRouteId: async (routeId: number): Promise<RouteStopResponseDto[]> => {
-    console.log(`[routeService] GET /RouteStop/${routeId}`);
-    const response = await axiosInstance.get(`/RouteStop/${routeId}`);
+    console.log(`[routeService] GET /routestop/route/${routeId}`);
+    const response = await axiosInstance.get(`/routestop/route/${routeId}`);
     return response.data as RouteStopResponseDto[];
   },
 
