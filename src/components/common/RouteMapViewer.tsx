@@ -331,7 +331,7 @@ const RouteMapViewer: React.FC<RouteMapViewerProps> = ({
         <MapContainer
           center={center}
           zoom={zoom}
-          scrollWheelZoom={mode === 'edit'}
+          scrollWheelZoom={true}
           style={{ height: '100%', width: '100%' }}
         >
           <MapUpdater center={mapCenter} />

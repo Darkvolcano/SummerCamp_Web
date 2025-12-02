@@ -669,7 +669,7 @@ const RouteTab: React.FC = () => {
           setRouteStops([]);
         }}
         footer={null}
-        width={800}
+        width={1200}
       >
         {detailRoute && (
           <div className="space-y-6">
@@ -796,56 +796,71 @@ const RouteTab: React.FC = () => {
                   <p>No stops configured for this route</p>
                 </div>
               ) : (
-                <div className="border border-[#E5E7EB] rounded-lg overflow-hidden">
-                  <table className="w-full">
-                    <thead className="bg-[#F9FAFB] border-b border-[#E5E7EB]">
-                      <tr>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Order
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Location
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Estimated Time
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Status
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-[#E5E7EB]">
-                      {routeStops
-                        .sort((a, b) => a.stopOrder - b.stopOrder)
-                        .map((stop) => {
-                          return (
-                            <tr key={stop.routeStopId} className="hover:bg-[#F9FAFB]">
-                              <td className="px-4 py-3 text-sm font-mono text-[#6B7280]">
-                                {stop.stopOrder}
-                              </td>
-                              <td className="px-4 py-3 text-sm text-[#374151]">
-                                {stop.location?.name || `Location #${stop.location?.id || 'N/A'}`}
-                              </td>
-                              <td className="px-4 py-3 text-sm text-[#6B7280]">
-                                <div className="flex items-center gap-1">
-                                  <Clock size={14} className="text-[#9CA3AF]" />
-                                  {stop.estimatedTime} min
-                                </div>
-                              </td>
-                              <td className="px-4 py-3">
-                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                  stop.status === 'Active' 
-                                    ? 'bg-green-100 text-green-700' 
-                                    : 'bg-gray-100 text-gray-700'
-                                }`}>
-                                  {stop.status}
-                                </span>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                    </tbody>
-                  </table>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Route Stops Table */}
+                  <div className="border border-[#E5E7EB] rounded-lg overflow-hidden">
+                    <table className="w-full">
+                      <thead className="bg-[#F9FAFB] border-b border-[#E5E7EB]">
+                        <tr>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                            Order
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                            Location
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                            Time
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-[#E5E7EB]">
+                        {routeStops
+                          .sort((a, b) => a.stopOrder - b.stopOrder)
+                          .map((stop) => {
+                            return (
+                              <tr key={stop.routeStopId} className="hover:bg-[#F9FAFB]">
+                                <td className="px-4 py-3 text-sm font-mono text-[#6B7280]">
+                                  {stop.stopOrder}
+                                </td>
+                                <td className="px-4 py-3">
+                                  <div className="text-sm font-medium text-[#374151]">
+                                    {stop.location?.name || `Location #${stop.location?.id || 'N/A'}`}
+                                  </div>
+                                  <div className="text-xs text-[#9CA3AF] truncate">
+                                    {stop.location?.address || 'No address'}
+                                  </div>
+                                </td>
+                                <td className="px-4 py-3 text-sm text-[#6B7280]">
+                                  <div className="flex items-center gap-1">
+                                    <Clock size={14} className="text-[#9CA3AF]" />
+                                    {stop.estimatedTime} min
+                                  </div>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Route Map */}
+                  <div className="border border-[#E5E7EB] rounded-lg overflow-hidden">
+                    <RouteMapViewer
+                      mode="view"
+                      routeStops={routeStops.map(stop => ({
+                        locationId: stop.location?.id || null,
+                        locationName: stop.location?.name || '',
+                        address: stop.location?.address || '',
+                        latitude: stop.location?.latitude || 0,
+                        longitude: stop.location?.longitude || 0,
+                        stopOrder: stop.stopOrder,
+                        estimatedTime: stop.estimatedTime,
+                      }))}
+                      height="450px"
+                      enableSearch={false}
+                      enableCreate={false}
+                    />
+                  </div>
                 </div>
               )}
             </div>
