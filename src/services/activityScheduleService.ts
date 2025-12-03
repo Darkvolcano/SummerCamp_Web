@@ -18,6 +18,13 @@ export interface LocationInfo {
   name: string;
 }
 
+export interface LiveStreamInfo {
+  livestreamId: number;
+  roomId: string;
+  title: string;
+  hostId: number;
+}
+
 export interface ActivitySchedule {
   activityScheduleId: number;
   activity: ActivityInfo | null;
@@ -26,11 +33,11 @@ export interface ActivitySchedule {
   endTime: string;
   status: string;
   isLivestream: boolean;
-  roomId?: number | null;
+  liveStream: LiveStreamInfo | null;
   maxCapacity: number | null;
   isOptional: boolean;
   location: LocationInfo | null;
-  currentCapacity: number | null;
+  currentCapacity?: number | null;
 }
 
 export interface ActivityScheduleCreateDto {
@@ -40,15 +47,7 @@ export interface ActivityScheduleCreateDto {
   startTime: string;
   endTime: string;
   isOptional?: boolean | null;
-}
-
-export interface CoreActivityScheduleUpdateDto {
-  activityId: number;
-  staffId?: number | null;
-  locationId?: number | null;
-  startTime: string;
-  endTime: string;
-  isOptional?: boolean | null;
+  isLiveStream?: boolean | null;
 }
 
 export interface OptionalScheduleCreateDto {
@@ -56,6 +55,7 @@ export interface OptionalScheduleCreateDto {
   staffId?: number | null;
   maxCapacity?: number | null;
   locationId?: number | null;
+  isLiveStream?: boolean | null;
 }
 
 export interface ActivityScheduleResponseDto {
@@ -66,11 +66,11 @@ export interface ActivityScheduleResponseDto {
   endTime: string;
   status: string;
   isLivestream: boolean;
-  roomId?: number | null;
+  liveStream: LiveStreamInfo | null;
   maxCapacity: number | null;
   isOptional: boolean;
   location: LocationInfo | null;
-  currentCapacity: number | null;
+  currentCapacity?: number | null;
 }
 
 const activityScheduleService = {
@@ -142,6 +142,7 @@ const activityScheduleService = {
       startTime: schedule.startTime,
       endTime: schedule.endTime,
       isOptional: schedule.isOptional ?? null,
+      isLiveStream: schedule.isLiveStream ?? null,
     };
 
     const response = await axiosInstance.post("/ActivitySchedule/core", requestPayload);
@@ -156,6 +157,7 @@ const activityScheduleService = {
       staffId: schedule.staffId ?? null,
       maxCapacity: schedule.maxCapacity ?? null,
       locationId: schedule.locationId ?? null,
+      isLiveStream: schedule.isLiveStream ?? null,
     };
 
     const response = await axiosInstance.post(`/ActivitySchedule/optional/${coreScheduleId}`, requestPayload);
@@ -163,7 +165,7 @@ const activityScheduleService = {
   },
 
   // Update core activity schedule
-  updateCoreActivitySchedule: async (id: number, schedule: CoreActivityScheduleUpdateDto): Promise<ActivityScheduleResponseDto> => {
+  updateCoreActivitySchedule: async (id: number, schedule: ActivityScheduleCreateDto): Promise<ActivityScheduleResponseDto> => {
     console.log(`[activityScheduleService] PUT /ActivitySchedule/core/${id}`);
     const requestPayload = {
       activityId: schedule.activityId,
@@ -172,6 +174,7 @@ const activityScheduleService = {
       startTime: schedule.startTime,
       endTime: schedule.endTime,
       isOptional: schedule.isOptional ?? null,
+      isLiveStream: schedule.isLiveStream ?? null,
     };
 
     const response = await axiosInstance.put(`/ActivitySchedule/core/${id}`, requestPayload);
@@ -186,10 +189,12 @@ const activityScheduleService = {
     });
   },
 
-  // Delete activity schedule
-  deleteActivitySchedule: async (id: number): Promise<void> => {
-    console.log(`[activityScheduleService] DELETE /ActivitySchedule/${id}`);
-    await axiosInstance.delete(`/ActivitySchedule/${id}`);
+  // Update live stream status
+  updateLiveStreamStatus: async (activityScheduleId: number, isLiveStream: boolean): Promise<void> => {
+    console.log(`[activityScheduleService] PUT /ActivitySchedule/${activityScheduleId}/liveStreamStatus`);
+    await axiosInstance.put(`/ActivitySchedule/${activityScheduleId}/liveStreamStatus`, null, {
+      params: { isLiveStream: isLiveStream },
+    });
   },
 };
 

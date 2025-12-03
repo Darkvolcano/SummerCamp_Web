@@ -6,33 +6,94 @@ export interface StaffInfo {
   role: "Staff" | "Manager";
 }
 
+export interface StaffCampResponseDto {
+  campId: number;
+  name: string;
+  description: string | null;
+  place: string | null;
+  address: string | null;
+  minParticipants: number;
+  maxParticipants: number;
+  minAge: number;
+  maxAge: number;
+  startDate: string;
+  endDate: string;
+  price: number;
+  status: string;
+  image: string | null;
+  createBy: number;
+  registrationStartDate: string;
+  registrationEndDate: string;
+  campType: any | null;
+  location: any | null;
+  promotion: any | null;
+}
+
+export interface ActivityScheduleInfo {
+  activityScheduleId: number;
+  name: string;
+  startTime: string;
+  endTime: string;
+  location: string | null;
+}
+
+export interface CampActivitiesResponseDto {
+  campId: number;
+  campName: string;
+  activities: ActivityScheduleInfo[];
+}
+
+export interface CampGroupResponseDto {
+  campId: number;
+  campName: string;
+  groupId: number;
+  groupName: string;
+  minAge: number;
+  maxAge: number;
+}
+
+export interface SupervisorInfo {
+  userId: number;
+  fullName: string;
+}
+
+export interface CampAccommodationResponseDto {
+  accommodationId: number;
+  campId: number;
+  accommodationTypeId: number;
+  name: string;
+  capacity: number;
+  isActive: boolean;
+  supervisor: SupervisorInfo | null;
+}
+
 const staffService = {
   // Get camps for staff
-  getStaffCamps: async (): Promise<any[]> => {
+  getStaffCamps: async (): Promise<StaffCampResponseDto[]> => {
     console.log("[staffService] GET /Staff/my-camps");
     const response = await axiosInstance.get("/Staff/my-camps");
-    return response.data;
+    return response.data as StaffCampResponseDto[];
   },
 
   // Get activities for staff in a camp
-  getCampActivities: async (campId: number): Promise<any[]> => {
+  getCampActivities: async (campId: number): Promise<CampActivitiesResponseDto> => {
     console.log(`[staffService] GET /Staff/camps/${campId}/activities`);
     const response = await axiosInstance.get(`/Staff/camps/${campId}/activities`);
-    return response.data;
+    return response.data as CampActivitiesResponseDto;
   },
 
   // Get groups for staff in a camp
-  getCampGroups: async (campId: number): Promise<any[]> => {
+  getCampGroups: async (campId: number): Promise<CampGroupResponseDto> => {
     console.log(`[staffService] GET /Staff/camps/${campId}/group`);
     const response = await axiosInstance.get(`/Staff/camps/${campId}/group`);
-    return response.data;
+    return response.data as CampGroupResponseDto;
   },
 
   // Get accommodations for staff in a camp
-  getCampAccommodations: async (campId: number): Promise<any[]> => {
+  getCampAccommodations: async (campId: number): Promise<CampAccommodationResponseDto> => {
     console.log(`[staffService] GET /Staff/camps/${campId}/accomodation`);
     const response = await axiosInstance.get(`/Staff/camps/${campId}/accomodation`);
-    return response.data;
+    return response.data as CampAccommodationResponseDto;
   },
 
   // Get available staff for activity assignment
