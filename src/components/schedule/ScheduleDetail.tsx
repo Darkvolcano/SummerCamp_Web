@@ -139,9 +139,9 @@ const ScheduleDetail: React.FC<ScheduleDetailProps> = ({
           <span className="font-medium">{schedule.location?.name || "N/A"}</span>
         </Descriptions.Item>
 
-        {schedule.roomId && (
+        {schedule.liveStream?.roomId && (
           <Descriptions.Item label="Room ID">
-            <span className="font-mono">#{schedule.roomId}</span>
+            <span className="font-mono">#{schedule.liveStream.roomId}</span>
           </Descriptions.Item>
         )}
 

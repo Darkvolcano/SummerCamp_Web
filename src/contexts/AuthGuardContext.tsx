@@ -166,6 +166,7 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
           PagePath.STAFF_BLOGS,
           PagePath.STAFF_ATTENDANCE_CHECKING,
           PagePath.STAFF_ATTENDANCE_CAMPERS,
+          PagePath.STAFF_CALENDAR,
           "/staff/profile",
           "/staff/chat",
           "/profile",
