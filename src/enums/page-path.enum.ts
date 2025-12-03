@@ -33,6 +33,7 @@ export enum PagePath {
   USER_CAMPER_DETAIL = "/user/my-campers/:camperId",
   USER_CAMPER_EDIT = "/user/my-campers/edit/:camperId",
   REGISTRATION_FORM = "/register-camp/:campId",
+  USER_LIVESTREAM_VIEW = "/parent/livestream/view/:roomId",
 
 
 
@@ -61,6 +62,7 @@ export enum PagePath {
   STAFF_CALENDAR = "/staff/calendar",
   STAFF_PHOTOS = "/staff/photos",
   STAFF_CHECKIN = "/staff/check-in",
+  STAFF_LIVESTREAM_HOST = "/staff/livestream/host/:roomId",
 
   //Manager Routes
   MANAGER_DASHBOARD = "/manager/dashboard",

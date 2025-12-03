@@ -47,6 +47,8 @@ import MyTransaction from "./pages/Parent/MyTransaction/MyTransaction";
 import AttendanceChecking from "./pages/Staff/AttendanceChecking/AttendanceChecking";
 import AttendanceCamperList from "./pages/Staff/AttendanceChecking/AttendanceCamperList";
 import MyCalendar from "./pages/Staff/MyCalendar/MyCalendar";
+import HostLiveStream from "./pages/Staff/LiveStream/HostLiveStream";
+import ViewLiveStream from "./pages/Parent/LiveStream/ViewLiveStream";
 function App() {
   return (
     <Router>
@@ -126,9 +128,10 @@ function App() {
             {/* Staff Routes - Protected */}
             <Route element={<StaffLayout />}>
               <Route path={PagePath.STAFF_SCHEDULE} element={<StaffSchedule />} />
-              <Route path={PagePath.STAFF_CALENDAR} element={<MyCalendar />} />
-              <Route path={PagePath.STAFF_ATTENDANCE_CHECKING} element={<AttendanceChecking />} />
-              <Route path={PagePath.STAFF_ATTENDANCE_CAMPERS} element={<AttendanceCamperList />} />
+            <Route path={PagePath.STAFF_CALENDAR} element={<MyCalendar />} />
+            <Route path={PagePath.STAFF_ATTENDANCE_CHECKING} element={<AttendanceChecking />} />
+            <Route path={PagePath.STAFF_ATTENDANCE_CAMPERS} element={<AttendanceCamperList />} />
+            <Route path={PagePath.STAFF_LIVESTREAM_HOST} element={<HostLiveStream />} />
             </Route>
             <Route path={PagePath.STAFF_CAMPS} element={<MyCamps />} />
             <Route path={PagePath.STAFF_BLOGS} element={<MyBlogs />} />
@@ -255,6 +258,14 @@ function App() {
               element={
                 <MainLayout>
                   <MyTransaction />
+                </MainLayout>
+              }
+            />
+            <Route
+              path={PagePath.USER_LIVESTREAM_VIEW}
+              element={
+                <MainLayout>
+                  <ViewLiveStream />
                 </MainLayout>
               }
             />
