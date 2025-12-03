@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Spin, Tabs, Empty, Button, Modal, Form, Input, Select, DatePicker, Upload } from "antd";
+import { Spin, Tabs, Empty, Button, Modal, Form, Input, Select, DatePicker, Upload, Checkbox } from "antd";
 import { ArrowLeftOutlined, EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { useNavigate, useParams } from "react-router-dom";
 import dayjs from "dayjs";
@@ -36,6 +36,11 @@ const CamperDetail: React.FC = () => {
   const [guardianForm] = Form.useForm();
   const [guardianLoading, setGuardianLoading] = useState(false);
   const [deleteGuardianId, setDeleteGuardianId] = useState<number | null>(null);
+
+  // Avatar modal states
+  const [isAvatarModalVisible, setIsAvatarModalVisible] = useState(false);
+  const [avatarForm] = Form.useForm();
+  const [avatarLoading, setAvatarLoading] = useState(false);
 
   // Camp dropdown states
   const [camps, setCamps] = useState<RegistrationCamperResponseDto[]>([]);
@@ -173,11 +178,11 @@ const CamperDetail: React.FC = () => {
       }
 
       const healthRecord: HealthRecordCreateDto | undefined =
-        values.condition || values.allergies || values.isAllergy || values.note
+        values.condition || values.allergies || values.isAllergy !== undefined || values.note
           ? {
               condition: values.condition || undefined,
               allergies: values.allergies || undefined,
-              isAllergy: values.isAllergy || undefined,
+              isAllergy: values.isAllergy !== undefined ? values.isAllergy : undefined,
               note: values.note || undefined,
             }
           : undefined;
@@ -191,14 +196,6 @@ const CamperDetail: React.FC = () => {
 
       const updatedCamper = await camperService.updateCamper(camper.camperId, updateData);
 
-      // Upload avatar separately if provided
-      if (values.avatarFile) {
-        await camperService.uploadCamperAvatar(
-          camper.camperId,
-          values.avatarFile as File
-        );
-      }
-
       setCamper(updatedCamper);
       setIsEditing(false);
       toastSuccess("Thành công", "Cập nhật thông tin trại viên thành công");
@@ -210,6 +207,37 @@ const CamperDetail: React.FC = () => {
   };
 
   // Handle avatar upload
+  const handleAvatarUpload = async () => {
+    try {
+      const values = await avatarForm.validateFields();
+      
+      if (!camper || !values.avatarFile) return;
+
+      setAvatarLoading(true);
+
+      await camperService.uploadCamperAvatar(
+        camper.camperId,
+        values.avatarFile as File
+      );
+
+      // Refetch camper data to get updated avatar
+      const updatedCamper = await camperService.getCamperById(camper.camperId);
+      setCamper(updatedCamper);
+      setCamperAvatarPreview(updatedCamper.avatar || null);
+      
+      setIsAvatarModalVisible(false);
+      avatarForm.resetFields();
+      toastSuccess("Thành công", "Cập nhật ảnh đại diện thành công");
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message || "Không thể cập nhật ảnh đại diện";
+      toastError("Lỗi", errorMessage);
+    } finally {
+      setAvatarLoading(false);
+    }
+  };
+
+  // Handle avatar change in modal
   const handleAvatarChange = (info: any) => {
     const file = info.file;
     const reader = new FileReader();
@@ -217,7 +245,7 @@ const CamperDetail: React.FC = () => {
       setCamperAvatarPreview(e.target?.result as string);
     };
     reader.readAsDataURL(file);
-    editForm.setFieldValue("avatarFile", file);
+    avatarForm.setFieldValue("avatarFile", file);
   };
 
   // Handle add guardian
@@ -340,45 +368,6 @@ const CamperDetail: React.FC = () => {
         <div className="space-y-6">
           {isEditing ? (
             <Form form={editForm} layout="vertical" className="space-y-4">
-              {/* Avatar */}
-              <Form.Item label="Ảnh đại diện" name="avatarFile">
-                <div className="space-y-4">
-                  {camperAvatarPreview ? (
-                    <div className="flex flex-col items-center gap-4">
-                      <img
-                        src={camperAvatarPreview}
-                        alt="Preview"
-                        className="w-32 h-32 rounded-lg object-cover border border-gray-200"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setCamperAvatarPreview(null);
-                          editForm.setFieldValue("avatarFile", undefined);
-                        }}
-                        className="text-sm text-red-500 hover:text-red-700"
-                      >
-                        Xóa ảnh
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                      <div className="text-4xl mb-2">📷</div>
-                      <p className="text-gray-600 mb-2">Chưa có ảnh</p>
-                    </div>
-                  )}
-                  <Upload
-                    name="avatarFile"
-                    accept="image/*"
-                    beforeUpload={() => false}
-                    onChange={handleAvatarChange}
-                    maxCount={1}
-                  >
-                    <Button block>Chọn ảnh</Button>
-                  </Upload>
-                </div>
-              </Form.Item>
-
               {/* Basic Info */}
               <Form.Item
                 label="Tên trại viên"
@@ -423,7 +412,7 @@ const CamperDetail: React.FC = () => {
                 </Form.Item>
 
                 <Form.Item name="isAllergy" valuePropName="checked">
-                  <input type="checkbox" /> Trại viên có dị ứng
+                  <Checkbox>Trại viên có dị ứng</Checkbox>
                 </Form.Item>
 
                 <Form.Item label="Ghi chú thêm" name="note">
@@ -443,46 +432,63 @@ const CamperDetail: React.FC = () => {
             </Form>
           ) : (
             <>
-              {/* Basic Info */}
+              {/* Basic Info with Avatar */}
               <div className="bg-white rounded-lg p-6 border border-gray-200">
                 <h3 className="text-xl font-bold text-gray-900 mb-6">Thông tin cơ bản</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <p className="text-sm text-gray-600 font-medium mb-2">Tên trại viên</p>
-                    <p className="text-lg font-semibold text-gray-900">{camper.camperName}</p>
+                <div className="flex flex-col md:flex-row gap-8">
+                  {/* Avatar Section */}
+                  <div className="flex flex-col items-center gap-3 md:w-40">
+                    <div className="w-40 h-40 rounded-lg overflow-hidden border-2 border-gray-200 bg-gray-50 flex items-center justify-center">
+                      {camper.avatar ? (
+                        <img
+                          src={camper.avatar}
+                          alt={camper.camperName}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="text-center">
+                          <div className="text-5xl mb-2">👤</div>
+                          <p className="text-xs text-gray-500">Chưa có ảnh</p>
+                        </div>
+                      )}
+                    </div>
+                    <Button
+                      type="default"
+                      onClick={() => {
+                        setCamperAvatarPreview(camper.avatar || null);
+                        setIsAvatarModalVisible(true);
+                      }}
+                      className="w-full"
+                    >
+                      Thay đổi ảnh
+                    </Button>
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-600 font-medium mb-2">Giới tính</p>
-                    <p className="text-lg font-semibold text-gray-900">{getGenderDisplay(camper.gender)}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600 font-medium mb-2">Ngày sinh</p>
-                    <p className="text-lg font-semibold text-gray-900">
-                      {dayjs(camper.dob).format("DD/MM/YYYY")}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600 font-medium mb-2">Tuổi</p>
-                    <p className="text-lg font-semibold text-gray-900">
-                      {calculateAge(camper.dob)} tuổi
-                    </p>
+
+                  {/* Info Grid */}
+                  <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 md:pl-4">
+                    <div>
+                      <p className="text-sm text-gray-600 font-medium mb-2">Tên trại viên</p>
+                      <p className="text-lg font-semibold text-gray-900">{camper.camperName}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600 font-medium mb-2">Giới tính</p>
+                      <p className="text-lg font-semibold text-gray-900">{getGenderDisplay(camper.gender)}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600 font-medium mb-2">Ngày sinh</p>
+                      <p className="text-lg font-semibold text-gray-900">
+                        {dayjs(camper.dob).format("DD/MM/YYYY")}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600 font-medium mb-2">Tuổi</p>
+                      <p className="text-lg font-semibold text-gray-900">
+                        {calculateAge(camper.dob)} tuổi
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
-
-              {/* Avatar */}
-              {camper.avatar && (
-                <div className="bg-white rounded-lg p-6 border border-gray-200">
-                  <h3 className="text-xl font-bold text-gray-900 mb-4">Ảnh đại diện</h3>
-                  <div className="flex justify-center">
-                    <img
-                      src={camper.avatar}
-                      alt={camper.camperName}
-                      className="w-48 h-48 rounded-lg object-cover"
-                    />
-                  </div>
-                </div>
-              )}
 
               {/* Health Record */}
               {camper.healthRecord && (
@@ -802,6 +808,65 @@ const CamperDetail: React.FC = () => {
 
           <Form.Item label="Số điện thoại" name="phoneNumber">
             <Input placeholder="Nhập số điện thoại" />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* Avatar Upload Modal */}
+      <Modal
+        title="Thay đổi ảnh đại diện"
+        open={isAvatarModalVisible}
+        onOk={handleAvatarUpload}
+        onCancel={() => {
+          setIsAvatarModalVisible(false);
+          avatarForm.resetFields();
+          setCamperAvatarPreview(camper?.avatar || null);
+        }}
+        okText="Lưu"
+        cancelText="Hủy"
+        confirmLoading={avatarLoading}
+        width={500}
+      >
+        <Form form={avatarForm} layout="vertical">
+          <Form.Item label="Ảnh đại diện" name="avatarFile">
+            <div className="space-y-4">
+              {camperAvatarPreview ? (
+                <div className="flex flex-col items-center gap-4">
+                  <img
+                    src={camperAvatarPreview}
+                    alt="Preview"
+                    className="w-48 h-48 rounded-lg object-cover border-2 border-gray-200"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCamperAvatarPreview(null);
+                      avatarForm.setFieldValue("avatarFile", undefined);
+                    }}
+                    className="text-sm text-red-500 hover:text-red-700 font-medium"
+                  >
+                    Xóa ảnh
+                  </button>
+                </div>
+              ) : (
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                  <div className="text-5xl mb-2">📷</div>
+                  <p className="text-gray-600 mb-2">Chưa có ảnh</p>
+                </div>
+              )}
+              <Upload
+                name="avatarFile"
+                accept="image/*"
+                beforeUpload={() => false}
+                onChange={handleAvatarChange}
+                maxCount={1}
+                showUploadList={false}
+              >
+                <Button block type="primary" className="bg-[#FF8F50] border-[#FF8F50]">
+                  Chọn ảnh mới
+                </Button>
+              </Upload>
+            </div>
           </Form.Item>
         </Form>
       </Modal>
