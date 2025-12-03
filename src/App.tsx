@@ -49,6 +49,7 @@ import AttendanceCamperList from "./pages/Staff/AttendanceChecking/AttendanceCam
 import MyCalendar from "./pages/Staff/MyCalendar/MyCalendar";
 import HostLiveStream from "./pages/Staff/LiveStream/HostLiveStream";
 import ViewLiveStream from "./pages/Parent/LiveStream/ViewLiveStream";
+import CampTransaction from "./pages/Manager/Transaction/campTransaction";
 function App() {
   return (
     <Router>
@@ -176,7 +177,7 @@ function App() {
               />
               <Route
                 path={PagePath.MANAGER_PAYMENTS}
-                element={<div>Manager Payments</div>}
+                element={<CampTransaction />}
               />
               <Route
                 path={PagePath.MANAGER_CALENDAR}
