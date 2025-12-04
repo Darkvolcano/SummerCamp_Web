@@ -127,12 +127,11 @@ const ActivityScheduleManagement: React.FC = () => {
         const updatedData: any = {
           activityId,
           staffId: scheduleData.staffId,
+          locationId: scheduleData.locationId,
           startTime: scheduleData.startTime,
           endTime: scheduleData.endTime,
-          isLivestream: scheduleData.isLivestream,
-          roomId: scheduleData.roomId,
-          maxCapacity: scheduleData.maxCapacity,
-          locationId: scheduleData.locationId,
+          isOptional: scheduleData.isOptional,
+          isLiveStream: scheduleData.isLiveStream,
         };
 
         await activityScheduleService.updateCoreActivitySchedule(
@@ -152,12 +151,11 @@ const ActivityScheduleManagement: React.FC = () => {
         const newScheduleData: any = {
           activityId,
           staffId: scheduleData.staffId,
+          locationId: scheduleData.locationId,
           startTime: scheduleData.startTime,
           endTime: scheduleData.endTime,
-          isLivestream: scheduleData.isLivestream,
-          roomId: scheduleData.roomId,
-          maxCapacity: scheduleData.maxCapacity,
-          locationId: scheduleData.locationId,
+          isOptional: scheduleData.isOptional,
+          isLiveStream: scheduleData.isLiveStream,
         };
 
         const newSchedule =

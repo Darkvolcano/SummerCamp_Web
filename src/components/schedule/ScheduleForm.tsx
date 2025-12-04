@@ -56,8 +56,8 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
         staffId: schedule.staff?.userId,
         startTime: dayjs(schedule.startTime),
         endTime: dayjs(schedule.endTime),
-        isLivestream: schedule.isLivestream,
-        roomId: schedule.roomId,
+        isOptional: schedule.isOptional,
+        isLiveStream: schedule.isLivestream, // API returns isLivestream (lowercase s), form uses isLiveStream (uppercase S)
         maxCapacity: schedule.maxCapacity,
         locationId: schedule.location?.id,
       });
@@ -144,6 +144,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
           staffId: values.staffId ? parseInt(values.staffId, 10) : null,
           maxCapacity: values.maxCapacity ? parseInt(values.maxCapacity, 10) : null,
           locationId: values.locationId ? parseInt(values.locationId, 10) : null,
+          isLiveStream: !!values.isLiveStream,
         };
 
         await activityScheduleService.createOptionalActivitySchedule(parseInt(coreScheduleId, 10), optionalData);
@@ -158,6 +159,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
           startTime: values.startTime.toISOString(),
           endTime: values.endTime.toISOString(),
           isOptional: !!values.isOptional,
+          isLiveStream: !!values.isLiveStream,
         };
 
         onSave(scheduleData);
@@ -393,6 +395,10 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
                 <Form.Item label="Is Optional" name="isOptional" valuePropName="checked">
                   <Checkbox>This activity has optional slots</Checkbox>
                 </Form.Item>
+
+                <Form.Item label="Live Stream" name="isLiveStream" valuePropName="checked">
+                  <Checkbox>Enable live streaming for this activity</Checkbox>
+                </Form.Item>
               </>
             )}
 
@@ -515,20 +521,53 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
                 >
                   <InputNumber placeholder="Enter max capacity (optional)" min={1} style={{ width: "100%" }} />
                 </Form.Item>
+
+                <Form.Item label="Live Stream" name="isLiveStream" valuePropName="checked">
+                  <Checkbox>Enable live streaming for this optional activity</Checkbox>
+                </Form.Item>
               </>
             )}
           </Form>
         </Spin>
       </div>
 
-      <div className="schedule-form-footer">
-        <Button onClick={onClose}>Cancel</Button>
+      <div className="schedule-form-footer" style={{ 
+        display: 'flex', 
+        gap: '12px', 
+        justifyContent: 'flex-end',
+        padding: '16px 24px',
+        borderTop: '1px solid #E5E7EB',
+        backgroundColor: '#F9FAFB'
+      }}>
+        <Button 
+          onClick={onClose}
+          size="large"
+          style={{
+            borderRadius: '8px',
+            fontWeight: 500,
+            height: '40px',
+            paddingLeft: '20px',
+            paddingRight: '20px'
+          }}
+        >
+          Cancel
+        </Button>
         <Button
           type="primary"
           loading={loading}
           onClick={() => form.submit()}
+          size="large"
+          style={{
+            borderRadius: '8px',
+            fontWeight: 500,
+            height: '40px',
+            paddingLeft: '24px',
+            paddingRight: '24px',
+            backgroundColor: '#6366F1',
+            borderColor: '#6366F1'
+          }}
         >
-          {schedule ? "Update" : "Create"}
+          {schedule ? "Update Schedule" : "Create Schedule"}
         </Button>
       </div>
 
