@@ -31,9 +31,12 @@ export interface StaffCampResponseDto {
 
 export interface ActivityScheduleInfo {
   activityScheduleId: number;
-  name: string;
+  activityName: string;
+  activityType: string;
   startTime: string;
   endTime: string;
+  status: string;
+  isLivestream: boolean;
   location: string | null;
 }
 
@@ -50,6 +53,43 @@ export interface CampGroupResponseDto {
   groupName: string;
   minAge: number;
   maxAge: number;
+}
+
+export interface ActivityInfo {
+  name: string;
+  activityType: string;
+}
+
+export interface StaffBasicInfo {
+  userId: number;
+  fullName: string;
+}
+
+export interface LiveStreamInfo {
+  livestreamId: number;
+  roomId: string;
+  title: string;
+  hostId: number;
+}
+
+export interface LocationInfo {
+  id: number;
+  name: string;
+}
+
+export interface GroupStaffActivityResponseDto {
+  activityScheduleId: number;
+  coreActivityId: number | null;
+  activity: ActivityInfo;
+  staff: StaffBasicInfo | null;
+  startTime: string;
+  endTime: string;
+  status: string;
+  isLivestream: boolean;
+  liveStream: LiveStreamInfo | null;
+  maxCapacity: number | null;
+  isOptional: boolean;
+  location: LocationInfo | null;
 }
 
 export interface SupervisorInfo {
@@ -80,6 +120,13 @@ const staffService = {
     console.log(`[staffService] GET /Staff/camps/${campId}/activities`);
     const response = await axiosInstance.get(`/Staff/camps/${campId}/activities`);
     return response.data as CampActivitiesResponseDto;
+  },
+
+  // Get group staff activities with full details
+  getGroupStaffActivities: async (campId: number): Promise<GroupStaffActivityResponseDto[]> => {
+    console.log(`[staffService] GET /Staff/camps/${campId}/group-staff-activities`);
+    const response = await axiosInstance.get(`/Staff/camps/${campId}/group-staff-activities`);
+    return response.data as GroupStaffActivityResponseDto[];
   },
 
   // Get groups for staff in a camp
