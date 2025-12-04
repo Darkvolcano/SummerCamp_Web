@@ -16,8 +16,16 @@ export interface VehicleNameDto {
   vehicleName: string | null;
 }
 
+export interface CampNameDto {
+  campId: number;
+  name: string | null;
+  startDate: string;
+  endDate: string;
+}
+
 // Request DTOs
 export interface TransportScheduleRequestDto {
+  campId: number;
   routeId: number;
   driverId: number;
   vehicleId: number;
@@ -35,6 +43,7 @@ export interface TransportScheduleStatusUpdateDto {
 // Response DTO
 export interface TransportScheduleResponseDto {
   transportScheduleId: number;
+  campName: CampNameDto;
   routeName: RouteNameDto;
   driverFullName: DriverNameDto;
   vehicleName: VehicleNameDto;
@@ -50,6 +59,7 @@ export interface TransportScheduleResponseDto {
 
 // Search params interface
 export interface TransportScheduleSearchParams {
+  campId?: number;
   vehicleId?: number;
   driverId?: number;
   routeId?: number;
