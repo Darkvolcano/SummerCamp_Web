@@ -46,7 +46,7 @@ export default function Navbar() {
       case "admin":
         return { path: PagePath.ADMIN_DASHBOARD, label: "Quản trị" };
       case "staff":
-        return { path: PagePath.STAFF_SCHEDULE, label: "Nhân viên" };
+        return { path: PagePath.STAFF_CALENDAR, label: "Nhân viên" };
       case "manager":
         return { path: PagePath.MANAGER_DASHBOARD, label: "Quản lý" };
       case "driver":
