@@ -93,7 +93,7 @@ const Login = () => {
             if (userRole === "admin") {
               navigate(PagePath.ADMIN_DASHBOARD);
             } else if (userRole === "staff") {
-              navigate(PagePath.STAFF_SCHEDULE);
+              navigate(PagePath.STAFF_CALENDAR);
             }else if (userRole === "manager") {
               navigate(PagePath.MANAGER_DASHBOARD);
             }else if (userRole === "driver") {

@@ -10,7 +10,7 @@ import RouteMapViewer, { type RouteStopItem } from '../../../components/common/R
 
 const { Option } = Select;
 
-const ROUTE_TYPES = ['Shuttle'];
+const ROUTE_TYPES = ['PickUp', 'DropOff'];
 
 const RouteTab: React.FC = () => {
   const { selectedCampId } = useManagerContext();
