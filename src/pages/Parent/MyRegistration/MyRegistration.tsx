@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { Spin, Empty, Collapse, Modal, Form, Input } from "antd";
-import { CreditCardOutlined, SearchOutlined, CaretRightOutlined, EyeOutlined } from "@ant-design/icons";
+import { SearchOutlined, CaretRightOutlined, EyeOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 import { Button } from "antd";
@@ -34,7 +34,6 @@ const MyRegistration: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
-  const [paymentLoading, setPaymentLoading] = useState(false);
   const [completeModalVisible, setCompleteModalVisible] = useState(false);
   const [selectedRegistration, setSelectedRegistration] = useState<RegistrationResponseDto | null>(null);
   const [cancelModalVisible, setCancelModalVisible] = useState(false);
@@ -104,29 +103,6 @@ const MyRegistration: React.FC = () => {
       }
     };
     fetchRegistrations();
-  };
-
-  // Handle payment
-  const handlePayment = async (registration: RegistrationResponseDto) => {
-    try {
-      setPaymentLoading(true);
-      const paymentData = await registrationService.generatePaymentLink(
-        registration.registrationId,
-        {
-          optionalChoices: registration.optionalChoices || null,
-        }
-      );
-
-      if (paymentData.paymentUrl) {
-        window.location.href = paymentData.paymentUrl;
-      }
-    } catch (error: any) {
-      const errorMessage =
-        error.response?.data?.message || "Không thể tạo liên kết thanh toán";
-      toastError("Lỗi", errorMessage);
-    } finally {
-      setPaymentLoading(false);
-    }
   };
 
   // Handle cancel registration
@@ -418,23 +394,12 @@ const MyRegistration: React.FC = () => {
                         Xem chi tiết
                       </button>
 
-                      {registration.status === "Approved" && (
+                      {(registration.status === "Approved" || registration.status === "PendingPayment") && (
                         <button
                           onClick={() => handleOpenCompleteModal(registration)}
                           className="flex items-center justify-center gap-1 bg-[#FF8F50] text-white font-medium py-1.5 px-4 rounded-full text-sm hover:bg-[#ff7e3d] transition-colors"
                         >
                           Hoàn tất & Thanh toán
-                        </button>
-                      )}
-
-                      {registration.status === "PendingPayment" && (
-                        <button
-                          onClick={() => handlePayment(registration)}
-                          disabled={paymentLoading}
-                          className="flex items-center justify-center gap-1 bg-[#FF8F50] text-white font-medium py-1.5 px-4 rounded-full text-sm hover:bg-[#ff7e3d] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          <CreditCardOutlined />
-                          Thanh toán ngay
                         </button>
                       )}
 
