@@ -1,191 +1,267 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { List, Button, Select, Card, Spin, Typography, Empty } from 'antd';
-import { VideoCameraOutlined, CalendarOutlined, EnvironmentOutlined } from '@ant-design/icons';
-import dayjs from 'dayjs';
-import staffService from '../../../services/staffService';
-import type { StaffCampResponseDto, ActivityScheduleInfo } from '../../../services/staffService';
-import { useNotification } from '../../../contexts/NotificationContext';
-
-const { Title, Text } = Typography;
+import React, { useEffect, useState } from "react";
+import { Spin } from "antd";
+import { useStaffContext } from "../../../hooks/useStaffContext";
+import { useNotification } from "../../../contexts/NotificationContext";
+import staffService from "../../../services/staffService";
+import activityScheduleService from "../../../services/activityScheduleService";
+import campService, { type CampResponseDto } from "../../../services/campService";
+import Calendar from "../../../components/calander/Calendar";
+import ScheduleDetail from "../../../components/schedule/ScheduleDetail";
+// import { useNavigate } from "react-router-dom";
+// For future live stream implementation
 
 const MyCalendar: React.FC = () => {
-  const [camps, setCamps] = useState<StaffCampResponseDto[]>([]);
-  const [selectedCampId, setSelectedCampId] = useState<number | null>(null);
-  const [activities, setActivities] = useState<ActivityScheduleInfo[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [activitiesLoading, setActivitiesLoading] = useState<boolean>(false);
-  const { toastError, toastInfo } = useNotification();
+  const { selectedCampId } = useStaffContext();
+  const { toastError } = useNotification();
+  // const navigate = useNavigate();
 
-  const fetchCamps = useCallback(async () => {
+  const [campData, setCampData] = useState<CampResponseDto | null>(null);
+  const [campActivities, setCampActivities] = useState<any[]>([]);
+  const [groupStaffActivities, setGroupStaffActivities] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const [showScheduleDetail, setShowScheduleDetail] = useState(false);
+  const [selectedSchedule, setSelectedSchedule] = useState<any | null>(null);
+
+  // Fetch camp data
+  useEffect(() => {
+    if (!selectedCampId) {
+      setCampData(null);
+      return;
+    }
+
+    const fetchCampData = async () => {
+      try {
+        setLoading(true);
+        const data = await campService.getCampById(selectedCampId);
+        setCampData(data);
+      } catch (error) {
+        console.error("Failed to load camp:", error);
+        toastError("Error", "Unable to load camp details");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCampData();
+  }, [selectedCampId, toastError]);
+
+  // Fetch activities and schedules
+  useEffect(() => {
+    if (!selectedCampId) {
+      setCampActivities([]);
+      setGroupStaffActivities([]);
+      return;
+    }
+
+    const fetchActivities = async () => {
+      try {
+        setLoading(true);
+
+        // Fetch both camp activities and group staff activities
+        const [campActivitiesData, groupActivitiesData] = await Promise.all([
+          staffService.getCampActivities(selectedCampId),
+          staffService.getGroupStaffActivities(selectedCampId),
+        ]);
+
+        console.log("[MyCalendar] Camp activities:", campActivitiesData);
+        console.log("[MyCalendar] Group staff activities:", groupActivitiesData);
+
+        setCampActivities(campActivitiesData.activities || []);
+        setGroupStaffActivities(groupActivitiesData || []);
+      } catch (error) {
+        console.error("Failed to load activities:", error);
+        toastError("Error", "Unable to load calendar activities");
+        setCampActivities([]);
+        setGroupStaffActivities([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchActivities();
+  }, [selectedCampId, toastError]);
+
+  // Handle view schedule detail
+  const handleViewSchedule = async (event: any) => {
+    console.log("[MyCalendar] View schedule clicked:", event);
+
+    const activityScheduleId = parseInt(event.id, 10);
+
     try {
       setLoading(true);
-      const data = await staffService.getStaffCamps();
-      setCamps(data);
-      if (data.length > 0) {
-        setSelectedCampId(data[0].campId);
-      }
+      
+      // Fetch full schedule data from API
+      const schedule = await activityScheduleService.getActivityScheduleById(activityScheduleId);
+      
+      console.log("[MyCalendar] Fetched full schedule:", schedule);
+      
+      setSelectedSchedule(schedule);
+      setShowScheduleDetail(true);
     } catch (error) {
-      console.error("Error fetching camps:", error);
-      toastError("Lỗi", "Không thể tải danh sách trại.");
+      console.error("Failed to load schedule details:", error);
+      toastError("Error", "Unable to load schedule details");
     } finally {
       setLoading(false);
     }
-  }, [toastError]);
+  };
 
-  const fetchActivities = useCallback(async (campId: number) => {
+  /* 
+  // COMMENTED - Live Stream Logic for future reference
+  const handleStartStream = async (activityScheduleId: number, activityName: string) => {
     try {
-      setActivitiesLoading(true);
-      const data = await staffService.getCampActivities(campId);
-      // The API returns an object with an 'activities' array
-      setActivities(data.activities || []);
-    } catch (error) {
-      console.error("Error fetching activities:", error);
-      toastError("Lỗi", "Không thể tải danh sách hoạt động.");
-    } finally {
-      setActivitiesLoading(false);
-    }
-  }, [toastError]);
-
-  useEffect(() => {
-    fetchCamps();
-  }, [fetchCamps]);
-
-  useEffect(() => {
-    if (selectedCampId) {
-      fetchActivities(selectedCampId);
-    } else {
-      setActivities([]);
-    }
-  }, [selectedCampId, fetchActivities]);
-
-  const handleStartStream = async (activity: ActivityScheduleInfo) => {
-    try {
-      setActivitiesLoading(true);
+      setLoading(true);
       
-      // 1. Check if already has livestream
-      const schedule = await activityScheduleService.getActivityScheduleById(
-        activity.activityScheduleId
-      );
+      const schedule = await activityScheduleService.getActivityScheduleById(activityScheduleId);
       
       let roomId: string;
       
       if (schedule.liveStream?.roomId) {
-        // Already has room, reuse it
         roomId = schedule.liveStream.roomId;
-        toastInfo("Thông báo", "Sử dụng phòng livestream đã có");
+        toastInfo("Info", "Using existing livestream room");
       } else {
-        // Create new VideoSDK room
         const videoSDKService = (await import("../../../services/videoSDKService")).default;
         roomId = await videoSDKService.createRoom();
         
-        // Save to backend
         const liveStreamService = (await import("../../../services/liveStreamService")).default;
         await liveStreamService.createLiveStream({
-          title: activity.name,
+          title: activityName,
           roomId: roomId,
-          // hostId will be set by backend from auth token
         });
         
-        toastInfo("Thành công", "Đã tạo phòng livestream mới");
+        toastInfo("Success", "Created new livestream room");
       }
       
-      // 2. Update isLivestream = true
-      await activityScheduleService.updateLiveStreamStatus(
-        activity.activityScheduleId,
-        true
-      );
+      // Update isLivestream status (optional, don't block on error)
+      try {
+        await activityScheduleService.updateLiveStreamStatus(activityScheduleId, true);
+      } catch (error) {
+        console.warn("Could not update livestream status (skipping):", error);
+      }
       
-      // 3. Navigate to host livestream page
+      // Navigate to host livestream page
       navigate(`/staff/livestream/host/${roomId}`, {
         state: {
-          activityScheduleId: activity.activityScheduleId,
-          activityName: activity.name,
+          activityScheduleId: activityScheduleId,
+          activityName: activityName,
         },
       });
       
     } catch (error) {
       console.error("Error starting stream:", error);
-      toastError("Lỗi", "Không thể bắt đầu livestream. Vui lòng thử lại.");
+      toastError("Error", "Unable to start livestream. Please try again.");
     } finally {
-      setActivitiesLoading(false);
+      setLoading(false);
     }
   };
+  */
 
-  return (
-    <div className="p-6 max-w-5xl mx-auto">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-        <Title level={2} className="!mb-0">Lịch hoạt động của tôi</Title>
-        
-        <div className="flex items-center gap-2">
-          <Text strong>Chọn trại:</Text>
-          <Select
-            style={{ width: 250 }}
-            placeholder="Chọn trại"
-            value={selectedCampId}
-            onChange={(value) => setSelectedCampId(value)}
-            loading={loading}
-            options={camps.map(camp => ({ label: camp.name, value: camp.campId }))}
-          />
+  // If no camp selected
+  if (!selectedCampId) {
+    return (
+      <div className="p-6 flex items-center justify-center min-h-[500px]">
+        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-indigo-200 p-12 rounded-2xl text-center shadow-lg max-w-md">
+          <h3 className="text-xl font-bold text-indigo-900 mb-2">
+            Select Camp
+          </h3>
+          <p className="text-indigo-700 text-base leading-relaxed">
+            Please select a camp from the left sidebar to view your calendar
+          </p>
         </div>
       </div>
+    );
+  }
 
-      {activitiesLoading ? (
-        <div className="flex justify-center py-20">
-          <Spin size="large" tip="Đang tải hoạt động..." />
-        </div>
-      ) : (
-        <List
-          grid={{ gutter: 16, column: 1 }}
-          dataSource={activities}
-          rowKey="activityScheduleId"
-          locale={{ emptyText: <Empty description="Không có hoạt động nào trong trại này" /> }}
-          renderItem={item => (
-            <List.Item>
-              <Card
-                className="shadow-sm hover:shadow-md transition-shadow"
-                actions={[
-                  <Button 
-                    type="primary" 
-                    icon={<VideoCameraOutlined />} 
-                    onClick={() => handleStartStream(item.activityScheduleId)}
-                    className="bg-red-500 hover:bg-red-600 border-red-500 hover:border-red-600"
-                  >
-                    Start Live Stream
-                  </Button>
-                ]}
-              >
-                <List.Item.Meta
-                  title={
-                    <div className="flex justify-between items-start">
-                      <Text strong style={{ fontSize: '1.1rem' }}>{item.name}</Text>
-                      {/* You could add status badge here if available */}
-                    </div>
-                  }
-                  description={
-                    <div className="space-y-2 mt-3">
-                      <div className="flex items-center text-gray-600">
-                        <CalendarOutlined className="mr-2 text-blue-500" />
-                        <span className="font-medium">
-                          {dayjs(item.startTime).format('DD/MM/YYYY')}
-                        </span>
-                        <span className="mx-2">|</span>
-                        <span>
-                          {dayjs(item.startTime).format('HH:mm')} - {dayjs(item.endTime).format('HH:mm')}
-                        </span>
-                      </div>
-                      
-                      {item.location && (
-                        <div className="flex items-center text-gray-600">
-                          <EnvironmentOutlined className="mr-2 text-green-500" />
-                          <span>{item.location}</span>
-                        </div>
-                      )}
-                    </div>
-                  }
-                />
-              </Card>
-            </List.Item>
-          )}
+  // Loading state
+  if (loading && campActivities.length === 0 && groupStaffActivities.length === 0) {
+    return (
+      <div className="flex justify-center items-center h-96">
+        <Spin size="large" />
+      </div>
+    );
+  }
+
+  // Combine both activity lists and convert to calendar format
+  const allActivities = [
+    ...campActivities.map((activity) => ({
+      id: activity.activityScheduleId.toString(),
+      title: activity.activityName || "Untitled",
+      start: new Date(activity.startTime),
+      end: new Date(activity.endTime),
+      type: activity.activityType as "Core" | "Optional" | "Resting" | "CheckIn" | "CheckOut",
+      description: `Status: ${activity.status}`,
+      location: activity.location || "No location",
+      participants: 0,
+      isOptional: activity.activityType === "Optional",
+    })),
+    ...groupStaffActivities.map((activity) => ({
+      id: activity.activityScheduleId.toString(),
+      title: activity.activity?.name || "Untitled",
+      start: new Date(activity.startTime),
+      end: new Date(activity.endTime),
+      type: activity.activity?.activityType as "Core" | "Optional" | "Resting" | "CheckIn" | "CheckOut",
+      description: `Status: ${activity.status}`,
+      location: activity.location?.name || "No location",
+      participants: activity.maxCapacity || 0,
+      isOptional: activity.isOptional || false,
+    })),
+  ];
+
+  // Remove duplicates by activityScheduleId
+  const uniqueActivities = allActivities.filter(
+    (activity, index, self) =>
+      index === self.findIndex((a) => a.id === activity.id)
+  );
+
+  return (
+    <div className="p-6">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-[#111827]">
+          My Calendar
+        </h1>
+        <p className="text-[#6B7280] text-sm mt-1">
+          View your assigned activity schedules on calendar
+        </p>
+      </div>
+
+      <div className="staff-calendar">
+        <Calendar
+          activities={uniqueActivities}
+          campInfo={
+            campData
+              ? {
+                  campId: campData.campId,
+                  name: campData.name,
+                  startDate: campData.startDate,
+                  endDate: campData.endDate,
+                }
+              : undefined
+          }
+          userRole="staff"
+          onSelectSchedule={handleViewSchedule}
+          // Staff cannot add or create schedules
+          onAddClick={undefined}
+          onSelectSlot={undefined}
+          onCreateOptional={undefined}
+        />
+      </div>
+
+      {/* Schedule Detail Modal */}
+      {showScheduleDetail && selectedSchedule && (
+        <ScheduleDetail
+          schedule={selectedSchedule}
+          userRole="staff"
+          onClose={() => {
+            setShowScheduleDetail(false);
+            setSelectedSchedule(null);
+          }}
+          // COMMENTED - Live stream logic for later reference
+          // onStartLiveStream={() => {
+          //   handleStartStream(
+          //     selectedSchedule.activityScheduleId,
+          //     selectedSchedule.activity?.name || selectedSchedule.activityName
+          //   );
+          // }}
         />
       )}
     </div>
