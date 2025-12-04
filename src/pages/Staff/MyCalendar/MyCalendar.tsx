@@ -12,7 +12,7 @@ import ScheduleDetail from "../../../components/schedule/ScheduleDetail";
 
 const MyCalendar: React.FC = () => {
   const { selectedCampId } = useStaffContext();
-  const { toastError } = useNotification();
+  const { toastError, toastSuccess } = useNotification();
   // const navigate = useNavigate();
 
   const [campData, setCampData] = useState<CampResponseDto | null>(null);
@@ -58,14 +58,10 @@ const MyCalendar: React.FC = () => {
       try {
         setLoading(true);
 
-        // Fetch both camp activities and group staff activities
         const [campActivitiesData, groupActivitiesData] = await Promise.all([
           staffService.getCampActivities(selectedCampId),
           staffService.getGroupStaffActivities(selectedCampId),
         ]);
-
-        console.log("[MyCalendar] Camp activities:", campActivitiesData);
-        console.log("[MyCalendar] Group staff activities:", groupActivitiesData);
 
         setCampActivities(campActivitiesData.activities || []);
         setGroupStaffActivities(groupActivitiesData || []);
@@ -82,20 +78,12 @@ const MyCalendar: React.FC = () => {
     fetchActivities();
   }, [selectedCampId, toastError]);
 
-  // Handle view schedule detail
   const handleViewSchedule = async (event: any) => {
-    console.log("[MyCalendar] View schedule clicked:", event);
-
     const activityScheduleId = parseInt(event.id, 10);
 
     try {
       setLoading(true);
-      
-      // Fetch full schedule data from API
       const schedule = await activityScheduleService.getActivityScheduleById(activityScheduleId);
-      
-      console.log("[MyCalendar] Fetched full schedule:", schedule);
-      
       setSelectedSchedule(schedule);
       setShowScheduleDetail(true);
     } catch (error) {
@@ -106,55 +94,44 @@ const MyCalendar: React.FC = () => {
     }
   };
 
-  /* 
-  // COMMENTED - Live Stream Logic for future reference
-  const handleStartStream = async (activityScheduleId: number, activityName: string) => {
+  const handleStartLiveStream = async () => {
+    if (!selectedSchedule) return;
+
     try {
       setLoading(true);
-      
-      const schedule = await activityScheduleService.getActivityScheduleById(activityScheduleId);
-      
       let roomId: string;
-      
-      if (schedule.liveStream?.roomId) {
-        roomId = schedule.liveStream.roomId;
-        toastInfo("Info", "Using existing livestream room");
+
+      if (selectedSchedule.liveStream?.roomId) {
+        roomId = selectedSchedule.liveStream.roomId;
+        toastSuccess("Info", "Using existing livestream room");
       } else {
         const videoSDKService = (await import("../../../services/videoSDKService")).default;
         roomId = await videoSDKService.createRoom();
-        
-        const liveStreamService = (await import("../../../services/liveStreamService")).default;
-        await liveStreamService.createLiveStream({
-          title: activityName,
-          roomId: roomId,
-        });
-        
-        toastInfo("Success", "Created new livestream room");
+
+        if (selectedSchedule.liveStream?.livestreamId) {
+          const liveStreamService = (await import("../../../services/liveStreamService")).default;
+          await liveStreamService.updateLiveStream(
+            selectedSchedule.liveStream.livestreamId,
+            {
+              title: selectedSchedule.liveStream.title,
+              roomId: roomId,
+              hostId: selectedSchedule.liveStream.hostId,
+            }
+          );
+          toastSuccess("Success", "Livestream room created and updated");
+        }
       }
-      
-      // Update isLivestream status (optional, don't block on error)
-      try {
-        await activityScheduleService.updateLiveStreamStatus(activityScheduleId, true);
-      } catch (error) {
-        console.warn("Could not update livestream status (skipping):", error);
-      }
-      
-      // Navigate to host livestream page
-      navigate(`/staff/livestream/host/${roomId}`, {
-        state: {
-          activityScheduleId: activityScheduleId,
-          activityName: activityName,
-        },
-      });
-      
+
+      setTimeout(() => {
+        window.location.href = `/staff/livestream/host/${roomId}`;
+      }, 1500);
     } catch (error) {
-      console.error("Error starting stream:", error);
+      console.error("[MyCalendar] Error starting livestream:", error);
       toastError("Error", "Unable to start livestream. Please try again.");
     } finally {
       setLoading(false);
     }
   };
-  */
 
   // If no camp selected
   if (!selectedCampId) {
@@ -255,13 +232,7 @@ const MyCalendar: React.FC = () => {
             setShowScheduleDetail(false);
             setSelectedSchedule(null);
           }}
-          // COMMENTED - Live stream logic for later reference
-          // onStartLiveStream={() => {
-          //   handleStartStream(
-          //     selectedSchedule.activityScheduleId,
-          //     selectedSchedule.activity?.name || selectedSchedule.activityName
-          //   );
-          // }}
+          onStartLiveStream={handleStartLiveStream}
         />
       )}
     </div>
