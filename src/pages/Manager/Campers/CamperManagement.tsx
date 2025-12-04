@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Spin, message } from 'antd';
 import { Search, Eye } from 'lucide-react';
 import { useManagerContext } from '../../../hooks/useManagerContext';
-import camperService, { type CamperResponseDto } from '../../../services/camperService';
+import camperService, { type CamperCampResponseDto } from '../../../services/camperService';
 
 const CamperManagement: React.FC = () => {
   const { selectedCampId } = useManagerContext();
-  const [campers, setCampers] = useState<CamperResponseDto[]>([]);
+  const [campers, setCampers] = useState<CamperCampResponseDto[]>([]);
   const [loading, setLoading] = useState(false);
 
   // Filters
@@ -39,7 +39,7 @@ const CamperManagement: React.FC = () => {
     fetchCampers();
   }, [selectedCampId]);
 
-  const calculateGenderCounts = (data: CamperResponseDto[]) => {
+  const calculateGenderCounts = (data: CamperCampResponseDto[]) => {
     const counts: Record<string, number> = {};
     data.forEach((camper) => {
       counts[camper.gender] = (counts[camper.gender] || 0) + 1;
