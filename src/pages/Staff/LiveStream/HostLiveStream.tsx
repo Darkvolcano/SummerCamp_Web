@@ -11,7 +11,7 @@ const HostLiveStream: React.FC = () => {
   const { roomId } = useParams<{ roomId: string }>();
   const location = useLocation();
   const navigate = useNavigate();
-  const { toastError, toastSuccess} = useNotification();
+  const { toastSuccess } = useNotification();
   
   const activityScheduleId = location.state?.activityScheduleId;
   const activityName = location.state?.activityName;
@@ -39,6 +39,7 @@ const HostLiveStream: React.FC = () => {
           micEnabled: true,
           webcamEnabled: true,
           name: "Host",
+          debugMode: false,
         }}
         token={VIDEOSDK_CONFIG.authToken}
       >
@@ -174,7 +175,7 @@ const MeetingView: React.FC<{
 };
 
 const ParticipantView: React.FC<{ participantId: string }> = ({ participantId }) => {
-  const { webcamStream, micStream, webcamOn, micOn, displayName } = useParticipant(participantId);
+  const { webcamStream, webcamOn, micOn, displayName } = useParticipant(participantId);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {

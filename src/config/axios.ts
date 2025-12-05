@@ -2,7 +2,8 @@ import axios from "axios";
 
 // Get API base URL from environment variable or use default
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "https://localhost:7075/api";
+  // import.meta.env.VITE_API_BASE_URL || "https://localhost:7075/api";
+   import.meta.env.VITE_API_BASE_URL || "https://summercampapi-339197681269.asia-southeast1.run.app/api";
 
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,

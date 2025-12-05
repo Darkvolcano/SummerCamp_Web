@@ -5,7 +5,8 @@ interface CampDetailDashboardProps {
   campStatus?: string;
 }
 
-const CampDetailDashboard: React.FC<CampDetailDashboardProps> = ({ campId, campStatus }) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const CampDetailDashboard: React.FC<CampDetailDashboardProps> = ({ campId: _campId, campStatus }) => {
   if (campStatus === 'DRAFT' || campStatus === 'Draft') {
     return (
       <div className="pb-12">

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Modal } from "antd";
 import { useNotification } from "../../../contexts/NotificationContext";
 import locationService, {
-  type LocationRequestDto,
+  type LocationCreateDto,
 } from "../../../services/LocationService";
 
 interface AddLocationModalProps {
@@ -41,14 +41,13 @@ const AddLocationModal: React.FC<AddLocationModalProps> = ({
 
     try {
       setLoading(true);
-      const newLocation: LocationRequestDto = {
+      const newLocation: LocationCreateDto = {
         name: formData.name,
         address: formData.address,
         locationType: "Camp",
         latitude: null,
         longitude: null,
         parentLocationId: null,
-        isActive: true,
       };
 
       await locationService.createLocation(newLocation);

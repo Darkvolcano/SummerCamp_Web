@@ -6,6 +6,7 @@ import dayjs from "dayjs";
 import { useNotification } from "../../../contexts/NotificationContext";
 import { PagePath } from "../../../enums/page-path.enum";
 import DeletePopover from "../../../components/DeletePopover";
+import LiveActivities from "../LiveActivities/LiveActivities";
 import camperService, {
   type CamperResponseDto,
   type CamperUpdateRequestDto,
@@ -707,6 +708,22 @@ const CamperDetail: React.FC = () => {
         </div>
       ),
     },
+    {
+      key: "live",
+      label: "🔴 Hoạt động trực tiếp",
+      children: (
+        <div>
+          {camps.length > 0 && camps[selectedCampIndex] ? (
+            <LiveActivities
+              campId={camps[selectedCampIndex].camp.campId}
+              camperId={camper?.camperId || 0}
+            />
+          ) : (
+            <Empty description="Vui lòng chọn trại để xem hoạt động trực tiếp" />
+          )}
+        </div>
+      ),
+    },
   ];
 
   return (
@@ -837,16 +854,6 @@ const CamperDetail: React.FC = () => {
                     alt="Preview"
                     className="w-48 h-48 rounded-lg object-cover border-2 border-gray-200"
                   />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setCamperAvatarPreview(null);
-                      avatarForm.setFieldValue("avatarFile", undefined);
-                    }}
-                    className="text-sm text-red-500 hover:text-red-700 font-medium"
-                  >
-                    Xóa ảnh
-                  </button>
                 </div>
               ) : (
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
@@ -854,18 +861,20 @@ const CamperDetail: React.FC = () => {
                   <p className="text-gray-600 mb-2">Chưa có ảnh</p>
                 </div>
               )}
-              <Upload
-                name="avatarFile"
-                accept="image/*"
-                beforeUpload={() => false}
-                onChange={handleAvatarChange}
-                maxCount={1}
-                showUploadList={false}
-              >
-                <Button block type="primary" className="bg-[#FF8F50] border-[#FF8F50]">
-                  Chọn ảnh mới
-                </Button>
-              </Upload>
+              <div className="flex justify-center">
+                <Upload
+                  name="avatarFile"
+                  accept="image/*"
+                  beforeUpload={() => false}
+                  onChange={handleAvatarChange}
+                  maxCount={1}
+                  showUploadList={false}
+                >
+                  <Button type="primary" className="bg-[#FF8F50] border-[#FF8F50]">
+                    Chọn ảnh mới
+                  </Button>
+                </Upload>
+              </div>
             </div>
           </Form.Item>
         </Form>

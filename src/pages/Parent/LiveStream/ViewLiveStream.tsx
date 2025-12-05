@@ -17,6 +17,7 @@ const ViewLiveStream: React.FC = () => {
           micEnabled: false,
           webcamEnabled: false,
           name: "Viewer",
+          debugMode: false,
         }}
         token={VIDEOSDK_CONFIG.authToken}
       >
