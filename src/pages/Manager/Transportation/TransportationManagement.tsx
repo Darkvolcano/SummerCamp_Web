@@ -2,6 +2,7 @@ import React from 'react';
 import { Tabs } from 'antd';
 import { useManagerContext } from '../../../hooks/useManagerContext';
 import RouteTab from './RouteTab';
+import VehicleTab from './VehicleTab';
 import TransportScheduleTab from './TransportScheduleTab';
 
 const TransportationManagement: React.FC = () => {
@@ -27,6 +28,11 @@ const TransportationManagement: React.FC = () => {
       children: <RouteTab />,
     },
     {
+      key: 'vehicles',
+      label: 'Vehicles',
+      children: <VehicleTab />,
+    },
+    {
       key: 'schedules',
       label: 'Transport Schedule',
       children: <TransportScheduleTab />,
@@ -38,7 +44,7 @@ const TransportationManagement: React.FC = () => {
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-[#111827]">Transportation Management</h1>
         <p className="text-xs text-[#6B7280] mt-0.5">
-          Manage routes and transport schedules for the camp
+          Manage routes, vehicles and transport schedules for the camp
         </p>
       </div>
 

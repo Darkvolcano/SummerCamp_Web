@@ -5,7 +5,8 @@ interface CampDetailScheduleProps {
   campStatus?: string;
 }
 
-const CampDetailSchedule: React.FC<CampDetailScheduleProps> = ({ campId, campStatus }) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const CampDetailSchedule: React.FC<CampDetailScheduleProps> = ({ campId: _campId, campStatus }) => {
   if (campStatus === 'DRAFT' || campStatus === 'Draft') {
     return (
       <div className="pb-12">

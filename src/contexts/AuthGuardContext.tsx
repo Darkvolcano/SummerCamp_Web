@@ -56,6 +56,7 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
         .replace(/:orderId/g, "[0-9]+")
         .replace(/:registrationId/g, "[0-9]+")
         .replace(/:scheduleId/g, "[0-9]+")
+        .replace(/:roomId/g, "[a-zA-Z0-9\\-_]+")
         .replace(/:id/g, "[0-9]+");
       const regex = new RegExp(`^${dynamicRoutePattern}$`);
       return regex.test(path);
@@ -102,7 +103,7 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
           if (userRole === "admin") {
             navigate(PagePath.ADMIN_DASHBOARD, { replace: true });
           } else if (userRole === "staff") {
-            navigate(PagePath.STAFF_SCHEDULE, { replace: true });
+            navigate(PagePath.STAFF_CALENDAR, { replace: true });
           } else if (userRole === "manager") {
             navigate(PagePath.MANAGER_DASHBOARD, { replace: true });
           } else if (userRole === "driver") {
@@ -147,7 +148,7 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
       // Default redirects for each role when accessing root
       const roleRedirects: Record<string, string> = {
         parent: PagePath.HOME,
-        staff: PagePath.STAFF_SCHEDULE,
+        staff: PagePath.STAFF_CALENDAR,
         admin: PagePath.ADMIN_DASHBOARD,
         manager: PagePath.MANAGER_DASHBOARD,
         user: PagePath.HOME,
@@ -166,12 +167,15 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
           PagePath.STAFF_BLOGS,
           PagePath.STAFF_ATTENDANCE_CHECKING,
           PagePath.STAFF_ATTENDANCE_CAMPERS,
+          PagePath.STAFF_CALENDAR,
+          PagePath.STAFF_LIVESTREAM_HOST,
           "/staff/profile",
           "/staff/chat",
           "/profile",
         ],
         parent: [
           PagePath.HOME,
+          PagePath.USER_LIVESTREAM_VIEW,
           "/checkout",
           "/payment-success",
           "/user/information",
@@ -218,6 +222,7 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
         ],
         user: [
           PagePath.HOME,
+          PagePath.USER_LIVESTREAM_VIEW,
           "/profile",
           PagePath.REGISTRATION_FORM,
           "/checkout",

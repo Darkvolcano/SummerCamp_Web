@@ -64,11 +64,17 @@ export interface RegistrationResponseDto {
 
 export interface GeneratePaymentLinkRequestDto {
   optionalChoices?: OptionalChoiceDto[] | null;
+  transportChoices?: TransportChoiceDto[] | null;
 }
 
 export interface OptionalChoiceDto {
   camperId: number;
   activityScheduleId: number;
+}
+
+export interface TransportChoiceDto {
+  camperId: number;
+  requestTransport: boolean;
 }
 
 const registrationService = {
@@ -166,6 +172,7 @@ const registrationService = {
     console.log(`[registrationService] POST /registration/${id}/payment-link?isMobile=${isMobile}`);
     const requestPayload = {
       optionalChoices: paymentData.optionalChoices || null,
+      transportChoices: paymentData.transportChoices || null,
     };
 
     const response = await axiosInstance.post(

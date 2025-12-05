@@ -3,40 +3,18 @@ import { Spin, Empty, Badge, Button } from "antd";
 import { CheckCircle, Clock, AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useNotification } from "../../../contexts/NotificationContext";
+import { useStaffContext } from "../../../hooks/useStaffContext";
 import activityScheduleService, {
   type ActivityScheduleResponseDto,
 } from "../../../services/activityScheduleService";
-import campService, { type CampResponseDto } from "../../../services/campService";
 
 const AttendanceChecking: React.FC = () => {
   const navigate = useNavigate();
   const { toastError } = useNotification();
+  const { selectedCampId } = useStaffContext();
 
-  const [camps, setCamps] = useState<CampResponseDto[]>([]);
-  const [selectedCampId, setSelectedCampId] = useState<number | null>(null);
   const [schedules, setSchedules] = useState<ActivityScheduleResponseDto[]>([]);
   const [loading, setLoading] = useState(false);
-
-  // Fetch camps on mount
-  useEffect(() => {
-    const loadCamps = async () => {
-      try {
-        setLoading(true);
-        const campsData = await campService.getAllCamps();
-        setCamps(campsData);
-        if (campsData.length > 0) {
-          setSelectedCampId(campsData[0].campId);
-        }
-      } catch (error) {
-        console.error("Failed to load camps:", error);
-        toastError("Error", "Unable to load camps");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadCamps();
-  }, [toastError]);
 
   // Fetch attendances when camp is selected
   useEffect(() => {
@@ -107,6 +85,22 @@ const AttendanceChecking: React.FC = () => {
     });
   };
 
+  // If no camp selected
+  if (!selectedCampId) {
+    return (
+      <div className="p-6 flex items-center justify-center min-h-[500px]">
+        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-indigo-200 p-12 rounded-2xl text-center shadow-lg max-w-md">
+          <h3 className="text-xl font-bold text-indigo-900 mb-2">
+            Select Camp
+          </h3>
+          <p className="text-indigo-700 text-base leading-relaxed">
+            Please select a camp from the left sidebar to view attendance schedules
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   if (loading && schedules.length === 0) {
     return (
       <div className="flex justify-center items-center h-96">
@@ -125,25 +119,6 @@ const AttendanceChecking: React.FC = () => {
         <p className="text-[#6B7280] text-sm mt-1">
           Check and manage your assigned activity schedules requiring attendance
         </p>
-      </div>
-
-      {/* Camp Selection */}
-      <div className="mb-6 bg-white rounded-lg shadow-sm border border-[#E5E7EB] p-4">
-        <label className="block text-sm font-medium text-gray-700 mb-3">
-          Select Camp
-        </label>
-        <select
-          value={selectedCampId || ""}
-          onChange={(e) => setSelectedCampId(Number(e.target.value))}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-        >
-          <option value="">-- Select a camp --</option>
-          {camps.map((camp) => (
-            <option key={camp.campId} value={camp.campId}>
-              {camp.name}
-            </option>
-          ))}
-        </select>
       </div>
 
       {/* Schedules List */}

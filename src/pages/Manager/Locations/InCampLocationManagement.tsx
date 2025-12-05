@@ -106,6 +106,7 @@ const InCampLocationManagement: React.FC = () => {
         await locationService.updateLocation(editingLocation.locationId, {
           name: values.name,
           locationType: "In_camp",
+          isActive: editingLocation.isActive,
           address: values.description || null,
           latitude: null,
           longitude: null,

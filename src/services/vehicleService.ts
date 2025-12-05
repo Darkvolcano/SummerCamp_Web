@@ -73,6 +73,23 @@ const vehicleService = {
         return mapped;
     },
 
+    // Get available vehicles
+    getAvailableVehicles: async (
+        date?: string,
+        startTime?: string,
+        endTime?: string
+    ): Promise<VehicleResponseDto[]> => {
+        console.log("📤 [vehicleService] GET /vehicle/available");
+        const response = await axiosInstance.get("/vehicle/available", {
+            params: { date, startTime, endTime },
+        });
+        console.log("✅ [vehicleService] GET /vehicle/available raw response:", response.data);
+
+        const mapped = (response.data as BackendVehicleResponse[]).map(mapBackendToFrontend);
+        console.log("✅ [vehicleService] GET /vehicle/available mapped:", mapped);
+        return mapped;
+    },
+
     // Get vehicle by ID
     getVehicleById: async (id: number): Promise<VehicleResponseDto> => {
         console.log(`📤 [vehicleService] GET /vehicle/${id}`);

@@ -1,6 +1,7 @@
 import React from "react";
 import { Descriptions, Badge, Button } from "antd";
-import { Edit, Trash2, Check, X } from "lucide-react";
+import { Edit, Trash2, Check, X, Video } from "lucide-react";
+import { useAuthStore } from "../../services/userService";
 import type { ActivityScheduleResponseDto } from "../../services/activityScheduleService";
 import "./ScheduleDetail.css";
 
@@ -12,6 +13,7 @@ interface ScheduleDetailProps {
   onDelete?: () => void;
   onApprove?: () => void;
   onReject?: () => void;
+  onStartLiveStream?: () => void;
 }
 
 const ScheduleDetail: React.FC<ScheduleDetailProps> = ({
@@ -22,10 +24,18 @@ const ScheduleDetail: React.FC<ScheduleDetailProps> = ({
   onDelete,
   onApprove,
   onReject,
+  onStartLiveStream,
 }) => {
-  // Determine permissions
+  const { user } = useAuthStore();
+  
   const canManage = userRole === 'manager';
   const canApprove = userRole === 'admin';
+  
+  const canStartLiveStream = 
+    schedule.isLivestream === true && 
+    schedule.staff?.userId === user?.id &&
+    userRole === 'staff' &&
+    onStartLiveStream !== undefined;
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -139,9 +149,9 @@ const ScheduleDetail: React.FC<ScheduleDetailProps> = ({
           <span className="font-medium">{schedule.location?.name || "N/A"}</span>
         </Descriptions.Item>
 
-        {schedule.roomId && (
+        {schedule.liveStream?.roomId && (
           <Descriptions.Item label="Room ID">
-            <span className="font-mono">#{schedule.roomId}</span>
+            <span className="font-mono">#{schedule.liveStream.roomId}</span>
           </Descriptions.Item>
         )}
 
@@ -177,6 +187,16 @@ const ScheduleDetail: React.FC<ScheduleDetailProps> = ({
 
       <div className="schedule-detail-footer">
         <Button onClick={onClose}>Close</Button>
+        {canStartLiveStream && (
+          <Button
+            type="primary"
+            style={{ backgroundColor: "#ef4444" }}
+            icon={<Video size={16} />}
+            onClick={onStartLiveStream}
+          >
+            Start Live Stream
+          </Button>
+        )}
         {canManage && (
           <>
             <Button

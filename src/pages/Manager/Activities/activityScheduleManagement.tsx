@@ -127,12 +127,11 @@ const ActivityScheduleManagement: React.FC = () => {
         const updatedData: any = {
           activityId,
           staffId: scheduleData.staffId,
+          locationId: scheduleData.locationId,
           startTime: scheduleData.startTime,
           endTime: scheduleData.endTime,
-          isLivestream: scheduleData.isLivestream,
-          roomId: scheduleData.roomId,
-          maxCapacity: scheduleData.maxCapacity,
-          locationId: scheduleData.locationId,
+          isOptional: scheduleData.isOptional,
+          isLiveStream: scheduleData.isLiveStream,
         };
 
         await activityScheduleService.updateCoreActivitySchedule(
@@ -152,12 +151,11 @@ const ActivityScheduleManagement: React.FC = () => {
         const newScheduleData: any = {
           activityId,
           staffId: scheduleData.staffId,
+          locationId: scheduleData.locationId,
           startTime: scheduleData.startTime,
           endTime: scheduleData.endTime,
-          isLivestream: scheduleData.isLivestream,
-          roomId: scheduleData.roomId,
-          maxCapacity: scheduleData.maxCapacity,
-          locationId: scheduleData.locationId,
+          isOptional: scheduleData.isOptional,
+          isLiveStream: scheduleData.isLiveStream,
         };
 
         const newSchedule =
@@ -179,15 +177,14 @@ const ActivityScheduleManagement: React.FC = () => {
   };
 
   // Handle delete schedule
-  const handleDeleteSchedule = async (scheduleId: number) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleDeleteSchedule = async (_scheduleId: number) => {
     try {
       setLoading(true);
-      await activityScheduleService.deleteActivitySchedule(scheduleId);
-      setSchedules((prev) =>
-        prev.filter((s) => s.activityScheduleId !== scheduleId)
-      );
+      // await activityScheduleService.deleteActivitySchedule(scheduleId);
+      // TODO: Implement delete method in activityScheduleService
+      toastError("Not Implemented", "Delete schedule functionality is not yet available. Please contact the administrator.");
       setShowScheduleDetail(false);
-      toastSuccess("Success", "Schedule deleted successfully");
     } catch (error) {
       console.error("Failed to delete schedule:", error);
       toastError("Error", "Failed to delete schedule");

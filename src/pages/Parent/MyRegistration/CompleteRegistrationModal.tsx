@@ -21,6 +21,10 @@ interface CamperSelection {
   [camperId: number]: number[]; // camperId -> array of selected activityScheduleIds
 }
 
+interface TransportSelection {
+  [camperId: number]: boolean; // camperId -> requestTransport
+}
+
 interface TimeSlot {
   start: string;
   end: string;
@@ -39,6 +43,7 @@ const CompleteRegistrationModal: React.FC<CompleteRegistrationModalProps> = ({
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [camperSelections, setCamperSelections] = useState<CamperSelection>({});
+  const [transportSelections, setTransportSelections] = useState<TransportSelection>({});
 
   // Fetch optional activities
   useEffect(() => {
@@ -57,10 +62,13 @@ const CompleteRegistrationModal: React.FC<CompleteRegistrationModalProps> = ({
 
       // Initialize selections
       const initialSelections: CamperSelection = {};
+      const initialTransportSelections: TransportSelection = {};
       registration!.campers?.forEach((camper) => {
         initialSelections[camper.camperId] = [];
+        initialTransportSelections[camper.camperId] = camper.requestTransport || false;
       });
       setCamperSelections(initialSelections);
+      setTransportSelections(initialTransportSelections);
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message || "Không thể tải danh sách hoạt động";
@@ -124,6 +132,14 @@ const CompleteRegistrationModal: React.FC<CompleteRegistrationModalProps> = ({
     });
   };
 
+  // Toggle transport selection
+  const toggleTransportSelection = (camperId: number) => {
+    setTransportSelections((prev) => ({
+      ...prev,
+      [camperId]: !prev[camperId],
+    }));
+  };
+
   // Handle submit
   const handleSubmit = async () => {
     try {
@@ -138,11 +154,18 @@ const CompleteRegistrationModal: React.FC<CompleteRegistrationModalProps> = ({
           }))
         );
 
-      // Call API to generate payment link with optional choices
+      // Build transport choices
+      const transportChoices = registration!.campers?.map((camper) => ({
+        camperId: camper.camperId,
+        requestTransport: transportSelections[camper.camperId] || false,
+      })) || [];
+
+      // Call API to generate payment link with optional choices and transport choices
       const paymentData = await registrationService.generatePaymentLink(
         registration!.registrationId,
         {
           optionalChoices: optionalChoices.length > 0 ? optionalChoices : null,
+          transportChoices: transportChoices.length > 0 ? transportChoices : null,
         }
       );
 
@@ -264,6 +287,26 @@ const CompleteRegistrationModal: React.FC<CompleteRegistrationModalProps> = ({
                   Không có hoạt động tùy chọn nào
                 </p>
               )}
+
+              {/* Transport Selection */}
+              <div className="mt-6 pt-4 border-t border-gray-300">
+                <label className="flex items-center gap-3 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={transportSelections[camper.camperId] || false}
+                    onChange={() => toggleTransportSelection(camper.camperId)}
+                    className="w-5 h-5 rounded border-2 border-gray-300 text-[#FF8F50] focus:ring-[#FF8F50] focus:ring-offset-0 cursor-pointer"
+                  />
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-gray-800 group-hover:text-[#FF8F50] transition-colors">
+                      Đăng ký dịch vụ đưa đón
+                    </p>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      Dịch vụ xe đưa đón an toàn từ điểm tập trung đến trại hè
+                    </p>
+                  </div>
+                </label>
+              </div>
             </div>
           ))}
 
