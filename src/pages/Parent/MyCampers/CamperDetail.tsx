@@ -6,7 +6,6 @@ import dayjs from "dayjs";
 import { useNotification } from "../../../contexts/NotificationContext";
 import { PagePath } from "../../../enums/page-path.enum";
 import DeletePopover from "../../../components/DeletePopover";
-import LiveActivities from "../LiveActivities/LiveActivities";
 import camperService, {
   type CamperResponseDto,
   type CamperUpdateRequestDto,
@@ -528,6 +527,25 @@ const CamperDetail: React.FC = () => {
                   </div>
                 </div>
               )}
+
+              {/* Action Buttons */}
+              <div className="flex flex-wrap gap-3 mt-6 justify-end">
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className="flex items-center justify-center gap-1 bg-blue-500 text-white font-medium py-1.5 px-4 rounded-full text-sm hover:bg-blue-600 transition-colors"
+                >
+                  <EditOutlined />
+                  Chỉnh sửa
+                </button>
+                <button
+                  disabled={deleteLoading}
+                  onClick={handleDeleteCamper}
+                  className="flex items-center justify-center gap-1 bg-red-500 text-white font-medium py-1.5 px-4 rounded-full text-sm hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <DeleteOutlined />
+                  Xóa
+                </button>
+              </div>
             </>
           )}
         </div>
@@ -703,23 +721,38 @@ const CamperDetail: React.FC = () => {
                   </div>
                 </div>
               )}
+
+              {/* Action Buttons Grid */}
+              {camps[selectedCampIndex] && (
+                <div className="grid grid-cols-2 gap-4 mt-6">
+                  {/* View Activity Schedule Button */}
+                  <button
+                    onClick={() => {
+                      navigate(
+                        `/user/my-campers/${camper.camperId}/schedule/${camps[selectedCampIndex].camp.campId}`
+                      );
+                    }}
+                    className="flex flex-col items-center justify-center gap-3 bg-[#FF8F50] text-white rounded-2xl p-6 hover:bg-[#ff7e3d] transition-all hover:shadow-lg group"
+                  >
+                    <div className="text-4xl">📅</div>
+                    <span className="font-semibold text-base text-center">Xem lịch hoạt động</span>
+                  </button>
+
+                  {/* View Transport Schedule Button */}
+                  <button
+                    onClick={() => {
+                      navigate(
+                        `/user/my-campers/${camper.camperId}/transport-schedule/${camps[selectedCampIndex].camp.campId}`
+                      );
+                    }}
+                    className="flex flex-col items-center justify-center gap-3 bg-[#FF8F50] text-white rounded-2xl p-6 hover:bg-[#ff7e3d] transition-all hover:shadow-lg group"
+                  >
+                    <div className="text-4xl">🚌</div>
+                    <span className="font-semibold text-base text-center">Xem lịch đưa đón</span>
+                  </button>
+                </div>
+              )}
             </>
-          )}
-        </div>
-      ),
-    },
-    {
-      key: "live",
-      label: "🔴 Hoạt động trực tiếp",
-      children: (
-        <div>
-          {camps.length > 0 && camps[selectedCampIndex] ? (
-            <LiveActivities
-              campId={camps[selectedCampIndex].camp.campId}
-              camperId={camper?.camperId || 0}
-            />
-          ) : (
-            <Empty description="Vui lòng chọn trại để xem hoạt động trực tiếp" />
           )}
         </div>
       ),
@@ -749,27 +782,6 @@ const CamperDetail: React.FC = () => {
 
         {/* Tabs */}
         <Tabs items={tabItems} defaultActiveKey="info" />
-
-        {/* Action Buttons */}
-        {!isEditing && (
-          <div className="flex flex-wrap gap-3 mt-8 justify-end">
-            <button
-              onClick={() => setIsEditing(true)}
-              className="flex items-center justify-center gap-1 bg-blue-500 text-white font-medium py-1.5 px-4 rounded-full text-sm hover:bg-blue-600 transition-colors"
-            >
-              <EditOutlined />
-              Chỉnh sửa
-            </button>
-            <button
-              disabled={deleteLoading}
-              onClick={handleDeleteCamper}
-              className="flex items-center justify-center gap-1 bg-red-500 text-white font-medium py-1.5 px-4 rounded-full text-sm hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <DeleteOutlined />
-              Xóa
-            </button>
-          </div>
-        )}
       </div>
 
       {/* Guardian Modal */}
