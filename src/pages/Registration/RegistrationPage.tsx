@@ -12,7 +12,7 @@ import {
   DatePicker,
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import camperService, {
   type CamperResponseDto,
   type CamperRequestDto,
@@ -74,7 +74,6 @@ const RegistrationPage: React.FC = () => {
   // Modal for new camper registration
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [newCamperForm] = Form.useForm();
-  const [newCamperIndex, setNewCamperIndex] = useState<number | null>(null);
   const [camperAvatarPreview, setCamperAvatarPreview] = useState<string | null>(
     null
   );
@@ -291,8 +290,7 @@ const RegistrationPage: React.FC = () => {
   };
 
   // Handle register new camper modal
-  const showNewCamperModal = (index: number) => {
-    setNewCamperIndex(index);
+  const showNewCamperModal = () => {
     setIsModalVisible(true);
   };
 
@@ -342,28 +340,6 @@ const RegistrationPage: React.FC = () => {
           createdCamper.camperId,
           values.avatarFile as File
         );
-      }
-
-      const newCampers = [...campers];
-      const newRegistrationCampers = [...registrationCampers];
-
-      if (newCamperIndex !== null) {
-        // Use the created camper from API
-        newRegistrationCampers[newCamperIndex] = {
-          camperName: createdCamper.camperName,
-          gender: createdCamper.gender,
-          dob: createdCamper.dob,
-        };
-        setRegistrationCampers(newRegistrationCampers);
-
-        // Set the actual created camper with ID from API
-        newCampers[newCamperIndex] = createdCamper;
-        setCampers(newCampers);
-
-        // Set the newly created camper as selected in the Select
-        const newSelectedIds = [...selectedCamperIds];
-        newSelectedIds[newCamperIndex] = createdCamper.camperId;
-        setSelectedCamperIds(newSelectedIds);
       }
 
       // Add the newly created camper to the dropdown list immediately
@@ -573,6 +549,22 @@ const RegistrationPage: React.FC = () => {
       return;
     }
 
+    // Check if all campers have avatars
+    const campersWithoutAvatar = campers
+      .map((c, index) => ({ camper: c, index }))
+      .filter(({ camper }) => camper && !camper.avatar);
+    
+    if (campersWithoutAvatar.length > 0) {
+      const camperNames = campersWithoutAvatar
+        .map(({ camper }) => camper?.camperName)
+        .join(", ");
+      toastError(
+        "Thiếu ảnh đại diện", 
+        `Vui lòng vào trang Quản lý trại viên để upload ảnh cho: ${camperNames}`
+      );
+      return;
+    }
+
     try {
       setSubmitting(true);
 
@@ -713,7 +705,7 @@ const RegistrationPage: React.FC = () => {
                         <Button
                           type="primary"
                           icon={<PlusOutlined />}
-                          onClick={() => showNewCamperModal(index)}
+                          onClick={() => showNewCamperModal()}
                           className="bg-[#FF8F50] border-[#FF8F50] whitespace-nowrap"
                         >
                           Đăng ký mới
@@ -722,13 +714,36 @@ const RegistrationPage: React.FC = () => {
 
                       {campers[index] && (
                         <div className="mb-4 p-4 bg-white rounded border border-gray-200">
+                          {/* Warning for missing avatar */}
+                          {!campers[index]?.avatar && (
+                            <div className="mb-4 p-3 bg-red-50 border-l-4 border-red-500 rounded">
+                              <div className="flex items-start gap-3">
+                                <span className="text-2xl">⚠️</span>
+                                <div className="flex-1">
+                                  <p className="text-sm font-bold text-red-800 mb-1">
+                                    Yêu cầu bổ sung ảnh đại diện (Bắt buộc)
+                                  </p>
+                                  <p className="text-xs text-red-700">
+                                    Trại viên <span className="font-semibold">{campers[index]?.camperName}</span> chưa có ảnh đại diện. 
+                                    Vui lòng vào trang <Link to="/user/my-campers" className="font-semibold text-red-800 underline hover:text-red-900">Quản lý trại viên</Link> để upload ảnh trước khi đăng ký.
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
                           <div className="flex gap-4 mb-4">
-                            {campers[index]?.avatar && (
+                            {campers[index]?.avatar ? (
                               <img
                                 src={campers[index]?.avatar}
                                 alt={campers[index]?.camperName}
                                 className="w-23 h-26 rounded-lg object-cover border border-gray-300"
                               />
+                            ) : (
+                              <div className="w-23 h-26 rounded-lg border-2 border-dashed border-red-400 bg-red-50 flex flex-col items-center justify-center">
+                                <div className="text-3xl mb-1">📷</div>
+                                <p className="text-xs text-red-600 font-semibold text-center px-2">Thiếu ảnh</p>
+                              </div>
                             )}
                             <div className="flex-1 grid grid-cols-2 gap-4">
                               <div>
