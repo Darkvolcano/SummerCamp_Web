@@ -241,6 +241,7 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
           PagePath.USER_MYREGISTRATIONS_DETAIL,
           PagePath.USER_CAMPER_DETAIL,
           PagePath.USER_CAMPER_EDIT,
+          PagePath.USER_CAMPER_SCHEDULE,
         ],
       };
 

@@ -43,6 +43,7 @@ import MyRegistration from "./pages/Parent/MyRegistration/MyRegistration";
 import RegistrationDetail from "./pages/Parent/MyRegistration/MyRegistrationDetail";
 import MyCampers from "./pages/Parent/MyCampers/MyCampers";
 import CamperDetail from "./pages/Parent/MyCampers/CamperDetail";
+import CamperSchedule from "./pages/Parent/MyCampers/CamperSchedule";
 import MyTransaction from "./pages/Parent/MyTransaction/MyTransaction";
 import AttendanceChecking from "./pages/Staff/AttendanceChecking/AttendanceChecking";
 import AttendanceCamperList from "./pages/Staff/AttendanceChecking/AttendanceCamperList";
@@ -251,6 +252,14 @@ function App() {
               element={
                 <MainLayout>
                   <CamperDetail />
+                </MainLayout>
+              }
+            />
+            <Route
+              path={PagePath.USER_CAMPER_SCHEDULE}
+              element={
+                <MainLayout>
+                  <CamperSchedule />
                 </MainLayout>
               }
             />
