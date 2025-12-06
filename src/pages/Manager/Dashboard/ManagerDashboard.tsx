@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Spin, Button } from "antd";
+import { useNavigate } from "react-router-dom";
 import { useManagerContext } from "../../../hooks/useManagerContext";
 import campService, { type CampResponseDto } from "../../../services/campService";
 import { useNotification } from "../../../contexts/NotificationContext";
 
 const ManagerDashboard: React.FC = () => {
+  const navigate = useNavigate();
   const { selectedCampId } = useManagerContext();
   const { toastSuccess, toastError } = useNotification();
   const [camp, setCamp] = useState<CampResponseDto | null>(null);
@@ -93,20 +95,99 @@ const ManagerDashboard: React.FC = () => {
                 }`}>
                   {isRejected ? "⚠️ Approval Required" : "📋 Camp Not Published"}
                 </h3>
-                <p className={`text-xs mb-2 ${
+                <p className={`text-md mb-3 ${
                   isRejected ? "text-red-700" : "text-blue-700"
                 }`}>
                   {isRejected
-                    ? "Submission rejected - review and fix required sections below"
-                    : "Complete setup to submit for approval"}
+                    ? "Submission rejected - review and complete all setup to submit for approval"
+                    : "Complete all setup to submit for approval"}
                 </p>
-                <div className={`flex flex-wrap gap-2 text-xs ${
-                  isRejected ? "text-red-800" : "text-blue-800"
-                }`}>
-                  <span>• Staff</span>
-                  <span>• Groups</span>
-                  <span>• Location</span>
-                  <span>• Schedule</span>
+                
+                {/* Setup Steps */}
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-3">
+                  <button
+                    onClick={() => navigate("/manager/staffs")}
+                    className={`${
+                      isRejected ? "bg-red-100 hover:bg-red-200 border-red-300" : "bg-blue-100 hover:bg-blue-200 border-blue-300"
+                    } border rounded-lg p-2 text-left transition-all group flex items-center gap-2`}
+                  >
+                    <span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
+                      isRejected ? "bg-red-600 text-white" : "bg-blue-600 text-white"
+                    }`}>1</span>
+                    <span className={`text-xs font-semibold ${
+                      isRejected ? "text-red-900 group-hover:text-red-700" : "text-blue-900 group-hover:text-blue-700"
+                    }`}>Staff Assignment</span>
+                  </button>
+
+                  <button
+                    onClick={() => navigate("/manager/locations")}
+                    className={`${
+                      isRejected ? "bg-red-100 hover:bg-red-200 border-red-300" : "bg-blue-100 hover:bg-blue-200 border-blue-300"
+                    } border rounded-lg p-2 text-left transition-all group flex items-center gap-2`}
+                  >
+                    <span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
+                      isRejected ? "bg-red-600 text-white" : "bg-blue-600 text-white"
+                    }`}>2</span>
+                    <span className={`text-xs font-semibold ${
+                      isRejected ? "text-red-900 group-hover:text-red-700" : "text-blue-900 group-hover:text-blue-700"
+                    }`}>Locations</span>
+                  </button>
+
+                  <button
+                    onClick={() => navigate("/manager/groups")}
+                    className={`${
+                      isRejected ? "bg-red-100 hover:bg-red-200 border-red-300" : "bg-blue-100 hover:bg-blue-200 border-blue-300"
+                    } border rounded-lg p-2 text-left transition-all group flex items-center gap-2`}
+                  >
+                    <span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
+                      isRejected ? "bg-red-600 text-white" : "bg-blue-600 text-white"
+                    }`}>3</span>
+                    <span className={`text-xs font-semibold ${
+                      isRejected ? "text-red-900 group-hover:text-red-700" : "text-blue-900 group-hover:text-blue-700"
+                    }`}>Groups</span>
+                  </button>
+
+                  <button
+                    onClick={() => navigate("/manager/accommodation")}
+                    className={`${
+                      isRejected ? "bg-red-100 hover:bg-red-200 border-red-300" : "bg-blue-100 hover:bg-blue-200 border-blue-300"
+                    } border rounded-lg p-2 text-left transition-all group flex items-center gap-2`}
+                  >
+                    <span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
+                      isRejected ? "bg-red-600 text-white" : "bg-blue-600 text-white"
+                    }`}>4</span>
+                    <span className={`text-xs font-semibold ${
+                      isRejected ? "text-red-900 group-hover:text-red-700" : "text-blue-900 group-hover:text-blue-700"
+                    }`}>Accommodation</span>
+                  </button>
+
+                  <button
+                    onClick={() => navigate("/manager/activities")}
+                    className={`${
+                      isRejected ? "bg-red-100 hover:bg-red-200 border-red-300" : "bg-blue-100 hover:bg-blue-200 border-blue-300"
+                    } border rounded-lg p-2 text-left transition-all group flex items-center gap-2`}
+                  >
+                    <span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
+                      isRejected ? "bg-red-600 text-white" : "bg-blue-600 text-white"
+                    }`}>5</span>
+                    <span className={`text-xs font-semibold ${
+                      isRejected ? "text-red-900 group-hover:text-red-700" : "text-blue-900 group-hover:text-blue-700"
+                    }`}>Activities</span>
+                  </button>
+
+                  <button
+                    onClick={() => navigate("/manager/transportation")}
+                    className={`${
+                      isRejected ? "bg-red-100 hover:bg-red-200 border-red-300" : "bg-blue-100 hover:bg-blue-200 border-blue-300"
+                    } border rounded-lg p-2 text-left transition-all group flex items-center gap-2`}
+                  >
+                    <span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
+                      isRejected ? "bg-red-600 text-white" : "bg-blue-600 text-white"
+                    }`}>6</span>
+                    <span className={`text-xs font-semibold ${
+                      isRejected ? "text-red-900 group-hover:text-red-700" : "text-blue-900 group-hover:text-blue-700"
+                    }`}>Transportation</span>
+                  </button>
                 </div>
               </div>
               <Button
