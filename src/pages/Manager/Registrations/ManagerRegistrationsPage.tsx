@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Spin, message } from 'antd';
+import { Spin } from 'antd';
 import { Search, Eye, CheckCircle2 } from 'lucide-react';
 import { useManagerContext } from '../../../hooks/useManagerContext';
+import { useNotification } from '../../../contexts/NotificationContext';
 import registrationService, { type RegistrationResponseDto } from '../../../services/registrationService';
 import { RegistrationStatus } from '../../../enums/registration-status.enum';
 
 const ManagerRegistrationsPage: React.FC = () => {
   const { selectedCampId } = useManagerContext();
+  const { toastSuccess, toastError } = useNotification();
   const [registrations, setRegistrations] = useState<RegistrationResponseDto[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -31,7 +33,7 @@ const ManagerRegistrationsPage: React.FC = () => {
         calculateStatusCounts(data);
       } catch (error) {
         console.error('[ManagerRegistrationsPage] Failed to load registrations:', error);
-        message.error('Unable to load registrations');
+        toastError('Error', 'Unable to load registrations');
       } finally {
         setLoading(false);
       }
@@ -133,7 +135,7 @@ const ManagerRegistrationsPage: React.FC = () => {
   const handleApprove = async (registrationId: number) => {
     try {
       await registrationService.approveRegistration(registrationId);
-      message.success('Registration approved successfully');
+      toastSuccess('Success', 'Registration approved successfully');
       // Refresh registrations
       if (selectedCampId) {
         const data = await registrationService.getRegistrationsByCampId(selectedCampId);
@@ -142,7 +144,7 @@ const ManagerRegistrationsPage: React.FC = () => {
       }
     } catch (error) {
       console.error('Failed to approve registration:', error);
-      message.error('Failed to approve registration');
+      toastError('Error', 'Failed to approve registration');
     }
   };
 

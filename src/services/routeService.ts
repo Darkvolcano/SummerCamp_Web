@@ -97,7 +97,29 @@ const routeService = {
     await axiosInstance.delete(`/route/${id}`);
   },
 
+  // Get routes by camp ID
+  getRoutesByCampId: async (campId: number): Promise<RouteResponseDto[]> => {
+    console.log(`[routeService] GET /route/camp/${campId}`);
+    const response = await axiosInstance.get(`/route/camp/${campId}`);
+    return response.data as RouteResponseDto[];
+  },
+
   // ==================== ROUTE STOP ENDPOINTS ====================
+
+  // Get all route stops
+  getAllRouteStops: async (): Promise<RouteStopResponseDto[]> => {
+    console.log("[routeService] GET /routestop");
+    const response = await axiosInstance.get("/routestop");
+    return response.data as RouteStopResponseDto[];
+  },
+
+  // Get route stop by ID (with optional routeId query parameter)
+  getRouteStopById: async (routeStopId: string, routeId?: number): Promise<RouteStopResponseDto> => {
+    console.log(`[routeService] GET /routestop/${routeStopId}`);
+    const params = routeId ? { routeId } : {};
+    const response = await axiosInstance.get(`/routestop/${routeStopId}`, { params });
+    return response.data as RouteStopResponseDto;
+  },
 
   // Get route stops by route ID
   getRouteStopsByRouteId: async (routeId: number): Promise<RouteStopResponseDto[]> => {
@@ -108,7 +130,7 @@ const routeService = {
 
   // Create route stop
   createRouteStop: async (routeStop: RouteStopRequestDto): Promise<RouteStopResponseDto> => {
-    console.log("[routeService] POST /RouteStop");
+    console.log("[routeService] POST /routestop");
     const requestPayload = {
       routeId: routeStop.routeId,
       locationId: routeStop.locationId,
@@ -116,13 +138,13 @@ const routeService = {
       estimatedTime: routeStop.estimatedTime,
     };
 
-    const response = await axiosInstance.post("/RouteStop", requestPayload);
+    const response = await axiosInstance.post("/routestop", requestPayload);
     return response.data as RouteStopResponseDto;
   },
 
   // Update route stop
   updateRouteStop: async (routeStopId: number, routeStop: RouteStopRequestDto): Promise<RouteStopResponseDto> => {
-    console.log(`[routeService] PUT /RouteStop/${routeStopId}`);
+    console.log(`[routeService] PUT /routestop/${routeStopId}`);
     const requestPayload = {
       routeId: routeStop.routeId,
       locationId: routeStop.locationId,
@@ -130,14 +152,14 @@ const routeService = {
       estimatedTime: routeStop.estimatedTime,
     };
 
-    const response = await axiosInstance.put(`/RouteStop/${routeStopId}`, requestPayload);
+    const response = await axiosInstance.put(`/routestop/${routeStopId}`, requestPayload);
     return response.data as RouteStopResponseDto;
   },
 
   // Delete route stop
   deleteRouteStop: async (routeStopId: number): Promise<void> => {
-    console.log(`[routeService] DELETE /RouteStop/${routeStopId}`);
-    await axiosInstance.delete(`/RouteStop/${routeStopId}`);
+    console.log(`[routeService] DELETE /routestop/${routeStopId}`);
+    await axiosInstance.delete(`/routestop/${routeStopId}`);
   },
 };
 

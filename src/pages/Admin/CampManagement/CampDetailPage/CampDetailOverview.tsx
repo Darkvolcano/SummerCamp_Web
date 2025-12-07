@@ -25,6 +25,8 @@ import locationService, {
 import promotionService, {
   type PromotionResponseDto,
 } from "../../../../services/promotionService";
+import attendanceLogService from "../../../../services/attendanceLogService";
+import attendanceFolderService from "../../../../services/attendanceFolderService";
 import {
   uploadImageToCloudinary,
   validateImageFile,
@@ -224,6 +226,75 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
       onUpdate?.();
     } catch (error: any) {
       let errorMsg = 'Failed to reject camp';
+      if (error.response?.data?.message) {
+        errorMsg = error.response.data.message;
+      }
+      toastError('Error', errorMsg);
+    }
+  };
+
+  const handleOpenRegistration = async () => {
+    try {
+      await campService.updateCampStatusTest(campId, CampStatus.OPEN_FOR_REGISTRATION);
+      toastSuccess('Success', 'Camp registration opened successfully!');
+      fetchCampData();
+      onUpdate?.();
+    } catch (error: any) {
+      let errorMsg = 'Failed to open registration';
+      if (error.response?.data?.message) {
+        errorMsg = error.response.data.message;
+      }
+      toastError('Error', errorMsg);
+    }
+  };
+
+  const handleCloseRegistration = async () => {
+    try {
+      await campService.updateCampStatusTest(campId, CampStatus.REGISTRATION_CLOSED);
+      toastSuccess('Success', 'Camp registration closed successfully!');
+      fetchCampData();
+      onUpdate?.();
+    } catch (error: any) {
+      let errorMsg = 'Failed to close registration';
+      if (error.response?.data?.message) {
+        errorMsg = error.response.data.message;
+      }
+      toastError('Error', errorMsg);
+    }
+  };
+
+  const handleCreateAttendanceLogs = async () => {
+    try {
+      await attendanceLogService.createLogsForRegistrationClosedCamps();
+      toastSuccess('Success', 'Attendance logs created successfully!');
+    } catch (error: any) {
+      let errorMsg = 'Failed to create attendance logs';
+      if (error.response?.data?.message) {
+        errorMsg = error.response.data.message;
+      }
+      toastError('Error', errorMsg);
+    }
+  };
+
+  const handleCreateFolders = async () => {
+    try {
+      await attendanceFolderService.createFolders(campId);
+      toastSuccess('Success', 'Attendance folders created successfully!');
+    } catch (error: any) {
+      let errorMsg = 'Failed to create folders';
+      if (error.response?.data?.message) {
+        errorMsg = error.response.data.message;
+      }
+      toastError('Error', errorMsg);
+    }
+  };
+
+  const handlePreloadFaceDatabase = async () => {
+    try {
+      await attendanceFolderService.preloadFaceDatabase(campId, false);
+      toastSuccess('Success', 'Face database preloaded successfully!');
+    } catch (error: any) {
+      let errorMsg = 'Failed to preload face database';
       if (error.response?.data?.message) {
         errorMsg = error.response.data.message;
       }
@@ -879,6 +950,50 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
                 </select>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Registration Control Buttons */}
+        <div className="mt-8 pt-6 border-t border-[#E5E7EB]">
+          <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4">
+            TEST
+          </h3>
+          <div className="flex gap-3">
+            <button
+              onClick={handleOpenRegistration}
+              className="flex items-center gap-1.5 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-medium text-sm"
+            >
+              <CheckCircle size={16} />
+              Open
+            </button>
+            <button
+              onClick={handleCloseRegistration}
+              className="flex items-center gap-1.5 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all font-medium text-sm"
+            >
+              <XCircle size={16} />
+              Close
+            </button>
+            <button
+              onClick={handleCreateAttendanceLogs}
+              className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-medium text-sm"
+            >
+              <CheckCircle size={16} />
+              Create Logs
+            </button>
+            <button
+              onClick={handleCreateFolders}
+              className="flex items-center gap-1.5 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all font-medium text-sm"
+            >
+              <CheckCircle size={16} />
+              Create Folders
+            </button>
+            <button
+              onClick={handlePreloadFaceDatabase}
+              className="flex items-center gap-1.5 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all font-medium text-sm"
+            >
+              <CheckCircle size={16} />
+              Preload Face DB
+            </button>
           </div>
         </div>
       </div>

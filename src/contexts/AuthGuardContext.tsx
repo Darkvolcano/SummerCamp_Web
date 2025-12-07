@@ -169,6 +169,7 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
           PagePath.STAFF_ATTENDANCE_CAMPERS,
           PagePath.STAFF_CALENDAR,
           PagePath.STAFF_LIVESTREAM_HOST,
+          PagePath.STAFF_CHECKIN,
           "/staff/profile",
           "/staff/chat",
           "/profile",
@@ -241,6 +242,8 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
           PagePath.USER_MYREGISTRATIONS_DETAIL,
           PagePath.USER_CAMPER_DETAIL,
           PagePath.USER_CAMPER_EDIT,
+          PagePath.USER_CAMPER_SCHEDULE,
+          PagePath.USER_CAMPER_TRANSPORTSCHEDULE,
         ],
       };
 

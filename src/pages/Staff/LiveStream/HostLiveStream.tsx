@@ -103,12 +103,24 @@ const MeetingView: React.FC<{
         </div>
 
         {/* Video Grid */}
-        <div className="flex-1 p-4 overflow-auto">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {[...participants.keys()].map((participantId) => (
-              <ParticipantView key={participantId} participantId={participantId} />
+        <div className="flex-1 p-4 overflow-hidden flex gap-4">
+          {/* Main Host Video - Large Center */}
+          <div className="flex-1 flex items-center justify-center bg-gray-950">
+            {[...participants.keys()].filter((_, index) => index === 0).map((participantId) => (
+              <div key={participantId} className="w-full h-full flex items-center justify-center">
+                <ParticipantView participantId={participantId} isMainView={true} />
+              </div>
             ))}
           </div>
+          
+          {/* Sidebar for other viewers */}
+          {participants.size > 1 && (
+            <div className="w-72 flex-shrink-0 overflow-y-auto flex flex-col gap-3">
+              {[...participants.keys()].filter((_, index) => index > 0).map((participantId) => (
+                <ParticipantView key={participantId} participantId={participantId} isMainView={false} />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Controls */}
@@ -174,7 +186,7 @@ const MeetingView: React.FC<{
   );
 };
 
-const ParticipantView: React.FC<{ participantId: string }> = ({ participantId }) => {
+const ParticipantView: React.FC<{ participantId: string; isMainView?: boolean }> = ({ participantId, isMainView = false }) => {
   const { webcamStream, webcamOn, micOn, displayName } = useParticipant(participantId);
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -188,12 +200,16 @@ const ParticipantView: React.FC<{ participantId: string }> = ({ participantId })
   }, [webcamStream, webcamOn]);
 
   return (
-    <div className="relative bg-gray-800 rounded-lg overflow-hidden aspect-video">
+    <div className={`relative bg-gray-800 rounded-lg overflow-hidden ${
+      isMainView ? "w-full h-full max-h-[calc(100vh-200px)]" : "aspect-video"
+    }`}>
       {webcamOn && webcamStream ? (
-        <video ref={videoRef} autoPlay className="w-full h-full object-cover" />
+        <video ref={videoRef} autoPlay className="w-full h-full object-contain" />
       ) : (
         <div className="flex items-center justify-center h-full bg-gray-700">
-          <span className="text-4xl text-white">{displayName?.[0] || "?"}</span>
+          <span className={`text-white ${
+            isMainView ? "text-8xl" : "text-2xl"
+          }`}>{displayName?.[0] || "?"}</span>
         </div>
       )}
       <div className="absolute bottom-2 left-2 bg-black/70 px-3 py-1 rounded text-white text-sm flex items-center gap-2">

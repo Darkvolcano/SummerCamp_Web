@@ -62,7 +62,7 @@ const ViewerMeetingView: React.FC<{ onLeave: () => void }> = ({ onLeave }) => {
 
   if (error) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
+      <div className="flex justify-center items-center min-h-screen ">
         <div className="text-center max-w-md">
           <div className="text-6xl mb-4">⚠️</div>
           <h2 className="text-white text-2xl mb-2">Không thể tham gia livestream</h2>
@@ -85,7 +85,7 @@ const ViewerMeetingView: React.FC<{ onLeave: () => void }> = ({ onLeave }) => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col pt-15">
       {/* Header */}
       <div className="bg-gray-800 p-4 flex justify-between items-center">
         <div>
@@ -114,10 +114,11 @@ const ViewerMeetingView: React.FC<{ onLeave: () => void }> = ({ onLeave }) => {
       </div>
 
       {/* Video Grid */}
-      <div className="flex-1 p-4 overflow-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="flex-1 p-4 overflow-hidden flex gap-4">
+        {/* Main Host Video - Large Center */}
+        <div className="flex-1 flex items-center justify-center bg-gray-950">
           {[...participants.keys()].map((participantId) => (
-            <ParticipantView key={participantId} participantId={participantId} />
+            <HostVideoDisplay key={participantId} participantId={participantId} />
           ))}
         </div>
       </div>
@@ -125,10 +126,27 @@ const ViewerMeetingView: React.FC<{ onLeave: () => void }> = ({ onLeave }) => {
   );
 };
 
-const ParticipantView: React.FC<{ participantId: string }> = ({ participantId }) => {
-  const { webcamStream, webcamOn, micOn, displayName } = useParticipant(participantId);
-  const videoRef = useRef<HTMLVideoElement>(null);
+const HostVideoDisplay: React.FC<{ participantId: string }> = ({ participantId }) => {
+  const { displayName } = useParticipant(participantId);
+  
+  // Only render if this is the host
+  if (displayName !== "Host") {
+    return null;
+  }
 
+  return (
+    <div className="w-full h-full flex items-center justify-center">
+      <ParticipantView participantId={participantId} isMainView={true} />
+    </div>
+  );
+};
+
+const ParticipantView: React.FC<{ participantId: string; isMainView?: boolean }> = ({ participantId, isMainView = false }) => {
+  const { webcamStream, webcamOn, micStream, micOn, displayName } = useParticipant(participantId);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  // Handle video stream
   useEffect(() => {
     if (webcamStream && videoRef.current && webcamOn) {
       const mediaStream = new MediaStream();
@@ -138,13 +156,31 @@ const ParticipantView: React.FC<{ participantId: string }> = ({ participantId })
     }
   }, [webcamStream, webcamOn]);
 
+  // Handle audio stream separately
+  useEffect(() => {
+    if (micStream && audioRef.current) {
+      const audioMediaStream = new MediaStream();
+      audioMediaStream.addTrack(micStream.track);
+      audioRef.current.srcObject = audioMediaStream;
+      audioRef.current.play().catch((err) => console.error("Error playing audio:", err));
+    }
+  }, [micStream]);
+
   return (
-    <div className="relative bg-gray-800 rounded-lg overflow-hidden aspect-video">
+    <div className={`relative bg-gray-800 rounded-lg overflow-hidden ${
+      isMainView ? "w-full h-full max-h-[calc(100vh-200px)]" : "aspect-video"
+    }`}>
       {webcamOn && webcamStream ? (
-        <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover" />
+        <>
+          <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-contain" />
+          <audio ref={audioRef} autoPlay />
+        </>
       ) : (
         <div className="flex items-center justify-center h-full bg-gray-700">
-          <span className="text-4xl text-white">{displayName?.[0] || "?"}</span>
+          <span className={`text-white ${
+            isMainView ? "text-8xl" : "text-4xl"
+          }`}>{displayName?.[0] || "?"}</span>
+          <audio ref={audioRef} autoPlay />
         </div>
       )}
       <div className="absolute bottom-2 left-2 bg-black/70 px-3 py-1 rounded text-white text-sm flex items-center gap-2">
