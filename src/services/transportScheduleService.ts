@@ -57,6 +57,12 @@ export interface TransportScheduleResponseDto {
   cancelReasons: string | null;
 }
 
+export interface CamperInScheduleResponseDto {
+  camperId: number;
+  camperName: string | null;
+  status: string | null;
+}
+
 // Search params interface
 export interface TransportScheduleSearchParams {
   campId?: number;
@@ -70,83 +76,97 @@ export interface TransportScheduleSearchParams {
 }
 
 const transportScheduleService = {
-  // GET /api/transportschedules - get list or search
+  // GET /api/transport-schedules - get list or search
   getTransportSchedules: async (
     params?: TransportScheduleSearchParams
   ): Promise<TransportScheduleResponseDto[]> => {
-    console.log("[transportScheduleService] GET /transportschedules");
-    const response = await axiosInstance.get("/transportschedules", { params });
+    console.log("[transportScheduleService] GET /transport-schedules");
+    const response = await axiosInstance.get("/transport-schedules", { params });
     return response.data as TransportScheduleResponseDto[];
   },
 
-  // GET /api/transportschedules/{id}
+  // GET /api/transport-schedules/{id}
   getTransportScheduleById: async (
     id: number
   ): Promise<TransportScheduleResponseDto> => {
-    console.log(`[transportScheduleService] GET /transportschedules/${id}`);
-    const response = await axiosInstance.get(`/transportschedules/${id}`);
+    console.log(`[transportScheduleService] GET /transport-schedules/${id}`);
+    const response = await axiosInstance.get(`/transport-schedules/${id}`);
     return response.data as TransportScheduleResponseDto;
   },
 
-  // POST /api/transportschedules
+  // POST /api/transport-schedules
   createTransportSchedule: async (
     data: TransportScheduleRequestDto
   ): Promise<TransportScheduleResponseDto> => {
-    console.log("[transportScheduleService] POST /transportschedules");
-    const response = await axiosInstance.post("/transportschedules", data);
+    console.log("[transportScheduleService] POST /transport-schedules");
+    const response = await axiosInstance.post("/transport-schedules", data);
     return response.data as TransportScheduleResponseDto;
   },
 
-  // PUT /api/transportschedules/{id}
+  // PUT /api/transport-schedules/{id}
   updateTransportSchedule: async (
     id: number,
     data: TransportScheduleRequestDto
   ): Promise<TransportScheduleResponseDto> => {
-    console.log(`[transportScheduleService] PUT /transportschedules/${id}`);
-    const response = await axiosInstance.put(`/transportschedules/${id}`, data);
+    console.log(`[transportScheduleService] PUT /transport-schedules/${id}`);
+    const response = await axiosInstance.put(`/transport-schedules/${id}`, data);
     return response.data as TransportScheduleResponseDto;
   },
 
-  // DELETE /api/transportschedules/{id}
+  // DELETE /api/transport-schedules/{id}
   deleteTransportSchedule: async (id: number): Promise<void> => {
-    console.log(`[transportScheduleService] DELETE /transportschedules/${id}`);
-    await axiosInstance.delete(`/transportschedules/${id}`);
+    console.log(`[transportScheduleService] DELETE /transport-schedules/${id}`);
+    await axiosInstance.delete(`/transport-schedules/${id}`);
   },
 
-  // GET /api/transportschedules/driver-schedule
+  // GET /api/transport-schedules/driver-schedule
   getDriverSchedule: async (): Promise<TransportScheduleResponseDto[]> => {
-    console.log("[transportScheduleService] GET /transportschedules/driver-schedule");
-    const response = await axiosInstance.get("/transportschedules/driver-schedule");
+    console.log("[transportScheduleService] GET /transport-schedules/driver-schedule");
+    const response = await axiosInstance.get("/transport-schedules/driver-schedule");
     return response.data as TransportScheduleResponseDto[];
   },
 
-  // PATCH /api/transportschedules/{id}/status - Update status (NotYet, Rejected, Canceled)
+  // GET /api/transport-schedules/{id}/campers - Get list camper in one transport schedule
+  getCampersByScheduleId: async (id: number): Promise<CamperInScheduleResponseDto[]> => {
+    console.log(`[transportScheduleService] GET /transport-schedules/${id}/campers`);
+    const response = await axiosInstance.get(`/transport-schedules/${id}/campers`);
+    return response.data as CamperInScheduleResponseDto[];
+  },
+
+  // GET /api/transport-schedules/camper/{camperId} - Get camper transport schedule
+  getSchedulesByCamperId: async (camperId: number): Promise<TransportScheduleResponseDto[]> => {
+    console.log(`[transportScheduleService] GET /transport-schedules/camper/${camperId}`);
+    const response = await axiosInstance.get(`/transport-schedules/camper/${camperId}`);
+    return response.data as TransportScheduleResponseDto[];
+  },
+
+  // PATCH /api/transport-schedules/{id}/status - Update status (NotYet, Rejected, Canceled)
   updateTransportScheduleStatus: async (
     id: number,
     data: TransportScheduleStatusUpdateDto
   ): Promise<TransportScheduleResponseDto> => {
-    console.log(`[transportScheduleService] PATCH /transportschedules/${id}/status`);
+    console.log(`[transportScheduleService] PATCH /transport-schedules/${id}/status`);
     const response = await axiosInstance.patch(
-      `/transportschedules/${id}/status`,
+      `/transport-schedules/${id}/status`,
       data
     );
     return response.data as TransportScheduleResponseDto;
   },
 
-  // PATCH /api/transportschedules/{id}/start-trip - Update actual start time
+  // PATCH /api/transport-schedules/{id}/start-trip - Update actual start time
   startTrip: async (id: number): Promise<TransportScheduleResponseDto> => {
-    console.log(`[transportScheduleService] PATCH /transportschedules/${id}/start-trip`);
+    console.log(`[transportScheduleService] PATCH /transport-schedules/${id}/start-trip`);
     const response = await axiosInstance.patch(
-      `/transportschedules/${id}/start-trip`
+      `/transport-schedules/${id}/start-trip`
     );
     return response.data as TransportScheduleResponseDto;
   },
 
-  // PATCH /api/transportschedules/{id}/end-trip - Update actual end time
+  // PATCH /api/transport-schedules/{id}/end-trip - Update actual end time
   endTrip: async (id: number): Promise<TransportScheduleResponseDto> => {
-    console.log(`[transportScheduleService] PATCH /transportschedules/${id}/end-trip`);
+    console.log(`[transportScheduleService] PATCH /transport-schedules/${id}/end-trip`);
     const response = await axiosInstance.patch(
-      `/transportschedules/${id}/end-trip`
+      `/transport-schedules/${id}/end-trip`
     );
     return response.data as TransportScheduleResponseDto;
   },

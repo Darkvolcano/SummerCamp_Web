@@ -74,7 +74,8 @@ export interface OptionalChoiceDto {
 
 export interface TransportChoiceDto {
   camperId: number;
-  requestTransport: boolean;
+  transportScheduleId: number;
+  locationId: number;
 }
 
 const registrationService = {

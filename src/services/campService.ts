@@ -322,6 +322,19 @@ const campService = {
     const mapped = mapBackendToFrontend(response.data as BackendCampResponse);
     return mapped;
   },
+
+  // Update camp status without validation (for testing)
+  updateCampStatusTest: async (
+    campId: number,
+    status: CampStatus
+  ): Promise<CampResponseDto> => {
+    console.log(`[campService] PATCH /camp/${campId}/test-status`);
+    const response = await axiosInstance.patch(`/camp/${campId}/test-status`, {
+      status,
+    });
+    const mapped = mapBackendToFrontend(response.data as BackendCampResponse);
+    return mapped;
+  },
 };
 
 export default campService;

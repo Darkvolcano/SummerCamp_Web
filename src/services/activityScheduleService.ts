@@ -82,9 +82,18 @@ const activityScheduleService = {
   },
 
   // Get activity schedules with pending attendance by camp ID
-  getAttendancesByCampId: async (campId: number): Promise<ActivityScheduleResponseDto[]> => {
+  getAttendancesByCampId: async (campId: number, staffId?: number): Promise<ActivityScheduleResponseDto[]> => {
     console.log(`[activityScheduleService] GET /ActivitySchedule/attendances/camps/${campId}`);
-    const response = await axiosInstance.get(`/ActivitySchedule/attendances/camps/${campId}`);
+    const response = await axiosInstance.get(`/ActivitySchedule/attendances/camps/${campId}`, {
+      params: staffId ? { staffId } : {},
+    });
+    return response.data as ActivityScheduleResponseDto[];
+  },
+
+  // Get activity schedules for check-in/check-out attendance by camp ID
+  getAttendancesCheckinCheckoutByCampId: async (campId: number): Promise<ActivityScheduleResponseDto[]> => {
+    console.log(`[activityScheduleService] GET /ActivitySchedule/attendances-checkin-checkout/camps/${campId}`);
+    const response = await axiosInstance.get(`/ActivitySchedule/attendances-checkin-checkout/camps/${campId}`);
     return response.data as ActivityScheduleResponseDto[];
   },
 
@@ -189,12 +198,24 @@ const activityScheduleService = {
     });
   },
 
+  // Auto change status (scheduled job trigger)
+  changeStatusAuto: async (): Promise<void> => {
+    console.log("[activityScheduleService] PUT /ActivitySchedule/change-status-auto");
+    await axiosInstance.put("/ActivitySchedule/change-status-auto");
+  },
+
   // Update live stream status
   updateLiveStreamStatus: async (activityScheduleId: number, isLiveStream: boolean): Promise<void> => {
     console.log(`[activityScheduleService] PUT /ActivitySchedule/${activityScheduleId}/liveStreamStatus`);
     await axiosInstance.put(`/ActivitySchedule/${activityScheduleId}/liveStreamStatus`, null, {
       params: { isLiveStream: isLiveStream },
     });
+  },
+
+  // Delete activity schedule
+  deleteActivitySchedule: async (activityScheduleId: number): Promise<void> => {
+    console.log(`[activityScheduleService] DELETE /ActivitySchedule/${activityScheduleId}`);
+    await axiosInstance.delete(`/ActivitySchedule/${activityScheduleId}`);
   },
 };
 
