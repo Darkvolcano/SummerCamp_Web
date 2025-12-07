@@ -89,16 +89,20 @@ const MyCalendar: React.FC = () => {
 
     const fetchGroupsAndAccommodations = async () => {
       try {
-        const [groupsData, accommodationsData] = await Promise.all([
-          staffService.getCampGroups(selectedCampId),
-          staffService.getCampAccommodations(selectedCampId),
-        ]);
-
+        const groupsData = await staffService.getCampGroups(selectedCampId);
+        console.log('[MyCalendar] Groups Response:', groupsData);
         setCampGroups(groupsData);
+      } catch (error) {
+        console.error("Failed to load groups:", error);
+        setCampGroups(null);
+      }
+
+      try {
+        const accommodationsData = await staffService.getCampAccommodations(selectedCampId);
+        console.log('[MyCalendar] Accommodations Response:', accommodationsData);
         setCampAccommodations(Array.isArray(accommodationsData) ? accommodationsData : [accommodationsData]);
       } catch (error) {
-        console.error("Failed to load groups/accommodations:", error);
-        setCampGroups(null);
+        console.error("Failed to load accommodations:", error);
         setCampAccommodations([]);
       }
     };
