@@ -106,7 +106,7 @@ const MeetingView: React.FC<{
         <div className="flex-1 p-4 overflow-hidden flex gap-4">
           {/* Main Host Video - Large Center */}
           <div className="flex-1 flex items-center justify-center bg-gray-950">
-            {[...participants.keys()].filter((id, index) => index === 0).map((participantId) => (
+            {[...participants.keys()].filter((_, index) => index === 0).map((participantId) => (
               <div key={participantId} className="w-full h-full flex items-center justify-center">
                 <ParticipantView participantId={participantId} isMainView={true} />
               </div>
@@ -116,7 +116,7 @@ const MeetingView: React.FC<{
           {/* Sidebar for other viewers */}
           {participants.size > 1 && (
             <div className="w-72 flex-shrink-0 overflow-y-auto flex flex-col gap-3">
-              {[...participants.keys()].filter((id, index) => index > 0).map((participantId) => (
+              {[...participants.keys()].filter((_, index) => index > 0).map((participantId) => (
                 <ParticipantView key={participantId} participantId={participantId} isMainView={false} />
               ))}
             </div>
