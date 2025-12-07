@@ -44,6 +44,7 @@ import RegistrationDetail from "./pages/Parent/MyRegistration/MyRegistrationDeta
 import MyCampers from "./pages/Parent/MyCampers/MyCampers";
 import CamperDetail from "./pages/Parent/MyCampers/CamperDetail";
 import CamperSchedule from "./pages/Parent/MyCampers/CamperSchedule";
+import CamperTransportSchedule from "./pages/Parent/MyCampers/CamperTransportSchedule";
 import MyTransaction from "./pages/Parent/MyTransaction/MyTransaction";
 import AttendanceChecking from "./pages/Staff/AttendanceChecking/AttendanceChecking";
 import AttendanceCamperList from "./pages/Staff/AttendanceChecking/AttendanceCamperList";
@@ -51,6 +52,9 @@ import MyCalendar from "./pages/Staff/MyCalendar/MyCalendar";
 import HostLiveStream from "./pages/Staff/LiveStream/HostLiveStream";
 import ViewLiveStream from "./pages/Parent/LiveStream/ViewLiveStream";
 import CampTransaction from "./pages/Manager/Transaction/campTransaction";
+import CheckIn from "./pages/Staff/CheckIn/CheckIn";
+import UserManagement from "./pages/Admin/UserManagement/UserManagement";
+
 function App() {
   return (
     <Router>
@@ -125,6 +129,10 @@ function App() {
                 path={PagePath.ADMIN_VEHICLE_TYPES}
                 element={<VehicleTypeManagement />}
               />
+              <Route
+                path={PagePath.ADMIN_USERS}
+                element={<UserManagement />}
+              />
             </Route>
 
             {/* Staff Routes - Protected */}
@@ -133,6 +141,7 @@ function App() {
             <Route path={PagePath.STAFF_CALENDAR} element={<MyCalendar />} />
             <Route path={PagePath.STAFF_ATTENDANCE_CHECKING} element={<AttendanceChecking />} />
             <Route path={PagePath.STAFF_ATTENDANCE_CAMPERS} element={<AttendanceCamperList />} />
+            <Route path={PagePath.STAFF_CHECKIN} element={<CheckIn />} />
             <Route path={PagePath.STAFF_LIVESTREAM_HOST} element={<HostLiveStream />} />
             </Route>
             <Route path={PagePath.STAFF_CAMPS} element={<MyCamps />} />
@@ -260,6 +269,14 @@ function App() {
               element={
                 <MainLayout>
                   <CamperSchedule />
+                </MainLayout>
+              }
+            />
+            <Route
+              path={PagePath.USER_CAMPER_TRANSPORTSCHEDULE}
+              element={
+                <MainLayout>
+                  <CamperTransportSchedule />
                 </MainLayout>
               }
             />

@@ -94,7 +94,9 @@ const AttendanceCamperList: React.FC = () => {
         return;
       }
 
-      await attendanceLogService.updateAttendanceLogs(updates);
+      await attendanceLogService.updateAttendanceLogsV2({
+        attendanceLogs: updates,
+      });
       toastSuccess("Success", "Attendance records updated successfully");
       setHasChanges(false);
 
