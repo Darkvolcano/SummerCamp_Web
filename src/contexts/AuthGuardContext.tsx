@@ -69,6 +69,7 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
       PagePath.REGISTER,
       PagePath.VERIFY_EMAIL,
       PagePath.VERIFY_OTP,
+      PagePath.FORGOT_PASSWORD,
       PagePath.RESET_PASSWORD,
       PagePath.FORBIDDEN,
       PagePath.CAMP,

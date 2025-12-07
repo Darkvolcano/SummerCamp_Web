@@ -47,6 +47,12 @@ export interface ChangePasswordDto {
   newPassword: string;
 }
 
+export interface ResetPasswordDto {
+  email: string;
+  otp: string;
+  newPassword: string;
+}
+
 interface User {
   id: number;
   fullName: string;
@@ -535,6 +541,35 @@ export const useResendOTP = () => {
 
         console.error('Unexpected error:', error);
         throw new Error('Đã xảy ra lỗi không mong muốn. Vui lòng thử lại.');
+      }
+    },
+  });
+};
+
+export const useResetPassword = () => {
+  return useMutation({
+    mutationFn: async (resetPassword: ResetPasswordDto) => {
+      try {
+        const requestPayload = {
+          Email: resetPassword.email,
+          Otp: resetPassword.otp,
+          NewPassword: resetPassword.newPassword,
+        };
+        const response = await axiosInstance.post(
+          `auth/reset-password`,
+          requestPayload
+        );
+        return response.data;
+      } catch (error) {
+        if (axios.isAxiosError(error) && error.response) {
+          const errorMessage = error.response.data;
+          const customError = new Error("API Error");
+          (customError as any).responseValue = errorMessage;
+          throw customError;
+        } else {
+          const errorMessage = (error as Error).message;
+          throw new Error(errorMessage);
+        }
       }
     },
   });
