@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Spin } from "antd";
+import { Modal, Spin, Select } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { useNotification } from "../../../contexts/NotificationContext";
@@ -9,6 +9,13 @@ import registrationService, {
 import activityScheduleService, {
   type ActivityScheduleResponseDto,
 } from "../../../services/activityScheduleService";
+import routeService, {
+  type RouteResponseDto,
+  type RouteStopResponseDto,
+} from "../../../services/routeService";
+import transportScheduleService, {
+  type TransportScheduleResponseDto,
+} from "../../../services/transportScheduleService";
 
 interface CompleteRegistrationModalProps {
   visible: boolean;
@@ -22,7 +29,20 @@ interface CamperSelection {
 }
 
 interface TransportSelection {
-  [camperId: number]: boolean; // camperId -> requestTransport
+  [camperId: number]: {
+    pickUp?: {
+      routeId: number;
+      stopPointId: number;
+      locationId: number;
+      scheduleId: number;
+    };
+    dropOff?: {
+      routeId: number;
+      stopPointId: number;
+      locationId: number;
+      scheduleId: number;
+    };
+  };
 }
 
 interface TimeSlot {
@@ -44,15 +64,16 @@ const CompleteRegistrationModal: React.FC<CompleteRegistrationModalProps> = ({
   const [submitting, setSubmitting] = useState(false);
   const [camperSelections, setCamperSelections] = useState<CamperSelection>({});
   const [transportSelections, setTransportSelections] = useState<TransportSelection>({});
+  
+  // Transport-related states
+  const [routes, setRoutes] = useState<RouteResponseDto[]>([]);
+  const [routeStops, setRouteStops] = useState<{ [routeId: number]: RouteStopResponseDto[] }>({});
+  const [schedules, setSchedules] = useState<{ [routeId: number]: TransportScheduleResponseDto[] }>({});
+  const [loadingRoutes, setLoadingRoutes] = useState(false);
 
   // Fetch optional activities
   useEffect(() => {
-    if (visible && registration) {
-      fetchOptionalActivities();
-    }
-  }, [visible, registration]);
-
-  const fetchOptionalActivities = async () => {
+    const fetchOptionalActivities = async () => {
     try {
       setLoading(true);
       const activities = await activityScheduleService.getOptionalSchedulesByCamp(
@@ -65,7 +86,7 @@ const CompleteRegistrationModal: React.FC<CompleteRegistrationModalProps> = ({
       const initialTransportSelections: TransportSelection = {};
       registration!.campers?.forEach((camper) => {
         initialSelections[camper.camperId] = [];
-        initialTransportSelections[camper.camperId] = camper.requestTransport || false;
+        initialTransportSelections[camper.camperId] = {};
       });
       setCamperSelections(initialSelections);
       setTransportSelections(initialTransportSelections);
@@ -77,6 +98,34 @@ const CompleteRegistrationModal: React.FC<CompleteRegistrationModalProps> = ({
       setLoading(false);
     }
   };
+
+    if (visible && registration) {
+      fetchOptionalActivities();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visible, registration]);
+
+  // Fetch routes when modal opens
+  useEffect(() => {
+    const fetchRoutes = async () => {
+    try {
+      setLoadingRoutes(true);
+      const allRoutes = await routeService.getRoutesByCampId(registration!.camp.campId);
+      setRoutes(allRoutes);
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message || "Không thể tải danh sách tuyến đường";
+      toastError("Lỗi", errorMessage);
+    } finally {
+      setLoadingRoutes(false);
+    }
+  };
+
+    if (visible && registration) {
+      fetchRoutes();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visible, registration]);
 
   // Check if two time slots overlap
   const isTimeOverlap = (slot1: TimeSlot, slot2: TimeSlot): boolean => {
@@ -132,12 +181,118 @@ const CompleteRegistrationModal: React.FC<CompleteRegistrationModalProps> = ({
     });
   };
 
-  // Toggle transport selection
-  const toggleTransportSelection = (camperId: number) => {
-    setTransportSelections((prev) => ({
-      ...prev,
-      [camperId]: !prev[camperId],
-    }));
+  // Handle route selection
+  const handleRouteSelect = async (
+    camperId: number,
+    type: "pickUp" | "dropOff",
+    routeId: number
+  ) => {
+    try {
+      // Fetch route stops for this route
+      if (!routeStops[routeId]) {
+        const stops = await routeService.getRouteStopsByRouteId(routeId);
+        setRouteStops((prev) => ({ ...prev, [routeId]: stops }));
+      }
+
+      // Fetch schedules for this route
+      if (!schedules[routeId]) {
+        const transportSchedules = await transportScheduleService.getTransportSchedules({
+          routeId: routeId,
+        });
+        setSchedules((prev) => ({ ...prev, [routeId]: transportSchedules }));
+      }
+
+      // Update transport selection with route
+      setTransportSelections((prev) => ({
+        ...prev,
+        [camperId]: {
+          ...prev[camperId],
+          [type]: {
+            ...prev[camperId]?.[type],
+            routeId,
+            stopPointId: 0,
+            locationId: 0,
+            scheduleId: 0,
+          },
+        },
+      }));
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message || "Không thể tải thông tin tuyến đường";
+      toastError("Lỗi", errorMessage);
+    }
+  };
+
+  // Handle stop point selection
+  const handleStopPointSelect = (
+    camperId: number,
+    type: "pickUp" | "dropOff",
+    stopPointId: number,
+    locationId: number
+  ) => {
+    setTransportSelections((prev) => {
+      const currentTransport = prev[camperId]?.[type];
+      if (!currentTransport) return prev;
+      
+      return {
+        ...prev,
+        [camperId]: {
+          ...prev[camperId],
+          [type]: {
+            ...currentTransport,
+            stopPointId,
+            locationId,
+          },
+        },
+      };
+    });
+  };
+
+  // Handle schedule selection
+  const handleScheduleSelect = (
+    camperId: number,
+    type: "pickUp" | "dropOff",
+    scheduleId: number
+  ) => {
+    setTransportSelections((prev) => {
+      const currentTransport = prev[camperId]?.[type];
+      if (!currentTransport) return prev;
+      
+      return {
+        ...prev,
+        [camperId]: {
+          ...prev[camperId],
+          [type]: {
+            ...currentTransport,
+            scheduleId,
+          },
+        },
+      };
+    });
+  };
+
+  // Toggle transport selection (enable/disable)
+  const toggleTransportType = (camperId: number, type: "pickUp" | "dropOff") => {
+    setTransportSelections((prev) => {
+      const current = prev[camperId] || {};
+      const newSelection = { ...current };
+      
+      if (newSelection[type]) {
+        delete newSelection[type];
+      } else {
+        newSelection[type] = {
+          routeId: 0,
+          stopPointId: 0,
+          locationId: 0,
+          scheduleId: 0,
+        };
+      }
+
+      return {
+        ...prev,
+        [camperId]: newSelection,
+      };
+    });
   };
 
   // Handle submit
@@ -154,11 +309,31 @@ const CompleteRegistrationModal: React.FC<CompleteRegistrationModalProps> = ({
           }))
         );
 
-      // Build transport choices
-      const transportChoices = registration!.campers?.map((camper) => ({
-        camperId: camper.camperId,
-        requestTransport: transportSelections[camper.camperId] || false,
-      })) || [];
+      // Build transport choices - combine pickUp and dropOff
+      const transportChoices = Object.entries(transportSelections)
+        .flatMap(([camperId, selection]) => {
+          const choices = [];
+          
+          // Add pickUp if selected
+          if (selection.pickUp && selection.pickUp.scheduleId) {
+            choices.push({
+              camperId: parseInt(camperId),
+              transportScheduleId: selection.pickUp.scheduleId,
+              locationId: selection.pickUp.locationId,
+            });
+          }
+          
+          // Add dropOff if selected
+          if (selection.dropOff && selection.dropOff.scheduleId) {
+            choices.push({
+              camperId: parseInt(camperId),
+              transportScheduleId: selection.dropOff.scheduleId,
+              locationId: selection.dropOff.locationId,
+            });
+          }
+          
+          return choices;
+        });
 
       // Call API to generate payment link with optional choices and transport choices
       const paymentData = await registrationService.generatePaymentLink(
@@ -289,23 +464,232 @@ const CompleteRegistrationModal: React.FC<CompleteRegistrationModalProps> = ({
               )}
 
               {/* Transport Selection */}
-              <div className="mt-6 pt-4 border-t border-gray-300">
-                <label className="flex items-center gap-3 cursor-pointer group">
-                  <input
-                    type="checkbox"
-                    checked={transportSelections[camper.camperId] || false}
-                    onChange={() => toggleTransportSelection(camper.camperId)}
-                    className="w-5 h-5 rounded border-2 border-gray-300 text-[#FF8F50] focus:ring-[#FF8F50] focus:ring-offset-0 cursor-pointer"
-                  />
-                  <div className="flex-1">
-                    <p className="text-sm font-semibold text-gray-800 group-hover:text-[#FF8F50] transition-colors">
-                      Đăng ký dịch vụ đưa đón
-                    </p>
-                    <p className="text-xs text-gray-500 mt-0.5">
-                      Dịch vụ xe đưa đón an toàn từ điểm tập trung đến trại hè
-                    </p>
-                  </div>
-                </label>
+              <div className="mt-6 pt-4 border-t border-gray-300 space-y-4">
+                <p className="text-sm font-semibold text-gray-800">
+                  Đăng ký dịch vụ đưa đón
+                </p>
+
+                {/* PickUp Section */}
+                <div className="space-y-2">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={!!transportSelections[camper.camperId]?.pickUp}
+                      onChange={() => toggleTransportType(camper.camperId, "pickUp")}
+                      className="w-4 h-4 rounded border-2 border-gray-300 text-[#FF8F50] focus:ring-[#FF8F50] cursor-pointer"
+                    />
+                    <span className="text-sm font-medium text-gray-700">
+                      Đưa đến trại (Pick Up)
+                    </span>
+                  </label>
+
+                  {transportSelections[camper.camperId]?.pickUp && (
+                    <div className="ml-6 space-y-2">
+                      {/* Route Select */}
+                      <Select
+                        placeholder="Chọn tuyến đường"
+                        className="w-full"
+                        value={
+                          transportSelections[camper.camperId]?.pickUp?.routeId || undefined
+                        }
+                        onChange={(value) =>
+                          handleRouteSelect(camper.camperId, "pickUp", value)
+                        }
+                        loading={loadingRoutes}
+                      >
+                        {routes
+                          .filter((route) => route.routeType === "PickUp")
+                          .map((route) => (
+                            <Select.Option
+                              key={route.routeId}
+                              value={route.routeId}
+                            >
+                              {route.routeName}
+                            </Select.Option>
+                          ))}
+                      </Select>
+
+                      {/* Stop Point Select */}
+                      {(transportSelections[camper.camperId]?.pickUp?.routeId ?? 0) > 0 && (
+                        <Select
+                          placeholder="Chọn điểm dừng"
+                          className="w-full"
+                          value={
+                            transportSelections[camper.camperId]?.pickUp
+                              ?.stopPointId || undefined
+                          }
+                          onChange={(value) => {
+                            const routeId = transportSelections[camper.camperId]?.pickUp?.routeId;
+                            if (!routeId) return;
+                            
+                            const stop = routeStops[routeId]?.find((s) => s.routeStopId === value);
+                            if (stop) {
+                              handleStopPointSelect(
+                                camper.camperId,
+                                "pickUp",
+                                value,
+                                stop.location.id
+                              );
+                            }
+                          }}
+                        >
+                          {transportSelections[camper.camperId]?.pickUp?.routeId &&
+                            routeStops[
+                              transportSelections[camper.camperId].pickUp!.routeId
+                            ]?.map((stop) => (
+                            <Select.Option
+                              key={stop.routeStopId}
+                              value={stop.routeStopId}
+                            >
+                              {stop.location.name} - {stop.location.address}
+                            </Select.Option>
+                          ))}
+                        </Select>
+                      )}
+
+                      {/* Schedule Select */}
+                      {(transportSelections[camper.camperId]?.pickUp?.stopPointId ?? 0) > 0 && (
+                        <Select
+                          placeholder="Chọn lịch trình"
+                          className="w-full"
+                          value={
+                            transportSelections[camper.camperId]?.pickUp
+                              ?.scheduleId || undefined
+                          }
+                          onChange={(value) =>
+                            handleScheduleSelect(camper.camperId, "pickUp", value)
+                          }
+                        >
+                          {transportSelections[camper.camperId]?.pickUp?.routeId &&
+                            schedules[
+                              transportSelections[camper.camperId].pickUp!.routeId
+                            ]
+                              ?.filter((s) => s.transportType === "PickUp")
+                              .map((schedule) => (
+                              <Select.Option
+                                key={schedule.transportScheduleId}
+                                value={schedule.transportScheduleId}
+                              >
+                                {dayjs(schedule.date).format("DD/MM/YYYY")} -{" "}
+                                {schedule.startTime} - {schedule.endTime}
+                              </Select.Option>
+                            ))}
+                        </Select>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* DropOff Section */}
+                <div className="space-y-2">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={!!transportSelections[camper.camperId]?.dropOff}
+                      onChange={() => toggleTransportType(camper.camperId, "dropOff")}
+                      className="w-4 h-4 rounded border-2 border-gray-300 text-[#FF8F50] focus:ring-[#FF8F50] cursor-pointer"
+                    />
+                    <span className="text-sm font-medium text-gray-700">
+                      Đón về (Drop Off)
+                    </span>
+                  </label>
+
+                  {transportSelections[camper.camperId]?.dropOff && (
+                    <div className="ml-6 space-y-2">
+                      {/* Route Select */}
+                      <Select
+                        placeholder="Chọn tuyến đường"
+                        className="w-full"
+                        value={
+                          transportSelections[camper.camperId]?.dropOff?.routeId || undefined
+                        }
+                        onChange={(value) =>
+                          handleRouteSelect(camper.camperId, "dropOff", value)
+                        }
+                        loading={loadingRoutes}
+                      >
+                        {routes
+                          .filter((route) => route.routeType === "DropOff")
+                          .map((route) => (
+                            <Select.Option
+                              key={route.routeId}
+                              value={route.routeId}
+                            >
+                              {route.routeName}
+                            </Select.Option>
+                          ))}
+                      </Select>
+
+                      {/* Stop Point Select */}
+                      {(transportSelections[camper.camperId]?.dropOff?.routeId ?? 0) > 0 && (
+                        <Select
+                          placeholder="Chọn điểm dừng"
+                          className="w-full"
+                          value={
+                            transportSelections[camper.camperId]?.dropOff
+                              ?.stopPointId || undefined
+                          }
+                          onChange={(value) => {
+                            const routeId = transportSelections[camper.camperId]?.dropOff?.routeId;
+                            if (!routeId) return;
+                            
+                            const stop = routeStops[routeId]?.find((s) => s.routeStopId === value);
+                            if (stop) {
+                              handleStopPointSelect(
+                                camper.camperId,
+                                "dropOff",
+                                value,
+                                stop.location.id
+                              );
+                            }
+                          }}
+                        >
+                          {transportSelections[camper.camperId]?.dropOff?.routeId &&
+                            routeStops[
+                              transportSelections[camper.camperId].dropOff!.routeId
+                            ]?.map((stop) => (
+                            <Select.Option
+                              key={stop.routeStopId}
+                              value={stop.routeStopId}
+                            >
+                              {stop.location.name} - {stop.location.address}
+                            </Select.Option>
+                          ))}
+                        </Select>
+                      )}
+
+                      {/* Schedule Select */}
+                      {(transportSelections[camper.camperId]?.dropOff?.stopPointId ?? 0) > 0 && (
+                        <Select
+                          placeholder="Chọn lịch trình"
+                          className="w-full"
+                          value={
+                            transportSelections[camper.camperId]?.dropOff
+                              ?.scheduleId || undefined
+                          }
+                          onChange={(value) =>
+                            handleScheduleSelect(camper.camperId, "dropOff", value)
+                          }
+                        >
+                          {transportSelections[camper.camperId]?.dropOff?.routeId &&
+                            schedules[
+                              transportSelections[camper.camperId].dropOff!.routeId
+                            ]
+                              ?.filter((s) => s.transportType === "DropOff")
+                              .map((schedule) => (
+                              <Select.Option
+                                key={schedule.transportScheduleId}
+                                value={schedule.transportScheduleId}
+                              >
+                                {dayjs(schedule.date).format("DD/MM/YYYY")} -{" "}
+                                {schedule.startTime} - {schedule.endTime}
+                              </Select.Option>
+                            ))}
+                        </Select>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           ))}
