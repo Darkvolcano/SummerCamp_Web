@@ -20,6 +20,13 @@ export interface AttendanceFolderScheduleResponse {
   message?: string;
 }
 
+export interface PreloadFaceDatabaseResponse {
+  success: boolean;
+  campId: number;
+  message?: string;
+  alreadyLoaded?: boolean;
+}
+
 const attendanceFolderService = {
   // Manually triggers folder creation for a specific camp (for testing/admin purposes)
   createFolders: async (campId: number): Promise<AttendanceFolderCreateResponse> => {
@@ -60,6 +67,23 @@ const attendanceFolderService = {
       if (axios.isAxiosError(error)) {
         throw new Error(
           error.response?.data?.message || "Failed to schedule folder creation job"
+        );
+      }
+      throw error;
+    }
+  },
+
+  // Manually preload face database for a specific camp (triggers immediate job execution)
+  preloadFaceDatabase: async (campId: number, forceReload: boolean = false): Promise<PreloadFaceDatabaseResponse> => {
+    try {
+      const response = await axiosInstance.post(`/admin/ai/preload/${campId}`, null, {
+        params: { forceReload }
+      });
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw new Error(
+          error.response?.data?.message || "Failed to preload face database"
         );
       }
       throw error;
