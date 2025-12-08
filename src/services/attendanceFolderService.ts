@@ -27,6 +27,13 @@ export interface PreloadFaceDatabaseResponse {
   alreadyLoaded?: boolean;
 }
 
+export interface LoadedCampsStatsResponse {
+  success: boolean;
+  data: Record<string, number>;
+  totalCamps: number;
+  totalFaces: number;
+}
+
 const attendanceFolderService = {
   // Manually triggers folder creation for a specific camp (for testing/admin purposes)
   createFolders: async (campId: number): Promise<AttendanceFolderCreateResponse> => {
@@ -84,6 +91,21 @@ const attendanceFolderService = {
       if (axios.isAxiosError(error)) {
         throw new Error(
           error.response?.data?.message || "Failed to preload face database"
+        );
+      }
+      throw error;
+    }
+  },
+
+  // Get statistics about currently loaded camps in Python AI service
+  getLoadedCampsStats: async (): Promise<LoadedCampsStatsResponse> => {
+    try {
+      const response = await axiosInstance.get('/admin/ai/loaded-camps');
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw new Error(
+          error.response?.data?.message || "Failed to get loaded camps statistics"
         );
       }
       throw error;

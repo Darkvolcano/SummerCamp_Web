@@ -94,9 +94,9 @@ const Login = () => {
               navigate(PagePath.ADMIN_DASHBOARD);
             } else if (userRole === "staff") {
               navigate(PagePath.STAFF_CALENDAR);
-            }else if (userRole === "manager") {
+            } else if (userRole === "manager") {
               navigate(PagePath.MANAGER_DASHBOARD);
-            }else if (userRole === "driver") {
+            } else if (userRole === "driver") {
               navigate(PagePath.DRIVER_CALENDAR);
             } else {
               navigate(PagePath.HOME);
@@ -132,7 +132,10 @@ const Login = () => {
   };
 
   const handleForgotPassword = () => {
-    message.info("Chức năng đang được phát triển");
+    setIsSliding(true);
+    setTimeout(() => {
+      navigate(PagePath.FORGOT_PASSWORD);
+    }, 600);
   };
 
   const handleSignUp = () => {
@@ -347,7 +350,11 @@ const Login = () => {
                   </label>
                   <button
                     type="button"
-                    onClick={handleForgotPassword}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleForgotPassword();
+                    }}
                     disabled={loading}
                     className="forgot-link"
                   >
