@@ -27,6 +27,7 @@ export enum PagePath {
   USER_MYPROFILE = "/user/my-profile",
   USER_MYREGISTRATIONS = "/user/my-registrations",
   USER_MYREGISTRATIONS_DETAIL = "/user/my-registrations/:registrationId",
+  USER_PAYMENT_CALLBACK = "/user/payment-callback",
   USER_PAYMENT_HISTORY = "/user/payment-history",
   USER_PAYMENT_HISTORY_DETAIL = "/user/payment-history/:transactionId",
   USER_MYCAMPERS = "/user/my-campers",
