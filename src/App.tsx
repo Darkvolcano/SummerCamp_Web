@@ -43,6 +43,7 @@ import TransactionPage from "./pages/Admin/TransactionManagement/TransactionPage
 import MyProfile from "./pages/Parent/MyProfile/MyProfile";
 import MyRegistration from "./pages/Parent/MyRegistration/MyRegistration";
 import RegistrationDetail from "./pages/Parent/MyRegistration/MyRegistrationDetail";
+import PaymentCallback from "./pages/Parent/MyRegistration/PaymentCallback";
 import MyCampers from "./pages/Parent/MyCampers/MyCampers";
 import CamperDetail from "./pages/Parent/MyCampers/CamperDetail";
 import CamperSchedule from "./pages/Parent/MyCampers/CamperSchedule";
@@ -249,6 +250,14 @@ function App() {
               element={
                 <MainLayout>
                   <RegistrationDetail />
+                </MainLayout>
+              }
+            />
+            <Route
+              path={PagePath.USER_PAYMENT_CALLBACK}
+              element={
+                <MainLayout>
+                  <PaymentCallback />
                 </MainLayout>
               }
             />
