@@ -145,13 +145,13 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
       ...prev,
       [name]:
         name === "campTypeId" ||
-        name === "locationId" ||
-        name === "promotionId" ||
-        name === "minParticipants" ||
-        name === "maxParticipants" ||
-        name === "minAge" ||
-        name === "maxAge" ||
-        name === "price"
+          name === "locationId" ||
+          name === "promotionId" ||
+          name === "minParticipants" ||
+          name === "maxParticipants" ||
+          name === "minAge" ||
+          name === "maxAge" ||
+          name === "price"
           ? value === ""
             ? null
             : Number(value)
@@ -295,6 +295,32 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
       toastSuccess('Success', 'Face database preloaded successfully!');
     } catch (error: any) {
       let errorMsg = 'Failed to preload face database';
+      if (error.response?.data?.message) {
+        errorMsg = error.response.data.message;
+      }
+      toastError('Error', errorMsg);
+    }
+  };
+
+  const handleCheckLoadedCamps = async () => {
+    try {
+      const response = await attendanceFolderService.getLoadedCampsStats();
+
+      if (response.totalCamps === 0) {
+        toastError('No Camps Loaded', 'No camp is currently loaded in the Python AI service');
+        return;
+      }
+
+      const campsList = Object.entries(response.data)
+        .map(([campId, faceCount]) => `Camp ${campId}: ${faceCount} faces`)
+        .join(', ');
+
+      toastSuccess(
+        'Loaded Camps Statistics',
+        `Total: ${response.totalCamps} camp(s), ${response.totalFaces} faces. ${campsList}`
+      );
+    } catch (error: any) {
+      let errorMsg = 'Failed to get loaded camps statistics';
       if (error.response?.data?.message) {
         errorMsg = error.response.data.message;
       }
@@ -993,6 +1019,13 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
             >
               <CheckCircle size={16} />
               Preload Face DB
+            </button>
+            <button
+              onClick={handleCheckLoadedCamps}
+              className="flex items-center gap-1.5 px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-all font-medium text-sm"
+            >
+              <CheckCircle size={16} />
+              Check Loaded Camps
             </button>
           </div>
         </div>

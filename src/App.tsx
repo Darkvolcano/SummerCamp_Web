@@ -1,6 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
+import ForgotPassword from "./pages/ForgotPassword/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword/ResetPassword";
 import Home from "./pages/Home/Home";
 import Forbidden from "./pages/Forbidden/Forbidden";
 import UserProfile from "./pages/Profile/UserProfile";
@@ -66,6 +68,8 @@ function App() {
             <Route path={PagePath.LOGIN} element={<Login />} />
             <Route path={PagePath.REGISTER} element={<Register />} />
             <Route path={PagePath.VERIFY_OTP} element={<VerifyOtp />} />
+            <Route path={PagePath.FORGOT_PASSWORD} element={<ForgotPassword />} />
+            <Route path={PagePath.RESET_PASSWORD} element={<ResetPassword />} />
             <Route path={PagePath.FORBIDDEN} element={<Forbidden />} />
             <Route
               path={PagePath.CAMP}
@@ -139,11 +143,11 @@ function App() {
             {/* Staff Routes - Protected */}
             <Route element={<StaffLayout />}>
               <Route path={PagePath.STAFF_SCHEDULE} element={<StaffSchedule />} />
-            <Route path={PagePath.STAFF_CALENDAR} element={<MyCalendar />} />
-            <Route path={PagePath.STAFF_ATTENDANCE_CHECKING} element={<AttendanceChecking />} />
-            <Route path={PagePath.STAFF_ATTENDANCE_CAMPERS} element={<AttendanceCamperList />} />
-            <Route path={PagePath.STAFF_CHECKIN} element={<CheckIn />} />
-            <Route path={PagePath.STAFF_LIVESTREAM_HOST} element={<HostLiveStream />} />
+              <Route path={PagePath.STAFF_CALENDAR} element={<MyCalendar />} />
+              <Route path={PagePath.STAFF_ATTENDANCE_CHECKING} element={<AttendanceChecking />} />
+              <Route path={PagePath.STAFF_ATTENDANCE_CAMPERS} element={<AttendanceCamperList />} />
+              <Route path={PagePath.STAFF_CHECKIN} element={<CheckIn />} />
+              <Route path={PagePath.STAFF_LIVESTREAM_HOST} element={<HostLiveStream />} />
             </Route>
             <Route path={PagePath.STAFF_CAMPS} element={<MyCamps />} />
             <Route path={PagePath.STAFF_BLOGS} element={<MyBlogs />} />
