@@ -66,6 +66,7 @@ export enum PagePath {
   STAFF_ATTENDANCE_CHECKING = "/staff/attendance",
   STAFF_ATTENDANCE_CAMPERS = "/staff/attendance/:scheduleId/campers",
   STAFF_CALENDAR = "/staff/calendar",
+  STAFF_CAMP_DETAIL = "/staff/camp-detail",
   STAFF_PHOTOS = "/staff/photos",
   STAFF_CHECKIN = "/staff/check-in",
   STAFF_LIVESTREAM_HOST = "/staff/livestream/host/:roomId",

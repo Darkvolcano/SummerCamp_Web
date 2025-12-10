@@ -169,6 +169,7 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
           PagePath.STAFF_ATTENDANCE_CHECKING,
           PagePath.STAFF_ATTENDANCE_CAMPERS,
           PagePath.STAFF_CALENDAR,
+          PagePath.STAFF_CAMP_DETAIL,
           PagePath.STAFF_LIVESTREAM_HOST,
           PagePath.STAFF_CHECKIN,
           "/staff/profile",
