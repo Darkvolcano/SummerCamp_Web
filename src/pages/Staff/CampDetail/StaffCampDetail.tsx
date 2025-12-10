@@ -331,12 +331,6 @@ const StaffCampDetail: React.FC = () => {
                   <p className="text-sm font-semibold text-[#374151]">Group Name</p>
                   <p className="text-sm text-[#6B7280]">{group.groupName}</p>
                 </div>
-                <div>
-                  <p className="text-sm font-semibold text-[#374151]">Age Range</p>
-                  <p className="text-sm text-[#6B7280]">
-                    {group.minAge} - {group.maxAge} years old
-                  </p>
-                </div>
                 <button
                   onClick={handleViewGroupCampers}
                   className="w-full mt-4 inline-flex items-center justify-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-medium text-sm"
@@ -363,16 +357,6 @@ const StaffCampDetail: React.FC = () => {
                 <div>
                   <p className="text-sm font-semibold text-[#374151]">Accommodation Name</p>
                   <p className="text-sm text-[#6B7280]">{accommodation.name}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-[#374151]">Capacity</p>
-                  <p className="text-sm text-[#6B7280]">{accommodation.capacity} people</p>
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-[#374151]">Status</p>
-                  <Tag color={accommodation.isActive ? 'green' : 'red'}>
-                    {accommodation.isActive ? 'Active' : 'Inactive'}
-                  </Tag>
                 </div>
                 <button
                   onClick={handleViewAccommodationCampers}
