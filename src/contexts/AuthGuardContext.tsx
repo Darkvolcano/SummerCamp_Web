@@ -215,6 +215,7 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
           PagePath.ADMIN_SETTINGS,
           PagePath.ADMIN_CAMPTYPES,
           PagePath.ADMIN_CAMP_LOCATIONS,
+          PagePath.ADMIN_PROMOTIONS,
           PagePath.ADMIN_USERS,
           PagePath.ADMIN_FAQS,
           PagePath.ADMIN_TRANSACTIONS,

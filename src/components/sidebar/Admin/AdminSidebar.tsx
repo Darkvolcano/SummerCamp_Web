@@ -15,6 +15,7 @@ import {
   Shield,
   Logs,
   MapPin,
+  Tag,
 } from "lucide-react";
 import { useAuthStore } from "../../../services/userService";
 import "./AdminSidebar.css";
@@ -58,6 +59,11 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ onCollapsedChange }) => {
       path: PagePath.ADMIN_CAMP_LOCATIONS,
       label: "Camp Locations",
       icon: <MapPin size={20} />,
+    },
+    {
+      path: PagePath.ADMIN_PROMOTIONS,
+      label: "Promotions",
+      icon: <Tag size={20} />,
     },
     {
       path: PagePath.ADMIN_USERS,
