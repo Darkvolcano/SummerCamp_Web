@@ -10,6 +10,7 @@ import {
   LogOut,
   UserCircle,
   Briefcase,
+  Info,
 } from "lucide-react";
 import { useAuthStore } from "../../../services/userService";
 import { StaffContext } from "../../../contexts/StaffContext";
@@ -56,6 +57,11 @@ const StaffSidebar: React.FC<StaffSidebarProps> = ({ onCollapsedChange }) => {
       path: PagePath.STAFF_CALENDAR,
       label: "My Calendar",
       icon: <Calendar size={20} />,
+    },
+    {
+      path: PagePath.STAFF_CAMP_DETAIL,
+      label: "Camp Detail",
+      icon: <Info size={20} />,
     },
     {
       path: PagePath.STAFF_ATTENDANCE_CHECKING,

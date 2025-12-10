@@ -16,6 +16,7 @@ const CampDetailNavbar: React.FC<CampDetailNavbarProps> = ({
     { id: 'overview', label: 'Overview' },
     { id: 'staff', label: 'Staff' },
     { id: 'schedule', label: 'Schedule' },
+    { id: 'transportation', label: 'Transportation' },
     { id: 'group', label: 'Group' },
     { id: 'accommodation', label: 'Accommodation' },
     { id: 'dashboard', label: 'Dashboard' },

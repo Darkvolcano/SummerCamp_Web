@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   X,
   Edit2,
   Trash2,
   CheckCircle,
   XCircle,
+
   Upload,
   Plus,
   Loader,
@@ -58,8 +59,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
   const [locations, setLocations] = useState<LocationResponseDto[]>([]);
   const [promotions, setPromotions] = useState<PromotionResponseDto[]>([]);
   const [openDeletePopover, setOpenDeletePopover] = useState(false);
-  const [openApprovePopover, setOpenApprovePopover] = useState(false);
-  const [openRejectPopover, setOpenRejectPopover] = useState(false);
+
   const [showAddLocation, setShowAddLocation] = useState(false);
 
   const [campStatus, setCampStatus] = useState<string>("");
@@ -83,12 +83,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
     registrationEndDate: "",
   });
 
-  // Fetch camp data and related data
-  useEffect(() => {
-    fetchCampData();
-  }, [campId]);
-
-  const fetchCampData = async () => {
+  const fetchCampData = useCallback(async () => {
     try {
       setLoading(true);
       const [campData, typesData, locationsData, promotionsData] =
@@ -133,7 +128,12 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, [campId, toastError]);
+
+  // Fetch camp data and related data
+  useEffect(() => {
+    fetchCampData();
+  }, [fetchCampData]);
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -203,35 +203,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
     }
   };
 
-  const handleApprove = async () => {
-    try {
-      await campService.approveCamp(campId);
-      toastSuccess('Success', 'Camp approved and published successfully!');
-      fetchCampData();
-      onUpdate?.();
-    } catch (error: any) {
-      let errorMsg = 'Failed to approve camp';
-      if (error.response?.data?.message) {
-        errorMsg = error.response.data.message;
-      }
-      toastError('Error', errorMsg);
-    }
-  };
 
-  const handleReject = async () => {
-    try {
-      await campService.rejectCamp(campId);
-      toastSuccess('Success', 'Camp rejected successfully!');
-      fetchCampData();
-      onUpdate?.();
-    } catch (error: any) {
-      let errorMsg = 'Failed to reject camp';
-      if (error.response?.data?.message) {
-        errorMsg = error.response.data.message;
-      }
-      toastError('Error', errorMsg);
-    }
-  };
 
   const handleOpenRegistration = async () => {
     try {
@@ -404,84 +376,12 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
       <div className="pb-12">
         {/* Action Buttons */}
         <div className="mb-6 flex gap-3 justify-end">
-          {camp.status === CampStatus.PENDING_APPOVAL && (
-            <>
-              <Popover
-                content={
-                  <div className="space-y-2">
-                    <p className="text-sm font-medium">Approve this camp?</p>
-                    <div className="flex gap-2">
-                      <Button
-                        size="small"
-                        type="primary"
-                        danger={false}
-                        onClick={() => {
-                          handleApprove();
-                          setOpenApprovePopover(false);
-                        }}
-                      >
-                        Yes
-                      </Button>
-                      <Button
-                        size="small"
-                        onClick={() => setOpenApprovePopover(false)}
-                      >
-                        No
-                      </Button>
-                    </div>
-                  </div>
-                }
-                title="Confirm Approval"
-                trigger="click"
-                open={openApprovePopover}
-                onOpenChange={setOpenApprovePopover}
-              >
-                <button className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-medium">
-                  <CheckCircle size={18} />
-                  Approve & Publish
-                </button>
-              </Popover>
 
-              <Popover
-                content={
-                  <div className="space-y-2">
-                    <p className="text-sm font-medium">Reject this camp?</p>
-                    <div className="flex gap-2">
-                      <Button
-                        size="small"
-                        danger
-                        onClick={() => {
-                          handleReject();
-                          setOpenRejectPopover(false);
-                        }}
-                      >
-                        Yes
-                      </Button>
-                      <Button
-                        size="small"
-                        onClick={() => setOpenRejectPopover(false)}
-                      >
-                        No
-                      </Button>
-                    </div>
-                  </div>
-                }
-                title="Confirm Rejection"
-                trigger="click"
-                open={openRejectPopover}
-                onOpenChange={setOpenRejectPopover}
-              >
-                <button className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all font-medium">
-                  <XCircle size={18} />
-                  Reject
-                </button>
-              </Popover>
-            </>
-          )}
           {!isEditing &&
             [
               CampStatus.DRAFT,
               CampStatus.PENDING_APPOVAL,
+              CampStatus.REJECTED,
               CampStatus.CANCELED,
             ].includes(camp.status as CampStatus) && (
               <>
@@ -645,7 +545,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
                   <div className="space-y-3">
                     {/* Preview */}
                     {(imagePreview || formData.image) && (
-                      <div className="relative w-full h-40 rounded-lg overflow-hidden border border-gray-300">
+                      <div className="relative w-full h-96 rounded-lg overflow-hidden border border-gray-300">
                         <img
                           src={imagePreview || formData.image || ""}
                           alt="Preview"

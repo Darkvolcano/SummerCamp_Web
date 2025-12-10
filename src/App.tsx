@@ -39,6 +39,7 @@ import ActivityScheduleManagement from "./pages/Manager/Activities/activitySched
 import AccommodationManagement from "./pages/Manager/Accomodation/AccommodationManagement";
 import TransportationManagement from "./pages/Manager/Transportation";
 import CampTypePage from "./pages/Admin/CampTypeManagement/CampTypePage";
+import PromotionPage from "./pages/Admin/PromotionManagement/PromotionPage";
 import TransactionPage from "./pages/Admin/TransactionManagement/TransactionPage";
 import MyProfile from "./pages/Parent/MyProfile/MyProfile";
 import MyRegistration from "./pages/Parent/MyRegistration/MyRegistration";
@@ -57,6 +58,8 @@ import ViewLiveStream from "./pages/Parent/LiveStream/ViewLiveStream";
 import CampTransaction from "./pages/Manager/Transaction/campTransaction";
 import CheckIn from "./pages/Staff/CheckIn/CheckIn";
 import UserManagement from "./pages/Admin/UserManagement/UserManagement";
+import CampLocationPage from "./pages/Admin/CampLocationManagement/CampLocationPage";
+import StaffCampDetail from "./pages/Staff/CampDetail/StaffCampDetail";
 
 function App() {
   return (
@@ -121,6 +124,8 @@ function App() {
               <Route path={PagePath.ADMIN_CAMPS} element={<CampManagement />} />
               <Route path={PagePath.ADMIN_BLOGS} element={<BlogManagement />} />
               <Route path={PagePath.ADMIN_CAMPTYPES} element={<CampTypePage />} />
+              <Route path={PagePath.ADMIN_CAMP_LOCATIONS} element={<CampLocationPage />} />
+              <Route path={PagePath.ADMIN_PROMOTIONS} element={<PromotionPage />} />
               <Route path={PagePath.ADMIN_TRANSACTIONS} element={<TransactionPage />} />
               <Route
                 path={PagePath.ADMIN_CAMPS_DETAIL}
@@ -144,6 +149,7 @@ function App() {
             <Route element={<StaffLayout />}>
               <Route path={PagePath.STAFF_SCHEDULE} element={<StaffSchedule />} />
               <Route path={PagePath.STAFF_CALENDAR} element={<MyCalendar />} />
+              <Route path={PagePath.STAFF_CAMP_DETAIL} element={<StaffCampDetail />} />
               <Route path={PagePath.STAFF_ATTENDANCE_CHECKING} element={<AttendanceChecking />} />
               <Route path={PagePath.STAFF_ATTENDANCE_CAMPERS} element={<AttendanceCamperList />} />
               <Route path={PagePath.STAFF_CHECKIN} element={<CheckIn />} />

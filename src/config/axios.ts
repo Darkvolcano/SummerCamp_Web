@@ -52,9 +52,13 @@ axiosInstance.interceptors.response.use(
       }
     }
 
-    // Handle 403 Forbidden
     if (error.response?.status === 403) {
-      window.location.href = "/forbidden";
+      import('antd').then(({ message }) => {
+        message.error({
+          content: 'Access Denied: You do not have permission to access this resource',
+          duration: 4,
+        });
+      });
     }
 
     return Promise.reject(error);
