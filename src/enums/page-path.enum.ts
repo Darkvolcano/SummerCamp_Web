@@ -46,6 +46,7 @@ export enum PagePath {
   ADMIN_CAMPS = "/admin/camps",
   ADMIN_CAMPS_DETAIL = "/admin/camps/:campId",
   ADMIN_CAMPTYPES = "/admin/camp-types",
+  ADMIN_CAMP_LOCATIONS = "/admin/camp-locations",
   ADMIN_BLOGS = "/admin/blogs",
   ADMIN_ACCOUNTS = "/admin/accounts",
   ADMIN_VEHICLES = "/admin/vehicles",
