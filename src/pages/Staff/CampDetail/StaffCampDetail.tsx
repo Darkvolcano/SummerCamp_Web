@@ -209,7 +209,7 @@ const StaffCampDetail: React.FC = () => {
               <img
                 src={camp.image}
                 alt={camp.name}
-                className="w-full h-64 object-cover rounded-lg"
+                className="w-full h-96 object-cover rounded-lg"
               />
             </div>
           )}

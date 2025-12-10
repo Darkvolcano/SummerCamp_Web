@@ -545,7 +545,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
                   <div className="space-y-3">
                     {/* Preview */}
                     {(imagePreview || formData.image) && (
-                      <div className="relative w-full h-40 rounded-lg overflow-hidden border border-gray-300">
+                      <div className="relative w-full h-96 rounded-lg overflow-hidden border border-gray-300">
                         <img
                           src={imagePreview || formData.image || ""}
                           alt="Preview"

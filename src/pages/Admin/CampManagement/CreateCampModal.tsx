@@ -373,7 +373,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
                 <div className="space-y-3">
                   {/* Preview */}
                   {imagePreview && (
-                    <div className="relative w-full h-40 rounded-lg overflow-hidden border border-gray-300">
+                    <div className="relative w-full h-96 rounded-lg overflow-hidden border border-gray-300">
                       <img
                         src={imagePreview}
                         alt="Preview"
