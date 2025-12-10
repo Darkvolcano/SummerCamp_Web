@@ -594,9 +594,10 @@ const RegistrationPage: React.FC = () => {
 
       // TODO: Redirect to my registrations page or show confirmation modal
       // navigate(PagePath.MY_REGISTRATIONS);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating registration:", error);
-      toastError("Lỗi", "Không thể tạo đăng ký");
+      const errorMessage = error.response?.data?.message || error.response?.data?.title || "Không thể tạo đăng ký";
+      toastError("Lỗi", errorMessage);
     } finally {
       setSubmitting(false);
     }
