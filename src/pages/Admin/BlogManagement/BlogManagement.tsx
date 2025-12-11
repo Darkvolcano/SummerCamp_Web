@@ -25,7 +25,7 @@ export type BlogResponseDto = BlogDto;
 export interface BlogRequestDto {
   title: string;
   content: string;
-  image: string;
+  imageUrl: string;
   authorId?: number;
 }
 
@@ -49,7 +49,7 @@ export default function BlogManagement() {
       (blog: BlogDto) =>
         blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         blog.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        blog.Author?.fullName?.toLowerCase().includes(searchTerm.toLowerCase())
+        blog.authorName?.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [searchTerm, blogs]);
 
@@ -207,7 +207,7 @@ export default function BlogManagement() {
                     <td>
                       <div className="author-cell">
                         <User size={16} />
-                        {blog.Author?.fullName || `User ID: ${blog.authorId}`}
+                        {blog.authorName || `User ID: ${blog.authorId}`}
                       </div>
                     </td>
                     <td>
