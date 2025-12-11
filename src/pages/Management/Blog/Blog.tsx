@@ -545,7 +545,7 @@ const BlogManagement = () => {
                   {detailedBlog.Author?.fullName || "Ẩn danh"}
                 </Descriptions.Item>
                 <Descriptions.Item label="Ngày tạo">
-                  {new Date(detailedBlog.createdAt).toLocaleDateString("vi-VN")}
+                  {detailedBlog.createdAt ? new Date(detailedBlog.createdAt).toLocaleDateString("vi-VN") : "N/A"}
                 </Descriptions.Item>
               </Descriptions>
             </div>

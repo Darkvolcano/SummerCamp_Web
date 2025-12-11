@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { X, Save, FileText } from "lucide-react";
 import { message } from "antd";
 import type { BlogResponseDto, BlogRequestDto } from "./BlogManagement";
-import { useCreateBlogs, useUpdateBlogs } from "../../../services/blogService";
+import { useCreateBlogs, useUpdateBlogs, type CreateBlog } from "../../../services/blogService";
 import { CKEditorComponent } from "../../../components/CKEditor/CKEditor";
 import { useAuthStore } from "../../../services/userService";
 import "./BlogFormModal.css";
@@ -27,8 +27,9 @@ export default function BlogFormModal({
     const [formData, setFormData] = useState<BlogRequestDto>({
         title: "",
         content: "",
-        image: "",
+        imageUrl: "",
     });
+    const [imageFile, setImageFile] = useState<File | null>(null);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [saving, setSaving] = useState(false);
 
@@ -37,7 +38,7 @@ export default function BlogFormModal({
             setFormData({
                 title: blog.title,
                 content: blog.content,
-                image: blog.image || "",
+                imageUrl: blog.imageUrl || "",
             });
         }
     }, [blog, isEditing]);
@@ -61,6 +62,15 @@ export default function BlogFormModal({
         }
     };
 
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0] || null;
+        setImageFile(file);
+        // Clear error for imageUrl field
+        if (errors.imageUrl) {
+            setErrors((prev) => ({ ...prev, imageUrl: "" }));
+        }
+    };
+
     const validate = (): boolean => {
         const newErrors: Record<string, string> = {};
 
@@ -76,6 +86,10 @@ export default function BlogFormModal({
             newErrors.content = "Content must be at least 20 characters";
         }
 
+        if (!imageFile && !isEditing) {
+            newErrors.imageUrl = "Image is required";
+        }
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -88,7 +102,6 @@ export default function BlogFormModal({
             return;
         }
 
-        // Get current user from auth store
         const { user } = useAuthStore.getState();
         if (!user || !user.id) {
             message.error("User not authenticated. Please login again.");
@@ -98,10 +111,16 @@ export default function BlogFormModal({
         try {
             setSaving(true);
 
-            // Attach current user ID to the blog data
-            const blogDataWithAuthor = {
-                ...formData,
-                authorId: user.id
+            if (!imageFile && !isEditing) {
+                message.error("Please select an image");
+                return;
+            }
+
+            const blogDataWithAuthor: CreateBlog = {
+                title: formData.title,
+                content: formData.content,
+                imageUrl: imageFile!,
+                authorId: user.id,
             };
 
             if (isEditing && blog) {
@@ -169,6 +188,22 @@ export default function BlogFormModal({
                             />
                             {errors.content && (
                                 <span className="error-message">{errors.content}</span>
+                            )}
+                        </div>
+
+                        {/* Image Upload */}
+                        <div className="form-group">
+                            <label>
+                                Image <span className="required">*</span>
+                            </label>
+                            <input
+                                type="file"
+                                name="imageUrl"
+                                onChange={handleFileChange}
+                                className={errors.imageUrl ? "error" : ""}
+                            />
+                            {errors.imageUrl && (
+                                <span className="error-message">{errors.imageUrl}</span>
                             )}
                         </div>
                     </div>
