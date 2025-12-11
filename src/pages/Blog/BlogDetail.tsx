@@ -58,7 +58,7 @@ const BlogDetail: React.FC = () => {
                     Bài viết không tồn tại hoặc đã bị xóa
                 </p>
                 <button
-                    onClick={() => navigate("/blog")}
+                    onClick={() => navigate("/blog-posts")}
                     className="bg-[#FF8F50] text-white px-8 py-3 rounded-full hover:bg-[#ff7e3d] transition-all shadow-lg hover:shadow-xl hover:scale-105 font-semibold"
                 >
                     ← Quay lại danh sách
@@ -71,7 +71,7 @@ const BlogDetail: React.FC = () => {
         <div className="blog-detail-page bg-gradient-to-b from-gray-50 to-white min-h-screen">
             <div className="max-w-7xl mx-auto px-4 pt-24 pb-1">
                 <button
-                    onClick={() => navigate("/blog")}
+                    onClick={() => navigate("/blog-posts")}
                     className="flex bg-[#FF8F50] text-white items-center gap-2 hover:text-[#ffffff] font-semibold group px-6 py-2 rounded-full hover:shadow-lg hover:bg-[#ff7e3d] transition-all"
                 >
                     <ArrowLeftOutlined className="group-hover:-translate-x-1 transition-transform" />
@@ -83,14 +83,24 @@ const BlogDetail: React.FC = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <div className="lg:col-span-2 space-y-6">
                         <div className="relative h-96 rounded-3xl overflow-hidden shadow-2xl group">
-                            <img
-                                src={
-                                    blog.imageUrl ||
-                                    "https://via.placeholder.com/1200x600?text=Blog+Post"
-                                }
-                                alt={blog.title}
-                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                            />
+                            {blog.imageUrl && (
+                                <img
+                                    src={blog.imageUrl}
+                                    alt={blog.title}
+                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                    onError={(e) => {
+                                        console.error("Image failed to load:", blog.imageUrl);
+                                        (e.target as HTMLImageElement).src = "https://via.placeholder.com/1200x600?text=Blog+Post";
+                                    }}
+                                />
+                            )}
+                            {!blog.imageUrl && (
+                                <img
+                                    src="https://via.placeholder.com/1200x600?text=Blog+Post"
+                                    alt={blog.title}
+                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                />
+                            )}
                             <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
                         </div>
 
@@ -113,8 +123,8 @@ const BlogDetail: React.FC = () => {
                             </div>
 
                             <div
-                                className="prose prose-lg max-w-none text-gray-700 leading-relaxed"
-                                dangerouslySetInnerHTML={{ __html: blog.content }}
+                                className="text-gray-700 leading-relaxed space-y-4 [&_p]:mb-4 [&_p]:leading-7 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:mt-6 [&_h2]:mb-3 [&_h3]:text-xl [&_h3]:font-bold [&_h3]:mt-4 [&_h3]:mb-2 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:mb-2"
+                                dangerouslySetInnerHTML={{ __html: blog.content || "<p>Không có nội dung</p>" }}
                             />
                         </div>
                     </div>

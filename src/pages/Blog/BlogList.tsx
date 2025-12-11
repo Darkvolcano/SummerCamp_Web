@@ -117,6 +117,10 @@ const BlogList: React.FC = () => {
                                                     "https://via.placeholder.com/400x300?text=Blog+Post"
                                                 }
                                                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                                onError={(e) => {
+                                                    console.error("Blog list image failed to load:", blog.imageUrl, "blogId:", blog.id);
+                                                    (e.target as HTMLImageElement).src = "https://via.placeholder.com/400x300?text=Blog+Post";
+                                                }}
                                             />
                                         </div>
 
@@ -138,9 +142,9 @@ const BlogList: React.FC = () => {
                                                 </div>
 
                                                 <div
-                                                    className="text-gray-600 text-sm mb-4 line-clamp-3"
+                                                    className="text-gray-600 text-sm mb-4 line-clamp-3 [&_p]:mb-1 [&_p]:leading-tight"
                                                     dangerouslySetInnerHTML={{
-                                                        __html: blog.content.substring(0, 150) + "...",
+                                                        __html: (blog.content ? blog.content.substring(0, 150) : "Không có nội dung") + "...",
                                                     }}
                                                 />
 

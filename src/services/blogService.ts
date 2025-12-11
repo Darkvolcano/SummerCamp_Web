@@ -2,6 +2,23 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "../config/axios";
 import axios from "axios";
 
+// Helper function to convert plain text to safe HTML
+const convertContentToSafeHTML = (content: string): string => {
+  if (!content) return "";
+
+  // If content already contains HTML tags, return as is
+  if (/<[^>]*>/g.test(content)) {
+    return content;
+  }
+
+  // Convert plain text to HTML paragraphs
+  return content
+    .split(/\n\n+/) // Split by double newlines
+    .filter(line => line.trim()) // Remove empty lines
+    .map(line => `<p>${line.trim().replace(/\n/g, '<br>')}</p>`)
+    .join("");
+};
+
 export interface BlogDto {
   id: number;
   title: string;
@@ -28,8 +45,13 @@ const fetchBlogs = async (): Promise<BlogDto[]> => {
   const response = await axiosInstance.get("blog");
   const blogs = response.data;
 
+  console.log("Raw blog API response:", blogs);
+
   if (Array.isArray(blogs)) {
-    return blogs as BlogDto[];
+    return blogs.map(blog => ({
+      ...blog,
+      content: convertContentToSafeHTML(blog.content)
+    })) as BlogDto[];
   }
 
   return [];
@@ -47,7 +69,10 @@ const fetchBlogsActive = async (): Promise<BlogDto[]> => {
   const blogs = response.data;
 
   if (Array.isArray(blogs)) {
-    return blogs as BlogDto[];
+    return blogs.map(blog => ({
+      ...blog,
+      content: convertContentToSafeHTML(blog.content)
+    })) as BlogDto[];
   }
 
   return [];
@@ -98,7 +123,12 @@ export const useGetBlogById = (id: number) => {
     queryKey: ["blog", id],
     queryFn: async () => {
       const response = await axiosInstance.get(`blog/${id}`);
-      return response.data as BlogDto;
+      const blog = response.data as BlogDto;
+      console.log(`Blog detail API response for ID ${id}:`, blog);
+      return {
+        ...blog,
+        content: convertContentToSafeHTML(blog.content)
+      };
     },
     enabled: !!id,
   });
