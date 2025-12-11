@@ -1,0 +1,120 @@
+.contact-page {
+  min-height: 100vh;
+  background: white;
+}
+
+/* Hero Section */
+.hero-section {
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+}
+
+.hero-background::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 143, 80, 0.1) 0%,
+    rgba(255, 126, 61, 0.1) 100%
+  );
+  z-index: 1;
+}
+
+/* Contact Info Cards Animation */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.contact-info-section .grid > div:hover {
+  animation: float 2s ease-in-out infinite;
+}
+
+/* Form Styles */
+.form-container input:focus,
+.form-container textarea:focus,
+.form-container select:focus {
+  box-shadow: 0 0 0 3px rgba(255, 143, 80, 0.1);
+}
+
+/* Social Media Hover Effect */
+.social-section a {
+  position: relative;
+  overflow: hidden;
+}
+
+.social-section a::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.social-section a:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* FAQ Cards */
+.faq-section .grid > div {
+  position: relative;
+  overflow: hidden;
+}
+
+.faq-section .grid > div::before {
+  content: "?";
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  font-size: 120px;
+  font-weight: bold;
+  color: rgba(255, 143, 80, 0.05);
+  z-index: 0;
+}
+
+.faq-section .grid > div > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero-section h1 {
+    font-size: 2.5rem;
+  }
+
+  .hero-section p {
+    font-size: 1rem;
+  }
+
+  .contact-info-section h2,
+  .map-form-section h3,
+  .social-section h3,
+  .faq-section h3 {
+    font-size: 2rem;
+  }
+}

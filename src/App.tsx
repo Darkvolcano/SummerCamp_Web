@@ -25,6 +25,7 @@ import ManagerLayout from "./layouts/ManagerLayout";
 import ListCamp from "./pages/ListCamp/ListCamp";
 import CampDetail from "./pages/CampDetail/CampDetail";
 import About from "./pages/About/About";
+import Contact from "./pages/Contact/Contact";
 import ManagerDashboard from "./pages/Manager/Dashboard/ManagerDashboard";
 import ManagerRegistrationsPage from "./pages/Manager/Registrations/ManagerRegistrationsPage";
 import AdminLayout from "./layouts/AdminLayout";
@@ -97,6 +98,14 @@ function App() {
               element={
                 <MainLayout>
                   <About />
+                </MainLayout>
+              }
+            />
+            <Route
+              path={PagePath.CONTACT}
+              element={
+                <MainLayout>
+                  <Contact />
                 </MainLayout>
               }
             />
