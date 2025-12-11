@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Spin, message, Modal, Form, Input, InputNumber, Select } from 'antd';
-import { Search, Plus, Edit2, CheckCircle } from 'lucide-react';
+import { Search, Plus, Edit2, CheckCircle2 } from 'lucide-react';
 import { useManagerContext } from '../../../hooks/useManagerContext';
 import { useNotification } from '../../../contexts/NotificationContext';
 import groupService, { type GroupResponseDto, type GroupRequestDto } from '../../../services/groupService';
@@ -338,7 +338,7 @@ const GroupManagement: React.FC = () => {
                           disabled={!selectedGroups[camper?.camperId]}
                           className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] disabled:bg-gray-300 disabled:cursor-not-allowed transition-all font-medium text-sm"
                         >
-                          <CheckCircle size={16} />
+                          <CheckCircle2 size={16} />
                           Assign
                         </button>
                       </div>
