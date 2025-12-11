@@ -94,9 +94,9 @@ const BlogManagement = () => {
     form.setFieldsValue({
       title: record.title,
       content: record.content,
-      image: record.image,
+      image: record.imageUrl,
     });
-    setUploadedImageUrl(record.image || null);
+    setUploadedImageUrl(record.imageUrl || null);
     setFileList([]);
     setIsEditModalVisible(true);
   };
@@ -170,7 +170,7 @@ const BlogManagement = () => {
     form
       .validateFields()
       .then(async (values) => {
-        let imageUrl = uploadedImageUrl || selectedBlog.image;
+        let imageUrl = uploadedImageUrl || selectedBlog.imageUrl;
         if (fileList.length > 0 && fileList[0].originFileObj) {
           try {
             imageUrl = await uploadImageAndGetUrl(
@@ -528,7 +528,7 @@ const BlogManagement = () => {
                 </Descriptions.Item>
                 <Descriptions.Item label="Hình ảnh">
                   <Image
-                    src={detailedBlog.image}
+                    src={detailedBlog.imageUrl}
                     alt={detailedBlog.title}
                     style={{
                       display: "block",
@@ -542,7 +542,7 @@ const BlogManagement = () => {
                   />
                 </Descriptions.Item>
                 <Descriptions.Item label="Người tạo">
-                  {detailedBlog.Author?.fullName || "Ẩn danh"}
+                  {detailedBlog.authorName || "Ẩn danh"}
                 </Descriptions.Item>
                 <Descriptions.Item label="Ngày tạo">
                   {detailedBlog.createdAt ? new Date(detailedBlog.createdAt).toLocaleDateString("vi-VN") : "N/A"}
