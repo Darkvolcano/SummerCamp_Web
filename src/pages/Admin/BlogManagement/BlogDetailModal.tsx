@@ -42,8 +42,8 @@ export default function BlogDetailModal({
     };
 
     const getAuthorDisplay = () => {
-        if (blog.Author?.fullName) {
-            return blog.Author.fullName;
+        if (blog.authorName) {
+            return blog.authorName;
         }
         // Fallback to showing author ID if author info not available
         return `User ID: ${blog.authorId}`;

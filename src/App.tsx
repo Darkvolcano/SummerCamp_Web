@@ -14,6 +14,8 @@ import VehicleTypeManagement from "./pages/Admin/VehicleTypeManagement/VehicleTy
 import StaffSchedule from "./pages/Staff/MySchedule/MySchedule";
 import MyCamps from "./pages/Staff/MyCamps/MyCamps";
 import MyBlogs from "./pages/Staff/MyBlogs/MyBlogs";
+import BlogList from "./pages/Blog/BlogList";
+import BlogDetail from "./pages/Blog/BlogDetail";
 import { AuthGuardProvider } from "./contexts/AuthGuardContext";
 import { NotificationProvider } from "./contexts/NotificationContext";
 import { PagePath } from "./enums/page-path.enum";
@@ -95,6 +97,22 @@ function App() {
               element={
                 <MainLayout>
                   <About />
+                </MainLayout>
+              }
+            />
+            <Route
+              path={PagePath.BLOG}
+              element={
+                <MainLayout>
+                  <BlogList />
+                </MainLayout>
+              }
+            />
+            <Route
+              path={PagePath.BLOG_DETAIL}
+              element={
+                <MainLayout>
+                  <BlogDetail />
                 </MainLayout>
               }
             />

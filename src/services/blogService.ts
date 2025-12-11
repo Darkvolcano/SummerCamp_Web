@@ -2,32 +2,31 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "../config/axios";
 import axios from "axios";
 
-interface BlogApiResponse {
-  status: number;
-  message: string;
-  blogs?: BlogDto[];
-}
+// Helper function to convert plain text to safe HTML
+const convertContentToSafeHTML = (content: string): string => {
+  if (!content) return "";
 
-interface BlogDetailApiResponse {
-  status: number;
-  message: string;
-  blog?: BlogDto;
-}
+  // If content already contains HTML tags, return as is
+  if (/<[^>]*>/g.test(content)) {
+    return content;
+  }
+
+  // Convert plain text to HTML paragraphs
+  return content
+    .split(/\n\n+/) // Split by double newlines
+    .filter(line => line.trim()) // Remove empty lines
+    .map(line => `<p>${line.trim().replace(/\n/g, '<br>')}</p>`)
+    .join("");
+};
 
 export interface BlogDto {
   id: number;
   title: string;
   content: string;
+  imageUrl: string;
   authorId: number;
-  image: string;
-  isActive: boolean;
-  createdAt: Date;
-  updatedAt: number;
-  Author?: {
-    id: number;
-    fullName: string;
-    email: string;
-  } | null;
+  authorName?: string;
+  createdAt?: string;
 }
 
 interface MutationVariables {
@@ -38,55 +37,21 @@ interface MutationVariables {
 export interface CreateBlog {
   title: string;
   content: string;
-  imageUrl?: File; 
-  authorId?: number;
-}
-
-interface BackendBlogDto {
-  blogId?: number;
-  id?: number;
-  title: string;
-  content: string;
+  imageUrl: File; // Corrected type to File
   authorId: number;
-  image?: string;
-  isActive: boolean;
-  createdAt: Date;
-  updatedAt: number;
-  Author?: {
-    id: number;
-    fullName: string;
-    email: string;
-  } | null;
-  author?: {
-    id: number;
-    fullName: string;
-    email: string;
-  } | null;
 }
-
-const mapBlogResponse = (blog: BackendBlogDto): BlogDto => ({
-  id: blog.blogId || blog.id || 0,
-  title: blog.title,
-  content: blog.content,
-  authorId: blog.authorId,
-  image: blog.image || "",
-  isActive: blog.isActive,
-  createdAt: blog.createdAt,
-  updatedAt: blog.updatedAt,
-  Author: (blog.Author || blog.author) as BlogDto["Author"]
-});
 
 const fetchBlogs = async (): Promise<BlogDto[]> => {
   const response = await axiosInstance.get("blog");
   const blogs = response.data;
 
-  if (Array.isArray(blogs)) {
-    return blogs.map(mapBlogResponse);
-  }
+  console.log("Raw blog API response:", blogs);
 
-  const wrappedData = response.data as BlogApiResponse;
-  if (wrappedData.blogs && Array.isArray(wrappedData.blogs)) {
-    return wrappedData.blogs.map(mapBlogResponse);
+  if (Array.isArray(blogs)) {
+    return blogs.map(blog => ({
+      ...blog,
+      content: convertContentToSafeHTML(blog.content)
+    })) as BlogDto[];
   }
 
   return [];
@@ -100,16 +65,17 @@ export const useBlogs = () => {
 };
 
 const fetchBlogsActive = async (): Promise<BlogDto[]> => {
-  const response = await axiosInstance.get("blog/active");
-  const {
-    status,
-    message: responseMessage,
-    blogs,
-  } = response.data as BlogApiResponse;
-  if (status >= 200 && status < 300 && blogs) {
-    return Array.isArray(blogs) ? blogs : [];
+  const response = await axiosInstance.get("blog");
+  const blogs = response.data;
+
+  if (Array.isArray(blogs)) {
+    return blogs.map(blog => ({
+      ...blog,
+      content: convertContentToSafeHTML(blog.content)
+    })) as BlogDto[];
   }
-  throw new Error(responseMessage || "Không thể tải danh sách blog");
+
+  return [];
 };
 
 export const useBlogActive = () => {
@@ -122,7 +88,7 @@ export const useBlogActive = () => {
 export const useCreateBlogs = () => {
   const queryClient = useQueryClient();
 
-  return useMutation({
+  return useMutation<BlogDto, Error, CreateBlog>({
     mutationFn: async (newBlog: CreateBlog) => {
       try {
         const formData = new FormData();
@@ -137,7 +103,7 @@ export const useCreateBlogs = () => {
             "Content-Type": "multipart/form-data",
           },
         });
-        return response.data as BlogDetailApiResponse;
+        return response.data as BlogDto;
       } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
           const errorData = error.response.data;
@@ -157,16 +123,12 @@ export const useGetBlogById = (id: number) => {
     queryKey: ["blog", id],
     queryFn: async () => {
       const response = await axiosInstance.get(`blog/${id}`);
-      const {
-        status,
-        message: responseMessage,
-        blog,
-      } = response.data as BlogDetailApiResponse;
-
-      if (status >= 200 && status < 300 && blog) {
-        return blog;
-      }
-      throw new Error(responseMessage || "Failed to load blog details");
+      const blog = response.data as BlogDto;
+      console.log(`Blog detail API response for ID ${id}:`, blog);
+      return {
+        ...blog,
+        content: convertContentToSafeHTML(blog.content)
+      };
     },
     enabled: !!id,
   });
@@ -175,8 +137,8 @@ export const useGetBlogById = (id: number) => {
 export const useUpdateBlogs = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<void, Error, MutationVariables>({
-    mutationFn: async ({ id, blog }: MutationVariables): Promise<void> => {
+  return useMutation<BlogDto, Error, MutationVariables>({
+    mutationFn: async ({ id, blog }: MutationVariables): Promise<BlogDto> => {
       const formData = new FormData();
       formData.append("title", blog.title);
       formData.append("content", blog.content);
@@ -184,11 +146,12 @@ export const useUpdateBlogs = () => {
         formData.append("imageUrl", blog.imageUrl);
       }
 
-      await axiosInstance.put(`blog/${id}`, formData, {
+      const response = await axiosInstance.put(`blog/${id}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
+      return response.data as BlogDto;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["blog"] });
