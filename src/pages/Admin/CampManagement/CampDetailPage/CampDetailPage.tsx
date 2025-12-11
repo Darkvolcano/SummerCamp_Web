@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Spin, Button, Popover } from 'antd';
-import { CheckCircle, XCircle } from 'lucide-react';
+import { Spin, Button, Popover, Modal, Input } from 'antd';
+import { CheckCircle, XCircle, Ban } from 'lucide-react';
 import CampDetailNavbar from './CampDetailNavbar';
 import CampDetailOverview from './CampDetailOverview';
 import CampDetailSchedule from './CampDetailSchedule';
@@ -24,6 +24,9 @@ const CampDetailPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [openApprovePopover, setOpenApprovePopover] = useState(false);
   const [openRejectPopover, setOpenRejectPopover] = useState(false);
+  const [openCancelModal, setOpenCancelModal] = useState(false);
+  const [cancelReason, setCancelReason] = useState('');
+  const [cancelLoading, setCancelLoading] = useState(false);
 
 
   const numericCampId = parseInt(campId || '0', 10);
@@ -76,6 +79,30 @@ const CampDetailPage: React.FC = () => {
         errorMsg = error.response.data.message;
       }
       toastError('Error', errorMsg);
+    }
+  };
+
+  const handleCancel = async () => {
+    if (!cancelReason.trim()) {
+      toastError('Error', 'Please provide a cancellation reason');
+      return;
+    }
+
+    try {
+      setCancelLoading(true);
+      await campService.cancelCamp(numericCampId, cancelReason);
+      toastSuccess('Success', 'Camp cancelled successfully. Registrations marked for refund.');
+      fetchCampName();
+      setOpenCancelModal(false);
+      setCancelReason('');
+    } catch (error: any) {
+      let errorMsg = 'Failed to cancel camp';
+      if (error.response?.data?.message) {
+        errorMsg = error.response.data.message;
+      }
+      toastError('Error', errorMsg);
+    } finally {
+      setCancelLoading(false);
     }
   };
 
@@ -134,74 +161,91 @@ const CampDetailPage: React.FC = () => {
           </div>
 
           {/* Action Buttons */}
-          {campStatus === CampStatus.PENDING_APPOVAL && (
-            <div className="flex gap-3">
-              <Popover
-                content={
-                  <div className="space-y-2">
-                    <p className="text-sm font-medium">Approve this camp?</p>
-                    <div className="flex gap-2">
-                      <Button
-                        size="small"
-                        type="primary"
-                        danger={false}
-                        onClick={handleApprove}
-                      >
-                        Yes
-                      </Button>
-                      <Button
-                        size="small"
-                        onClick={() => setOpenApprovePopover(false)}
-                      >
-                        No
-                      </Button>
+          <div className="flex gap-3">
+            {campStatus === CampStatus.PENDING_APPOVAL && (
+              <>
+                <Popover
+                  content={
+                    <div className="space-y-2">
+                      <p className="text-sm font-medium">Approve this camp?</p>
+                      <div className="flex gap-2">
+                        <Button
+                          size="small"
+                          type="primary"
+                          danger={false}
+                          onClick={handleApprove}
+                        >
+                          Yes
+                        </Button>
+                        <Button
+                          size="small"
+                          onClick={() => setOpenApprovePopover(false)}
+                        >
+                          No
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                }
-                title="Confirm Approval"
-                trigger="click"
-                open={openApprovePopover}
-                onOpenChange={setOpenApprovePopover}
-              >
-                <button className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-medium">
-                  <CheckCircle size={18} />
-                  Approve & Publish
-                </button>
-              </Popover>
+                  }
+                  title="Confirm Approval"
+                  trigger="click"
+                  open={openApprovePopover}
+                  onOpenChange={setOpenApprovePopover}
+                >
+                  <button className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-medium">
+                    <CheckCircle size={18} />
+                    Approve & Publish
+                  </button>
+                </Popover>
 
-              <Popover
-                content={
-                  <div className="space-y-2">
-                    <p className="text-sm font-medium">Reject this camp?</p>
-                    <div className="flex gap-2">
-                      <Button
-                        size="small"
-                        danger
-                        onClick={handleReject}
-                      >
-                        Yes
-                      </Button>
-                      <Button
-                        size="small"
-                        onClick={() => setOpenRejectPopover(false)}
-                      >
-                        No
-                      </Button>
+                <Popover
+                  content={
+                    <div className="space-y-2">
+                      <p className="text-sm font-medium">Reject this camp?</p>
+                      <div className="flex gap-2">
+                        <Button
+                          size="small"
+                          danger
+                          onClick={handleReject}
+                        >
+                          Yes
+                        </Button>
+                        <Button
+                          size="small"
+                          onClick={() => setOpenRejectPopover(false)}
+                        >
+                          No
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                }
-                title="Confirm Rejection"
-                trigger="click"
-                open={openRejectPopover}
-                onOpenChange={setOpenRejectPopover}
+                  }
+                  title="Confirm Rejection"
+                  trigger="click"
+                  open={openRejectPopover}
+                  onOpenChange={setOpenRejectPopover}
+                >
+                  <button className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all font-medium">
+                    <XCircle size={18} />
+                    Reject
+                  </button>
+                </Popover>
+              </>
+            )}
+
+            {(campStatus === CampStatus.DRAFT || 
+              campStatus === CampStatus.PENDING_APPOVAL ||
+              campStatus === CampStatus.REJECTED ||
+              campStatus === CampStatus.PUBLISHED ||
+              campStatus === CampStatus.OPEN_FOR_REGISTRATION || 
+              campStatus === CampStatus.REGISTRATION_CLOSED) && (
+              <button 
+                onClick={() => setOpenCancelModal(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-all font-medium"
               >
-                <button className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all font-medium">
-                  <XCircle size={18} />
-                  Reject
-                </button>
-              </Popover>
-            </div>
-          )}
+                <Ban size={18} />
+                Cancel Camp
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Tab Navigation */}
@@ -213,6 +257,54 @@ const CampDetailPage: React.FC = () => {
 
         {/* Tab Content */}
         {renderTab()}
+
+        {/* Cancel Camp Modal */}
+        <Modal
+          title="Cancel Camp"
+          open={openCancelModal}
+          onCancel={() => {
+            setOpenCancelModal(false);
+            setCancelReason('');
+          }}
+          footer={[
+            <Button
+              key="back"
+              onClick={() => {
+                setOpenCancelModal(false);
+                setCancelReason('');
+              }}
+            >
+              No, Keep Camp
+            </Button>,
+            <Button
+              key="submit"
+              type="primary"
+              danger
+              loading={cancelLoading}
+              onClick={handleCancel}
+            >
+              Yes, Cancel Camp
+            </Button>,
+          ]}
+        >
+          <div className="space-y-4">
+            <p className="text-gray-700">
+              This will cancel the camp and mark all paid registrations for manual refund. This action cannot be undone.
+            </p>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Cancellation Reason <span className="text-red-500">*</span>
+              </label>
+              <Input.TextArea
+                value={cancelReason}
+                onChange={(e) => setCancelReason(e.target.value)}
+                placeholder="e.g., Insufficient registrations, Venue unavailable..."
+                rows={4}
+                maxLength={500}
+              />
+            </div>
+          </div>
+        </Modal>
       </div>
     </div>
   );

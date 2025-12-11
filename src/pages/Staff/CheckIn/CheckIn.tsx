@@ -25,9 +25,10 @@ const CheckIn: React.FC = () => {
         setLoading(true);
         const data = await activityScheduleService.getAttendancesCheckinCheckoutByCampId(selectedCampId);
         setSchedules(data);
-      } catch (error) {
+      } catch (error: any) {
         console.error("Failed to load check-in/check-out schedules:", error);
-        toastError("Error", "Unable to load check-in/check-out schedules");
+        const errorMessage = error.response?.data?.message || error.response?.data?.title || "Unable to load check-in/check-out schedules";
+        toastError("Error", errorMessage);
         setSchedules([]);
       } finally {
         setLoading(false);

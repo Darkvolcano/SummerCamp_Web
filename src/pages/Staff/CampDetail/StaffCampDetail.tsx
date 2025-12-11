@@ -61,9 +61,10 @@ const StaffCampDetail: React.FC = () => {
         setCamp(campData);
         setGroup(groupData);
         setAccommodation(accommodationData);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Failed to load camp details:', error);
-        toastError('Error', 'Unable to load camp details');
+        const errorMessage = error.response?.data?.message || error.response?.data?.title || 'Unable to load camp details';
+        toastError('Error', errorMessage);
       } finally {
         setLoading(false);
       }
@@ -81,9 +82,10 @@ const StaffCampDetail: React.FC = () => {
       const campers = await camperService.getCampersByCampId(selectedCampId);
       setAllCampers(campers);
       setShowCampersModal(true);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to load campers:', error);
-      toastError('Error', 'Unable to load campers');
+      const errorMessage = error.response?.data?.message || error.response?.data?.title || 'Unable to load campers';
+      toastError('Error', errorMessage);
     } finally {
       setLoadingCampers(false);
     }
@@ -100,9 +102,10 @@ const StaffCampDetail: React.FC = () => {
       // If API doesn't provide this, you may need a different endpoint
       setGroupCampers(allCampers);
       setShowGroupCampersModal(true);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to load group campers:', error);
-      toastError('Error', 'Unable to load group campers');
+      const errorMessage = error.response?.data?.message || error.response?.data?.title || 'Unable to load group campers';
+      toastError('Error', errorMessage);
     } finally {
       setLoadingCampers(false);
     }
@@ -119,9 +122,10 @@ const StaffCampDetail: React.FC = () => {
       // If API doesn't provide this, you may need a different endpoint
       setAccommodationCampers(allCampers);
       setShowAccommodationCampersModal(true);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to load accommodation campers:', error);
-      toastError('Error', 'Unable to load accommodation campers');
+      const errorMessage = error.response?.data?.message || error.response?.data?.title || 'Unable to load accommodation campers';
+      toastError('Error', errorMessage);
     } finally {
       setLoadingCampers(false);
     }
