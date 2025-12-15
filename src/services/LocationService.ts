@@ -38,6 +38,11 @@ export interface LocationResponseDto {
   parentLocationName?: string | null;
 }
 
+export interface AvailableLocationDto {
+  id: number;
+  name: string;
+}
+
 // API Service
 const locationService = {
   // Get all locations
@@ -168,6 +173,24 @@ const locationService = {
       }
     );
     return response.data as LocationResponseDto[];
+  },
+
+  // Get available camp locations by time range
+  getAvailableCampLocationsByTime: async (
+    startTime: string,
+    endTime: string
+  ): Promise<AvailableLocationDto[]> => {
+    console.log(`[locationService] GET /location/available-camp-locations/by-time`);
+    const response = await axiosInstance.get(
+      `/location/available-camp-locations/by-time`,
+      {
+        params: {
+          startTime,
+          endTime,
+        },
+      }
+    );
+    return response.data as AvailableLocationDto[];
   },
 
 };
