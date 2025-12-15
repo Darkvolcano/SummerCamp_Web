@@ -192,6 +192,9 @@ const ManagerRegistrationsPage: React.FC = () => {
                         Registration ID
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                        Created By
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
                         Campers
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
@@ -210,6 +213,9 @@ const ManagerRegistrationsPage: React.FC = () => {
                       >
                         <td className="px-6 py-4 text-sm font-mono text-[#6B7280]">
                           #{reg.registrationId}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-[#374151]">
+                          {reg.user?.fullName || 'N/A'}
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex flex-col gap-0.5">
@@ -379,6 +385,9 @@ const ManagerRegistrationsPage: React.FC = () => {
                           ID
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                          Created By
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
                           Campers
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
@@ -405,7 +414,7 @@ const ManagerRegistrationsPage: React.FC = () => {
                       {filteredRegistrations.length === 0 ? (
                         <tr>
                           <td
-                            colSpan={8}
+                            colSpan={9}
                             className="px-6 py-12 text-center text-[#6B7280]"
                           >
                             No registrations found matching your filters
@@ -419,6 +428,9 @@ const ManagerRegistrationsPage: React.FC = () => {
                           >
                             <td className="px-6 py-4 text-sm font-mono text-[#6B7280]">
                               #{reg.registrationId}
+                            </td>
+                            <td className="px-6 py-4 text-sm text-[#374151]">
+                              {reg.user?.fullName || 'N/A'}
                             </td>
                             <td className="px-6 py-4">
                               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#EFF6FF] text-[#3B82F6]">

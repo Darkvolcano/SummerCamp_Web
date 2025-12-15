@@ -182,6 +182,24 @@ const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = ({
             </span>
           </div>
 
+          {/* User Information */}
+          <div>
+            <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3 pb-2 border-b-2 border-blue-600 inline-block">
+              Registration Created By
+            </h3>
+            <div className="space-y-3 mt-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-[#EFF6FF] flex items-center justify-center flex-shrink-0">
+                  <Users size={18} className="text-[#3B82F6]" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs text-[#6B7280] font-medium">Parent/Guardian</p>
+                  <p className="text-sm text-[#111827] font-semibold">{registrationData.user.fullName}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Camp Information */}
           <div>
             <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3 pb-2 border-b-2 border-blue-600 inline-block">
