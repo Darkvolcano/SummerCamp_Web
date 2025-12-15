@@ -75,7 +75,7 @@ const StaffSidebar: React.FC<StaffSidebarProps> = ({ onCollapsedChange }) => {
     },
     {
       path: PagePath.STAFF_CHECKIN,
-      label: "Check In",
+      label: "Check In/Out",
       icon: <LogIn size={20} />,
     },
   ];

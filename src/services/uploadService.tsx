@@ -279,11 +279,11 @@ export const getTransformedImageUrl = (
 };
 
 export const uploadMyAvatar = async (file: File): Promise<UploadResponse> => {
-  console.log("[uploadService] POST /api/upload/my-avatar");
+  console.log("[uploadService] PUT /api/upload/my-avatar");
   const formData = new FormData();
   formData.append("file", file);
 
-  const response = await axiosInstance.post("/upload/my-avatar", formData, {
+  const response = await axiosInstance.put("/upload/my-avatar", formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
@@ -300,11 +300,11 @@ export const uploadMyAvatar = async (file: File): Promise<UploadResponse> => {
 };
 
 export const uploadStaffAvatar = async (userId: number, file: File): Promise<UploadResponse> => {
-  console.log(`[uploadService] POST /api/upload/admin/staff/${userId}/avatar`);
+  console.log(`[uploadService] PUT /api/upload/admin/staff/${userId}/avatar`);
   const formData = new FormData();
   formData.append("file", file);
 
-  const response = await axiosInstance.post(`/upload/admin/staff/${userId}/avatar`, formData, {
+  const response = await axiosInstance.put(`/upload/admin/staff/${userId}/avatar`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
@@ -321,11 +321,11 @@ export const uploadStaffAvatar = async (userId: number, file: File): Promise<Upl
 };
 
 export const uploadDriverAvatar = async (userId: number, file: File): Promise<UploadResponse> => {
-  console.log(`[uploadService] POST /api/upload/admin/driver/${userId}/avatar`);
+  console.log(`[uploadService] PUT /api/upload/admin/driver/${userId}/avatar`);
   const formData = new FormData();
   formData.append("file", file);
 
-  const response = await axiosInstance.post(`/upload/admin/driver/${userId}/avatar`, formData, {
+  const response = await axiosInstance.put(`/upload/admin/driver/${userId}/avatar`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
@@ -341,6 +341,26 @@ export const uploadDriverAvatar = async (userId: number, file: File): Promise<Up
   };
 };
 
+export interface ServerUploadResponse {
+  url: string;
+}
+
+export const uploadGenericImage = async (file: File): Promise<ServerUploadResponse> => {
+  console.log("[uploadService] POST /api/upload/image");
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await axiosInstance.post("/upload/image", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+  return {
+    url: response.data.url,
+  };
+};
+
 export default {
   uploadImageToCloudinary,
   uploadMultipleImages,
@@ -351,4 +371,5 @@ export default {
   uploadMyAvatar,
   uploadStaffAvatar,
   uploadDriverAvatar,
+  uploadGenericImage,
 };

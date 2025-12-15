@@ -29,9 +29,8 @@ import promotionService, {
 import attendanceLogService from "../../../../services/attendanceLogService";
 import attendanceFolderService from "../../../../services/attendanceFolderService";
 import {
-  uploadImageToCloudinary,
+  uploadGenericImage,
   validateImageFile,
-  deleteImageFromCloudinary,
 } from "../../../../services/uploadService";
 import { CampStatus } from "../../../../enums/camp-status.enum";
 import AddLocationModal from "../AddLocationModal";
@@ -53,8 +52,6 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
   const [loading, setLoading] = useState(true);
   const [imageUploading, setImageUploading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string>("");
-  const [uploadedImagePublicId, setUploadedImagePublicId] =
-    useState<string>("");
   const [campTypes, setCampTypes] = useState<CampTypeResponseDto[]>([]);
   const [locations, setLocations] = useState<LocationResponseDto[]>([]);
   const [promotions, setPromotions] = useState<PromotionResponseDto[]>([]);
@@ -303,7 +300,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const validation = validateImageFile(file, 10);
+      const validation = validateImageFile(file, 5); // Max 5MB
       if (!validation.valid) {
         toastError(
           "Validation Error",
@@ -314,20 +311,22 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
 
       try {
         setImageUploading(true);
-        const imageId = `camp_image_${Date.now()}`;
 
-        const result = await uploadImageToCloudinary(file, "camp", imageId, 3);
+        const result = await uploadGenericImage(file);
 
         setImagePreview(result.url);
-        setUploadedImagePublicId(result.publicId);
 
         setFormData((prev) => ({
           ...prev,
           image: result.url,
         }));
       } catch (error: any) {
-        const errorMsg =
-          error instanceof Error ? error.message : "Failed to upload image";
+        let errorMsg = "Failed to upload image";
+        if (error.response?.data?.message) {
+          errorMsg = error.response.data.message;
+        } else if (error instanceof Error) {
+          errorMsg = error.message;
+        }
         toastError("Upload Error", errorMsg);
         console.error("Image upload error:", error);
       } finally {
@@ -336,18 +335,8 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
     }
   };
 
-  const handleRemoveImage = async () => {
-    if (uploadedImagePublicId) {
-      try {
-        await deleteImageFromCloudinary(uploadedImagePublicId);
-        console.log("Image deleted from Cloudinary");
-      } catch (error) {
-        console.error("Error deleting image from Cloudinary:", error);
-      }
-    }
-
+  const handleRemoveImage = () => {
     setImagePreview("");
-    setUploadedImagePublicId("");
     setFormData((prev) => ({
       ...prev,
       image: "",

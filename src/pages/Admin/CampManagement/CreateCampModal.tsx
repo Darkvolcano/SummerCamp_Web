@@ -16,9 +16,8 @@ import promotionService, {
   type PromotionResponseDto,
 } from "../../../services/promotionService";
 import {
-  uploadImageToCloudinary,
+  uploadGenericImage,
   validateImageFile,
-  deleteImageFromCloudinary,
 } from "../../../services/uploadService";
 import AddLocationModal from "./AddLocationModal";
 
@@ -37,8 +36,6 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
   const [loading, setLoading] = useState(false);
   const [imageUploading, setImageUploading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string>("");
-  const [uploadedImagePublicId, setUploadedImagePublicId] =
-    useState<string>("");
   const [campTypes, setCampTypes] = useState<CampTypeResponseDto[]>([]);
   const [locations, setLocations] = useState<LocationResponseDto[]>([]);
   const [promotions, setPromotions] = useState<PromotionResponseDto[]>([]);
@@ -206,7 +203,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
     const file = e.target.files?.[0];
     if (file) {
       // Validate file
-      const validation = validateImageFile(file, 10); // Max 10MB
+      const validation = validateImageFile(file, 5); // Max 5MB
       if (!validation.valid) {
         toastError(
           "Validation Error",
@@ -217,25 +214,25 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
 
       try {
         setImageUploading(true);
-        const imageId = `camp_image_${Date.now()}`;
 
-        // Upload to Cloudinary
-        const result = await uploadImageToCloudinary(file, "camp", imageId, 3);
+        // Upload to backend
+        const result = await uploadGenericImage(file);
 
         // Show preview with uploaded image
         setImagePreview(result.url);
 
-        // Store Cloudinary URL and publicId for potential deletion
-        setUploadedImagePublicId(result.publicId);
-
-        // Store Cloudinary URL in formData
+        // Store image URL in formData
         setFormData((prev) => ({
           ...prev,
           image: result.url,
         }));
       } catch (error: any) {
-        const errorMsg =
-          error instanceof Error ? error.message : "Failed to upload image";
+        let errorMsg = "Failed to upload image";
+        if (error.response?.data?.message) {
+          errorMsg = error.response.data.message;
+        } else if (error instanceof Error) {
+          errorMsg = error.message;
+        }
         toastError("Upload Error", errorMsg);
         console.error("Image upload error:", error);
       } finally {
@@ -244,21 +241,9 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
     }
   };
 
-  const handleRemoveImage = async () => {
-    // Nếu có publicId, xóa ảnh từ Cloudinary
-    if (uploadedImagePublicId) {
-      try {
-        await deleteImageFromCloudinary(uploadedImagePublicId);
-        console.log("Image deleted from Cloudinary");
-      } catch (error) {
-        console.error("Error deleting image from Cloudinary:", error);
-        // Vẫn tiếp tục xóa preview dù có lỗi
-      }
-    }
-
+  const handleRemoveImage = () => {
     // Clear preview and form data
     setImagePreview("");
-    setUploadedImagePublicId("");
     setFormData((prev) => ({
       ...prev,
       image: "",
