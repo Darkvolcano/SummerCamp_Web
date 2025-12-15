@@ -5,6 +5,7 @@ export enum CampStatus {
   PUBLISHED = "Published",
   OPEN_FOR_REGISTRATION = "OpenForRegistration",
   REGISTRATION_CLOSED = "RegistrationClosed",
+  UNDER_ENROLLED = "UnderEnrolled",
   IN_PROGRESS = "InProgress",
   COMPLETED = "Completed",
   CANCELED = "Canceled",

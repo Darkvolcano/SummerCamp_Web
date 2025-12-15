@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Search, Eye, HousePlus } from "lucide-react";
+import { Search, Eye, HousePlus, ArrowUpDown } from "lucide-react";
 import { DatePicker, Spin } from "antd";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
@@ -29,6 +29,13 @@ const CampPrograms: React.FC = () => {
 
   // ✅ Changed: Empty array means "All" selected by default
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
+
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 15;
+
+  // Sort by start date
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
   // Status counts
   const [statusCounts, setStatusCounts] = useState<Record<string, number>>({});
@@ -117,6 +124,29 @@ const CampPrograms: React.FC = () => {
   // ✅ Check if "All" is selected
   const isAllSelected = selectedStatuses.length === 0;
 
+  // Sort filtered camps by start date
+  const sortedCamps = [...filteredCamps].sort((a, b) => {
+    const dateA = new Date(a.startDate).getTime();
+    const dateB = new Date(b.startDate).getTime();
+    return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
+  });
+
+  // Pagination
+  const totalPages = Math.ceil(sortedCamps.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedCamps = sortedCamps.slice(startIndex, endIndex);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, startDateFilter, endDateFilter, selectedCampType, selectedStatuses]);
+
+  // Toggle sort order
+  const toggleSortOrder = () => {
+    setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
+  };
+
   // Status badge color
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -130,6 +160,8 @@ const CampPrograms: React.FC = () => {
         return "bg-red-100 text-red-700";
       case CampStatus.PENDING_APPOVAL:
         return "bg-yellow-100 text-yellow-700";
+      case CampStatus.UNDER_ENROLLED:
+        return "bg-orange-100 text-orange-700";
       default:
         return "bg-gray-100 text-gray-700";
     }
@@ -311,7 +343,7 @@ const CampPrograms: React.FC = () => {
               <div>
                 <span className="text-sm text-[#6B7280]">Total Programs: </span>
                 <span className="text-lg font-bold text-[#111827]">
-                  {filteredCamps.length}
+                  {camps.length}
                 </span>
               </div>
               <div>
@@ -362,37 +394,46 @@ const CampPrograms: React.FC = () => {
           <table className="w-full">
             <thead className="bg-[#F9FAFB] border-b border-[#E5E7EB]">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider w-[100px]">
                   Camp ID
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider w-[200px]">
                   Camp Name
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider w-[130px]">
                   Camp Type
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider w-[150px]">
                   Place
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                  Start Date
+                <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider w-[130px]">
+                  <div className="flex items-center gap-1.5">
+                    Start Date
+                    <button
+                      onClick={toggleSortOrder}
+                      className="p-0.5 rounded hover:bg-[#E5E7EB] transition-colors"
+                      title={`Sort ${sortOrder === "asc" ? "descending" : "ascending"}`}
+                    >
+                      <ArrowUpDown size={12} className="text-[#9CA3AF]" />
+                    </button>
+                  </div>
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider w-[110px]">
                   End Date
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider w-[110px]">
                   Reg. Start
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider w-[110px]">
                   Reg. End
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider w-[130px]">
                   Price
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider w-[140px]">
                   Status
                 </th>
-                <th className="px-6 py-3 text-right text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                <th className="px-6 py-3 text-right text-xs font-semibold text-[#6B7280] uppercase tracking-wider w-[120px]">
                   Actions
                 </th>
               </tr>
@@ -416,7 +457,7 @@ const CampPrograms: React.FC = () => {
                   </td>
                 </tr>
               ) : (
-                filteredCamps.map((camp) => (
+                paginatedCamps.map((camp) => (
                   <tr
                     key={camp.campId}
                     className="hover:bg-[#F9FAFB] transition-colors"
@@ -477,6 +518,74 @@ const CampPrograms: React.FC = () => {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Controls */}
+        {filteredCamps.length > 0 && (
+          <div className="px-6 py-4 border-t border-[#E5E7EB] flex items-center justify-between">
+            <div className="text-sm text-[#6B7280]">
+              Showing {startIndex + 1} to {Math.min(endIndex, sortedCamps.length)} of {sortedCamps.length} results
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                  currentPage === 1
+                    ? "bg-[#F3F4F6] text-[#9CA3AF] cursor-not-allowed"
+                    : "bg-[#F3F4F6] text-[#374151] hover:bg-[#E5E7EB]"
+                }`}
+              >
+                Previous
+              </button>
+
+              <div className="flex items-center gap-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                  if (
+                    page === 1 ||
+                    page === totalPages ||
+                    (page >= currentPage - 1 && page <= currentPage + 1)
+                  ) {
+                    return (
+                      <button
+                        key={page}
+                        onClick={() => setCurrentPage(page)}
+                        className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                          currentPage === page
+                            ? "bg-[#6366F1] text-white"
+                            : "bg-[#F3F4F6] text-[#374151] hover:bg-[#E5E7EB]"
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    );
+                  } else if (
+                    page === currentPage - 2 ||
+                    page === currentPage + 2
+                  ) {
+                    return (
+                      <span key={page} className="px-2 text-[#9CA3AF]">
+                        ...
+                      </span>
+                    );
+                  }
+                  return null;
+                })}
+              </div>
+
+              <button
+                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                  currentPage === totalPages
+                    ? "bg-[#F3F4F6] text-[#9CA3AF] cursor-not-allowed"
+                    : "bg-[#F3F4F6] text-[#374151] hover:bg-[#E5E7EB]"
+                }`}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Create Camp Modal */}

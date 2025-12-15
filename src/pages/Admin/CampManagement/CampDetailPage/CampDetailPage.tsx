@@ -236,7 +236,8 @@ const CampDetailPage: React.FC = () => {
               campStatus === CampStatus.REJECTED ||
               campStatus === CampStatus.PUBLISHED ||
               campStatus === CampStatus.OPEN_FOR_REGISTRATION || 
-              campStatus === CampStatus.REGISTRATION_CLOSED) && (
+              campStatus === CampStatus.REGISTRATION_CLOSED ||
+              campStatus === CampStatus.UNDER_ENROLLED) && (
               <button 
                 onClick={() => setOpenCancelModal(true)}
                 className="flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-all font-medium"
