@@ -1,243 +1,298 @@
 import { useState, useEffect } from "react";
-import { X, Save, FileText } from "lucide-react";
-import { message } from "antd";
+import { X, Save, Upload } from "lucide-react";
+import { Modal, Spin } from "antd";
 import type { BlogResponseDto, BlogRequestDto } from "./BlogManagement";
 import { useCreateBlogs, useUpdateBlogs, type CreateBlog } from "../../../services/blogService";
 import { CKEditorComponent } from "../../../components/CKEditor/CKEditor";
 import { useAuthStore } from "../../../services/userService";
-import "./BlogFormModal.css";
+import { useNotification } from "../../../contexts/NotificationContext";
 
 interface BlogFormModalProps {
-    blog: BlogResponseDto | null;
-    isEditing: boolean;
-    onClose: () => void;
-    onSuccess: () => void;
+  blog: BlogResponseDto | null;
+  isEditing: boolean;
+  onClose: () => void;
+  onSuccess: () => void;
 }
 
 export default function BlogFormModal({
-    blog,
-    isEditing,
-    onClose,
-    onSuccess,
+  blog,
+  isEditing,
+  onClose,
+  onSuccess,
 }: BlogFormModalProps) {
-    // Use real API mutations
-    const createMutation = useCreateBlogs();
-    const updateMutation = useUpdateBlogs();
+  const { toastSuccess, toastError } = useNotification();
+  const createMutation = useCreateBlogs();
+  const updateMutation = useUpdateBlogs();
 
-    const [formData, setFormData] = useState<BlogRequestDto>({
-        title: "",
-        content: "",
-        imageUrl: "",
-    });
-    const [imageFile, setImageFile] = useState<File | null>(null);
-    const [errors, setErrors] = useState<Record<string, string>>({});
-    const [saving, setSaving] = useState(false);
+  const [formData, setFormData] = useState<BlogRequestDto>({
+    title: "",
+    content: "",
+    imageUrl: "",
+  });
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [saving, setSaving] = useState(false);
 
-    useEffect(() => {
-        if (blog && isEditing) {
-            setFormData({
-                title: blog.title,
-                content: blog.content,
-                imageUrl: blog.imageUrl || "",
-            });
+  useEffect(() => {
+    if (blog && isEditing) {
+      setFormData({
+        title: blog.title,
+        content: blog.content,
+        imageUrl: blog.imageUrl || "",
+      });
+      if (blog.imageUrl) {
+        setImagePreview(blog.imageUrl);
+      }
+    }
+  }, [blog, isEditing]);
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  const handleContentChange = (value: string) => {
+    setFormData((prev) => ({ ...prev, content: value }));
+    if (errors.content) {
+      setErrors((prev) => ({ ...prev, content: "" }));
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setImageFile(file);
+    
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+    
+    if (errors.imageUrl) {
+      setErrors((prev) => ({ ...prev, imageUrl: "" }));
+    }
+  };
+
+  const validate = (): boolean => {
+    const newErrors: Record<string, string> = {};
+
+    if (!formData.title.trim()) {
+      newErrors.title = "Title is required";
+    } else if (formData.title.length < 5) {
+      newErrors.title = "Title must be at least 5 characters";
+    }
+
+    if (!formData.content.trim()) {
+      newErrors.content = "Content is required";
+    } else if (formData.content.length < 20) {
+      newErrors.content = "Content must be at least 20 characters";
+    }
+
+    if (!imageFile && !isEditing && !formData.imageUrl) {
+      newErrors.imageUrl = "Image is required";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!validate()) {
+      toastError("Validation Error", "Please fix the validation errors");
+      return;
+    }
+
+    const { user } = useAuthStore.getState();
+    if (!user || !user.id) {
+      toastError("Authentication Error", "User not authenticated. Please login again.");
+      return;
+    }
+
+    try {
+      setSaving(true);
+
+      if (isEditing && blog) {
+        if (!blog.id) {
+          throw new Error("Blog ID is missing");
         }
-    }, [blog, isEditing]);
 
-    const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-    ) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
-        // Clear error for this field
-        if (errors[name]) {
-            setErrors((prev) => ({ ...prev, [name]: "" }));
+        // For update, only include imageUrl if a new file is selected
+        if (imageFile) {
+          const blogDataWithImage: CreateBlog = {
+            title: formData.title,
+            content: formData.content,
+            imageUrl: imageFile,
+            authorId: user.id,
+          };
+          await updateMutation.mutateAsync({ id: blog.id, blog: blogDataWithImage });
+        } else {
+          // Create a dummy file or handle update without image
+          // Since the API expects FormData, we need to send the existing imageUrl
+          const blogDataWithoutNewImage: CreateBlog = {
+            title: formData.title,
+            content: formData.content,
+            imageUrl: new File([], ""), // Empty file to satisfy type
+            authorId: user.id,
+          };
+          await updateMutation.mutateAsync({ id: blog.id, blog: blogDataWithoutNewImage });
         }
-    };
-
-    const handleContentChange = (value: string) => {
-        setFormData((prev) => ({ ...prev, content: value }));
-        // Clear error for content field
-        if (errors.content) {
-            setErrors((prev) => ({ ...prev, content: "" }));
-        }
-    };
-
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0] || null;
-        setImageFile(file);
-        // Clear error for imageUrl field
-        if (errors.imageUrl) {
-            setErrors((prev) => ({ ...prev, imageUrl: "" }));
-        }
-    };
-
-    const validate = (): boolean => {
-        const newErrors: Record<string, string> = {};
-
-        if (!formData.title.trim()) {
-            newErrors.title = "Title is required";
-        } else if (formData.title.length < 5) {
-            newErrors.title = "Title must be at least 5 characters";
+        toastSuccess("Success", "Blog updated successfully");
+      } else {
+        // For create, imageFile is required
+        if (!imageFile) {
+          toastError("Validation Error", "Please select an image");
+          return;
         }
 
-        if (!formData.content.trim()) {
-            newErrors.content = "Content is required";
-        } else if (formData.content.length < 20) {
-            newErrors.content = "Content must be at least 20 characters";
-        }
+        const blogDataWithAuthor: CreateBlog = {
+          title: formData.title,
+          content: formData.content,
+          imageUrl: imageFile,
+          authorId: user.id,
+        };
+        await createMutation.mutateAsync(blogDataWithAuthor);
+        toastSuccess("Success", "Blog created successfully");
+      }
 
-        if (!imageFile && !isEditing) {
-            newErrors.imageUrl = "Image is required";
-        }
+      onSuccess();
+    } catch (error) {
+      console.error("Error saving blog:", error);
+      const errorMessage = error instanceof Error ? error.message : "Failed to save blog";
+      toastError("Error", errorMessage);
+    } finally {
+      setSaving(false);
+    }
+  };
 
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        if (!validate()) {
-            message.error("Please fix the validation errors");
-            return;
-        }
-
-        const { user } = useAuthStore.getState();
-        if (!user || !user.id) {
-            message.error("User not authenticated. Please login again.");
-            return;
-        }
-
-        try {
-            setSaving(true);
-
-            if (!imageFile && !isEditing) {
-                message.error("Please select an image");
-                return;
-            }
-
-            const blogDataWithAuthor: CreateBlog = {
-                title: formData.title,
-                content: formData.content,
-                imageUrl: imageFile!,
-                authorId: user.id,
-            };
-
-            if (isEditing && blog) {
-                if (!blog.id) {
-                    throw new Error("Blog ID is missing");
-                }
-
-                await updateMutation.mutateAsync({ id: blog.id, blog: blogDataWithAuthor });
-                message.success("Blog updated successfully");
-            } else {
-                await createMutation.mutateAsync(blogDataWithAuthor);
-                message.success("Blog created successfully");
-            }
-
-            onSuccess();
-        } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : "Failed to save blog";
-            message.error(errorMessage);
-        } finally {
-            setSaving(false);
-        }
-    };
-
-    return (
-        <div className="modal-overlay" onClick={onClose}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                {/* Header */}
-                <div className="modal-header">
-                    <h2>{isEditing ? "Edit Blog Post" : "Create Blog Post"}</h2>
-                    <button className="close-btn" onClick={onClose} type="button">
-                        <X size={24} />
-                    </button>
-                </div>
-
-                {/* Form */}
-                <form className="blog-form" onSubmit={handleSubmit}>
-                    <div className="form-scroll">
-                        {/* Title */}
-                        <div className="form-group">
-                            <label>
-                                <FileText size={16} />
-                                Title <span className="required">*</span>
-                            </label>
-                            <input
-                                type="text"
-                                name="title"
-                                value={formData.title}
-                                onChange={handleChange}
-                                placeholder="Enter blog title"
-                                className={errors.title ? "error" : ""}
-                            />
-                            {errors.title && (
-                                <span className="error-message">{errors.title}</span>
-                            )}
-                        </div>
-
-                        {/* Content */}
-                        <div className="form-group">
-                            <CKEditorComponent
-                                name="content"
-                                label="Content"
-                                value={formData.content}
-                                onChange={handleContentChange}
-                                required={true}
-                            />
-                            {errors.content && (
-                                <span className="error-message">{errors.content}</span>
-                            )}
-                        </div>
-
-                        {/* Image Upload */}
-                        <div className="form-group">
-                            <label>
-                                Image <span className="required">*</span>
-                            </label>
-                            <input
-                                type="file"
-                                name="imageUrl"
-                                onChange={handleFileChange}
-                                className={errors.imageUrl ? "error" : ""}
-                            />
-                            {errors.imageUrl && (
-                                <span className="error-message">{errors.imageUrl}</span>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Footer */}
-                    <div className="modal-footer">
-                        <button
-                            type="button"
-                            className="btn-cancel"
-                            onClick={onClose}
-                            disabled={saving}
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            type="submit"
-                            className="btn-save"
-                            disabled={saving}
-                        >
-                            {saving ? (
-                                <>
-                                    <div className="spinner" />
-                                    Saving...
-                                </>
-                            ) : (
-                                <>
-                                    <Save size={20} />
-                                    {isEditing ? "Update" : "Create"} Blog
-                                </>
-                            )}
-                        </button>
-                    </div>
-                </form>
-            </div>
+  return (
+    <Modal
+      open={true}
+      onCancel={onClose}
+      footer={null}
+      width={900}
+      centered
+      closeIcon={<X size={20} />}
+      title={
+        <h2 className="text-xl font-bold text-[#111827]">
+          {isEditing ? "Edit Blog Post" : "Create Blog Post"}
+        </h2>
+      }
+    >
+      <form onSubmit={handleSubmit} className="space-y-6 mt-6">
+        {/* Title */}
+        <div>
+          <label className="block text-sm font-semibold text-[#374151] mb-2">
+            Title <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            name="title"
+            value={formData.title}
+            onChange={handleChange}
+            placeholder="Enter blog title"
+            className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:border-transparent text-sm ${
+              errors.title ? "border-red-500" : "border-[#E5E7EB]"
+            }`}
+          />
+          {errors.title && (
+            <p className="text-red-500 text-xs mt-1">{errors.title}</p>
+          )}
         </div>
-    );
+
+        {/* Image Upload */}
+        <div>
+          <label className="block text-sm font-semibold text-[#374151] mb-2">
+            Featured Image <span className="text-red-500">*</span>
+          </label>
+          
+          {imagePreview && (
+            <div className="mb-3 rounded-xl overflow-hidden border border-[#E5E7EB]">
+              <img
+                src={imagePreview}
+                alt="Preview"
+                className="w-full h-auto max-h-[300px] object-cover"
+              />
+            </div>
+          )}
+          
+          <div className="flex items-center gap-3">
+            <label className="flex-1 cursor-pointer">
+              <div className={`flex items-center justify-center gap-2 px-4 py-2.5 border-2 border-dashed rounded-lg transition-all ${
+                errors.imageUrl 
+                  ? "border-red-500 bg-red-50" 
+                  : "border-[#E5E7EB] hover:border-[#6366F1] hover:bg-[#F9FAFB]"
+              }`}>
+                <Upload size={20} className="text-[#6B7280]" />
+                <span className="text-sm text-[#6B7280]">
+                  {imageFile ? imageFile.name : "Choose image file"}
+                </span>
+              </div>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="hidden"
+              />
+            </label>
+          </div>
+          {errors.imageUrl && (
+            <p className="text-red-500 text-xs mt-1">{errors.imageUrl}</p>
+          )}
+        </div>
+
+        {/* Content */}
+        <div>
+          <CKEditorComponent
+            name="content"
+            label="Content"
+            value={formData.content}
+            onChange={handleContentChange}
+            required={true}
+          />
+          {errors.content && (
+            <p className="text-red-500 text-xs mt-1">{errors.content}</p>
+          )}
+        </div>
+
+        {/* Footer Actions */}
+        <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#E5E7EB]">
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={saving}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[#F3F4F6] text-[#6B7280] rounded-lg hover:bg-[#E5E7EB] transition-all font-medium text-sm disabled:opacity-50"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            disabled={saving}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-all font-medium text-sm disabled:opacity-50"
+          >
+            {saving ? (
+              <>
+                <Spin size="small" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save size={16} />
+                {isEditing ? "Update" : "Create"} Blog
+              </>
+            )}
+          </button>
+        </div>
+      </form>
+    </Modal>
+  );
 }
