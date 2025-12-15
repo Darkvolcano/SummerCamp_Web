@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Spin, Dropdown, Popover } from "antd";
-import { Search, Filter, UserRoundPlus } from "lucide-react";
+import { Search, Filter, UserRoundPlus, Eye } from "lucide-react";
 import { useNotification } from "../../../../contexts/NotificationContext";
 import DeletePopover from "../../../../components/DeletePopover";
+import StaffDetailModal from "../../../../components/StaffDetailModal";
 import campStaffService, {
   type StaffInfo,
   type CampStaffAssignmentResponse,
@@ -33,6 +34,10 @@ const CampDetailStaffAssignment: React.FC<CampDetailStaffAssignmentProps> = ({
     "All"
   );
   const [assignPopoverOpen, setAssignPopoverOpen] = useState(false);
+
+  // Staff Detail Modal
+  const [staffDetailModalOpen, setStaffDetailModalOpen] = useState(false);
+  const [selectedStaffUserId, setSelectedStaffUserId] = useState<number | null>(null);
 
   // Fetch data on mount
   useEffect(() => {
@@ -389,24 +394,37 @@ const CampDetailStaffAssignment: React.FC<CampDetailStaffAssignmentProps> = ({
                           </span>
                         </td>
                         <td className="px-6 py-4 text-right">
-                          <DeletePopover
-                            onConfirm={() =>
-                              handleRemoveStaff(
+                          <div className="flex items-center justify-end gap-2">
+                            <button
+                              onClick={() => {
+                                setSelectedStaffUserId(assignment.staff.userId);
+                                setStaffDetailModalOpen(true);
+                              }}
+                              className="inline-flex items-center gap-1 px-3 py-1.5 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-all font-medium text-sm"
+                              title="View Details"
+                            >
+                              <Eye size={14} />
+                              Details
+                            </button>
+                            <DeletePopover
+                              onConfirm={() =>
+                                handleRemoveStaff(
+                                  assignment.campStaffAssignmentId
+                                )
+                              }
+                              message="Remove this staff from camp?"
+                              disabled={assigning}
+                              isOpen={
+                                openDeletePopover ===
                                 assignment.campStaffAssignmentId
-                              )
-                            }
-                            message="Remove this staff from camp?"
-                            disabled={assigning}
-                            isOpen={
-                              openDeletePopover ===
-                              assignment.campStaffAssignmentId
-                            }
-                            onOpenChange={(open) =>
-                              setOpenDeletePopover(
-                                open ? assignment.campStaffAssignmentId : null
-                              )
-                            }
-                          />
+                              }
+                              onOpenChange={(open) =>
+                                setOpenDeletePopover(
+                                  open ? assignment.campStaffAssignmentId : null
+                                )
+                              }
+                            />
+                          </div>
                         </td>
                       </tr>
                     ))
@@ -418,6 +436,18 @@ const CampDetailStaffAssignment: React.FC<CampDetailStaffAssignmentProps> = ({
         </div>
       </div>
       </div>
+
+      {/* Staff Detail Modal */}
+      {selectedStaffUserId && (
+        <StaffDetailModal
+          isOpen={staffDetailModalOpen}
+          onClose={() => {
+            setStaffDetailModalOpen(false);
+            setSelectedStaffUserId(null);
+          }}
+          userId={selectedStaffUserId}
+        />
+      )}
     </div>
   );
 };
