@@ -18,6 +18,7 @@ import staffService, {
   type CampAccommodationResponseDto,
 } from '../../../services/staffService';
 import camperService, { type CamperCampResponseDto } from '../../../services/camperService';
+import CamperDetailModal from '../../../components/CamperDetailModal';
 
 const StaffCampDetail: React.FC = () => {
   const context = useContext(StaffContext);
@@ -39,6 +40,10 @@ const StaffCampDetail: React.FC = () => {
   const [groupCampers, setGroupCampers] = useState<CamperCampResponseDto[]>([]);
   const [accommodationCampers, setAccommodationCampers] = useState<CamperCampResponseDto[]>([]);
   const [loadingCampers, setLoadingCampers] = useState(false);
+
+  // Camper Detail Modal
+  const [camperDetailModalOpen, setCamperDetailModalOpen] = useState(false);
+  const [selectedCamperId, setSelectedCamperId] = useState<number | null>(null);
 
   // Fetch camp details
   useEffect(() => {
@@ -412,7 +417,14 @@ const StaffCampDetail: React.FC = () => {
             ) : (
               <div className="divide-y divide-gray-200">
                 {allCampers.map((camper) => (
-                  <div key={camper.camperId} className="py-4 flex items-center gap-4">
+                  <div 
+                    key={camper.camperId} 
+                    onClick={() => {
+                      setSelectedCamperId(camper.camperId);
+                      setCamperDetailModalOpen(true);
+                    }}
+                    className="py-4 flex items-center gap-4 cursor-pointer hover:bg-gray-50 rounded-lg px-2 transition-colors"
+                  >
                     <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white font-bold">
                       {camper.camperName.charAt(0).toUpperCase()}
                     </div>
@@ -455,7 +467,14 @@ const StaffCampDetail: React.FC = () => {
             ) : (
               <div className="divide-y divide-gray-200">
                 {groupCampers.map((camper) => (
-                  <div key={camper.camperId} className="py-4 flex items-center gap-4">
+                  <div 
+                    key={camper.camperId} 
+                    onClick={() => {
+                      setSelectedCamperId(camper.camperId);
+                      setCamperDetailModalOpen(true);
+                    }}
+                    className="py-4 flex items-center gap-4 cursor-pointer hover:bg-gray-50 rounded-lg px-2 transition-colors"
+                  >
                     <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center text-white font-bold">
                       {camper.camperName.charAt(0).toUpperCase()}
                     </div>
@@ -498,7 +517,14 @@ const StaffCampDetail: React.FC = () => {
             ) : (
               <div className="divide-y divide-gray-200">
                 {accommodationCampers.map((camper) => (
-                  <div key={camper.camperId} className="py-4 flex items-center gap-4">
+                  <div 
+                    key={camper.camperId} 
+                    onClick={() => {
+                      setSelectedCamperId(camper.camperId);
+                      setCamperDetailModalOpen(true);
+                    }}
+                    className="py-4 flex items-center gap-4 cursor-pointer hover:bg-gray-50 rounded-lg px-2 transition-colors"
+                  >
                     <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-amber-500 flex items-center justify-center text-white font-bold">
                       {camper.camperName.charAt(0).toUpperCase()}
                     </div>
@@ -518,6 +544,19 @@ const StaffCampDetail: React.FC = () => {
           </div>
         </Spin>
       </Modal>
+
+      {/* Camper Detail Modal */}
+      {selectedCamperId && (
+        <CamperDetailModal
+          isOpen={camperDetailModalOpen}
+          onClose={() => {
+            setCamperDetailModalOpen(false);
+            setSelectedCamperId(null);
+          }}
+          camperId={selectedCamperId}
+          campId={selectedCampId}
+        />
+      )}
     </div>
   );
 };
