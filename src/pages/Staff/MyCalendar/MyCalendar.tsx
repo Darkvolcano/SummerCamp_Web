@@ -37,9 +37,10 @@ const MyCalendar: React.FC = () => {
         setLoading(true);
         const data = await campService.getCampById(selectedCampId);
         setCampData(data);
-      } catch (error) {
+      } catch (error: any) {
         console.error("Failed to load camp:", error);
-        toastError("Error", "Unable to load camp details");
+        const errorMessage = error.response?.data?.message || error.response?.data?.title || "Unable to load camp details";
+        toastError("Error", errorMessage);
       } finally {
         setLoading(false);
       }
@@ -67,9 +68,10 @@ const MyCalendar: React.FC = () => {
 
         setCampActivities(campActivitiesData.activities || []);
         setGroupStaffActivities(groupActivitiesData || []);
-      } catch (error) {
+      } catch (error: any) {
         console.error("Failed to load activities:", error);
-        toastError("Error", "Unable to load calendar activities");
+        const errorMessage = error.response?.data?.message || error.response?.data?.title || "Unable to load calendar activities";
+        toastError("Error", errorMessage);
         setCampActivities([]);
         setGroupStaffActivities([]);
       } finally {
@@ -118,9 +120,10 @@ const MyCalendar: React.FC = () => {
       const schedule = await activityScheduleService.getActivityScheduleById(activityScheduleId);
       setSelectedSchedule(schedule);
       setShowScheduleDetail(true);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to load schedule details:", error);
-      toastError("Error", "Unable to load schedule details");
+      const errorMessage = error.response?.data?.message || error.response?.data?.title || "Unable to load schedule details";
+      toastError("Error", errorMessage);
     } finally {
       setLoading(false);
     }
@@ -157,9 +160,10 @@ const MyCalendar: React.FC = () => {
       setTimeout(() => {
         window.location.href = `/staff/livestream/host/${roomId}`;
       }, 1500);
-    } catch (error) {
+    } catch (error: any) {
       console.error("[MyCalendar] Error starting livestream:", error);
-      toastError("Error", "Unable to start livestream. Please try again.");
+      const errorMessage = error.response?.data?.message || error.response?.data?.title || "Unable to start livestream. Please try again.";
+      toastError("Error", errorMessage);
     } finally {
       setLoading(false);
     }

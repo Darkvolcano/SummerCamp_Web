@@ -3,6 +3,7 @@ import { Spin, message } from 'antd';
 import { Search, Eye } from 'lucide-react';
 import { useManagerContext } from '../../../hooks/useManagerContext';
 import camperService, { type CamperCampResponseDto } from '../../../services/camperService';
+import CamperDetailModal from '../../../components/CamperDetailModal';
 
 const CamperManagement: React.FC = () => {
   const { selectedCampId } = useManagerContext();
@@ -15,6 +16,10 @@ const CamperManagement: React.FC = () => {
 
   // Gender counts
   const [genderCounts, setGenderCounts] = useState<Record<string, number>>({});
+
+  // Camper Detail Modal
+  const [camperDetailModalOpen, setCamperDetailModalOpen] = useState(false);
+  const [selectedCamperId, setSelectedCamperId] = useState<number | null>(null);
 
   useEffect(() => {
     if (!selectedCampId) {
@@ -324,6 +329,10 @@ const CamperManagement: React.FC = () => {
                             </td>
                             <td className="px-6 py-4 text-right">
                               <button
+                                onClick={() => {
+                                  setSelectedCamperId(camper.camperId);
+                                  setCamperDetailModalOpen(true);
+                                }}
                                 className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#F3F4F6] text-[#6B7280] rounded-lg hover:bg-[#E5E7EB] transition-all font-medium text-sm"
                                 title="View Details"
                               >
@@ -341,6 +350,19 @@ const CamperManagement: React.FC = () => {
             </div>
           </div>
         </>
+      )}
+
+      {/* Camper Detail Modal */}
+      {selectedCamperId && (
+        <CamperDetailModal
+          isOpen={camperDetailModalOpen}
+          onClose={() => {
+            setCamperDetailModalOpen(false);
+            setSelectedCamperId(null);
+          }}
+          camperId={selectedCamperId}
+          campId={selectedCampId}
+        />
       )}
     </div>
   );

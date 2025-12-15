@@ -1,6 +1,12 @@
 import axiosInstance from "../config/axios";
 import { RegistrationStatus } from "../enums/registration-status.enum";
 
+// User info response
+export interface UserDto {
+  userId: number;
+  fullName: string;
+}
+
 // Camper info response
 export interface CamperDto {
   requestTransport: boolean;
@@ -15,7 +21,9 @@ export interface CamperDto {
 export interface CampDto {
   campId: number;
   name: string;
+  status: string;
   startDate: string;
+  endDate: string;
 }
 
 // Promotion info response
@@ -52,11 +60,13 @@ export interface UpdateRegistrationRequestDto {
 
 export interface RegistrationResponseDto {
   registrationId: number;
+  user: UserDto;
   camp: CampDto;
   registrationCreateAt: string;
   note?: string | null;
   status: string;
-  finalPrice?: number;
+  finalPrice: number;
+  rejectReason?: string | null;
   appliedPromotion?: PromotionDto | null;
   campers?: CamperDto[];
   optionalChoices?: OptionalChoiceDto[];
@@ -76,6 +86,12 @@ export interface TransportChoiceDto {
   camperId: number;
   transportScheduleId: number;
   locationId: number;
+}
+
+export interface RejectRegistrationRequestDto {
+  registrationId: number;
+  rejectReason: string;
+  camperId?: number | null;
 }
 
 const registrationService = {
@@ -191,6 +207,20 @@ const registrationService = {
     console.log(`[registrationService] PUT /registration/${id}/approve`);
     const response = await axiosInstance.put(`/registration/${id}/approve`);
     return response.data as RegistrationResponseDto;
+  },
+
+  // Reject registration or specific camper
+  rejectRegistration: async (
+    data: RejectRegistrationRequestDto
+  ): Promise<void> => {
+    console.log(`[registrationService] POST /registration/reject`);
+    const requestPayload = {
+      registrationId: data.registrationId,
+      rejectReason: data.rejectReason,
+      camperId: data.camperId || null,
+    };
+
+    await axiosInstance.post("/registration/reject", requestPayload);
   },
 };
 

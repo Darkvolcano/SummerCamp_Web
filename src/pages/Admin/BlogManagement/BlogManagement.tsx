@@ -1,24 +1,15 @@
-import { useState, useMemo } from "react";
-import {
-  Plus,
-  Search,
-  Edit2,
-  Trash2,
-  Eye,
-  Calendar,
-  User,
-  FileText,
-  RefreshCw,
-} from "lucide-react";
+import { useState } from "react";
+import { Search, Plus, Edit2, Eye, Calendar, User, FileText } from "lucide-react";
+import { Spin } from "antd";
 import BlogFormModal from "./BlogFormModal";
-import BlogDetailModal from "../BlogManagement/BlogDetailModal";
-import { message } from "antd";
+import BlogDetailModal from "./BlogDetailModal";
 import {
   useBlogs,
   useDeleteBlogs,
   type BlogDto,
 } from "../../../services/blogService";
-import "./BlogManagement.css";
+import { useNotification } from "../../../contexts/NotificationContext";
+import DeletePopover from "../../../components/DeletePopover";
 
 export type BlogResponseDto = BlogDto;
 
@@ -30,28 +21,28 @@ export interface BlogRequestDto {
 }
 
 export default function BlogManagement() {
+  const { toastSuccess, toastError } = useNotification();
   const { data: blogs = [], isLoading: loading, refetch } = useBlogs();
   const deleteMutation = useDeleteBlogs();
 
-  const [searchTerm, setSearchTerm] = useState("");
-
+  const [searchQuery, setSearchQuery] = useState("");
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedBlog, setSelectedBlog] = useState<BlogDto | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [deletePopoverOpen, setDeletePopoverOpen] = useState<number | null>(null);
 
-  const filteredBlogs = useMemo(() => {
-    if (!searchTerm) {
-      return blogs;
+  const filteredBlogs = blogs.filter((blog) => {
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      return (
+        blog.title.toLowerCase().includes(query) ||
+        blog.content.toLowerCase().includes(query) ||
+        blog.authorName?.toLowerCase().includes(query)
+      );
     }
-
-    return blogs.filter(
-      (blog: BlogDto) =>
-        blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        blog.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        blog.authorName?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [searchTerm, blogs]);
+    return true;
+  });
 
   const handleCreate = () => {
     setSelectedBlog(null);
@@ -70,18 +61,15 @@ export default function BlogManagement() {
     setIsDetailModalOpen(true);
   };
 
-  const handleDelete = async (blog: BlogDto) => {
-    if (window.confirm(`Are you sure you want to delete "${blog.title}"?`)) {
-      try {
-        await deleteMutation.mutateAsync(blog.id);
-        message.success("Blog deleted successfully");
-        refetch();
-      } catch (error) {
-        console.error("Error deleting blog:", error);
-        const errorMessage =
-          error instanceof Error ? error.message : "Failed to delete blog";
-        message.error(errorMessage);
-      }
+  const handleDelete = async (blogId: number) => {
+    try {
+      await deleteMutation.mutateAsync(blogId);
+      toastSuccess("Success", "Blog deleted successfully");
+      refetch();
+      setDeletePopoverOpen(null);
+    } catch (error) {
+      console.error("Error deleting blog:", error);
+      toastError("Error", "Failed to delete blog");
     }
   };
 
@@ -104,159 +92,226 @@ export default function BlogManagement() {
     }).length,
   };
 
+  const formatDate = (dateString: string | null | undefined) => {
+    if (!dateString) return 'N/A';
+    return new Date(dateString).toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
+  };
+
   return (
-    <>
-      <div className="blog-management-header">
-        <div className="header-left">
-          <h1 className="page-title">Blog Management</h1>
-          <p className="page-subtitle">Manage blog posts and articles</p>
-        </div>
-        <button className="btn-create" onClick={handleCreate}>
-          <Plus size={20} />
-          Create Blog Post
-        </button>
+    <div className="min-h-screen bg-[#F9FAFB] p-6">
+      {/* Header */}
+      <div className="mb-4">
+        <h1 className="text-2xl font-bold text-[#111827]">Blog Management</h1>
+        <p className="text-xs text-[#6B7280] mt-0.5">
+          Manage and organize blog posts and articles
+        </p>
       </div>
 
-      <div className="stats-grid">
-        <div className="stat-card">
-          <div className="stat-icon total">
-            <FileText size={24} />
-          </div>
-          <div className="stat-content">
-            <p className="stat-label">Total Posts</p>
-            <h3 className="stat-value">{stats.total}</h3>
-          </div>
+      {loading ? (
+        <div className="flex justify-center items-center h-96">
+          <Spin size="large" />
         </div>
-
-        <div className="stat-card">
-          <div className="stat-icon recent">
-            <Calendar size={24} />
-          </div>
-          <div className="stat-content">
-            <p className="stat-label">Recent (7 days)</p>
-            <h3 className="stat-value">{stats.recent}</h3>
-          </div>
+      ) : blogs.length === 0 ? (
+        <div className="bg-white rounded-xl shadow-sm border border-[#E5E7EB] p-12 text-center">
+          <p className="text-[#6B7280] text-lg mb-4">No blog posts found</p>
+          <button
+            onClick={handleCreate}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-all font-medium text-sm"
+          >
+            <Plus size={16} />
+            Create Blog Post
+          </button>
         </div>
-      </div>
+      ) : (
+        <>
+          {/* Filters and Table Section */}
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+            {/* Left Sidebar - Filters */}
+            <div className="lg:col-span-1">
+              <div className="bg-white rounded-xl shadow-sm border border-[#E5E7EB] p-6 sticky top-6">
+                <h3 className="text-lg font-bold text-[#111827] mb-4">Filters</h3>
 
-      <div className="filters-section">
-        <div className="search-box">
-          <Search size={20} />
-          <input
-            type="text"
-            placeholder="Search blogs..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
+                {/* Search */}
+                <div className="mb-6">
+                  <label className="block text-xs font-semibold text-[#374151] mb-2 uppercase tracking-wider">
+                    Search
+                  </label>
+                  <div className="relative">
+                    <Search
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9CA3AF]"
+                      size={16}
+                    />
+                    <input
+                      type="text"
+                      placeholder="By title, content, author..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full pl-9 pr-4 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:border-transparent text-sm text-[#6B7280] placeholder:text-[#9CA3AF]"
+                    />
+                  </div>
+                </div>
 
-        <button
-          className="btn-refresh"
-          onClick={() => refetch()}
-          disabled={loading}
-        >
-          <RefreshCw size={20} className={loading ? "spinning" : ""} />
-        </button>
-      </div>
+                {/* Add Button */}
+                <button
+                  onClick={handleCreate}
+                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-all font-medium text-sm"
+                >
+                  <Plus size={16} />
+                  Create Blog Post
+                </button>
 
-      <div className="table-container">
-        {loading ? (
-          <div className="loading-state">
-            <RefreshCw size={48} className="spinning" />
-            <p>Loading blogs...</p>
-          </div>
-        ) : filteredBlogs.length === 0 ? (
-          <div className="empty-state">
-            <FileText size={64} />
-            <h3>No blogs found</h3>
-            <p>
-              {searchTerm
-                ? "Try adjusting your search criteria"
-                : "Click 'Create Blog Post' to add your first blog"}
-            </p>
-            {!searchTerm && (
-              <button className="btn-create" onClick={handleCreate}>
-                <Plus size={20} />
-                Create Blog Post
-              </button>
-            )}
-          </div>
-        ) : (
-          <>
-            <table className="blogs-table">
-              <thead>
-                <tr>
-                  <th>Title</th>
-                  <th>Author</th>
-                  <th>Created Date</th>
-                  <th>Preview</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredBlogs.map((blog) => (
-                  <tr key={blog.id}>
-                    <td>
-                      <div className="blog-title-cell">
-                        <FileText size={20} />
-                        <div>
-                          <p className="blog-title">{blog.title}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div className="author-cell">
-                        <User size={16} />
-                        {blog.authorName || `User ID: ${blog.authorId}`}
-                      </div>
-                    </td>
-                    <td>
-                      <div className="date-cell">
-                        <Calendar size={16} />
-                        {blog.createdAt
-                          ? new Date(blog.createdAt).toLocaleDateString()
-                          : "N/A"}
-                      </div>
-                    </td>
-                    <td className="preview-cell">
-                      {blog.content.substring(0, 60)}...
-                    </td>
-                    <td>
-                      <div className="actions-cell">
-                        <button
-                          className="action-btn view"
-                          onClick={() => handleView(blog)}
-                          title="View Details"
-                        >
-                          <Eye size={16} />
-                        </button>
-                        <button
-                          className="action-btn edit"
-                          onClick={() => handleEdit(blog)}
-                          title="Edit"
-                        >
-                          <Edit2 size={16} />
-                        </button>
-                        <button
-                          className="action-btn delete"
-                          onClick={() => handleDelete(blog)}
-                          title="Delete"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <div className="results-footer">
-              Showing {filteredBlogs.length} of {blogs.length} blog posts
+                {/* Summary Stats */}
+                <div className="mt-6 pt-6 border-t border-[#E5E7EB]">
+                  <div className="space-y-3">
+                    <div>
+                      <span className="text-xs text-[#6B7280]">Total: </span>
+                      <span className="text-lg font-bold text-[#111827]">
+                        {stats.total}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-xs text-[#6B7280]">Found: </span>
+                      <span className="text-lg font-bold text-[#6366F1]">
+                        {filteredBlogs.length}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-xs text-[#6B7280]">Recent (7d): </span>
+                      <span className="text-lg font-bold text-[#10B981]">
+                        {stats.recent}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-          </>
-        )}
-      </div>
 
+            {/* Right Main Section - Table */}
+            <div className="lg:col-span-4">
+              <div className="bg-white rounded-xl shadow-sm border border-[#E5E7EB] overflow-hidden">
+                {/* Table Header */}
+                <div className="px-6 py-4 border-b border-[#E5E7EB]">
+                  <h2 className="text-lg font-bold text-[#111827]">
+                    Found: {filteredBlogs.length}
+                  </h2>
+                </div>
+
+                {/* Table */}
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-[#F9FAFB] border-b border-[#E5E7EB]">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                          ID
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                          Title
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                          Author
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                          Created Date
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                          Preview
+                        </th>
+                        <th className="px-6 py-3 text-right text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                          Actions
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#E5E7EB]">
+                      {filteredBlogs.length === 0 ? (
+                        <tr>
+                          <td
+                            colSpan={6}
+                            className="px-6 py-12 text-center text-[#6B7280]"
+                          >
+                            No blog posts found matching your filters
+                          </td>
+                        </tr>
+                      ) : (
+                        filteredBlogs.map((blog, index) => (
+                          <tr
+                            key={blog.id}
+                            className="hover:bg-[#F9FAFB] transition-colors"
+                          >
+                            <td className="px-6 py-4 text-sm font-mono text-[#6B7280]">
+                              {index + 1}
+                            </td>
+                            <td className="px-6 py-4">
+                              <div className="flex items-center gap-2">
+                                <FileText size={16} className="text-[#6366F1]" />
+                                <span className="text-sm font-medium text-[#111827] line-clamp-1">
+                                  {blog.title}
+                                </span>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4">
+                              <div className="flex items-center gap-2 text-sm text-[#6B7280]">
+                                <User size={16} />
+                                {blog.authorName || `User ID: ${blog.authorId}`}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4">
+                              <div className="flex items-center gap-2 text-sm text-[#6B7280]">
+                                <Calendar size={16} />
+                                {formatDate(blog.createdAt)}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 text-sm text-[#6B7280]">
+                              <span className="line-clamp-2">
+                                {blog.content.replace(/<[^>]*>/g, '').substring(0, 80)}...
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 text-right">
+                              <div className="flex items-center justify-end gap-2">
+                                <button
+                                  onClick={() => handleView(blog)}
+                                  className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#EFF6FF] text-[#3B82F6] rounded-lg hover:bg-[#DBEAFE] transition-all font-medium text-sm"
+                                  title="View Details"
+                                >
+                                  <Eye size={16} />
+                                  View
+                                </button>
+                                <button
+                                  onClick={() => handleEdit(blog)}
+                                  className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#F3F4F6] text-[#6B7280] rounded-lg hover:bg-[#E5E7EB] transition-all font-medium text-sm"
+                                  title="Edit Blog"
+                                >
+                                  <Edit2 size={16} />
+                                  Edit
+                                </button>
+                                <DeletePopover
+                                  onConfirm={() => handleDelete(blog.id)}
+                                  title="Delete Blog Post"
+                                  message={`Are you sure you want to delete "${blog.title}"?`}
+                                  buttonText="Delete"
+                                  isOpen={deletePopoverOpen === blog.id}
+                                  onOpenChange={(open) =>
+                                    setDeletePopoverOpen(open ? blog.id : null)
+                                  }
+                                />
+                              </div>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Modals */}
       {isFormModalOpen && (
         <BlogFormModal
           blog={selectedBlog}
@@ -271,9 +326,9 @@ export default function BlogManagement() {
           blog={selectedBlog}
           onClose={() => setIsDetailModalOpen(false)}
           onEdit={handleEdit}
-          onDelete={handleDelete}
+          onDelete={(blog) => handleDelete(blog.id)}
         />
       )}
-    </>
+    </div>
   );
 }

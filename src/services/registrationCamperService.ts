@@ -5,6 +5,7 @@ import axios from "axios";
 export interface CampSummaryDto {
   campId: number;
   name: string;
+  status: string;
   startDate: string;
   endDate: string;
 }
@@ -78,7 +79,9 @@ const registrationCamperService = {
       return data
         .filter(
           (item: RegistrationCamperResponseDto) =>
-            item.status !== "PendingApproval" && item.status !== "Canceled"
+            item.status !== "PendingApproval" && 
+            item.status !== "Canceled" &&
+            item.camp.status !== "Completed"
         )
         .sort(
           (a: RegistrationCamperResponseDto, b: RegistrationCamperResponseDto) =>

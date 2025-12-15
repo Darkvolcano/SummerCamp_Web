@@ -23,9 +23,10 @@ const ManagerDashboard: React.FC = () => {
         setLoading(true);
         const data = await campService.getCampById(selectedCampId);
         setCamp(data);
-      } catch (error) {
+      } catch (error: any) {
         console.error("Failed to load camp:", error);
-        toastError("Error", "Unable to load camp details");
+        const errorMessage = error.response?.data?.message || error.response?.data?.title || "Unable to load camp details";
+        toastError("Error", errorMessage);
       } finally {
         setLoading(false);
       }
@@ -43,9 +44,10 @@ const ManagerDashboard: React.FC = () => {
       const updatedCamp = await campService.submitCampForApproval(camp.campId);
       toastSuccess("Success", "Camp submitted for approval");
       setCamp(updatedCamp);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to submit camp:", error);
-      toastError("Error", "Failed to submit camp for approval");
+      const errorMessage = error.response?.data?.message || error.response?.data?.title || "Failed to submit camp for approval";
+      toastError("Error", errorMessage);
     } finally {
       setLoading(false);
     }

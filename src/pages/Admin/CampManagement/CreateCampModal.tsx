@@ -10,15 +10,14 @@ import campTypeService, {
   type CampTypeResponseDto,
 } from "../../../services/campTypeService";
 import locationService, {
-  type LocationResponseDto,
+  type AvailableLocationDto,
 } from "../../../services/LocationService";
 import promotionService, {
   type PromotionResponseDto,
 } from "../../../services/promotionService";
 import {
-  uploadImageToCloudinary,
+  uploadGenericImage,
   validateImageFile,
-  deleteImageFromCloudinary,
 } from "../../../services/uploadService";
 import AddLocationModal from "./AddLocationModal";
 
@@ -37,10 +36,10 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
   const [loading, setLoading] = useState(false);
   const [imageUploading, setImageUploading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string>("");
-  const [uploadedImagePublicId, setUploadedImagePublicId] =
-    useState<string>("");
   const [campTypes, setCampTypes] = useState<CampTypeResponseDto[]>([]);
-  const [locations, setLocations] = useState<LocationResponseDto[]>([]);
+  const [locations, setLocations] = useState<AvailableLocationDto[]>([]);
+  const [locationsLoading, setLocationsLoading] = useState(false);
+  const [locationsFetched, setLocationsFetched] = useState(false);
   const [promotions, setPromotions] = useState<PromotionResponseDto[]>([]);
   const [showAddLocation, setShowAddLocation] = useState(false);
 
@@ -64,14 +63,27 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
     registrationEndDate: "",
   });
 
-  // Fetch camp types, locations, and promotions on mount
+  // Fetch camp types and promotions on mount
   useEffect(() => {
     if (isOpen) {
       fetchCampTypes();
-      fetchLocations();
       fetchPromotions();
     }
   }, [isOpen]);
+
+
+
+  // Auto-fetch locations when dates change
+  useEffect(() => {
+    // Reset flag when dates change
+    setLocationsFetched(false);
+    
+    // Auto-fetch if both dates are present
+    if (formData.startDate && formData.endDate) {
+      fetchLocations();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData.startDate, formData.endDate]);
 
   const fetchCampTypes = async () => {
     try {
@@ -83,11 +95,32 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
   };
 
   const fetchLocations = async () => {
+    if (!formData.startDate || !formData.endDate) {
+      toastError("Validation Error", "Please select start date and end date first");
+      return;
+    }
+
+    // Skip if already fetched for current dates
+    if (locationsFetched && locations.length > 0) {
+      return;
+    }
+
     try {
-      const data = await locationService.getCampLocations();
+      setLocationsLoading(true);
+      
+      const data = await locationService.getAvailableCampLocationsByTime(
+        formData.startDate,
+        formData.endDate
+      );
+      
       setLocations(data);
-    } catch (error) {
+      setLocationsFetched(true);
+    } catch (error: any) {
       console.error("Error fetching locations:", error);
+      const errorMsg = error.response?.data?.message || "Failed to fetch available locations";
+      toastError("Error", errorMsg);
+    } finally {
+      setLocationsLoading(false);
     }
   };
 
@@ -194,19 +227,24 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
       registrationEndDate: "",
     });
     setImagePreview("");
+    setLocations([]);
+    setLocationsFetched(false);  // Reset fetch flag
     onClose();
   };
 
   const handleAddLocationSuccess = async () => {
     setShowAddLocation(false);
-    await fetchLocations();
+    // Only fetch locations if dates are already selected
+    if (formData.startDate && formData.endDate) {
+      await fetchLocations();
+    }
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       // Validate file
-      const validation = validateImageFile(file, 10); // Max 10MB
+      const validation = validateImageFile(file, 5); // Max 5MB
       if (!validation.valid) {
         toastError(
           "Validation Error",
@@ -217,25 +255,25 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
 
       try {
         setImageUploading(true);
-        const imageId = `camp_image_${Date.now()}`;
 
-        // Upload to Cloudinary
-        const result = await uploadImageToCloudinary(file, "camp", imageId, 3);
+        // Upload to backend
+        const result = await uploadGenericImage(file);
 
         // Show preview with uploaded image
         setImagePreview(result.url);
 
-        // Store Cloudinary URL and publicId for potential deletion
-        setUploadedImagePublicId(result.publicId);
-
-        // Store Cloudinary URL in formData
+        // Store image URL in formData
         setFormData((prev) => ({
           ...prev,
           image: result.url,
         }));
       } catch (error: any) {
-        const errorMsg =
-          error instanceof Error ? error.message : "Failed to upload image";
+        let errorMsg = "Failed to upload image";
+        if (error.response?.data?.message) {
+          errorMsg = error.response.data.message;
+        } else if (error instanceof Error) {
+          errorMsg = error.message;
+        }
         toastError("Upload Error", errorMsg);
         console.error("Image upload error:", error);
       } finally {
@@ -244,21 +282,9 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
     }
   };
 
-  const handleRemoveImage = async () => {
-    // Nếu có publicId, xóa ảnh từ Cloudinary
-    if (uploadedImagePublicId) {
-      try {
-        await deleteImageFromCloudinary(uploadedImagePublicId);
-        console.log("Image deleted from Cloudinary");
-      } catch (error) {
-        console.error("Error deleting image from Cloudinary:", error);
-        // Vẫn tiếp tục xóa preview dù có lỗi
-      }
-    }
-
+  const handleRemoveImage = () => {
     // Clear preview and form data
     setImagePreview("");
-    setUploadedImagePublicId("");
     setFormData((prev) => ({
       ...prev,
       image: "",
@@ -628,18 +654,22 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Location *
+                  Location * {locations.length > 0 && `(${locations.length} available)`}
                 </label>
                 <div className="flex gap-2">
                   <select
                     name="locationId"
                     value={formData.locationId || ""}
                     onChange={handleInputChange}
-                    className="flex-1 px-3 py-2 border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    onFocus={fetchLocations}
+                    disabled={locationsLoading}
+                    className="flex-1 px-3 py-2 border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <option value="">Select Location</option>
+                    <option value="">
+                      {locationsLoading ? "Loading locations..." : "Select Location"}
+                    </option>
                     {locations.map((loc) => (
-                      <option key={loc.locationId} value={loc.locationId}>
+                      <option key={loc.id} value={loc.id}>
                         {loc.name}
                       </option>
                     ))}

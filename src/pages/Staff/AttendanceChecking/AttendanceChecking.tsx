@@ -25,9 +25,10 @@ const AttendanceChecking: React.FC = () => {
         setLoading(true);
         const attendancesData = await activityScheduleService.getAttendancesByCampId(selectedCampId);
         setSchedules(attendancesData);
-      } catch (error) {
+      } catch (error: any) {
         console.error("Failed to load attendances:", error);
-        toastError("Error", "Unable to load attendance schedules");
+        const errorMessage = error.response?.data?.message || error.response?.data?.title || "Unable to load attendance schedules";
+        toastError("Error", errorMessage);
         setSchedules([]);
       } finally {
         setLoading(false);

@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Spin, message, Modal, Form, Input, InputNumber, Select } from 'antd';
-import { Search, Plus, Edit2 } from 'lucide-react';
+import { Search, Plus, Edit2, CheckCircle2 } from 'lucide-react';
 import { useManagerContext } from '../../../hooks/useManagerContext';
 import { useNotification } from '../../../contexts/NotificationContext';
 import groupService, { type GroupResponseDto, type GroupRequestDto } from '../../../services/groupService';
 import staffService, { type StaffInfo } from '../../../services/staffService';
 import campService, { type CampResponseDto } from '../../../services/campService';
+import camperGroupService from '../../../services/camperGroupService';
 import DeletePopover from '../../../components/DeletePopover';
 
 const GroupManagement: React.FC = () => {
@@ -29,6 +30,16 @@ const GroupManagement: React.FC = () => {
   // Delete popover state
   const [deletePopoverOpen, setDeletePopoverOpen] = useState<number | null>(null);
 
+  // Pending assignment campers
+  const [pendingCampers, setPendingCampers] = useState<any[]>([]);
+
+  // Group members (for detail view)
+  const [groupMembers, setGroupMembers] = useState<any[]>([]);
+  const [loadingMembers, setLoadingMembers] = useState(false);
+
+  // Selected groups for pending campers (camperId -> groupId)
+  const [selectedGroups, setSelectedGroups] = useState<Record<number, number>>({});
+
   useEffect(() => {
     if (!selectedCampId) {
       setGroups([]);
@@ -46,6 +57,15 @@ const GroupManagement: React.FC = () => {
         // Fetch camp data
         const campInfo = await campService.getCampById(selectedCampId);
         setCampData(campInfo);
+
+        // Fetch pending assignment campers
+        try {
+          const pendingData = await camperGroupService.getPendingAssignCampers(selectedCampId);
+          setPendingCampers(pendingData);
+        } catch (error) {
+          console.error('Failed to load pending campers:', error);
+          setPendingCampers([]);
+        }
       } catch (error) {
         console.error('Failed to load data:', error);
         message.error('Unable to load groups');
@@ -118,6 +138,21 @@ const GroupManagement: React.FC = () => {
         minAge: fullGroupData.minAge,
         maxAge: fullGroupData.maxAge,
       });
+
+      // Fetch group members
+      setLoadingMembers(true);
+      try {
+        const members = await camperGroupService.getCamperGroups({ groupId: group.groupId });
+        console.log('[GroupManagement] Fetched group members:', members);
+        setGroupMembers(Array.isArray(members) ? members : []);
+      } catch (error) {
+        console.error('Failed to load group members:', error);
+        setGroupMembers([]);
+        // Don't show error toast here, just log it
+      } finally {
+        setLoadingMembers(false);
+      }
+
       setIsModalVisible(true);
     } catch (error) {
       console.error('Failed to load group details:', error);
@@ -211,6 +246,110 @@ const GroupManagement: React.FC = () => {
           Manage and organize camper groups
         </p>
       </div>
+
+      {/* Pending Assignment Section */}
+      {pendingCampers.length > 0 && (
+        <div className="bg-white rounded-xl shadow-sm border border-[#E5E7EB] overflow-hidden mb-6">
+          {/* Header */}
+          <div className="px-6 py-4 border-b border-[#E5E7EB]">
+            <h2 className="text-lg font-bold text-[#111827]">
+              Pending Group Assignment ({pendingCampers.length})
+            </h2>
+          </div>
+
+          {/* Scrollable Table */}
+          <div className="overflow-y-auto max-h-96">
+            <table className="w-full border-collapse">
+              <thead className="bg-[#F9FAFB] border-b border-[#E5E7EB]">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                    Camper Name
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                    Camper ID
+                  </th>
+                  <th className="px-6 py-3 text-right text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#E5E7EB]">
+                {pendingCampers.map((camper: any, index: number) => (
+                  <tr
+                    key={camper?.camperId || index}
+                    className="hover:bg-[#F9FAFB] transition-colors"
+                  >
+                    <td className="px-6 py-4 text-sm font-medium text-[#111827]">
+                      {typeof camper === 'object' ? (camper.camperName || camper.name || 'Unknown') : String(camper)}
+                    </td>
+                    <td className="px-6 py-4 text-sm font-mono text-[#6B7280]">
+                      #{camper?.camperId || 'N/A'}
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <Select
+                          placeholder="Select group"
+                          size="small"
+                          className="w-48"
+                          value={selectedGroups[camper?.camperId]}
+                          options={groups.map(g => ({
+                            label: g.groupName,
+                            value: g.groupId
+                          }))}
+                          onChange={(groupId) => {
+                            if (camper?.camperId) {
+                              setSelectedGroups(prev => ({
+                                ...prev,
+                                [camper.camperId]: groupId
+                              }));
+                            }
+                          }}
+                        />
+                        <button
+                          onClick={async () => {
+                            const groupId = selectedGroups[camper?.camperId];
+                            if (groupId && camper?.camperId) {
+                              try {
+                                await camperGroupService.addCamperToGroup({
+                                  camperId: camper.camperId,
+                                  groupId: groupId
+                                });
+                                toastSuccess('Success', 'Camper assigned to group');
+                                // Clear selection
+                                setSelectedGroups(prev => {
+                                  const newState = { ...prev };
+                                  delete newState[camper.camperId];
+                                  return newState;
+                                });
+                                // Refresh pending campers
+                                if (selectedCampId) {
+                                  const pendingData = await camperGroupService.getPendingAssignCampers(selectedCampId);
+                                  setPendingCampers(pendingData);
+                                }
+                              } catch (error: any) {
+                                console.error('Failed to assign camper:', error);
+                                const errorMsg = error.response?.data?.message || error.message || 'Failed to assign camper to group';
+                                toastError('Error', errorMsg);
+                              }
+                            } else {
+                              toastError('Error', 'Please select a group first');
+                            }
+                          }}
+                          disabled={!selectedGroups[camper?.camperId]}
+                          className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] disabled:bg-gray-300 disabled:cursor-not-allowed transition-all font-medium text-sm"
+                        >
+                          <CheckCircle2 size={16} />
+                          Assign
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {loading ? (
         <div className="flex justify-center items-center h-96">
@@ -474,6 +613,59 @@ const GroupManagement: React.FC = () => {
               <InputNumber min={0} placeholder="e.g., 15" className="w-full" />
             </Form.Item>
           </div>
+
+          {/* Group Members Section (only show when editing) */}
+          {editingGroup && groupMembers && (
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-semibold text-gray-700">
+                  Group Members ({groupMembers.length || 0})
+                </h3>
+                {loadingMembers && <Spin size="small" />}
+              </div>
+              {groupMembers.length > 0 ? (
+                <div className="max-h-60 overflow-y-auto space-y-2">
+                  {groupMembers.map((member: any, index: number) => (
+                    <div
+                      key={member.camperGroupId || index}
+                      className="flex items-center justify-between p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                    >
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">
+                          {member.camperName?.camperName || 'Unknown'}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          ID: {member.camperName?.camperId || 'N/A'}
+                        </p>
+                      </div>
+                      <button
+                        onClick={async () => {
+                          if (window.confirm(`Remove ${member.camperName?.camperName} from this group?`)) {
+                            try {
+                              await camperGroupService.deleteCamperGroup(member.camperGroupId);
+                              toastSuccess('Success', 'Camper removed from group');
+                              // Refresh group members
+                              const members = await camperGroupService.getCamperGroups({ groupId: editingGroup?.groupId });
+                              setGroupMembers(Array.isArray(members) ? members : []);
+                            } catch (error: any) {
+                              console.error('Failed to remove camper:', error);
+                              const errorMsg = error.response?.data?.message || error.message || 'Failed to remove camper from group';
+                              toastError('Error', errorMsg);
+                            }
+                          }
+                        }}
+                        className="text-red-600 hover:text-red-800 text-xs font-medium px-2 py-1 rounded bg-white border border-red-300 hover:bg-red-50 transition-colors"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500 italic">No campers assigned yet</p>
+              )}
+            </div>
+          )}
         </Form>
       </Modal>
     </div>

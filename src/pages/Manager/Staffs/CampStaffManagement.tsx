@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Spin, Popover } from 'antd';
-import { Search, UserRoundPlus } from 'lucide-react';
+import { Search, UserRoundPlus, Eye } from 'lucide-react';
 import { useManagerContext } from '../../../hooks/useManagerContext';
 import { useNotification } from '../../../contexts/NotificationContext';
 import DeletePopover from '../../../components/DeletePopover';
+import StaffDetailModal from '../../../components/StaffDetailModal';
 import campStaffService, {
   type StaffInfo,
   type CampStaffAssignmentResponse,
@@ -35,6 +36,10 @@ const CampStaffManagement: React.FC = () => {
   >([]);
   const [searchAssignedQuery, setSearchAssignedQuery] = useState('');
   const [deletePopoverOpen, setDeletePopoverOpen] = useState<number | null>(null);
+
+  // Staff Detail Modal
+  const [staffDetailModalOpen, setStaffDetailModalOpen] = useState(false);
+  const [selectedStaffUserId, setSelectedStaffUserId] = useState<number | null>(null);
 
   useEffect(() => {
     if (!selectedCampId) {
@@ -399,7 +404,19 @@ const CampStaffManagement: React.FC = () => {
                               </span>
                             </td>
                             <td className="px-6 py-4 text-right">
-                              <DeletePopover
+                              <div className="flex items-center justify-end gap-2">
+                                <button
+                                  onClick={() => {
+                                    setSelectedStaffUserId(assignment.staff.userId);
+                                    setStaffDetailModalOpen(true);
+                                  }}
+                                  className="inline-flex items-center gap-1 px-3 py-1.5 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-all font-medium text-sm"
+                                  title="View Details"
+                                >
+                                  <Eye size={14} />
+                                  Details
+                                </button>
+                                <DeletePopover
                                 onConfirm={() =>
                                   handleRemoveStaff(
                                     assignment.campStaffAssignmentId
@@ -420,7 +437,8 @@ const CampStaffManagement: React.FC = () => {
                                       : null
                                   )
                                 }
-                              />
+                                />
+                              </div>
                             </td>
                           </tr>
                         ))
@@ -432,6 +450,18 @@ const CampStaffManagement: React.FC = () => {
             </div>
           </div>
         </>
+      )}
+
+      {/* Staff Detail Modal */}
+      {selectedStaffUserId && (
+        <StaffDetailModal
+          isOpen={staffDetailModalOpen}
+          onClose={() => {
+            setStaffDetailModalOpen(false);
+            setSelectedStaffUserId(null);
+          }}
+          userId={selectedStaffUserId}
+        />
       )}
     </div>
   );

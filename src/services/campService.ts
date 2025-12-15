@@ -335,6 +335,16 @@ const campService = {
     const mapped = mapBackendToFrontend(response.data as BackendCampResponse);
     return mapped;
   },
+
+  // Cancel camp
+  cancelCamp: async (campId: number, reason: string): Promise<CampResponseDto> => {
+    console.log(`[campService] PUT /camp/${campId}/cancel`);
+    const response = await axiosInstance.put(`/camp/${campId}/cancel`, {
+      reason,
+    });
+    const mapped = mapBackendToFrontend(response.data as BackendCampResponse);
+    return mapped;
+  },
 };
 
 export default campService;
