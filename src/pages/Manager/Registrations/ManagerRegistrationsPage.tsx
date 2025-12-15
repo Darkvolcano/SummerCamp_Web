@@ -5,6 +5,7 @@ import { useManagerContext } from '../../../hooks/useManagerContext';
 import { useNotification } from '../../../contexts/NotificationContext';
 import registrationService, { type RegistrationResponseDto } from '../../../services/registrationService';
 import { RegistrationStatus } from '../../../enums/registration-status.enum';
+import RegistrationDetailModal from '../../../components/RegistrationDetailModal';
 
 const ManagerRegistrationsPage: React.FC = () => {
   const { selectedCampId } = useManagerContext();
@@ -18,6 +19,10 @@ const ManagerRegistrationsPage: React.FC = () => {
 
   // Status counts
   const [statusCounts, setStatusCounts] = useState<Record<string, number>>({});
+
+  // Registration Detail Modal
+  const [registrationDetailModalOpen, setRegistrationDetailModalOpen] = useState(false);
+  const [selectedRegistrationId, setSelectedRegistrationId] = useState<number | null>(null);
 
   useEffect(() => {
     if (!selectedCampId) {
@@ -222,6 +227,10 @@ const ManagerRegistrationsPage: React.FC = () => {
                         <td className="px-6 py-4 text-right">
                           <div className="flex items-center justify-end gap-2">
                             <button
+                              onClick={() => {
+                                setSelectedRegistrationId(reg.registrationId);
+                                setRegistrationDetailModalOpen(true);
+                              }}
                               className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#F3F4F6] text-[#6B7280] rounded-lg hover:bg-[#E5E7EB] transition-all font-medium text-sm"
                               title="View Details"
                             >
@@ -387,13 +396,16 @@ const ManagerRegistrationsPage: React.FC = () => {
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
                           Status
                         </th>
+                        <th className="px-6 py-3 text-right text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                          Actions
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-[#E5E7EB]">
                       {filteredRegistrations.length === 0 ? (
                         <tr>
                           <td
-                            colSpan={7}
+                            colSpan={8}
                             className="px-6 py-12 text-center text-[#6B7280]"
                           >
                             No registrations found matching your filters
@@ -436,6 +448,19 @@ const ManagerRegistrationsPage: React.FC = () => {
                                 {reg.status.replace(/([A-Z])/g, ' $1').trim()}
                               </span>
                             </td>
+                            <td className="px-6 py-4 text-right">
+                              <button
+                                onClick={() => {
+                                  setSelectedRegistrationId(reg.registrationId);
+                                  setRegistrationDetailModalOpen(true);
+                                }}
+                                className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-all font-medium text-sm"
+                                title="View Details"
+                              >
+                                <Eye size={16} />
+                                Detail
+                              </button>
+                            </td>
                           </tr>
                         ))
                       )}
@@ -446,6 +471,26 @@ const ManagerRegistrationsPage: React.FC = () => {
             </div>
           </div>
         </>
+      )}
+
+      {/* Registration Detail Modal */}
+      {selectedRegistrationId && (
+        <RegistrationDetailModal
+          isOpen={registrationDetailModalOpen}
+          onClose={() => {
+            setRegistrationDetailModalOpen(false);
+            setSelectedRegistrationId(null);
+          }}
+          registrationId={selectedRegistrationId}
+          onApproved={async () => {
+            // Refresh registrations list after approval
+            if (selectedCampId) {
+              const data = await registrationService.getRegistrationsByCampId(selectedCampId);
+              setRegistrations(data);
+              calculateStatusCounts(data);
+            }
+          }}
+        />
       )}
     </div>
   );
