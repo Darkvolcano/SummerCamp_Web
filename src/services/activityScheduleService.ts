@@ -46,16 +46,41 @@ export interface ActivityScheduleCreateDto {
   locationId?: number | null;
   startTime: string;
   endTime: string;
-  isOptional?: boolean | null;
   isLiveStream?: boolean | null;
+  isRepeat?: boolean;
+  groupIds?: number[] | null;
+}
+
+export interface RepeatDayOfWeek {
+  dayOfWeek: "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday" | "Sunday";
+}
+
+export interface ActivityScheduleTemplateDto {
+  activityId: number;
+  staffId?: number | null;
+  locationId?: number | null;
+  isLiveStream?: boolean | null;
+  startTime: string; // format: time (e.g., "09:00:00")
+  endTime: string;   // format: time (e.g., "17:00:00")
+  isDaily?: boolean;
+  repeatDays?: RepeatDayOfWeek[] | null;
 }
 
 export interface OptionalScheduleCreateDto {
   activityId: number;
   staffId?: number | null;
-  maxCapacity?: number | null;
   locationId?: number | null;
+  startTime: string;
+  endTime: string;
   isLiveStream?: boolean | null;
+  isRepeat?: boolean;
+}
+
+export interface RestingScheduleCreateDto {
+  activityId: number;
+  startTime: string;
+  endTime: string;
+  isRepeat?: boolean;
 }
 
 export interface ActivityScheduleResponseDto {
@@ -73,12 +98,27 @@ export interface ActivityScheduleResponseDto {
   currentCapacity?: number | null;
 }
 
+export interface ActivityScheduleBatchResponseDto {
+  successes: ActivityScheduleResponseDto[];
+  errors: Array<string | {
+    message: string;
+    [key: string]: any;
+  }>;
+}
+
 const activityScheduleService = {
   // Get all activity schedules
   getAllActivitySchedules: async (): Promise<ActivityScheduleResponseDto[]> => {
     console.log("[activityScheduleService] GET /ActivitySchedule");
     const response = await axiosInstance.get("/ActivitySchedule");
     return response.data as ActivityScheduleResponseDto[];
+  },
+
+  // Get activity schedule by ID
+  getActivityScheduleById: async (id: number): Promise<ActivityScheduleResponseDto> => {
+    console.log(`[activityScheduleService] GET /ActivitySchedule/${id}`);
+    const response = await axiosInstance.get(`/ActivitySchedule/${id}`);
+    return response.data as ActivityScheduleResponseDto;
   },
 
   // Get activity schedules with pending attendance by camp ID
@@ -95,13 +135,6 @@ const activityScheduleService = {
     console.log(`[activityScheduleService] GET /ActivitySchedule/attendances-checkin-checkout/camps/${campId}`);
     const response = await axiosInstance.get(`/ActivitySchedule/attendances-checkin-checkout/camps/${campId}`);
     return response.data as ActivityScheduleResponseDto[];
-  },
-
-  // Get activity schedule by ID
-  getActivityScheduleById: async (id: number): Promise<ActivityScheduleResponseDto> => {
-    console.log(`[activityScheduleService] GET /ActivitySchedule/${id}`);
-    const response = await axiosInstance.get(`/ActivitySchedule/${id}`);
-    return response.data as ActivityScheduleResponseDto;
   },
 
   // Get activity schedules by camper and camp
@@ -142,7 +175,7 @@ const activityScheduleService = {
   },
 
   // Create core activity schedule
-  createCoreActivitySchedule: async (schedule: ActivityScheduleCreateDto): Promise<ActivityScheduleResponseDto> => {
+  createCoreActivitySchedule: async (schedule: ActivityScheduleCreateDto): Promise<ActivityScheduleBatchResponseDto> => {
     console.log("[activityScheduleService] POST /ActivitySchedule/core");
     const requestPayload = {
       activityId: schedule.activityId,
@@ -150,27 +183,62 @@ const activityScheduleService = {
       locationId: schedule.locationId ?? null,
       startTime: schedule.startTime,
       endTime: schedule.endTime,
-      isOptional: schedule.isOptional ?? null,
       isLiveStream: schedule.isLiveStream ?? null,
+      isRepeat: schedule.isRepeat ?? false,
+      groupIds: schedule.groupIds ?? null,
     };
 
     const response = await axiosInstance.post("/ActivitySchedule/core", requestPayload);
+    return response.data as ActivityScheduleBatchResponseDto;
+  },
+
+  // Create core activity schedule from template
+  createCoreActivityScheduleFromTemplate: async (template: ActivityScheduleTemplateDto): Promise<ActivityScheduleResponseDto> => {
+    console.log("[activityScheduleService] POST /ActivitySchedule/core-template");
+    const requestPayload = {
+      activityId: template.activityId,
+      staffId: template.staffId ?? null,
+      locationId: template.locationId ?? null,
+      isLiveStream: template.isLiveStream ?? null,
+      startTime: template.startTime,
+      endTime: template.endTime,
+      isDaily: template.isDaily ?? false,
+      repeatDays: template.repeatDays ?? null,
+    };
+
+    const response = await axiosInstance.post("/ActivitySchedule/core-template", requestPayload);
     return response.data as ActivityScheduleResponseDto;
   },
 
   // Create optional activity schedule
-  createOptionalActivitySchedule: async (coreScheduleId: number, schedule: OptionalScheduleCreateDto): Promise<ActivityScheduleResponseDto> => {
-    console.log(`[activityScheduleService] POST /ActivitySchedule/optional/${coreScheduleId}`);
+  createOptionalActivitySchedule: async (schedule: OptionalScheduleCreateDto): Promise<ActivityScheduleBatchResponseDto> => {
+    console.log("[activityScheduleService] POST /ActivitySchedule/optional");
     const requestPayload = {
       activityId: schedule.activityId,
       staffId: schedule.staffId ?? null,
-      maxCapacity: schedule.maxCapacity ?? null,
       locationId: schedule.locationId ?? null,
+      startTime: schedule.startTime,
+      endTime: schedule.endTime,
       isLiveStream: schedule.isLiveStream ?? null,
+      isRepeat: schedule.isRepeat ?? false,
     };
 
-    const response = await axiosInstance.post(`/ActivitySchedule/optional/${coreScheduleId}`, requestPayload);
-    return response.data as ActivityScheduleResponseDto;
+    const response = await axiosInstance.post("/ActivitySchedule/optional", requestPayload);
+    return response.data as ActivityScheduleBatchResponseDto;
+  },
+
+  // Create resting activity schedule
+  createRestingActivitySchedule: async (schedule: RestingScheduleCreateDto): Promise<ActivityScheduleBatchResponseDto> => {
+    console.log("[activityScheduleService] POST /ActivitySchedule/resting");
+    const requestPayload = {
+      activityId: schedule.activityId,
+      startTime: schedule.startTime,
+      endTime: schedule.endTime,
+      isRepeat: schedule.isRepeat ?? false,
+    };
+
+    const response = await axiosInstance.post("/ActivitySchedule/resting", requestPayload);
+    return response.data as ActivityScheduleBatchResponseDto;
   },
 
   // Update core activity schedule
@@ -182,12 +250,25 @@ const activityScheduleService = {
       locationId: schedule.locationId ?? null,
       startTime: schedule.startTime,
       endTime: schedule.endTime,
-      isOptional: schedule.isOptional ?? null,
       isLiveStream: schedule.isLiveStream ?? null,
+      isRepeat: schedule.isRepeat ?? false,
+      groupIds: schedule.groupIds ?? null,
     };
 
     const response = await axiosInstance.put(`/ActivitySchedule/core/${id}`, requestPayload);
     return response.data as ActivityScheduleResponseDto;
+  },
+
+  // Auto change status (scheduled job trigger)
+  changeStatusAuto: async (): Promise<void> => {
+    console.log("[activityScheduleService] PUT /ActivitySchedule/change-status-auto");
+    await axiosInstance.put("/ActivitySchedule/change-status-auto");
+  },
+
+  // Change status to pending attendance
+  changeStatusToPendingAttendance: async (): Promise<void> => {
+    console.log("[activityScheduleService] PUT /ActivitySchedule/change-status-to-pending-attendance");
+    await axiosInstance.put("/ActivitySchedule/change-status-to-pending-attendance");
   },
 
   // Update activity schedule status
@@ -196,12 +277,6 @@ const activityScheduleService = {
     await axiosInstance.put(`/ActivitySchedule/${activityScheduleId}/status`, null, {
       params: { status: status },
     });
-  },
-
-  // Auto change status (scheduled job trigger)
-  changeStatusAuto: async (): Promise<void> => {
-    console.log("[activityScheduleService] PUT /ActivitySchedule/change-status-auto");
-    await axiosInstance.put("/ActivitySchedule/change-status-auto");
   },
 
   // Update live stream status

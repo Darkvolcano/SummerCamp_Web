@@ -36,6 +36,33 @@
   color: #111827;
 }
 
+.icon-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #6b7280 !important;
+  padding: 0;
+}
+
+.icon-btn:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+  color: #374151 !important;
+}
+
+.icon-btn.close-btn:hover {
+  background: #fef2f2;
+  border-color: #fca5a5;
+  color: #ef4444 !important;
+}
+
 .schedule-form {
   flex: 1;
   padding: 24px;

@@ -85,7 +85,7 @@ const ScheduleDetail: React.FC<ScheduleDetailProps> = ({
       <div className="schedule-detail-header">
         <h2>Schedule Details</h2>
         <div className="header-actions">
-          <button className="icon-btn close-btn" onClick={onClose}>
+          <button className="icon-btn close-btn" onClick={onClose} style={{ width: '36px', height: '36px' }}>
             <X size={20} />
           </button>
         </div>

@@ -32,12 +32,6 @@ const ActivityScheduleManagement: React.FC = () => {
     startTime: Date;
     endTime: Date;
   } | null>(null);
-  const [scheduleFormMode, setScheduleFormMode] = useState<
-    "create-core" | "create-optional"
-  >("create-core");
-  const [selectedCoreScheduleId, setSelectedCoreScheduleId] = useState<
-    string | null
-  >(null);
 
   // Fetch activities and schedules
   useEffect(() => {
@@ -118,56 +112,18 @@ const ActivityScheduleManagement: React.FC = () => {
   const handleSaveSchedule = async (scheduleData: any) => {
     try {
       setLoading(true);
-
-      const activityId = scheduleData.activityId;
-
-      // Create or update the schedule
-      if (selectedSchedule) {
-        // Update existing schedule
-        const updatedData: any = {
-          activityId,
-          staffId: scheduleData.staffId,
-          locationId: scheduleData.locationId,
-          startTime: scheduleData.startTime,
-          endTime: scheduleData.endTime,
-          isOptional: scheduleData.isOptional,
-          isLiveStream: scheduleData.isLiveStream,
-        };
-
-        await activityScheduleService.updateCoreActivitySchedule(
-          selectedSchedule.activityScheduleId,
-          updatedData
-        );
-        setSchedules((prev) =>
-          prev.map((s) =>
-            s.activityScheduleId === selectedSchedule.activityScheduleId
-              ? { ...s, ...updatedData }
-              : s
-          )
-        );
-        toastSuccess("Success", "Schedule updated successfully");
-      } else {
-        // Create new schedule
-        const newScheduleData: any = {
-          activityId,
-          staffId: scheduleData.staffId,
-          locationId: scheduleData.locationId,
-          startTime: scheduleData.startTime,
-          endTime: scheduleData.endTime,
-          isOptional: scheduleData.isOptional,
-          isLiveStream: scheduleData.isLiveStream,
-        };
-
-        const newSchedule =
-          await activityScheduleService.createCoreActivitySchedule(
-            newScheduleData
-          );
-        setSchedules((prev) => [...prev, newSchedule]);
-        toastSuccess("Success", "Schedule created successfully");
+      
+      if (!selectedCampId) {
+        toastError("Error", "No camp selected");
+        return;
       }
-
+      
+      setSchedules((prev) => [...prev, scheduleData]);
       setShowScheduleForm(false);
       setSelectedSchedule(null);
+      
+      const updatedSchedules = await activityScheduleService.getActivitySchedulesByCamp(selectedCampId);
+      setSchedules(updatedSchedules);
     } catch (error) {
       console.error("Failed to save schedule:", error);
       toastError("Error", "Failed to save schedule");
@@ -262,13 +218,6 @@ const ActivityScheduleManagement: React.FC = () => {
           onSelectSchedule={handleViewSchedule}
           onAddClick={handleAddSchedule}
           onSelectSlot={handleSelectSlot}
-          onCreateOptional={(coreScheduleId: string) => {
-            setSelectedCoreScheduleId(coreScheduleId);
-            setScheduleFormMode("create-optional");
-            setSelectedSchedule(null);
-            setSelectedSlot(null);
-            setShowScheduleForm(true);
-          }}
         />
       </div>
 
@@ -280,34 +229,14 @@ const ActivityScheduleManagement: React.FC = () => {
           campId={selectedCampId}
           initialStartTime={selectedSlot?.startTime}
           initialEndTime={selectedSlot?.endTime}
-          mode={scheduleFormMode}
-          coreScheduleId={selectedCoreScheduleId || undefined}
           onClose={() => {
             setShowScheduleForm(false);
             setSelectedSchedule(null);
             setSelectedSlot(null);
-            setScheduleFormMode("create-core");
-            setSelectedCoreScheduleId(null);
           }}
           onSave={handleSaveSchedule}
           onActivityCreated={(newActivity) => {
-            // Update activities list
             setActivities((prev) => [...prev, newActivity]);
-            // Refresh schedules for optional creation
-            if (
-              selectedCoreScheduleId &&
-              scheduleFormMode === "create-optional"
-            ) {
-              if (!selectedCampId) return;
-              activityScheduleService
-                .getActivitySchedulesByCamp(selectedCampId)
-                .then((updatedSchedules) => {
-                  setSchedules(updatedSchedules);
-                })
-                .catch((error) => {
-                  console.error("Failed to refresh schedules:", error);
-                });
-            }
           }}
         />
       )}

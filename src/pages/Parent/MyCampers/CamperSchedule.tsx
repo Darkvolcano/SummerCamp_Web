@@ -170,7 +170,6 @@ const CamperSchedule: React.FC = () => {
       <div
         title={`${event.resource.activityName}\n${event.resource.locationName}\nLoại: ${getActivityTypeDisplay(event.resource.activityType)}\nTrạng thái: ${event.resource.attendanceStatus || "Chưa có"}${event.resource.isLivestream ? '\n🔴 Có livestream' : ''}`}
         className="cursor-pointer relative"
-        onClick={() => handleEventClick(event)}
       >
         {event.resource.isLivestream && (
           <div className="absolute -top-1 -right-1">
@@ -269,6 +268,7 @@ const CamperSchedule: React.FC = () => {
                 onView={() => {}}
                 date={currentDate}
                 onNavigate={(date) => setCurrentDate(date)}
+                onSelectEvent={handleEventClick}
                 eventPropGetter={eventStyleGetter}
                 components={{
                   event: EventComponent,

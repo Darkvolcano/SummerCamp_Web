@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Form, Input, Select, DatePicker, InputNumber, Button, Spin, Checkbox } from "antd";
+import { Modal, Form, Input, Select, DatePicker, Button, Spin, Checkbox } from "antd";
 import { Plus, X } from "lucide-react";
 import dayjs from "dayjs";
 import activityService, { type ActivityResponseDto } from "../../services/activityService";
@@ -7,6 +7,7 @@ import type { ActivityScheduleResponseDto } from "../../services/activitySchedul
 import activityScheduleService from "../../services/activityScheduleService";
 import staffService, { type StaffInfo } from "../../services/staffService";
 import locationService, { type LocationResponseDto } from "../../services/LocationService";
+import groupService, { type GroupResponseDto } from "../../services/groupService";
 import { useNotification } from "../../contexts/NotificationContext";
 import "./ScheduleForm.css";
 
@@ -19,9 +20,8 @@ interface ScheduleFormProps {
   onActivityCreated?: (activity: ActivityResponseDto) => void;
   initialStartTime?: Date;
   initialEndTime?: Date;
-  mode?: "create-core" | "create-optional";
-  coreScheduleId?: string;
 }
+
 
 const ScheduleForm: React.FC<ScheduleFormProps> = ({
   schedule,
@@ -32,8 +32,6 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
   onActivityCreated,
   initialStartTime,
   initialEndTime,
-  mode = "create-core",
-  coreScheduleId,
 }) => {
   const { toastError, toastSuccess } = useNotification();
   const [form] = Form.useForm();
@@ -46,7 +44,9 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
   const [loadingStaffs, setLoadingStaffs] = useState(false);
   const [availableLocations, setAvailableLocations] = useState<LocationResponseDto[]>([]);
   const [loadingLocations, setLoadingLocations] = useState(false);
-  const [coreSchedule, setCoreSchedule] = useState<ActivityScheduleResponseDto | null>(null);
+  const [availableGroups, setAvailableGroups] = useState<GroupResponseDto[]>([]);
+  const [loadingGroups, setLoadingGroups] = useState(false);
+  const [selectedActivityType, setSelectedActivityType] = useState<"Core" | "Optional" | "Resting" | null>(null);
 
   useEffect(() => {
     if (schedule) {
@@ -70,34 +70,32 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
     }
   }, [schedule, form, activities, initialStartTime, initialEndTime]);
 
-  // Fetch core schedule when mode is create-optional
+  // Filter activities to show only Core, Optional, and Resting types
   useEffect(() => {
-    if (mode === "create-optional" && coreScheduleId) {
-      const fetchCoreSchedule = async () => {
-        try {
-          const schedule = await activityScheduleService.getActivityScheduleById(parseInt(coreScheduleId, 10));
-          setCoreSchedule(schedule);
-        } catch (error) {
-          console.error("Failed to fetch core schedule:", error);
-          toastError("Error", "Failed to load core schedule details");
-        }
-      };
-      fetchCoreSchedule();
-    }
-  }, [mode, coreScheduleId, toastError]);
+    const allowedTypes = ["Core", "Optional", "Resting"];
+    const filtered = activities.filter(a => allowedTypes.includes(a.activityType));
+    setFilteredActivities(filtered);
+  }, [activities]);
 
-  // Filter activities based on mode
+  // Fetch groups when campId changes
   useEffect(() => {
-    if (mode === "create-core") {
-      // Core form: exclude Optional type activities
-      const coreActivities = activities.filter(a => a.activityType !== "Optional");
-      setFilteredActivities(coreActivities);
-    } else if (mode === "create-optional") {
-      // Optional form: only Optional type activities
-      const optionalActivities = activities.filter(a => a.activityType === "Optional");
-      setFilteredActivities(optionalActivities);
+    const fetchGroups = async () => {
+      try {
+        setLoadingGroups(true);
+        const groups = await groupService.getGroupsByCampId(campId);
+        setAvailableGroups(groups);
+      } catch (error) {
+        console.error("Failed to fetch groups:", error);
+        toastError("Error", "Failed to load groups");
+      } finally {
+        setLoadingGroups(false);
+      }
+    };
+    
+    if (campId) {
+      fetchGroups();
     }
-  }, [mode, activities]);
+  }, [campId, toastError]);
 
   const handleAddNewActivity = async () => {
     try {
@@ -137,36 +135,104 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
         ? values.activityId
         : parseInt(values.activityId, 10);
 
-      if (mode === "create-optional" && coreScheduleId) {
-        // Create optional schedule
-        const optionalData = {
-          activityId,
-          staffId: values.staffId ? parseInt(values.staffId, 10) : null,
-          maxCapacity: values.maxCapacity ? parseInt(values.maxCapacity, 10) : null,
-          locationId: values.locationId ? parseInt(values.locationId, 10) : null,
-          isLiveStream: !!values.isLiveStream,
-        };
+      const selectedActivity = activities.find(a => a.activityId === activityId);
+      if (!selectedActivity) {
+        toastError("Error", "Selected activity not found");
+        return;
+      }
 
-        await activityScheduleService.createOptionalActivitySchedule(parseInt(coreScheduleId, 10), optionalData);
-        toastSuccess("Success", "Optional activity schedule created successfully");
-        onClose();
-      } else {
-        // Create core schedule - match API schema exactly
-        const scheduleData = {
+      const activityType = selectedActivity.activityType;
+
+      if (activityType === "Core") {
+        const coreData = {
           activityId,
           staffId: values.staffId ? parseInt(values.staffId, 10) : null,
           locationId: values.locationId ? parseInt(values.locationId, 10) : null,
           startTime: values.startTime.toISOString(),
           endTime: values.endTime.toISOString(),
-          isOptional: !!values.isOptional,
           isLiveStream: !!values.isLiveStream,
+          isRepeat: !!values.isRepeat,
+          groupIds: values.groupIds && values.groupIds.length > 0 
+            ? values.groupIds.map((id: any) => parseInt(id, 10))
+            : null,
         };
 
-        onSave(scheduleData);
+        const response = await activityScheduleService.createCoreActivitySchedule(coreData);
+        
+        if (response.successes && response.successes.length > 0) {
+          toastSuccess("Success", `Created ${response.successes.length} schedule(s) successfully`);
+          response.successes.forEach((schedule: any) => onSave(schedule));
+        }
+        
+        if (response.errors && response.errors.length > 0) {
+          response.errors.forEach((error: any) => {
+            const errorMessage = typeof error === 'string' ? error : (error.message || 'Unknown error');
+            toastError("Warning", errorMessage);
+          });
+        }
+        
+        if (response.successes && response.successes.length > 0) {
+          onClose();
+        }
+      } else if (activityType === "Optional") {
+        const optionalData = {
+          activityId,
+          staffId: values.staffId ? parseInt(values.staffId, 10) : null,
+          locationId: values.locationId ? parseInt(values.locationId, 10) : null,
+          startTime: values.startTime.toISOString(),
+          endTime: values.endTime.toISOString(),
+          isLiveStream: !!values.isLiveStream,
+          isRepeat: !!values.isRepeat,
+        };
+
+        const response = await activityScheduleService.createOptionalActivitySchedule(optionalData);
+        
+        if (response.successes && response.successes.length > 0) {
+          toastSuccess("Success", `Created ${response.successes.length} schedule(s) successfully`);
+          response.successes.forEach((schedule: any) => onSave(schedule));
+        }
+        
+        if (response.errors && response.errors.length > 0) {
+          response.errors.forEach((error: any) => {
+            const errorMessage = typeof error === 'string' ? error : (error.message || 'Unknown error');
+            toastError("Warning", errorMessage);
+          });
+        }
+        
+        if (response.successes && response.successes.length > 0) {
+          onClose();
+        }
+      } else if (activityType === "Resting") {
+        const restingData = {
+          activityId,
+          startTime: values.startTime.toISOString(),
+          endTime: values.endTime.toISOString(),
+          isRepeat: !!values.isRepeat,
+        };
+
+        const response = await activityScheduleService.createRestingActivitySchedule(restingData);
+        
+        if (response.successes && response.successes.length > 0) {
+          toastSuccess("Success", `Created ${response.successes.length} schedule(s) successfully`);
+          response.successes.forEach((schedule: any) => onSave(schedule));
+        }
+        
+        if (response.errors && response.errors.length > 0) {
+          response.errors.forEach((error: any) => {
+            const errorMessage = typeof error === 'string' ? error : (error.message || 'Unknown error');
+            toastError("Warning", errorMessage);
+          });
+        }
+        
+        if (response.successes && response.successes.length > 0) {
+          onClose();
+        }
+      } else {
+        toastError("Error", `Activity type "${activityType}" is not supported for schedule creation`);
       }
     } catch (error) {
       console.error("Error submitting form:", error);
-      toastError("Error", "Failed to submit form");
+      toastError("Error", "Failed to create schedule");
     } finally {
       setLoading(false);
     }
@@ -175,7 +241,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
   return (
     <div className="schedule-form-sidebar">
       <div className="form-header">
-        <h2>{mode === "create-optional" ? "Create Optional Activity" : (schedule ? "Edit Schedule" : "Create Schedule")}</h2>
+        <h2>{schedule ? "Edit Schedule" : "Create Schedule"}</h2>
         <button className="icon-btn close-btn" onClick={onClose} style={{ width: '36px', height: '36px' }}>
           <X size={20} />
         </button>
@@ -196,6 +262,12 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
               <Select
                 placeholder="Select activity"
                 showSearch
+                onChange={(value) => {
+                  const selected = activities.find(a => a.activityId === value);
+                  if (selected) {
+                    setSelectedActivityType(selected.activityType as "Core" | "Optional" | "Resting");
+                  }
+                }}
                 filterOption={(input, option) =>
                   (option?.label ?? "")
                     .toString()
@@ -264,26 +336,28 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
               />
             </Form.Item>
 
-            {mode === "create-core" && (
+            {/* Common fields: Start Time and End Time (always shown) */}
+            <div className="grid grid-cols-2 gap-4">
+              <Form.Item
+                label="Start Time"
+                name="startTime"
+                rules={[{ required: true, message: "Please select start time" }]}
+              >
+                <DatePicker showTime format="YYYY-MM-DD HH:mm" style={{ width: "100%" }} />
+              </Form.Item>
+
+              <Form.Item
+                label="End Time"
+                name="endTime"
+                rules={[{ required: true, message: "Please select end time" }]}
+              >
+                <DatePicker showTime format="YYYY-MM-DD HH:mm" style={{ width: "100%" }} />
+              </Form.Item>
+            </div>
+
+            {/* Core Activity Fields */}
+            {selectedActivityType === "Core" && (
               <>
-                <div className="grid grid-cols-2 gap-4">
-                  <Form.Item
-                    label="Start Time"
-                    name="startTime"
-                    rules={[{ required: true, message: "Please select start time" }]}
-                  >
-                    <DatePicker showTime format="YYYY-MM-DD HH:mm" style={{ width: "100%" }} />
-                  </Form.Item>
-
-                  <Form.Item
-                    label="End Time"
-                    name="endTime"
-                    rules={[{ required: true, message: "Please select end time" }]}
-                  >
-                    <DatePicker showTime format="YYYY-MM-DD HH:mm" style={{ width: "100%" }} />
-                  </Form.Item>
-                </div>
-
                 <Form.Item
                   label="Staff"
                   name="staffId"
@@ -392,17 +466,42 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
                   />
                 </Form.Item>
 
-                <Form.Item label="Is Optional" name="isOptional" valuePropName="checked">
-                  <Checkbox>This activity has optional slots</Checkbox>
+                <Form.Item
+                  label="Groups"
+                  name="groupIds"
+                  rules={[{ required: true, message: "Please select at least one group" }]}
+                >
+                  <Select
+                    mode="multiple"
+                    placeholder="Select groups"
+                    showSearch
+                    loading={loadingGroups}
+                    notFoundContent={loadingGroups ? null : "No available groups"}
+                    filterOption={(input, option) =>
+                      (option?.label ?? "")
+                        .toString()
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
+                    options={availableGroups.map((group) => ({
+                      label: group.groupName,
+                      value: group.groupId,
+                    }))}
+                  />
                 </Form.Item>
 
                 <Form.Item label="Live Stream" name="isLiveStream" valuePropName="checked">
                   <Checkbox>Enable live streaming for this activity</Checkbox>
                 </Form.Item>
+
+                <Form.Item label="Repeat" name="isRepeat" valuePropName="checked">
+                  <Checkbox>Repeat this schedule</Checkbox>
+                </Form.Item>
               </>
             )}
 
-            {mode === "create-optional" && (
+            {/* Optional Activity Fields */}
+            {selectedActivityType === "Optional" && (
               <>
                 <Form.Item
                   label="Staff"
@@ -414,26 +513,27 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
                     showSearch
                     loading={loadingStaffs}
                     notFoundContent={
-                      !coreSchedule
-                        ? "Please select a core schedule first"
+                      !form.getFieldValue("startTime") || !form.getFieldValue("endTime")
+                        ? "Please fill in start time and end time first"
                         : loadingStaffs
                         ? null
                         : "No available staff"
                     }
                     onOpenChange={async (open) => {
                       if (open) {
-                        if (!coreSchedule) {
+                        const startTime = form.getFieldValue("startTime");
+                        const endTime = form.getFieldValue("endTime");
+
+                        if (!startTime || !endTime) {
                           return;
                         }
 
                         try {
                           setLoadingStaffs(true);
-                          const startTime = dayjs(coreSchedule.startTime).toISOString();
-                          const endTime = dayjs(coreSchedule.endTime).toISOString();
                           const staffs = await staffService.getAvailableStaffInTime(
                             campId,
-                            startTime,
-                            endTime
+                            startTime.toISOString(),
+                            endTime.toISOString()
                           );
                           setAvailableStaffs(staffs);
                         } catch (error) {
@@ -450,12 +550,10 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
                         .toLowerCase()
                         .includes(input.toLowerCase())
                     }
-                    options={availableStaffs.map((staff) => (
-                      {
-                        label: staff.fullName,
-                        value: staff.userId,
-                      }
-                    ))}
+                    options={availableStaffs.map((staff) => ({
+                      label: staff.fullName,
+                      value: staff.userId,
+                    }))}
                   />
                 </Form.Item>
 
@@ -469,26 +567,27 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
                     showSearch
                     loading={loadingLocations}
                     notFoundContent={
-                      !coreSchedule
-                        ? "Please select a core schedule first"
+                      !form.getFieldValue("startTime") || !form.getFieldValue("endTime")
+                        ? "Please fill in start time and end time first"
                         : loadingLocations
                         ? null
                         : "No available locations"
                     }
                     onOpenChange={async (open) => {
                       if (open) {
-                        if (!coreSchedule) {
+                        const startTime = form.getFieldValue("startTime");
+                        const endTime = form.getFieldValue("endTime");
+
+                        if (!startTime || !endTime) {
                           return;
                         }
 
                         try {
                           setLoadingLocations(true);
-                          const startTime = dayjs(coreSchedule.startTime).toISOString();
-                          const endTime = dayjs(coreSchedule.endTime).toISOString();
                           const locations = await locationService.getLocationsByCampIdAndTime(
                             campId,
-                            startTime,
-                            endTime
+                            startTime.toISOString(),
+                            endTime.toISOString()
                           );
                           setAvailableLocations(locations);
                         } catch (error) {
@@ -505,27 +604,28 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
                         .toLowerCase()
                         .includes(input.toLowerCase())
                     }
-                    options={availableLocations.map((location) => (
-                      {
-                        label: location.name,
-                        value: location.locationId,
-                      }
-                    ))}
+                    options={availableLocations.map((location) => ({
+                      label: location.name,
+                      value: location.locationId,
+                    }))}
                   />
-                </Form.Item>
-
-                <Form.Item
-                  label="Max Capacity"
-                  name="maxCapacity"
-                  rules={[{ required: false, message: "Please enter max capacity" }]}
-                >
-                  <InputNumber placeholder="Enter max capacity (optional)" min={1} style={{ width: "100%" }} />
                 </Form.Item>
 
                 <Form.Item label="Live Stream" name="isLiveStream" valuePropName="checked">
                   <Checkbox>Enable live streaming for this optional activity</Checkbox>
                 </Form.Item>
+
+                <Form.Item label="Repeat" name="isRepeat" valuePropName="checked">
+                  <Checkbox>Repeat this schedule</Checkbox>
+                </Form.Item>
               </>
+            )}
+
+            {/* Resting Activity Fields */}
+            {selectedActivityType === "Resting" && (
+              <Form.Item label="Repeat" name="isRepeat" valuePropName="checked">
+                <Checkbox>Repeat this schedule</Checkbox>
+              </Form.Item>
             )}
           </Form>
         </Spin>
