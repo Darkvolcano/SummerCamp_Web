@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Spin, Modal, Form, Select, DatePicker, TimePicker, Tag } from 'antd';
-import { Plus, Calendar, Clock, User, Truck, MapPin, ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
+import { Spin, Modal, Form, Select, DatePicker, TimePicker, Tag, Switch } from 'antd';
+import { Plus, Calendar, Clock, User, Truck, MapPin, ArrowUpCircle, ArrowDownCircle, Repeat } from 'lucide-react';
 import { useManagerContext } from '../../../hooks/useManagerContext';
 import { useNotification } from '../../../contexts/NotificationContext';
 import transportScheduleService, {
@@ -27,6 +27,7 @@ const TransportScheduleTab: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
   const [submitting, setSubmitting] = useState(false);
+  const [isRoundTrip, setIsRoundTrip] = useState(false);
 
   // Dropdown data
   const [routes, setRoutes] = useState<RouteResponseDto[]>([]);
@@ -102,6 +103,7 @@ const TransportScheduleTab: React.FC = () => {
     setSelectedTransportType(undefined);
     setVehicles([]);
     setDrivers([]);
+    setIsRoundTrip(false);
     setIsModalVisible(true);
     fetchDropdownData();
   };
@@ -111,21 +113,54 @@ const TransportScheduleTab: React.FC = () => {
       const values = await form.validateFields();
       setSubmitting(true);
 
-      const payload: TransportScheduleRequestDto = {
-        campId: selectedCampId!,
-        routeId: values.routeId,
-        driverId: values.driverId,
-        vehicleId: values.vehicleId,
-        date: values.date.format('YYYY-MM-DD'),
-        startTime: values.startTime.format('HH:mm:ss'),
-        endTime: values.endTime.format('HH:mm:ss'),
-        transportType: values.transportType,
-      };
+      if (isRoundTrip) {
+        // Create both pickup and dropoff schedules
+        const pickupPayload: TransportScheduleRequestDto = {
+          campId: selectedCampId!,
+          routeId: values.pickupRouteId,
+          driverId: values.driverId,
+          vehicleId: values.vehicleId,
+          date: values.pickupDate.format('YYYY-MM-DD'),
+          startTime: values.pickupStartTime.format('HH:mm:ss'),
+          endTime: values.pickupEndTime.format('HH:mm:ss'),
+          transportType: 'PickUp',
+        };
 
-      await transportScheduleService.createTransportSchedule(payload);
-      toastSuccess('Success', 'Transport schedule created successfully');
+        const dropoffPayload: TransportScheduleRequestDto = {
+          campId: selectedCampId!,
+          routeId: values.dropoffRouteId,
+          driverId: values.driverId,
+          vehicleId: values.vehicleId,
+          date: values.dropoffDate.format('YYYY-MM-DD'),
+          startTime: values.dropoffStartTime.format('HH:mm:ss'),
+          endTime: values.dropoffEndTime.format('HH:mm:ss'),
+          transportType: 'DropOff',
+        };
+
+        await transportScheduleService.bulkCreateTransportSchedules({
+          schedules: [pickupPayload, dropoffPayload],
+        });
+        toastSuccess('Success', 'Round trip schedules created successfully');
+      } else {
+        // Create single schedule
+        const payload: TransportScheduleRequestDto = {
+          campId: selectedCampId!,
+          routeId: values.routeId,
+          driverId: values.driverId,
+          vehicleId: values.vehicleId,
+          date: values.date.format('YYYY-MM-DD'),
+          startTime: values.startTime.format('HH:mm:ss'),
+          endTime: values.endTime.format('HH:mm:ss'),
+          transportType: values.transportType,
+        };
+
+        await transportScheduleService.createTransportSchedule(payload);
+        toastSuccess('Success', 'Transport schedule created successfully');
+      }
+
       setIsModalVisible(false);
       form.resetFields();
+      setIsRoundTrip(false);
       fetchSchedules();
     } catch (error: any) {
       console.error('Error creating schedule:', error);
@@ -398,33 +433,58 @@ const TransportScheduleTab: React.FC = () => {
           )}
 
           <Form form={form} layout="vertical" className="mt-4">
-            <Form.Item
-              label="Transport Type"
-              name="transportType"
-              rules={[{ required: true, message: 'Please select transport type!' }]}
-            >
-              <Select 
-                placeholder="Select transport type"
-                onChange={(value) => {
-                  // Reset route selection when transport type changes
-                  form.setFieldsValue({ routeId: undefined });
-                  setSelectedTransportType(value);
-                }}
-              >
-                <Option value="PickUp">
-                  <div className="flex items-center gap-2">
-                    <ArrowUpCircle size={16} className="text-green-600" />
-                    Pickup
+            {/* Round Trip Switch */}
+            <div className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Repeat size={20} className="text-purple-600" />
+                  <div>
+                    <h4 className="text-sm font-bold text-purple-900">Round Trip</h4>
+                    <p className="text-xs text-purple-700">Create both pickup and drop-off schedules</p>
                   </div>
-                </Option>
-                <Option value="DropOff">
-                  <div className="flex items-center gap-2">
-                    <ArrowDownCircle size={16} className="text-orange-600" />
-                    Drop-off
-                  </div>
-                </Option>
-              </Select>
-            </Form.Item>
+                </div>
+                <Switch
+                  checked={isRoundTrip}
+                  onChange={(checked) => {
+                    setIsRoundTrip(checked);
+                    form.resetFields();
+                    setVehicles([]);
+                    setDrivers([]);
+                  }}
+                />
+              </div>
+            </div>
+
+            {!isRoundTrip ? (
+              // Single Schedule Form
+              <>
+                <Form.Item
+                  label="Transport Type"
+                  name="transportType"
+                  rules={[{ required: true, message: 'Please select transport type!' }]}
+                >
+                  <Select 
+                    placeholder="Select transport type"
+                    onChange={(value) => {
+                      // Reset route selection when transport type changes
+                      form.setFieldsValue({ routeId: undefined });
+                      setSelectedTransportType(value);
+                    }}
+                  >
+                    <Option value="PickUp">
+                      <div className="flex items-center gap-2">
+                        <ArrowUpCircle size={16} className="text-green-600" />
+                        Pickup
+                      </div>
+                    </Option>
+                    <Option value="DropOff">
+                      <div className="flex items-center gap-2">
+                        <ArrowDownCircle size={16} className="text-orange-600" />
+                        Drop-off
+                      </div>
+                    </Option>
+                  </Select>
+                </Form.Item>
 
             <Form.Item
               label="Route"
@@ -580,6 +640,237 @@ const TransportScheduleTab: React.FC = () => {
                 ))}
               </Select>
             </Form.Item>
+              </>
+            ) : (
+              // Round Trip Form - Two Sections
+              <>
+                {/* Pickup Section */}
+                <div className="mb-6 p-4 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg">
+                  <div className="flex items-center gap-2 mb-4">
+                    <ArrowUpCircle size={20} className="text-green-600" />
+                    <h3 className="text-base font-bold text-green-900">Pickup Schedule</h3>
+                  </div>
+
+                  <Form.Item
+                    label="Pickup Route"
+                    name="pickupRouteId"
+                    rules={[{ required: true, message: 'Please select pickup route!' }]}
+                  >
+                    <Select 
+                      placeholder="Select pickup route" 
+                      showSearch 
+                      optionFilterProp="children"
+                    >
+                      {routes
+                        .filter(route => route.routeType === 'PickUp')
+                        .map((route) => (
+                          <Option key={route.routeId} value={route.routeId}>
+                            {route.routeName}
+                          </Option>
+                        ))}
+                    </Select>
+                  </Form.Item>
+
+                  <Form.Item
+                    label="Pickup Date"
+                    name="pickupDate"
+                    rules={[{ required: true, message: 'Please select pickup date!' }]}
+                  >
+                    <DatePicker
+                      className="w-full"
+                      format="DD/MM/YYYY"
+                    />
+                  </Form.Item>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <Form.Item
+                      label="Start Time"
+                      name="pickupStartTime"
+                      rules={[{ required: true, message: 'Please select start time!' }]}
+                    >
+                      <TimePicker className="w-full" format="HH:mm" />
+                    </Form.Item>
+
+                    <Form.Item
+                      label="End Time"
+                      name="pickupEndTime"
+                      rules={[{ required: true, message: 'Please select end time!' }]}
+                    >
+                      <TimePicker className="w-full" format="HH:mm" />
+                    </Form.Item>
+                  </div>
+                </div>
+
+                {/* Drop-off Section */}
+                <div className="mb-6 p-4 bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200 rounded-lg">
+                  <div className="flex items-center gap-2 mb-4">
+                    <ArrowDownCircle size={20} className="text-orange-600" />
+                    <h3 className="text-base font-bold text-orange-900">Drop-off Schedule</h3>
+                  </div>
+
+                  <Form.Item
+                    label="Drop-off Route"
+                    name="dropoffRouteId"
+                    rules={[{ required: true, message: 'Please select drop-off route!' }]}
+                  >
+                    <Select 
+                      placeholder="Select drop-off route" 
+                      showSearch 
+                      optionFilterProp="children"
+                    >
+                      {routes
+                        .filter(route => route.routeType === 'DropOff')
+                        .map((route) => (
+                          <Option key={route.routeId} value={route.routeId}>
+                            {route.routeName}
+                          </Option>
+                        ))}
+                    </Select>
+                  </Form.Item>
+
+                  <Form.Item
+                    label="Drop-off Date"
+                    name="dropoffDate"
+                    rules={[{ required: true, message: 'Please select drop-off date!' }]}
+                  >
+                    <DatePicker
+                      className="w-full"
+                      format="DD/MM/YYYY"
+                    />
+                  </Form.Item>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <Form.Item
+                      label="Start Time"
+                      name="dropoffStartTime"
+                      rules={[{ required: true, message: 'Please select start time!' }]}
+                    >
+                      <TimePicker className="w-full" format="HH:mm" />
+                    </Form.Item>
+
+                    <Form.Item
+                      label="End Time"
+                      name="dropoffEndTime"
+                      rules={[{ required: true, message: 'Please select end time!' }]}
+                    >
+                      <TimePicker className="w-full" format="HH:mm" />
+                    </Form.Item>
+                  </div>
+                </div>
+
+                {/* Shared Vehicle & Driver Section */}
+                <div className="mb-4 p-4 bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-200 rounded-lg">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Truck size={20} className="text-indigo-600" />
+                    <h3 className="text-base font-bold text-indigo-900">Shared Resources</h3>
+                  </div>
+
+                  <Form.Item
+                    label="Vehicle"
+                    name="vehicleId"
+                    rules={[{ required: true, message: 'Please select a vehicle!' }]}
+                  >
+                    <Select 
+                      placeholder="Select vehicle"
+                      showSearch 
+                      optionFilterProp="children"
+                      loading={loadingVehicles}
+                      notFoundContent={
+                        !form.getFieldValue('pickupDate') || !form.getFieldValue('pickupStartTime') || !form.getFieldValue('pickupEndTime')
+                          ? "Please fill in pickup date and time first"
+                          : loadingVehicles
+                          ? null
+                          : "No available vehicles"
+                      }
+                      onDropdownVisibleChange={async (open) => {
+                        if (open) {
+                          const date = form.getFieldValue('pickupDate');
+                          const startTime = form.getFieldValue('pickupStartTime');
+                          const endTime = form.getFieldValue('pickupEndTime');
+
+                          if (!date || !startTime || !endTime) {
+                            return;
+                          }
+
+                          try {
+                            setLoadingVehicles(true);
+                            const vehiclesData = await vehicleService.getAvailableVehicles(
+                              date.format('YYYY-MM-DD'),
+                              startTime.format('HH:mm:ss'),
+                              endTime.format('HH:mm:ss')
+                            );
+                            setVehicles(vehiclesData);
+                          } catch (error) {
+                            console.error('Failed to load available vehicles:', error);
+                            toastError('Error', 'Failed to load available vehicles');
+                          } finally {
+                            setLoadingVehicles(false);
+                          }
+                        }
+                      }}
+                    >
+                      {vehicles.map((vehicle) => (
+                        <Option key={vehicle.vehicleId} value={vehicle.vehicleId}>
+                          {vehicle.vehicleName} - {vehicle.vehicleNumber} (Capacity: {vehicle.capacity})
+                        </Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+
+                  <Form.Item
+                    label="Driver"
+                    name="driverId"
+                    rules={[{ required: true, message: 'Please select a driver!' }]}
+                  >
+                    <Select 
+                      placeholder="Select driver"
+                      showSearch 
+                      optionFilterProp="children"
+                      loading={loadingDrivers}
+                      notFoundContent={
+                        !form.getFieldValue('pickupDate') || !form.getFieldValue('pickupStartTime') || !form.getFieldValue('pickupEndTime')
+                          ? "Please fill in pickup date and time first"
+                          : loadingDrivers
+                          ? null
+                          : "No available drivers"
+                      }
+                      onDropdownVisibleChange={async (open) => {
+                        if (open) {
+                          const date = form.getFieldValue('pickupDate');
+                          const startTime = form.getFieldValue('pickupStartTime');
+                          const endTime = form.getFieldValue('pickupEndTime');
+
+                          if (!date || !startTime || !endTime) {
+                            return;
+                          }
+
+                          try {
+                            setLoadingDrivers(true);
+                            const driversData = await driverService.getAvailableDrivers(
+                              date.format('YYYY-MM-DD'),
+                              startTime.format('HH:mm:ss'),
+                              endTime.format('HH:mm:ss')
+                            );
+                            setDrivers(driversData);
+                          } catch (error) {
+                            console.error('Failed to load available drivers:', error);
+                            toastError('Error', 'Failed to load available drivers');
+                          } finally {
+                            setLoadingDrivers(false);
+                          }
+                        }
+                      }}
+                    >
+                      {drivers.map((driver) => (
+                        <Option key={driver.driverId} value={driver.driverId}>
+                          {driver.firstName} {driver.lastName} - {driver.email}
+                        </Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </div>
+              </>
+            )}
           </Form>
         </Spin>
       </Modal>

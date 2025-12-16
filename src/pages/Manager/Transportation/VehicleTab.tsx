@@ -17,7 +17,6 @@ const VehicleTab: React.FC = () => {
   const [vehicles, setVehicles] = useState<VehicleResponseDto[]>([]);
   const [loading, setLoading] = useState(false);
   const [vehicleTypes, setVehicleTypes] = useState<VehicleType[]>([]);
-  const [vehicleTypeMap, setVehicleTypeMap] = useState<Map<number, string>>(new Map());
 
   // Filters
   const [searchQuery, setSearchQuery] = useState('');
@@ -25,6 +24,7 @@ const VehicleTab: React.FC = () => {
   // Modal states
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingVehicle, setEditingVehicle] = useState<VehicleResponseDto | null>(null);
+  const [isEditMode, setIsEditMode] = useState(false); // NEW: Track if modal is in edit mode
   const [form] = Form.useForm();
   const [submitting, setSubmitting] = useState(false);
 
@@ -44,7 +44,6 @@ const VehicleTab: React.FC = () => {
     }
 
     fetchVehicles();
-    fetchAllVehicleTypes();
   }, [selectedCampId]);
 
   const fetchVehicles = async () => {
@@ -57,19 +56,6 @@ const VehicleTab: React.FC = () => {
       toastError('Error', 'Unable to load vehicles');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const fetchAllVehicleTypes = async () => {
-    try {
-      const types = await vehicleService.getAllVehicleTypes();
-      const typeMap = new Map<number, string>();
-      types.forEach(type => {
-        typeMap.set(type.vehicleTypeId, type.name);
-      });
-      setVehicleTypeMap(typeMap);
-    } catch (error) {
-      console.error('Failed to load vehicle types:', error);
     }
   };
 
@@ -107,28 +93,42 @@ const VehicleTab: React.FC = () => {
   // Handle add vehicle
   const handleAddClick = () => {
     setEditingVehicle(null);
+    setIsEditMode(true); // Adding new vehicle = edit mode
     form.resetFields();
     form.setFieldsValue({ status: 'Active' }); 
     setIsModalVisible(true);
   };
 
-  // Handle edit vehicle
-  const handleEditClick = async (vehicle: VehicleResponseDto) => {
+  // Handle view vehicle details
+  const handleViewClick = async (vehicle: VehicleResponseDto) => {
     try {
       const fullData = await vehicleService.getVehicleById(vehicle.vehicleId);
       setEditingVehicle(fullData);
-      form.setFieldsValue({
-        vehicleName: fullData.vehicleName,
-        vehicleNumber: fullData.vehicleNumber,
-        capacity: fullData.capacity,
-        status: fullData.status,
-        vehicleType: fullData.vehicleType,
-      });
+      setIsEditMode(false); // Start in view mode
       setIsModalVisible(true);
     } catch (error) {
       console.error('Failed to load vehicle details:', error);
       toastError('Error', 'Failed to load vehicle details');
     }
+  };
+
+  // Handle enable edit mode
+  const handleEnableEdit = async () => {
+    if (!editingVehicle) return;
+    
+    // Fetch vehicle types before enabling edit
+    await fetchVehicleTypes();
+    
+    // Set form values
+    form.setFieldsValue({
+      vehicleName: editingVehicle.vehicleName,
+      vehicleNumber: editingVehicle.vehicleNumber,
+      capacity: editingVehicle.capacity,
+      status: editingVehicle.status,
+      vehicleType: editingVehicle.vehicleType?.vehicleTypeId || null,
+    });
+    
+    setIsEditMode(true);
   };
 
   // Handle form submit
@@ -327,11 +327,7 @@ const VehicleTab: React.FC = () => {
                             {vehicle.vehicleNumber}
                           </td>
                           <td className="px-6 py-4 text-sm text-[#374151]">
-                            {vehicle.vehicleType ? (
-                              vehicleTypeMap.get(vehicle.vehicleType) || (
-                                <span className="text-[#9CA3AF]">Unknown Type</span>
-                              )
-                            ) : (
+                            {vehicle.vehicleType?.name || (
                               <span className="text-[#9CA3AF]">Unspecified</span>
                             )}
                           </td>
@@ -344,12 +340,12 @@ const VehicleTab: React.FC = () => {
                           <td className="px-6 py-4 text-right">
                             <div className="flex items-center justify-end gap-2">
                               <button
-                                onClick={() => handleEditClick(vehicle)}
+                                onClick={() => handleViewClick(vehicle)}
                                 className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#F3F4F6] text-[#6B7280] rounded-lg hover:bg-[#E5E7EB] transition-all font-medium text-sm"
-                                title="Edit Vehicle"
+                                title="View Details"
                               >
                                 <Edit2 size={16} />
-                                Edit
+                                Detail
                               </button>
                               <DeletePopover
                                 onConfirm={() => handleDelete(vehicle.vehicleId)}
@@ -374,20 +370,75 @@ const VehicleTab: React.FC = () => {
         </div>
       )}
 
-      {/* Add/Edit Vehicle Modal */}
+      {/* Vehicle Detail/Edit Modal */}
       <Modal
-        title={editingVehicle ? 'Edit Vehicle' : 'Add New Vehicle'}
+        title={editingVehicle ? (isEditMode ? 'Edit Vehicle' : 'Vehicle Details') : 'Add New Vehicle'}
         open={isModalVisible}
-        onOk={handleSubmit}
+        onOk={isEditMode ? handleSubmit : undefined}
         onCancel={() => {
           setIsModalVisible(false);
           setEditingVehicle(null);
+          setIsEditMode(false);
           form.resetFields();
         }}
         confirmLoading={submitting}
         width={600}
+        footer={
+          editingVehicle && !isEditMode ? (
+            // Detail view footer
+            <div className="flex justify-end gap-2">
+              <Button onClick={() => {
+                setIsModalVisible(false);
+                setEditingVehicle(null);
+                setIsEditMode(false);
+              }}>
+                Close
+              </Button>
+              <Button type="primary" onClick={handleEnableEdit}>
+                Edit
+              </Button>
+            </div>
+          ) : (
+            // Edit mode footer (default)
+            undefined
+          )
+        }
       >
-        <Form form={form} layout="vertical" className="mt-4">
+        {editingVehicle && !isEditMode ? (
+          // Detail View
+          <div className="space-y-4 mt-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs font-medium text-gray-500">Vehicle Name</label>
+                <p className="text-sm font-medium text-gray-900 mt-1">{editingVehicle.vehicleName}</p>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-gray-500">Vehicle Number</label>
+                <p className="text-sm font-mono text-gray-900 mt-1">{editingVehicle.vehicleNumber}</p>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs font-medium text-gray-500">Vehicle Type</label>
+                <p className="text-sm text-gray-900 mt-1">
+                  {editingVehicle.vehicleType?.name || <span className="text-gray-400">Unspecified</span>}
+                </p>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-gray-500">Capacity</label>
+                <p className="text-sm text-gray-900 mt-1">{editingVehicle.capacity} seats</p>
+              </div>
+            </div>
+            
+            <div>
+              <label className="text-xs font-medium text-gray-500">Status</label>
+              <div className="mt-1">{getStatusBadge(editingVehicle.status)}</div>
+            </div>
+          </div>
+        ) : (
+          // Edit Form
+          <Form form={form} layout="vertical" className="mt-4">
           <Form.Item
             label="Vehicle Name"
             name="vehicleName"
@@ -404,29 +455,30 @@ const VehicleTab: React.FC = () => {
             <Input placeholder="e.g., 50A-12345" />
           </Form.Item>
 
-          <Form.Item
-            label="Vehicle Type"
-            name="vehicleType"
-          >
-            <div className="flex gap-2">
+          <div className="flex gap-2">
+            <Form.Item
+              label="Vehicle Type"
+              name="vehicleType"
+              className="flex-1 mb-0"
+            >
               <Select
                 placeholder="Select vehicle type (optional)"
                 allowClear
-                className="flex-1"
                 options={vehicleTypes.map((type) => ({
                   label: type.name,
                   value: type.vehicleTypeId,
                 }))}
               />
-              <Button
-                icon={<Plus size={16} />}
-                onClick={() => setIsTypeModalVisible(true)}
-                title="Add New Vehicle Type"
-              >
-                Add Type
-              </Button>
-            </div>
-          </Form.Item>
+            </Form.Item>
+            <Button
+              icon={<Plus size={16} />}
+              onClick={() => setIsTypeModalVisible(true)}
+              title="Add New Vehicle Type"
+              style={{ marginTop: '30px' }}
+            >
+              Add Type
+            </Button>
+          </div>
 
           <Form.Item
             label="Capacity"
@@ -447,6 +499,7 @@ const VehicleTab: React.FC = () => {
             <Input />
           </Form.Item>
         </Form>
+        )}
       </Modal>
 
       {/* Add Vehicle Type Modal */}
