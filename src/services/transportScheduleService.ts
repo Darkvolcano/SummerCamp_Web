@@ -35,6 +35,10 @@ export interface TransportScheduleRequestDto {
   transportType: string;
 }
 
+export interface BulkCreateTransportScheduleDto {
+  schedules: TransportScheduleRequestDto[];
+}
+
 export interface TransportScheduleStatusUpdateDto {
   status: TransportScheduleStatus;
   cancelReasons?: string | null;
@@ -103,6 +107,15 @@ const transportScheduleService = {
     return response.data as TransportScheduleResponseDto;
   },
 
+  // POST /api/transport-schedules/bulk - Create list of transport schedules in bulk
+  bulkCreateTransportSchedules: async (
+    data: BulkCreateTransportScheduleDto
+  ): Promise<TransportScheduleResponseDto[]> => {
+    console.log("[transportScheduleService] POST /transport-schedules/bulk");
+    const response = await axiosInstance.post("/transport-schedules/bulk", data);
+    return response.data as TransportScheduleResponseDto[];
+  },
+
   // PUT /api/transport-schedules/{id}
   updateTransportSchedule: async (
     id: number,
@@ -137,6 +150,16 @@ const transportScheduleService = {
   getSchedulesByCamperId: async (camperId: number): Promise<TransportScheduleResponseDto[]> => {
     console.log(`[transportScheduleService] GET /transport-schedules/camper/${camperId}`);
     const response = await axiosInstance.get(`/transport-schedules/camper/${camperId}`);
+    return response.data as TransportScheduleResponseDto[];
+  },
+
+  // GET /api/transport-schedules/camper/{camperId}/camp/{campId} - Get camper transport schedules filtered by camp ID
+  getSchedulesByCamperIdAndCampId: async (
+    camperId: number,
+    campId: number
+  ): Promise<TransportScheduleResponseDto[]> => {
+    console.log(`[transportScheduleService] GET /transport-schedules/camper/${camperId}/camp/${campId}`);
+    const response = await axiosInstance.get(`/transport-schedules/camper/${camperId}/camp/${campId}`);
     return response.data as TransportScheduleResponseDto[];
   },
 

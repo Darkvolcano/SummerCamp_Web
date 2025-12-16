@@ -98,7 +98,11 @@ const ScheduleDetail: React.FC<ScheduleDetailProps> = ({
         </Descriptions.Item>
 
         <Descriptions.Item label="Activity Name">
-          <span className="font-medium">{schedule.activity?.name || "N/A"}</span>
+          {schedule.activity?.name ? (
+            <span className="font-medium">{schedule.activity.name}</span>
+          ) : (
+            <strong>N/A</strong>
+          )}
         </Descriptions.Item>
 
         <Descriptions.Item label="Activity Type">
@@ -134,19 +138,35 @@ const ScheduleDetail: React.FC<ScheduleDetailProps> = ({
         </Descriptions.Item>
 
         <Descriptions.Item label="Staff ID">
-          <span className="font-mono">#{schedule.staff?.userId || "N/A"}</span>
+          {schedule.staff?.userId ? (
+            <span className="font-mono">#{schedule.staff.userId}</span>
+          ) : (
+            <strong>N/A</strong>
+          )}
         </Descriptions.Item>
 
         <Descriptions.Item label="Staff Name">
-          <span className="font-medium">{schedule.staff?.fullName || "N/A"}</span>
+          {schedule.staff?.fullName ? (
+            <span className="font-medium">{schedule.staff.fullName}</span>
+          ) : (
+            <strong>N/A</strong>
+          )}
         </Descriptions.Item>
 
         <Descriptions.Item label="Location ID">
-          <span className="font-mono">#{schedule.location?.id || "N/A"}</span>
+          {schedule.location?.id ? (
+            <span className="font-mono">#{schedule.location.id}</span>
+          ) : (
+            <strong>N/A</strong>
+          )}
         </Descriptions.Item>
 
         <Descriptions.Item label="Location Name">
-          <span className="font-medium">{schedule.location?.name || "N/A"}</span>
+          {schedule.location?.name ? (
+            <span className="font-medium">{schedule.location.name}</span>
+          ) : (
+            <strong>N/A</strong>
+          )}
         </Descriptions.Item>
 
         {schedule.liveStream?.roomId && (
@@ -159,13 +179,6 @@ const ScheduleDetail: React.FC<ScheduleDetailProps> = ({
           <Badge
             color={schedule.isLivestream ? "green" : "red"}
             text={schedule.isLivestream ? "Yes" : "No"}
-          />
-        </Descriptions.Item>
-
-        <Descriptions.Item label="Is Optional">
-          <Badge
-            color={schedule.isOptional ? "gold" : "blue"}
-            text={schedule.isOptional ? "Yes" : "No"}
           />
         </Descriptions.Item>
 

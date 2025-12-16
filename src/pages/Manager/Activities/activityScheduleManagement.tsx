@@ -17,7 +17,7 @@ import ScheduleDetail from "../../../components/schedule/ScheduleDetail";
 
 const ActivityScheduleManagement: React.FC = () => {
   const { selectedCampId } = useManagerContext();
-  const { toastSuccess, toastError } = useNotification();
+  const { toastError } = useNotification();
 
   const [activities, setActivities] = useState<ActivityResponseDto[]>([]);
   const [schedules, setSchedules] = useState<ActivityScheduleResponseDto[]>([]);
