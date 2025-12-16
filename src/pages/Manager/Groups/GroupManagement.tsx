@@ -274,16 +274,16 @@ const GroupManagement: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#E5E7EB]">
-                {pendingCampers.map((camper: any, index: number) => (
+                {pendingCampers.map((registration: any, index: number) => (
                   <tr
-                    key={camper?.camperId || index}
+                    key={registration?.camper?.camperId || index}
                     className="hover:bg-[#F9FAFB] transition-colors"
                   >
                     <td className="px-6 py-4 text-sm font-medium text-[#111827]">
-                      {typeof camper === 'object' ? (camper.camperName || camper.name || 'Unknown') : String(camper)}
+                      {registration?.camper?.camperName || 'Unknown'}
                     </td>
                     <td className="px-6 py-4 text-sm font-mono text-[#6B7280]">
-                      #{camper?.camperId || 'N/A'}
+                      #{registration?.camper?.camperId || 'N/A'}
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
@@ -291,34 +291,34 @@ const GroupManagement: React.FC = () => {
                           placeholder="Select group"
                           size="small"
                           className="w-48"
-                          value={selectedGroups[camper?.camperId]}
+                          value={selectedGroups[registration?.camper?.camperId]}
                           options={groups.map(g => ({
                             label: g.groupName,
                             value: g.groupId
                           }))}
                           onChange={(groupId) => {
-                            if (camper?.camperId) {
+                            if (registration?.camper?.camperId) {
                               setSelectedGroups(prev => ({
                                 ...prev,
-                                [camper.camperId]: groupId
+                                [registration.camper.camperId]: groupId
                               }));
                             }
                           }}
                         />
                         <button
                           onClick={async () => {
-                            const groupId = selectedGroups[camper?.camperId];
-                            if (groupId && camper?.camperId) {
+                            const groupId = selectedGroups[registration?.camper?.camperId];
+                            if (groupId && registration?.camper?.camperId) {
                               try {
                                 await camperGroupService.addCamperToGroup({
-                                  camperId: camper.camperId,
+                                  camperId: registration.camper.camperId,
                                   groupId: groupId
                                 });
                                 toastSuccess('Success', 'Camper assigned to group');
                                 // Clear selection
                                 setSelectedGroups(prev => {
                                   const newState = { ...prev };
-                                  delete newState[camper.camperId];
+                                  delete newState[registration.camper.camperId];
                                   return newState;
                                 });
                                 // Refresh pending campers
@@ -335,7 +335,7 @@ const GroupManagement: React.FC = () => {
                               toastError('Error', 'Please select a group first');
                             }
                           }}
-                          disabled={!selectedGroups[camper?.camperId]}
+                          disabled={!selectedGroups[registration?.camper?.camperId]}
                           className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] disabled:bg-gray-300 disabled:cursor-not-allowed transition-all font-medium text-sm"
                         >
                           <CheckCircle2 size={16} />
