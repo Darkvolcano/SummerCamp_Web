@@ -52,6 +52,7 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
         .replace(/:campId/g, "[0-9]+")
         .replace(/:camperId/g, "[0-9]+")
         .replace(/:userId/g, "[0-9]+")
+        .replace(/:staffId/g, "[0-9]+")
         .replace(/:blogId/g, "[0-9]+")
         .replace(/:orderId/g, "[0-9]+")
         .replace(/:registrationId/g, "[0-9]+")
@@ -249,6 +250,7 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
           PagePath.USER_CAMPER_SCHEDULE,
           PagePath.USER_CAMPER_TRANSPORTSCHEDULE,
           PagePath.USER_PAYMENT_CALLBACK,
+          PagePath.USER_STAFF_DETAIL,
         ],
       };
 

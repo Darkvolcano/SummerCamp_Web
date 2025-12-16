@@ -50,6 +50,7 @@ import RegistrationDetail from "./pages/Parent/MyRegistration/MyRegistrationDeta
 import PaymentCallback from "./pages/Parent/MyRegistration/PaymentCallback";
 import MyCampers from "./pages/Parent/MyCampers/MyCampers";
 import CamperDetail from "./pages/Parent/MyCampers/CamperDetail";
+import StaffDetail from "./pages/Parent/MyCampers/StaffDetail";
 import CamperSchedule from "./pages/Parent/MyCampers/CamperSchedule";
 import CamperTransportSchedule from "./pages/Parent/MyCampers/CamperTransportSchedule";
 import MyTransaction from "./pages/Parent/MyTransaction/MyTransaction";
@@ -315,6 +316,14 @@ function App() {
               element={
                 <MainLayout>
                   <CamperSchedule />
+                </MainLayout>
+              }
+            />
+            <Route
+              path={PagePath.USER_STAFF_DETAIL}
+              element={
+                <MainLayout>
+                  <StaffDetail />
                 </MainLayout>
               }
             />
