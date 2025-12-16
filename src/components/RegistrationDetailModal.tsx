@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Spin } from 'antd';
-import { FileText, Calendar, Users, Banknote, Tag, FileCheck, CheckCircle2 } from 'lucide-react';
+import { Modal, Spin, Checkbox, Input, Popconfirm } from 'antd';
+import { FileText, Calendar, Users, Banknote, Tag, FileCheck, CheckCircle2, XCircle } from 'lucide-react';
 import registrationService, {
   type RegistrationResponseDto,
 } from '../services/registrationService';
@@ -28,6 +28,12 @@ const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = ({
   // Camper Detail Modal
   const [camperDetailModalOpen, setCamperDetailModalOpen] = useState(false);
   const [selectedCamperId, setSelectedCamperId] = useState<number | null>(null);
+
+  // Reject Modal
+  const [rejectModalVisible, setRejectModalVisible] = useState(false);
+  const [rejecting, setRejecting] = useState(false);
+  const [rejectReason, setRejectReason] = useState('');
+  const [selectedCamperIdsForReject, setSelectedCamperIdsForReject] = useState<number[]>([]);
 
   useEffect(() => {
     if (isOpen && registrationId) {
@@ -74,6 +80,58 @@ const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = ({
       toastError('Error', errorMsg);
     } finally {
       setApproving(false);
+    }
+  };
+
+  const handleOpenRejectModal = () => {
+    setRejectModalVisible(true);
+    setRejectReason('');
+    setSelectedCamperIdsForReject([]);
+  };
+
+  const handleReject = async () => {
+    if (!rejectReason.trim()) {
+      toastError('Error', 'Please provide a reason for rejection');
+      return;
+    }
+
+    try {
+      setRejecting(true);
+      
+      const rejectData = {
+        registrationId: registrationId,
+        rejectReason: rejectReason,
+        camperId: selectedCamperIdsForReject.length === 1 ? selectedCamperIdsForReject[0] : undefined,
+      };
+
+      await registrationService.rejectRegistration(rejectData);
+      
+      if (selectedCamperIdsForReject.length === 0) {
+        toastSuccess('Success', 'Registration rejected successfully');
+      } else if (selectedCamperIdsForReject.length === 1) {
+        toastSuccess('Success', 'Camper rejected successfully');
+      } else {
+        toastSuccess('Success', `${selectedCamperIdsForReject.length} campers rejected successfully`);
+      }
+      
+      setRejectModalVisible(false);
+      
+      // Refresh data
+      await fetchRegistrationDetails();
+      
+      // Notify parent component
+      if (onApproved) {
+        onApproved();
+      }
+    } catch (error: any) {
+      console.error('Error rejecting registration:', error);
+      let errorMsg = 'Failed to reject registration';
+      if (error.response?.data?.message) {
+        errorMsg = error.response.data.message;
+      }
+      toastError('Error', errorMsg);
+    } finally {
+      setRejecting(false);
     }
   };
 
@@ -130,27 +188,56 @@ const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = ({
             <button
               onClick={handleClose}
               className="px-4 py-2 bg-[#F3F4F6] text-[#6B7280] rounded-lg hover:bg-[#E5E7EB] transition-all font-medium text-sm"
-              disabled={approving}
+              disabled={approving || rejecting}
             >
               Close
             </button>
             <button
-              onClick={handleApprove}
-              disabled={approving}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-all font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={handleOpenRejectModal}
+              disabled={approving || rejecting}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {approving ? (
+              {rejecting ? (
                 <>
                   <Spin size="small" />
-                  Approving...
+                  Rejecting...
                 </>
               ) : (
                 <>
-                  <CheckCircle2 size={16} />
-                  Approve Registration
+                  <XCircle size={16} />
+                  Reject
                 </>
               )}
             </button>
+            <Popconfirm
+              title="Approve Registration"
+              description="Are you sure you want to approve this registration?"
+              onConfirm={handleApprove}
+              okText="Yes, Approve"
+              cancelText="Cancel"
+              okButtonProps={{
+                className: "bg-[#6366F1] hover:bg-[#4F46E5]",
+                loading: approving,
+              }}
+              disabled={approving || rejecting}
+            >
+              <button
+                disabled={approving || rejecting}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-all font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {approving ? (
+                  <>
+                    <Spin size="small" />
+                    Approving...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle2 size={16} />
+                    Approve Registration
+                  </>
+                )}
+              </button>
+            </Popconfirm>
           </div>
         ) : null
       }
@@ -353,6 +440,129 @@ const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = ({
           campId={registrationData?.camp.campId}
         />
       )}
+
+      {/* Reject Modal */}
+      <Modal
+        title={
+          <div className="flex items-center gap-2">
+            <XCircle size={20} className="text-red-500" />
+            <span className="text-lg font-bold text-[#111827]">Reject Registration</span>
+          </div>
+        }
+        open={rejectModalVisible}
+        onCancel={() => {
+          setRejectModalVisible(false);
+          setRejectReason('');
+          setSelectedCamperIdsForReject([]);
+        }}
+        footer={
+          <div className="flex justify-end gap-3 pt-4 border-t border-[#E5E7EB]">
+            <button
+              onClick={() => {
+                setRejectModalVisible(false);
+                setRejectReason('');
+                setSelectedCamperIdsForReject([]);
+              }}
+              className="px-5 py-2.5 bg-[#F3F4F6] text-[#6B7280] rounded-lg hover:bg-[#E5E7EB] transition-all font-medium text-sm"
+              disabled={rejecting}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleReject}
+              disabled={rejecting || !rejectReason.trim()}
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {rejecting ? (
+                <>
+                  <Spin size="small" />
+                  Rejecting...
+                </>
+              ) : (
+                <>
+                  <XCircle size={16} />
+                  Confirm Reject
+                </>
+              )}
+            </button>
+          </div>
+        }
+        width={600}
+        centered
+      >
+        <div className="space-y-4 mt-4">
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+            <p className="text-sm text-yellow-800">
+              <strong>Note:</strong> If you don't select any campers, the entire registration will be rejected.
+              If you select specific campers, only those campers will be rejected.
+            </p>
+          </div>
+
+          {/* Camper Selection */}
+          {registrationData?.campers && registrationData.campers.length > 0 && (
+            <div>
+              <h4 className="text-sm font-semibold text-gray-900 mb-3">
+                Select Campers to Reject (Optional)
+              </h4>
+              <div className="space-y-2 max-h-60 overflow-y-auto">
+                {registrationData.campers.map((camper) => (
+                  <div
+                    key={camper.camperId}
+                    className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors"
+                  >
+                    <Checkbox
+                      checked={selectedCamperIdsForReject.includes(camper.camperId)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedCamperIdsForReject([...selectedCamperIdsForReject, camper.camperId]);
+                        } else {
+                          setSelectedCamperIdsForReject(
+                            selectedCamperIdsForReject.filter((id) => id !== camper.camperId)
+                          );
+                        }
+                      }}
+                    />
+                    {camper.avatar ? (
+                      <img
+                        src={camper.avatar}
+                        alt={camper.camperName}
+                        className="w-10 h-10 rounded-full object-cover border-2 border-gray-300"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-400 to-gray-500 flex items-center justify-center">
+                        <Users size={18} className="text-white" />
+                      </div>
+                    )}
+                    <div className="flex-1">
+                      <p className="text-sm font-semibold text-gray-900">{camper.camperName}</p>
+                      <p className="text-xs text-gray-600">
+                        {camper.gender} • {formatDate(camper.dob)}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Reject Reason */}
+          <div className="mb-6">
+            <h4 className="text-sm font-semibold text-gray-900 mb-2">
+              Reason for Rejection <span className="text-red-500">*</span>
+            </h4>
+            <Input.TextArea
+              value={rejectReason}
+              onChange={(e) => setRejectReason(e.target.value)}
+              placeholder="Please provide a reason for rejecting this registration..."
+              rows={6}
+              maxLength={500}
+              showCount
+              className="resize-none"
+              style={{ minHeight: '150px' }}
+            />
+          </div>
+        </div>
+      </Modal>
     </Modal>
   );
 };

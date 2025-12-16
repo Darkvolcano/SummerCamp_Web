@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Spin } from 'antd';
+import { Spin, Popconfirm } from 'antd';
 import { Search, Eye, CheckCircle2 } from 'lucide-react';
 import { useManagerContext } from '../../../hooks/useManagerContext';
 import { useNotification } from '../../../contexts/NotificationContext';
@@ -243,14 +243,24 @@ const ManagerRegistrationsPage: React.FC = () => {
                               <Eye size={16} />
                               Detail
                             </button>
-                            <button
-                              onClick={() => handleApprove(reg.registrationId)}
-                              className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-all font-medium text-sm"
+                            <Popconfirm
                               title="Approve Registration"
+                              description="Are you sure you want to approve this registration?"
+                              onConfirm={() => handleApprove(reg.registrationId)}
+                              okText="Yes, Approve"
+                              cancelText="Cancel"
+                              okButtonProps={{
+                                className: "bg-[#6366F1] hover:bg-[#4F46E5]",
+                              }}
                             >
-                              <CheckCircle2 size={16} />
-                              Approve
-                            </button>
+                              <button
+                                className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-all font-medium text-sm"
+                                title="Approve Registration"
+                              >
+                                <CheckCircle2 size={16} />
+                                Approve
+                              </button>
+                            </Popconfirm>
                           </div>
                         </td>
                       </tr>
@@ -385,9 +395,6 @@ const ManagerRegistrationsPage: React.FC = () => {
                           ID
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Created By
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
                           Campers
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
@@ -414,7 +421,7 @@ const ManagerRegistrationsPage: React.FC = () => {
                       {filteredRegistrations.length === 0 ? (
                         <tr>
                           <td
-                            colSpan={9}
+                            colSpan={8}
                             className="px-6 py-12 text-center text-[#6B7280]"
                           >
                             No registrations found matching your filters
@@ -428,9 +435,6 @@ const ManagerRegistrationsPage: React.FC = () => {
                           >
                             <td className="px-6 py-4 text-sm font-mono text-[#6B7280]">
                               #{reg.registrationId}
-                            </td>
-                            <td className="px-6 py-4 text-sm text-[#374151]">
-                              {reg.user?.fullName || 'N/A'}
                             </td>
                             <td className="px-6 py-4">
                               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#EFF6FF] text-[#3B82F6]">
