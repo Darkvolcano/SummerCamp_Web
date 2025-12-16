@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { Spin, Empty, Collapse, Modal, Form, Input } from "antd";
-import { SearchOutlined, CaretRightOutlined, EyeOutlined } from "@ant-design/icons";
+import { SearchOutlined, CaretRightOutlined, EyeOutlined, EditOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 import { Button } from "antd";
@@ -11,6 +11,7 @@ import registrationService, {
   type RegistrationResponseDto,
 } from "../../../services/registrationService";
 import CompleteRegistrationModal from "./CompleteRegistrationModal";
+import EditRegistrationModal from "./EditRegistrationModal";
 
 const STATUS_OPTIONS = [
   { key: "PendingApproval", label: "Chờ duyệt" },
@@ -36,6 +37,7 @@ const MyRegistration: React.FC = () => {
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
   const [completeModalVisible, setCompleteModalVisible] = useState(false);
   const [selectedRegistration, setSelectedRegistration] = useState<RegistrationResponseDto | null>(null);
+  const [editModalVisible, setEditModalVisible] = useState(false);
   const [cancelModalVisible, setCancelModalVisible] = useState(false);
   const [cancelLoading, setCancelLoading] = useState(false);
   const [cancelForm] = Form.useForm();
@@ -103,6 +105,33 @@ const MyRegistration: React.FC = () => {
       }
     };
     fetchRegistrations();
+  };
+
+  // Handle edit registration
+  const handleOpenEditModal = (registration: RegistrationResponseDto) => {
+    setSelectedRegistration(registration);
+    setEditModalVisible(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setEditModalVisible(false);
+    setSelectedRegistration(null);
+  };
+
+  const handleEditSuccess = () => {
+    // Refresh registrations list
+    const fetchRegistrations = async () => {
+      try {
+        const data = await registrationService.getRegistrationHistory();
+        setRegistrations(data);
+      } catch (error: any) {
+        const errorMessage =
+          error.response?.data?.message || "Không thể tải danh sách đăng ký";
+        toastError("Lỗi", errorMessage);
+      }
+    };
+    fetchRegistrations();
+    handleCloseEditModal();
   };
 
   // Handle cancel registration
@@ -394,6 +423,16 @@ const MyRegistration: React.FC = () => {
                         Xem chi tiết
                       </button>
 
+                      {(registration.status === "Rejected" || registration.status === "PendingApproval") && (
+                        <button
+                          onClick={() => handleOpenEditModal(registration)}
+                          className="flex items-center justify-center gap-1 bg-orange-500 text-white font-medium py-1.5 px-4 rounded-full text-sm hover:bg-orange-600 transition-colors"
+                        >
+                          <EditOutlined />
+                          Chỉnh sửa
+                        </button>
+                      )}
+
                       {(registration.status === "Approved" || registration.status === "PendingPayment") && (
                         <button
                           onClick={() => handleOpenCompleteModal(registration)}
@@ -419,6 +458,14 @@ const MyRegistration: React.FC = () => {
         registration={selectedRegistration}
         onClose={handleCloseCompleteModal}
         onSuccess={handleCompleteSuccess}
+      />
+
+      {/* Edit Registration Modal */}
+      <EditRegistrationModal
+        visible={editModalVisible}
+        registration={selectedRegistration}
+        onClose={handleCloseEditModal}
+        onSuccess={handleEditSuccess}
       />
 
       {/* Cancel Registration Modal */}

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button, Spin, Modal, Form, Input } from "antd";
-import { ArrowLeftOutlined } from "@ant-design/icons";
+import { ArrowLeftOutlined, EditOutlined } from "@ant-design/icons";
 import { useNavigate, useParams } from "react-router-dom";
 import dayjs from "dayjs";
 import { useNotification } from "../../../contexts/NotificationContext";
@@ -9,6 +9,7 @@ import registrationService, {
 } from "../../../services/registrationService";
 import campService, { type CampResponseDto } from "../../../services/campService";
 import CompleteRegistrationModal from "./CompleteRegistrationModal";
+import EditRegistrationModal from "./EditRegistrationModal";
 
 const CANCELABLE_STATUSES = [
   "PendingApproval",
@@ -28,6 +29,7 @@ const RegistrationDetail: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [cancelLoading, setCancelLoading] = useState(false);
   const [completeModalVisible, setCompleteModalVisible] = useState(false);
+  const [editModalVisible, setEditModalVisible] = useState(false);
   const [cancelConfirmModal, setCancelConfirmModal] = useState(false);
   const [cancelForm] = Form.useForm();
 
@@ -59,6 +61,22 @@ const RegistrationDetail: React.FC = () => {
 
     fetchDetails();
   }, [registrationId, toastError, navigate]);
+
+  // Handle edit registration
+  const handleEditSuccess = async () => {
+    setEditModalVisible(false);
+    // Refresh registration data
+    if (!registrationId) return;
+    try {
+      const regId = parseInt(registrationId);
+      const registrationData = await registrationService.getRegistrationById(regId);
+      setRegistration(registrationData);
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message || "Không thể tải thông tin đơn đăng ký";
+      toastError("Lỗi", errorMessage);
+    }
+  };
 
   // Handle cancel registration
   const handleCancelRegistration = async () => {
@@ -188,6 +206,14 @@ const RegistrationDetail: React.FC = () => {
               <p className="text-gray-900 italic">"{registration.note}"</p>
             </div>
           )}
+
+          {/* Reject Reason */}
+          {registration.rejectReason && (
+            <div className="mt-6 bg-red-50 p-4 rounded-lg border border-red-200">
+              <p className="text-sm text-red-900 font-semibold mb-1">Lý do từ chối</p>
+              <p className="text-red-700 italic">"{registration.rejectReason}"</p>
+            </div>
+          )}
         </div>
 
         {/* Camp Information */}
@@ -274,6 +300,16 @@ const RegistrationDetail: React.FC = () => {
 
         {/* Action Buttons */}
         <div className="flex flex-wrap gap-3 mb-8 justify-end">
+          {(registration.status === "Rejected" || registration.status === "PendingApproval") && (
+            <button
+              onClick={() => setEditModalVisible(true)}
+              className="flex items-center justify-center gap-1 bg-orange-500 text-white font-medium py-1.5 px-4 rounded-full text-sm hover:bg-orange-600 transition-colors"
+            >
+              <EditOutlined />
+              Chỉnh sửa
+            </button>
+          )}
+
           {(registration.status === "Approved" || registration.status === "PendingPayment") && (
             <button
               onClick={() => setCompleteModalVisible(true)}
@@ -304,6 +340,14 @@ const RegistrationDetail: React.FC = () => {
           // Refresh registration data or navigate back
           navigate("/my-registrations");
         }}
+      />
+
+      {/* Edit Registration Modal */}
+      <EditRegistrationModal
+        visible={editModalVisible}
+        registration={registration}
+        onClose={() => setEditModalVisible(false)}
+        onSuccess={handleEditSuccess}
       />
 
       {/* Cancel Confirmation Modal */}
