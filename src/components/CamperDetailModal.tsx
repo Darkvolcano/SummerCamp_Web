@@ -165,8 +165,38 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
                       <div className="mt-2 text-sm text-[#6B7280]">
                         <span className="font-medium">Date of Birth:</span> {formatDate(camperData.dob)}
                       </div>
+                      {/* Camper Status */}
+                      {campRegistration && campRegistration.status && (
+                        <div className="mt-3">
+                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
+                            {campRegistration.status}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
+
+                  {/* Parent Information */}
+                  {campRegistration && campRegistration.userAccount && (
+                    <div>
+                      <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3 pb-2 border-b-2 border-blue-600 inline-block">
+                        Parent Information
+                      </h3>
+                      <div className="space-y-3 mt-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-lg bg-[#EFF6FF] flex items-center justify-center flex-shrink-0">
+                            <User size={18} className="text-[#3B82F6]" />
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-xs text-[#6B7280] font-medium">Parent/Guardian Name</p>
+                            <p className="text-sm text-[#111827] font-semibold">
+                              {campRegistration.userAccount.fullName}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Health Information */}
                   {camperData.healthRecord && (
@@ -245,17 +275,55 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
                           </div>
                         </div>
 
-                        {campRegistration.camperGroup && (
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-lg bg-[#EFF6FF] flex items-center justify-center flex-shrink-0">
-                              <Users size={18} className="text-[#3B82F6]" />
+                        {/* Group Information */}
+                        {campRegistration.groupName ? (
+                          <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                            <div className="flex items-start gap-3">
+                              <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
+                                <Users size={18} className="text-blue-600" />
+                              </div>
+                              <div className="flex-1">
+                                <p className="text-xs text-blue-600 font-semibold uppercase mb-1">Assigned Group</p>
+                                <p className="text-sm text-[#111827] font-bold mb-2">
+                                  {campRegistration.groupName.groupName}
+                                </p>
+                                <div className="space-y-1">
+                                  <div className="flex items-center gap-2 text-xs text-gray-700">
+                                    <span className="font-medium">Supervisor:</span>
+                                    <span>{campRegistration.groupName.supervisor.fullName}</span>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
-                            <div className="flex-1">
-                              <p className="text-xs text-[#6B7280] font-medium">Assigned Group</p>
-                              <p className="text-sm text-[#111827] font-medium">
-                                {campRegistration.camperGroup.groupName.groupName}
-                              </p>
+                          </div>
+                        ) : (
+                          <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                            <p className="text-sm text-gray-500 italic text-center">Not assigned to a group yet</p>
+                          </div>
+                        )}
+
+                        {/* Accommodation Information */}
+                        {campRegistration.accommodation ? (
+                          <div className="bg-green-50 rounded-lg p-4 border border-green-200">
+                            <div className="flex items-start gap-3">
+                              <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center flex-shrink-0">
+                                <Tent size={18} className="text-green-600" />
+                              </div>
+                              <div className="flex-1">
+                                <p className="text-xs text-green-600 font-semibold uppercase mb-1">Accommodation</p>
+                                <p className="text-sm text-[#111827] font-bold mb-2">
+                                  {campRegistration.accommodation.name}
+                                </p>
+                                <div className="flex items-center gap-2 text-xs text-gray-700">
+                                  <span className="font-medium">Supervisor:</span>
+                                  <span>{campRegistration.accommodation.supervisor.fullName}</span>
+                                </div>
+                              </div>
                             </div>
+                          </div>
+                        ) : (
+                          <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                            <p className="text-sm text-gray-500 italic text-center">No accommodation assigned yet</p>
                           </div>
                         )}
 
@@ -270,19 +338,6 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
                           </div>
                         )}
 
-                        {campRegistration.status && (
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-lg bg-[#EFF6FF] flex items-center justify-center flex-shrink-0">
-                              <Calendar size={18} className="text-[#3B82F6]" />
-                            </div>
-                            <div className="flex-1">
-                              <p className="text-xs text-[#6B7280] font-medium">Registration Status</p>
-                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
-                                {campRegistration.status}
-                              </span>
-                            </div>
-                          </div>
-                        )}
                       </div>
                     </div>
                   )}

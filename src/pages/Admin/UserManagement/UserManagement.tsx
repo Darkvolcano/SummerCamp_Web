@@ -29,6 +29,10 @@ const UserManagement: React.FC = () => {
     inactive: 0,
   });
 
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 15;
+
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
@@ -112,6 +116,17 @@ const UserManagement: React.FC = () => {
 
     return true;
   });
+
+  // Pagination
+  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedRole, selectedStatuses]);
 
   // Handle status checkbox
   const handleStatusToggle = (status: string) => {
@@ -351,7 +366,7 @@ const UserManagement: React.FC = () => {
             >
               All
             </button>
-            {Object.values(Role).map((role) => (
+            {Object.values(Role).filter(role => role !== Role.PARENT).map((role) => (
               <button
                 key={role}
                 onClick={() => setSelectedRole(role)}
@@ -518,7 +533,7 @@ const UserManagement: React.FC = () => {
                   </td>
                 </tr>
               ) : (
-                filteredUsers.map((user) => (
+                paginatedUsers.map((user) => (
                   <tr
                     key={user.userId}
                     className="hover:bg-[#F9FAFB] transition-colors"
@@ -604,6 +619,74 @@ const UserManagement: React.FC = () => {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Controls */}
+        {filteredUsers.length > 0 && (
+          <div className="px-6 py-4 border-t border-[#E5E7EB] flex items-center justify-between">
+            <div className="text-sm text-[#6B7280]">
+              Showing {startIndex + 1} to {Math.min(endIndex, filteredUsers.length)} of {filteredUsers.length} results
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                  currentPage === 1
+                    ? "bg-[#F3F4F6] text-[#9CA3AF] cursor-not-allowed"
+                    : "bg-[#F3F4F6] text-[#374151] hover:bg-[#E5E7EB]"
+                }`}
+              >
+                Previous
+              </button>
+
+              <div className="flex items-center gap-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                  if (
+                    page === 1 ||
+                    page === totalPages ||
+                    (page >= currentPage - 1 && page <= currentPage + 1)
+                  ) {
+                    return (
+                      <button
+                        key={page}
+                        onClick={() => setCurrentPage(page)}
+                        className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                          currentPage === page
+                            ? "bg-[#6366F1] text-white"
+                            : "bg-[#F3F4F6] text-[#374151] hover:bg-[#E5E7EB]"
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    );
+                  } else if (
+                    page === currentPage - 2 ||
+                    page === currentPage + 2
+                  ) {
+                    return (
+                      <span key={page} className="px-2 text-[#9CA3AF]">
+                        ...
+                      </span>
+                    );
+                  }
+                  return null;
+                })}
+              </div>
+
+              <button
+                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                  currentPage === totalPages
+                    ? "bg-[#F3F4F6] text-[#9CA3AF] cursor-not-allowed"
+                    : "bg-[#F3F4F6] text-[#374151] hover:bg-[#E5E7EB]"
+                }`}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

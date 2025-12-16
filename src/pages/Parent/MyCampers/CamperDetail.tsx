@@ -46,6 +46,7 @@ const CamperDetail: React.FC = () => {
   const [camps, setCamps] = useState<RegistrationCamperResponseDto[]>([]);
   const [selectedCampIndex, setSelectedCampIndex] = useState(0);
   const [campsLoading, setCampsLoading] = useState(false);
+  const [campsFetched, setCampsFetched] = useState(false);
 
   // Fetch camper details
   useEffect(() => {
@@ -104,44 +105,47 @@ const CamperDetail: React.FC = () => {
     fetchCamperDetails();
   }, [camperId, toastError, navigate, editForm]);
 
-  // Fetch camps for camper
-  useEffect(() => {
-    const fetchCamps = async () => {
-      if (!camperId) return;
+  // Fetch camps for camper (lazy load)
+  const fetchCamps = async () => {
+    if (!camperId || campsFetched) return;
 
-      try {
-        setCampsLoading(true);
-        const camperId_num = parseInt(camperId);
-        const campsData = await registrationCamperService.getCampByCamper(camperId_num);
-        setCamps(campsData);
+    try {
+      setCampsLoading(true);
+      const camperId_num = parseInt(camperId);
+      const campsData = await registrationCamperService.getCampByCamper(camperId_num);
+      setCamps(campsData);
+      setCampsFetched(true);
 
-        // Find camp with nearest future startDate
-        if (campsData.length > 0) {
-          const now = dayjs();
-          const futureCamps = campsData.filter(c => dayjs(c.camp.startDate).isAfter(now));
+      // Find camp with nearest future startDate
+      if (campsData.length > 0) {
+        const now = dayjs();
+        const futureCamps = campsData.filter(c => dayjs(c.camp.startDate).isAfter(now));
 
-          if (futureCamps.length > 0) {
-            // Sort by startDate and get the nearest one
-            const nearestCamp = futureCamps.sort((a: RegistrationCamperResponseDto, b: RegistrationCamperResponseDto) =>
-              dayjs(a.camp.startDate).diff(dayjs(b.camp.startDate))
-            )[0];
-            const index = campsData.findIndex(c => c.camp.campId === nearestCamp.camp.campId);
-            setSelectedCampIndex(index >= 0 ? index : 0);
-          } else {
-            // If no future camps, select the first one
-            setSelectedCampIndex(0);
-          }
+        if (futureCamps.length > 0) {
+          const nearestCamp = futureCamps.sort((a: RegistrationCamperResponseDto, b: RegistrationCamperResponseDto) =>
+            dayjs(a.camp.startDate).diff(dayjs(b.camp.startDate))
+          )[0];
+          const index = campsData.findIndex(c => c.camp.campId === nearestCamp.camp.campId);
+          setSelectedCampIndex(index >= 0 ? index : 0);
+        } else {
+          setSelectedCampIndex(0);
         }
-      } catch (error: any) {
-        console.warn("Failed to fetch camps:", error);
-        setCamps([]);
-      } finally {
-        setCampsLoading(false);
       }
-    };
+    } catch (error: any) {
+      console.warn("Failed to fetch camps:", error);
+      setCamps([]);
+    } finally {
+      setCampsLoading(false);
+    }
+  };
 
-    fetchCamps();
-  }, [camperId]);
+  // Handle tab change
+  const handleTabChange = (key: string) => {
+    if (key === 'registrations' && !campsFetched) {
+      fetchCamps();
+    }
+  };
+
 
   // Handle delete camper
   const handleDeleteCamper = async () => {
@@ -643,7 +647,16 @@ const CamperDetail: React.FC = () => {
       label: "Trạng thái trại hè",
       children: (
         <div className="space-y-4">
-          {camps.length === 0 ? (
+          {campsLoading ? (
+            <div className="flex justify-center items-center py-12">
+              <div className="text-center">
+                <Spin size="large" />
+                <p className="mt-4 text-gray-600 font-medium">
+                  Đang tải danh sách trại hè...
+                </p>
+              </div>
+            </div>
+          ) : camps.length === 0 ? (
             <Empty description="Chưa có trại hè nào" />
           ) : (
             <>
@@ -704,20 +717,72 @@ const CamperDetail: React.FC = () => {
                         </p>
                       </div>
                     </div>
-                    <div>
-                      <p className="text-sm text-gray-600 font-medium mb-1">Nhóm</p>
-                      <p className="text-gray-900 font-medium">
-                        {camps[selectedCampIndex].camperGroup?.groupName?.groupName || "Chưa phân nhóm"}
-                      </p>
-                    </div>
-                    {camps[selectedCampIndex].status && (
-                      <div>
-                        <p className="text-sm text-gray-600 font-medium mb-1">Trạng thái trại viên</p>
-                        <span className={`inline-block text-sm font-bold px-4 py-1.5 rounded-full ${getStatusInfo(camps[selectedCampIndex].status).bg} ${getStatusInfo(camps[selectedCampIndex].status).text}`}>
-                          {getStatusInfo(camps[selectedCampIndex].status).label}
-                        </span>
+
+                    {/* Group, Accommodation and Status - Combined Section */}
+                    <div className="border-t border-gray-200 pt-4 space-y-4">
+                      {/* Group and Accommodation - Side by Side */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* Group Information */}
+                        <div>
+                          <p className="text-sm text-gray-600 font-medium mb-2">Nhóm</p>
+                          {camps[selectedCampIndex].groupName ? (
+                            <div className="bg-blue-50 rounded-lg p-3 border border-blue-200 h-full">
+                              <p className="text-gray-900 font-semibold mb-1">
+                                {camps[selectedCampIndex].groupName.groupName}
+                              </p>
+                              <div className="flex items-center gap-2 text-sm text-gray-700">
+                                <span className="font-medium">Giám sát viên:</span>
+                                <span
+                                  onClick={() => navigate(`/user/staff/${camps[selectedCampIndex].groupName!.supervisor.userId}`)}
+                                  className="text-blue-600 hover:text-blue-800 underline cursor-pointer transition-colors"
+                                >
+                                  {camps[selectedCampIndex].groupName.supervisor.fullName}
+                                </span>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="bg-gray-50 rounded-lg p-3 border border-gray-200 h-full flex items-center justify-center">
+                              <p className="text-gray-500 italic text-sm">Chưa phân nhóm</p>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Accommodation Information */}
+                        <div>
+                          <p className="text-sm text-gray-600 font-medium mb-2">Chỗ ở</p>
+                          {camps[selectedCampIndex].accommodation ? (
+                            <div className="bg-green-50 rounded-lg p-3 border border-green-200 h-full">
+                              <p className="text-gray-900 font-semibold mb-1">
+                                {camps[selectedCampIndex].accommodation.name}
+                              </p>
+                              <div className="flex items-center gap-2 text-sm text-gray-700">
+                                <span className="font-medium">Giám sát viên:</span>
+                                <span
+                                  onClick={() => navigate(`/user/staff/${camps[selectedCampIndex].accommodation!.supervisor.userId}`)}
+                                  className="text-blue-600 hover:text-blue-800 underline cursor-pointer transition-colors"
+                                >
+                                  {camps[selectedCampIndex].accommodation.supervisor.fullName}
+                                </span>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="bg-gray-50 rounded-lg p-3 border border-gray-200 h-full flex items-center justify-center">
+                              <p className="text-gray-500 italic text-sm">Chưa phân chỗ ở</p>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    )}
+
+                      {/* Status */}
+                      {camps[selectedCampIndex].status && (
+                        <div className="mt-4 pt-7">
+                          <p className="text-sm text-gray-600 font-medium mb-2">Trạng thái trại viên</p>
+                          <span className={`inline-block text-sm font-bold px-4 py-1.5 rounded-full ${getStatusInfo(camps[selectedCampIndex].status).bg} ${getStatusInfo(camps[selectedCampIndex].status).text}`}>
+                            {getStatusInfo(camps[selectedCampIndex].status).label}
+                          </span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}
@@ -781,7 +846,7 @@ const CamperDetail: React.FC = () => {
         </div>
 
         {/* Tabs */}
-        <Tabs items={tabItems} defaultActiveKey="info" />
+        <Tabs items={tabItems} defaultActiveKey="info" onChange={handleTabChange} />
       </div>
 
       {/* Guardian Modal */}

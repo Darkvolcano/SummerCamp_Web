@@ -278,7 +278,6 @@ const MyCalendar: React.FC = () => {
           // Staff cannot add or create schedules
           onAddClick={undefined}
           onSelectSlot={undefined}
-          onCreateOptional={undefined}
         />
       </div>
 

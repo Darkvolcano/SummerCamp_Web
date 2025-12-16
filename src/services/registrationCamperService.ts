@@ -2,6 +2,34 @@ import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "../config/axios";
 import axios from "axios";
 
+export interface UserAccountDto {
+  userId: number;
+  fullName: string;
+}
+
+export interface CamperDto {
+  camperId: number;
+  camperName: string;
+}
+
+export interface SupervisorDto {
+  userId: number;
+  fullName: string;
+}
+
+export interface GroupNameDto {
+  groupId: number;
+  groupName: string;
+  supervisor: SupervisorDto;
+  currentSize: number;
+}
+
+export interface AccommodationDto {
+  accommodationId: number;
+  name: string;
+  supervisor: SupervisorDto;
+}
+
 export interface CampSummaryDto {
   campId: number;
   name: string;
@@ -10,26 +38,13 @@ export interface CampSummaryDto {
   endDate: string;
 }
 
-export interface CamperNameDto {
-  camperId: number;
-  camperName: string;
-}
-
-export interface GroupNameDto {
-  groupId: number;
-  groupName: string;
-}
-
-export interface CamperGroupDto {
-  camperName: CamperNameDto;
-  groupName: GroupNameDto;
-}
-
 export interface RegistrationCamperResponseDto {
   registrationId: number;
-  camperId: number;
-  camperGroup?: CamperGroupDto;
-  status: string | null;
+  userAccount: UserAccountDto;
+  camper: CamperDto;
+  groupName: GroupNameDto | null;
+  accommodation: AccommodationDto | null;
+  status: string;
   requestTransport: boolean;
   camp: CampSummaryDto;
 }

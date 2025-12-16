@@ -14,7 +14,7 @@ export interface VehicleRequestDto {
     vehicleNumber: string;
     capacity: number;
     status: string;
-    vehicleType: number | null;
+    vehicleType: number | null; // Backend expects "vehicleType" not "vehicleTypeId"
 }
 
 // Response DTO (from GET)
@@ -24,40 +24,30 @@ export interface VehicleResponseDto {
     vehicleNumber: string;
     capacity: number;
     status: string;
-    vehicleType: number | null;
-    vehicleTypeNavigation: {
+    vehicleType: {
         vehicleTypeId: number;
         name: string;
         description?: string;
     } | null;
 }
 
-// Backend raw response structure
+// Backend raw response structure (same as frontend now)
 interface BackendVehicleResponse {
     vehicleId: number;
     vehicleName: string;
     vehicleNumber: string;
     capacity: number;
     status: string;
-    vehicleType: number | null;
-    vehicleTypeNavigation?: {
+    vehicleType: {
         vehicleTypeId: number;
         name: string;
         description?: string;
     } | null;
 }
 
-// Map backend response to frontend format
+// Map backend response to frontend format (now they're the same)
 const mapBackendToFrontend = (data: BackendVehicleResponse): VehicleResponseDto => {
-    return {
-        vehicleId: data.vehicleId,
-        vehicleName: data.vehicleName,
-        vehicleNumber: data.vehicleNumber,
-        capacity: data.capacity,
-        status: data.status,
-        vehicleType: data.vehicleType,
-        vehicleTypeNavigation: data.vehicleTypeNavigation || null,
-    };
+    return data;
 };
 
 // API Service

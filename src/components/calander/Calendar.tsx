@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   Calendar as BigCalendar,
   momentLocalizer,
@@ -37,7 +37,6 @@ interface CalendarProps {
   onSelectSchedule?: (schedule: any) => void;
   onAddClick?: () => void;
   onSelectSlot?: (slotInfo: { start: Date; end: Date; view: View }) => void;
-  onCreateOptional?: (coreScheduleId: string) => void;
 }
 
 const Calendar: React.FC<CalendarProps> = ({
@@ -47,12 +46,18 @@ const Calendar: React.FC<CalendarProps> = ({
   onSelectSchedule,
   onAddClick,
   onSelectSlot,
-  onCreateOptional,
 }) => {
   // Determine permissions based on userRole
   const canManage = userRole === 'manager';
   const [view, setView] = useState<View>("month");
   const [date, setDate] = useState(new Date());
+
+  // Auto-navigate to camp start date when campInfo is available
+  useEffect(() => {
+    if (campInfo && campInfo.startDate) {
+      setDate(moment(campInfo.startDate).toDate());
+    }
+  }, [campInfo]);
 
   // Event style
   const eventStyleGetter = (event: Activity) => {
@@ -194,14 +199,6 @@ const Calendar: React.FC<CalendarProps> = ({
     return (
       <div className="custom-toolbar">
         <div className="toolbar-left">
-          <div className="toolbar-date-section">
-            <span className="toolbar-month">
-              {moment(toolbar.date).format("MMM")}
-            </span>
-            <span className="toolbar-day">
-              {moment(toolbar.date).format("DD")}
-            </span>
-          </div>
           {label()}
         </div>
 
@@ -270,23 +267,9 @@ const Calendar: React.FC<CalendarProps> = ({
 
   // Custom event component to show "+ Optional" button for Core with isOptional=true
   const EventComponent = ({ event }: { event: Activity }) => {
-    const isOptionalContainer = event.type === "Core" && event.isOptional === true;
-
     return (
       <div className="flex items-center justify-between w-full h-full px-2">
         <span className="truncate text-sm">{event.title}</span>
-        {isOptionalContainer && canManage && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onCreateOptional?.(event.id);
-            }}
-            className="ml-2 px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition-all whitespace-nowrap"
-            title="Add Optional Activity"
-          >
-            + Optional
-          </button>
-        )}
       </div>
     );
   };
