@@ -104,7 +104,7 @@ export default function VehicleDetailModal({
                             <div className="info-content">
                                 <p className="info-label">Type</p>
                                 <p className="info-value">
-                                    {vehicle.vehicleTypeNavigation?.name || "N/A"}
+                                    {vehicle.vehicleType?.name || "N/A"}
                                 </p>
                             </div>
                         </div>
@@ -171,7 +171,7 @@ export default function VehicleDetailModal({
                                     Vehicle Type
                                 </span>
                                 <span className="detail-value">
-                                    {vehicle.vehicleTypeNavigation?.name || "Not assigned"}
+                                    {vehicle.vehicleType?.name || "Not assigned"}
                                 </span>
                             </div>
                             <div className="detail-item">
@@ -237,14 +237,14 @@ export default function VehicleDetailModal({
                     </div>
 
                     {/* Type Description Section */}
-                    {vehicle.vehicleTypeNavigation?.description && (
+                    {vehicle.vehicleType?.description && (
                         <div className="detail-section description-section">
                             <h3 className="section-title">
                                 <Tag size={20} />
                                 Vehicle Type Description
                             </h3>
                             <p className="section-content">
-                                {vehicle.vehicleTypeNavigation.description}
+                                {vehicle.vehicleType.description}
                             </p>
                         </div>
                     )}

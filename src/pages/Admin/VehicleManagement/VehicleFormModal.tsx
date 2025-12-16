@@ -52,14 +52,14 @@ export default function VehicleFormModal({
         if (vehicle && isEditing) {
             console.log("🔄 [VehicleFormModal] Initializing form with vehicle:", vehicle);
             console.log("🔑 [VehicleFormModal] vehicle.vehicleType:", vehicle.vehicleType);
-            console.log("📦 [VehicleFormModal] vehicle.vehicleTypeNavigation:", vehicle.vehicleTypeNavigation);
+            console.log("📦 [VehicleFormModal] vehicle.vehicleType:", vehicle.vehicleType);
 
             setFormData({
                 vehicleName: vehicle.vehicleName,
                 vehicleNumber: vehicle.vehicleNumber,
                 capacity: vehicle.capacity,
                 status: vehicle.status,
-                vehicleType: vehicle.vehicleType,
+                vehicleType: vehicle.vehicleType?.vehicleTypeId || null,
             });
 
             console.log("✅ [VehicleFormModal] Form data set to:", {

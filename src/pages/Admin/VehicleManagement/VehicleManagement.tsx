@@ -66,7 +66,7 @@ export default function VehicleManagement() {
           vehicle.vehicleNumber
             ?.toLowerCase()
             .includes(searchTerm.toLowerCase()) ||
-          vehicle.vehicleTypeNavigation?.name
+          vehicle.vehicleType?.name
             ?.toLowerCase()
             .includes(searchTerm.toLowerCase())
       );
@@ -291,7 +291,7 @@ export default function VehicleManagement() {
                   </td>
                   <td>
                     <span className="vehicle-type">
-                      {vehicle.vehicleTypeNavigation?.name || "N/A"}
+                      {vehicle.vehicleType?.name || "N/A"}
                     </span>
                   </td>
                   <td>

@@ -27,6 +27,7 @@ export interface VehicleResponseDto {
     vehicleType: {
         vehicleTypeId: number;
         name: string;
+        description?: string;
     } | null;
 }
 
@@ -40,6 +41,7 @@ interface BackendVehicleResponse {
     vehicleType: {
         vehicleTypeId: number;
         name: string;
+        description?: string;
     } | null;
 }
 
