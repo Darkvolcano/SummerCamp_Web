@@ -50,16 +50,44 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
   useEffect(() => {
     if (schedule) {
       // Editing
+      const activity = activities.find((a) => a.name === schedule.activity?.name);
+      
       form.setFieldsValue({
-        activityId: activities.find((a) => a.name === schedule.activity?.name)?.activityId,
+        activityId: activity?.activityId,
         staffId: schedule.staff?.userId,
         startTime: dayjs(schedule.startTime),
         endTime: dayjs(schedule.endTime),
         isOptional: schedule.isOptional,
-        isLiveStream: schedule.isLivestream, // API returns isLivestream (lowercase s), form uses isLiveStream (uppercase S)
+        isLiveStream: schedule.isLivestream,
         maxCapacity: schedule.maxCapacity,
         locationId: schedule.location?.id,
       });
+
+      // Pre-load staff and location to show names in dropdown
+      if (schedule.staff) {
+        setAvailableStaffs([{
+          userId: schedule.staff.userId,
+          fullName: schedule.staff.fullName,
+          role: "Staff"
+        }]);
+      }
+
+      if (schedule.location) {
+        setAvailableLocations([{
+          locationId: schedule.location.id,
+          name: schedule.location.name,
+          locationType: "In_camp",
+          isActive: true,
+          address: null,
+          latitude: null,
+          longitude: null,
+        }]);
+      }
+
+      // Set selectedActivityType to show correct form fields
+      if (activity) {
+        setSelectedActivityType(activity.activityType as "Core" | "Optional" | "Resting" | "Checkin" | "Checkout");
+      }
     } else if (initialStartTime && initialEndTime) {
       // Creating
       form.setFieldsValue({
@@ -124,6 +152,42 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
 
       const activityType = selectedActivity.activityType;
 
+      // UPDATE MODE
+      if (schedule) {
+        const startTime = values.startTime as dayjs.Dayjs;
+        const endTime = values.endTime as dayjs.Dayjs;
+
+        const updateData: any = {
+          activityScheduleId: schedule.activityScheduleId,
+          startTime: startTime.toISOString(),
+          endTime: endTime.toISOString(),
+        };
+
+        // Add fields based on activity type
+        if (activityType === "Core" || activityType === "Optional") {
+          // Core/Optional: Update all fields
+          updateData.staffId = values.staffId ? parseInt(values.staffId, 10) : null;
+          updateData.locationId = values.locationId ? parseInt(values.locationId, 10) : null;
+          updateData.isLiveStream = !!values.isLiveStream;
+        } else if (activityType === "Resting") {
+          // Resting: Only time (already added above)
+        } else if (activityType === "Checkin" || activityType === "Checkout") {
+          // Checkin/Checkout: Time + Location
+          updateData.locationId = values.locationId ? parseInt(values.locationId, 10) : null;
+        }
+
+        const response = await activityScheduleService.updateActivitySchedule(
+          schedule.activityScheduleId,
+          updateData
+        );
+        
+        toastSuccess("Thành công", `Cập nhật lịch trình ${activityType} thành công`);
+        onSave(response);
+        onClose();
+        return;
+      }
+
+      // CREATE MODE
       if (activityType === "Core") {
         const coreData = {
           activityId,
@@ -283,6 +347,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
               <Select
                 placeholder="Select activity"
                 showSearch
+                disabled={!!schedule}  // Disable in edit mode
                 onChange={(value) => {
                   const selected = activities.find(a => a.activityId === value);
                   if (selected) {
@@ -376,8 +441,8 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
               </Form.Item>
             </div>
 
-            {/* Core Activity Fields */}
-            {selectedActivityType === "Core" && (
+            {/* Core Activity Fields - Only show in CREATE mode or EDIT mode for Core */}
+            {selectedActivityType === "Core" && !schedule && (
               <>
                 <Form.Item
                   label={<span className="text-sm font-semibold text-[#374151]">Nhân Viên</span>}
@@ -552,8 +617,127 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
               </>
             )}
 
-            {/* Optional Activity Fields */}
-            {selectedActivityType === "Optional" && (
+            {/* Core/Optional Edit Fields - Staff, Location, LiveStream */}
+            {(selectedActivityType === "Core" || selectedActivityType === "Optional") && schedule && (
+              <>
+                <Form.Item
+                  label={<span className="text-sm font-semibold text-[#374151]">Nhân Viên</span>}
+                  name="staffId"
+                >
+                  <Select
+                    placeholder="Chọn nhân viên"
+                    showSearch
+                    loading={loadingStaffs}
+                    notFoundContent={
+                      loadingStaffs
+                        ? null
+                        : !form.getFieldValue("startTime") || !form.getFieldValue("endTime")
+                        ? "Vui lòng điền Thời Gian Bắt Đầu và Kết Thúc trước"
+                        : "Không có nhân viên"
+                    }
+                    onOpenChange={async (open) => {
+                      if (open) {
+                        const startTime = form.getFieldValue("startTime") as dayjs.Dayjs;
+                        const endTime = form.getFieldValue("endTime") as dayjs.Dayjs;
+
+                        if (!startTime || !endTime) {
+                          return;
+                        }
+
+                        try {
+                          setLoadingStaffs(true);
+                          const staffs = await staffService.getAvailableStaffInTime(
+                            campId,
+                            startTime.toISOString(),
+                            endTime.toISOString()
+                          );
+                          setAvailableStaffs(staffs);
+                        } catch (error) {
+                          console.error("Failed to fetch staffs:", error);
+                          toastError("Lỗi", "Không thể tải danh sách nhân viên");
+                        } finally {
+                          setLoadingStaffs(false);
+                        }
+                      }
+                    }}
+                    filterOption={(input, option) =>
+                      (option?.label ?? "")
+                        .toString()
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
+                    options={availableStaffs.map((staff) => ({
+                      label: staff.fullName,
+                      value: staff.userId,
+                    }))}
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  label={<span className="text-sm font-semibold text-[#374151]">Địa Điểm</span>}
+                  name="locationId"
+                >
+                  <Select
+                    placeholder="Chọn địa điểm"
+                    showSearch
+                    loading={loadingLocations}
+                    notFoundContent={
+                      loadingLocations
+                        ? null
+                        : !form.getFieldValue("startTime") || !form.getFieldValue("endTime")
+                        ? "Vui lòng điền Thời Gian Bắt Đầu và Kết Thúc trước"
+                        : "Không có địa điểm"
+                    }
+                    onOpenChange={async (open) => {
+                      if (open) {
+                        const startTime = form.getFieldValue("startTime") as dayjs.Dayjs;
+                        const endTime = form.getFieldValue("endTime") as dayjs.Dayjs;
+
+                        if (!startTime || !endTime) {
+                          return;
+                        }
+
+                        try {
+                          setLoadingLocations(true);
+                          const locations = await locationService.getLocationsByCampIdAndTime(
+                            campId,
+                            startTime.toISOString(),
+                            endTime.toISOString()
+                          );
+                          setAvailableLocations(locations);
+                        } catch (error) {
+                          console.error("Failed to fetch locations:", error);
+                          toastError("Lỗi", "Không thể tải danh sách địa điểm");
+                        } finally {
+                          setLoadingLocations(false);
+                        }
+                      }
+                    }}
+                    filterOption={(input, option) =>
+                      (option?.label ?? "")
+                        .toString()
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
+                    options={availableLocations.map((location) => ({
+                      label: location.name,
+                      value: location.locationId,
+                    }))}
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  label={<span className="text-sm font-semibold text-[#374151]">Live Stream</span>}
+                  name="isLiveStream"
+                  valuePropName="checked"
+                >
+                  <Checkbox>Bật live stream cho lịch trình này</Checkbox>
+                </Form.Item>
+              </>
+            )}
+
+            {/* Optional Activity Fields - Only CREATE mode */}
+            {selectedActivityType === "Optional" && !schedule && (
               <>
                 <Form.Item
                   label={<span className="text-sm font-semibold text-[#374151]">Nhân Viên</span>}
@@ -673,8 +857,8 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
               </>
             )}
 
-            {/* Resting Activity Fields */}
-            {selectedActivityType === "Resting" && (
+            {/* Resting Activity Fields - Only CREATE mode */}
+            {selectedActivityType === "Resting" && !schedule && (
               <Form.Item label={<span className="text-sm font-semibold text-[#374151]">Lặp Lại</span>} name="isRepeat" valuePropName="checked">
                 <Checkbox>Lặp lại lịch trình này</Checkbox>
               </Form.Item>
