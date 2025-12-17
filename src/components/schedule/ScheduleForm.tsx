@@ -7,7 +7,6 @@ import type { ActivityScheduleResponseDto } from "../../services/activitySchedul
 import activityScheduleService from "../../services/activityScheduleService";
 import staffService, { type StaffInfo } from "../../services/staffService";
 import locationService, { type LocationResponseDto } from "../../services/LocationService";
-import groupService, { type GroupResponseDto } from "../../services/groupService";
 import { useNotification } from "../../contexts/NotificationContext";
 import "./ScheduleForm.css";
 
@@ -44,9 +43,9 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
   const [loadingStaffs, setLoadingStaffs] = useState(false);
   const [availableLocations, setAvailableLocations] = useState<LocationResponseDto[]>([]);
   const [loadingLocations, setLoadingLocations] = useState(false);
-  const [availableGroups, setAvailableGroups] = useState<GroupResponseDto[]>([]);
+  const [availableGroups, setAvailableGroups] = useState<any[]>([]);
   const [loadingGroups, setLoadingGroups] = useState(false);
-  const [selectedActivityType, setSelectedActivityType] = useState<"Core" | "Optional" | "Resting" | null>(null);
+  const [selectedActivityType, setSelectedActivityType] = useState<"Core" | "Optional" | "Resting" | "Checkin" | "Checkout" | null>(null);
 
   useEffect(() => {
     if (schedule) {
@@ -70,32 +69,11 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
     }
   }, [schedule, form, activities, initialStartTime, initialEndTime]);
 
-  // Filter activities to show only Core, Optional, and Resting types
   useEffect(() => {
-    const allowedTypes = ["Core", "Optional", "Resting"];
-    const filtered = activities.filter(a => allowedTypes.includes(a.activityType));
-    setFilteredActivities(filtered);
+    setFilteredActivities(activities);
   }, [activities]);
 
-  // Fetch groups when campId changes
-  useEffect(() => {
-    const fetchGroups = async () => {
-      try {
-        setLoadingGroups(true);
-        const groups = await groupService.getGroupsByCampId(campId);
-        setAvailableGroups(groups);
-      } catch (error) {
-        console.error("Failed to fetch groups:", error);
-        toastError("Error", "Failed to load groups");
-      } finally {
-        setLoadingGroups(false);
-      }
-    };
-    
-    if (campId) {
-      fetchGroups();
-    }
-  }, [campId, toastError]);
+  // Groups will be fetched dynamically when dropdown opens (similar to staff and locations)
 
   const handleAddNewActivity = async () => {
     try {
@@ -115,6 +93,9 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
       form.setFieldsValue({
         activityId: newActivity.activityId,
       });
+
+      // Set selectedActivityType to show corresponding form fields
+      setSelectedActivityType(newActivity.activityType as "Core" | "Optional" | "Resting" | "Checkin" | "Checkout");
 
       onActivityCreated?.(newActivity);
 
@@ -227,12 +208,52 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
         if (response.successes && response.successes.length > 0) {
           onClose();
         }
+      } else if (activityType === "Checkin" || activityType === "Checkout") {
+        const startTime = values.startTime as dayjs.Dayjs;
+        const endTime = values.endTime as dayjs.Dayjs;
+        
+        const checkInOutData = {
+          activityId,
+          startTime: startTime.toISOString(),
+          endTime: endTime.toISOString(),
+          locationId: values.locationId ? parseInt(values.locationId, 10) : 0,
+        };
+
+        const response = await activityScheduleService.createCheckInCheckOutSchedule(checkInOutData);
+        toastSuccess("Thành công", `Tạo lịch trình ${activityType} thành công`);
+        onSave(response);
+        onClose();
       } else {
         toastError("Error", `Activity type "${activityType}" is not supported for schedule creation`);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error submitting form:", error);
-      toastError("Error", "Failed to create schedule");
+      
+      // Extract error message from API response
+      let errorMessage = "Failed to create schedule";
+      
+      if (error.response?.data) {
+        const errorData = error.response.data;
+        
+        // Handle different error formats
+        if (typeof errorData === 'string') {
+          errorMessage = errorData;
+        } else if (errorData.message) {
+          errorMessage = errorData.message;
+        } else if (errorData.title) {
+          errorMessage = errorData.title;
+        } else if (errorData.errors) {
+          // Validation errors
+          const errors = Object.entries(errorData.errors)
+            .map(([field, messages]) => `${field}: ${(messages as string[]).join(', ')}`)
+            .join('\n');
+          errorMessage = errors;
+        }
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      toastError("Lỗi", errorMessage);
     } finally {
       setLoading(false);
     }
@@ -241,7 +262,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
   return (
     <div className="schedule-form-sidebar">
       <div className="form-header">
-        <h2>{schedule ? "Edit Schedule" : "Create Schedule"}</h2>
+        <h2>{schedule ? "Sửa Lịch Trình" : "Tạo Lịch Trình"}</h2>
         <button className="icon-btn close-btn" onClick={onClose} style={{ width: '36px', height: '36px' }}>
           <X size={20} />
         </button>
@@ -255,9 +276,9 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
             onFinish={handleFormSubmit}
           >
             <Form.Item
-              label="Activity"
-              name="activityId"
-              rules={[{ required: true, message: "Please select or create an activity" }]}
+              label={<span className="text-sm font-semibold text-[#374151]">Hoạt Động</span>}
+            name="activityId"
+            rules={[{ required: true, message: "Vui lòng chọn hoặc tạo hoạt động" }]}
             >
               <Select
                 placeholder="Select activity"
@@ -265,7 +286,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
                 onChange={(value) => {
                   const selected = activities.find(a => a.activityId === value);
                   if (selected) {
-                    setSelectedActivityType(selected.activityType as "Core" | "Optional" | "Resting");
+                    setSelectedActivityType(selected.activityType as "Core" | "Optional" | "Resting" | "Checkin" | "Checkout");
                   }
                 }}
                 filterOption={(input, option) =>
@@ -286,9 +307,9 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
                         return { background: "#fef3c7", color: "#b45309", border: "1px solid #f59e0b" };
                       case "Resting":
                         return { background: "#e0e7ff", color: "#3730a3", border: "1px solid #6366f1" };
-                      case "CheckIn":
+                      case "Checkin":
                         return { background: "#dcfce7", color: "#166534", border: "1px solid #10b981" };
-                      case "CheckOut":
+                      case "Checkout":
                         return { background: "#fecaca", color: "#991b1b", border: "1px solid #ef4444" };
                       default:
                         return { background: "#f3f4f6", color: "#374151", border: "1px solid #d1d5db" };
@@ -328,7 +349,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
                         onClick={() => setShowNewActivityForm(true)}
                         className="text-blue-600"
                       >
-                        Add New Activity
+                        Thêm Hoạt Động Mới
                       </Button>
                     </div>
                   </>
@@ -339,17 +360,17 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
             {/* Common fields: Start Time and End Time (always shown) */}
             <div className="grid grid-cols-2 gap-4">
               <Form.Item
-                label="Start Time"
+                label={<span className="text-sm font-semibold text-[#374151]">Thời Gian Bắt Đầu</span>}
                 name="startTime"
-                rules={[{ required: true, message: "Please select start time" }]}
+                rules={[{ required: true, message: "Vui lòng chọn thời gian bắt đầu" }]}
               >
                 <DatePicker showTime format="YYYY-MM-DD HH:mm" style={{ width: "100%" }} />
               </Form.Item>
 
               <Form.Item
-                label="End Time"
+                label={<span className="text-sm font-semibold text-[#374151]">Thời Gian Kết Thúc</span>}
                 name="endTime"
-                rules={[{ required: true, message: "Please select end time" }]}
+                rules={[{ required: true, message: "Vui lòng chọn thời gian kết thúc" }]}
               >
                 <DatePicker showTime format="YYYY-MM-DD HH:mm" style={{ width: "100%" }} />
               </Form.Item>
@@ -359,9 +380,9 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
             {selectedActivityType === "Core" && (
               <>
                 <Form.Item
-                  label="Staff"
+                  label={<span className="text-sm font-semibold text-[#374151]">Nhân Viên</span>}
                   name="staffId"
-                  rules={[{ required: true, message: "Please select staff" }]}
+                  rules={[{ required: true, message: "Vui lòng chọn nhân viên" }]}
                 >
                   <Select
                     placeholder="Select staff"
@@ -413,9 +434,9 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
                 </Form.Item>
 
                 <Form.Item
-                  label="Location"
+                  label={<span className="text-sm font-semibold text-[#374151]">Địa Điểm</span>}
                   name="locationId"
-                  rules={[{ required: true, message: "Please select location" }]}
+                  rules={[{ required: true, message: "Vui lòng chọn địa điểm" }]}
                 >
                   <Select
                     placeholder="Select location"
@@ -467,16 +488,47 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
                 </Form.Item>
 
                 <Form.Item
-                  label="Groups"
+                  label={<span className="text-sm font-semibold text-[#374151]">Nhóm</span>}
                   name="groupIds"
-                  rules={[{ required: true, message: "Please select at least one group" }]}
+                  rules={[{ required: true, message: "Vui lòng chọn ít nhất một nhóm" }]}
                 >
                   <Select
                     mode="multiple"
                     placeholder="Select groups"
                     showSearch
                     loading={loadingGroups}
-                    notFoundContent={loadingGroups ? null : "No available groups"}
+                    notFoundContent={
+                      !form.getFieldValue("startTime") || !form.getFieldValue("endTime")
+                        ? "Please fill in start time and end time first"
+                        : loadingGroups
+                        ? null
+                        : "No available groups"
+                    }
+                    onOpenChange={async (open) => {
+                      if (open) {
+                        const startTime = form.getFieldValue("startTime");
+                        const endTime = form.getFieldValue("endTime");
+
+                        if (!startTime || !endTime) {
+                          return;
+                        }
+
+                        try {
+                          setLoadingGroups(true);
+                          const groups = await activityScheduleService.getAvailableGroups(
+                            campId,
+                            startTime.toISOString(),
+                            endTime.toISOString()
+                          );
+                          setAvailableGroups(groups);
+                        } catch (error) {
+                          console.error("Failed to fetch available groups:", error);
+                          toastError("Error", "Failed to load available groups");
+                        } finally {
+                          setLoadingGroups(false);
+                        }
+                      }
+                    }}
                     filterOption={(input, option) =>
                       (option?.label ?? "")
                         .toString()
@@ -490,12 +542,12 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
                   />
                 </Form.Item>
 
-                <Form.Item label="Live Stream" name="isLiveStream" valuePropName="checked">
-                  <Checkbox>Enable live streaming for this activity</Checkbox>
+                <Form.Item label={<span className="text-sm font-semibold text-[#374151]">Live Stream</span>} name="isLiveStream" valuePropName="checked">
+                  <Checkbox>Bật live streaming cho hoạt động này</Checkbox>
                 </Form.Item>
 
-                <Form.Item label="Repeat" name="isRepeat" valuePropName="checked">
-                  <Checkbox>Repeat this schedule</Checkbox>
+                <Form.Item label={<span className="text-sm font-semibold text-[#374151]">Lặp Lại</span>} name="isRepeat" valuePropName="checked">
+                  <Checkbox>Lặp lại lịch trình này</Checkbox>
                 </Form.Item>
               </>
             )}
@@ -504,9 +556,9 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
             {selectedActivityType === "Optional" && (
               <>
                 <Form.Item
-                  label="Staff"
+                  label={<span className="text-sm font-semibold text-[#374151]">Nhân Viên</span>}
                   name="staffId"
-                  rules={[{ required: false, message: "Please select staff" }]}
+                  rules={[{ required: false, message: "Vui lòng chọn nhân viên" }]}
                 >
                   <Select
                     placeholder="Select staff (optional)"
@@ -558,9 +610,9 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
                 </Form.Item>
 
                 <Form.Item
-                  label="Location"
+                  label={<span className="text-sm font-semibold text-[#374151]">Địa Điểm</span>}
                   name="locationId"
-                  rules={[{ required: false, message: "Please select location" }]}
+                  rules={[{ required: false, message: "Vui lòng chọn địa điểm" }]}
                 >
                   <Select
                     placeholder="Select location (optional)"
@@ -611,21 +663,80 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
                   />
                 </Form.Item>
 
-                <Form.Item label="Live Stream" name="isLiveStream" valuePropName="checked">
-                  <Checkbox>Enable live streaming for this optional activity</Checkbox>
+                <Form.Item label={<span className="text-sm font-semibold text-[#374151]">Live Stream</span>} name="isLiveStream" valuePropName="checked">
+                  <Checkbox>Bật live streaming cho hoạt động tùy chọn này</Checkbox>
                 </Form.Item>
 
-                <Form.Item label="Repeat" name="isRepeat" valuePropName="checked">
-                  <Checkbox>Repeat this schedule</Checkbox>
+                <Form.Item label={<span className="text-sm font-semibold text-[#374151]">Lặp Lại</span>} name="isRepeat" valuePropName="checked">
+                  <Checkbox>Lặp lại lịch trình này</Checkbox>
                 </Form.Item>
               </>
             )}
 
             {/* Resting Activity Fields */}
             {selectedActivityType === "Resting" && (
-              <Form.Item label="Repeat" name="isRepeat" valuePropName="checked">
-                <Checkbox>Repeat this schedule</Checkbox>
+              <Form.Item label={<span className="text-sm font-semibold text-[#374151]">Lặp Lại</span>} name="isRepeat" valuePropName="checked">
+                <Checkbox>Lặp lại lịch trình này</Checkbox>
               </Form.Item>
+            )}
+
+            {/* CheckIn/CheckOut Activity Fields */}
+            {(selectedActivityType === "Checkin" || selectedActivityType === "Checkout") && (
+              <>
+                <Form.Item
+                  label={<span className="text-sm font-semibold text-[#374151]">Địa Điểm</span>}
+                  name="locationId"
+                  rules={[{ required: true, message: "Vui lòng chọn địa điểm" }]}
+                >
+                  <Select
+                    placeholder="Chọn địa điểm"
+                    showSearch
+                    loading={loadingLocations}
+                    notFoundContent={
+                      loadingLocations
+                        ? null
+                        : !form.getFieldValue("startTime") || !form.getFieldValue("endTime")
+                        ? "Vui lòng điền Thời Gian Bắt Đầu và Kết Thúc trước"
+                        : "Không có địa điểm"
+                    }
+                    onOpenChange={async (open) => {
+                      if (open) {
+                        const startTime = form.getFieldValue("startTime") as dayjs.Dayjs;
+                        const endTime = form.getFieldValue("endTime") as dayjs.Dayjs;
+
+                        if (!startTime || !endTime) {
+                          return;
+                        }
+
+                        try {
+                          setLoadingLocations(true);
+                          const locations = await locationService.getLocationsByCampIdAndTime(
+                            campId,
+                            startTime.toISOString(),
+                            endTime.toISOString()
+                          );
+                          setAvailableLocations(locations);
+                        } catch (error) {
+                          console.error("Failed to fetch locations:", error);
+                          toastError("Lỗi", "Không thể tải danh sách địa điểm");
+                        } finally {
+                          setLoadingLocations(false);
+                        }
+                      }
+                    }}
+                    filterOption={(input, option) =>
+                      (option?.label ?? "")
+                        .toString()
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
+                    options={availableLocations.map((location) => ({
+                      label: location.name,
+                      value: location.locationId,
+                    }))}
+                  />
+                </Form.Item>
+              </>
             )}
           </Form>
         </Spin>
@@ -650,7 +761,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
             paddingRight: '20px'
           }}
         >
-          Cancel
+          Hủy
         </Button>
         <Button
           type="primary"
@@ -667,13 +778,13 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
             borderColor: '#6366F1'
           }}
         >
-          {schedule ? "Update Schedule" : "Create Schedule"}
+          {schedule ? "Cập Nhật Lịch Trình" : "Tạo Lịch Trình"}
         </Button>
       </div>
 
       {/* New Activity Modal */}
       <Modal
-        title="Create New Activity"
+        title="Tạo Hoạt Động Mới"
         open={showNewActivityForm}
         onCancel={() => !creatingActivity && setShowNewActivityForm(false)}
         onOk={handleAddNewActivity}
@@ -683,17 +794,17 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
       >
         <Form form={newActivityForm} layout="vertical">
           <Form.Item
-            label="Activity Name"
+            label={<span className="text-sm font-semibold text-[#374151]">Tên Hoạt Động</span>}
             name="activityName"
-            rules={[{ required: true, message: "Please enter activity name" }]}
+            rules={[{ required: true, message: "Vui lòng nhập tên hoạt động" }]}
           >
             <Input placeholder="e.g., Team Building" />
           </Form.Item>
 
           <Form.Item
-            label="Activity Type"
+            label={<span className="text-sm font-semibold text-[#374151]">Loại Hoạt Động</span>}
             name="activityType"
-            rules={[{ required: true, message: "Please select activity type" }]}
+            rules={[{ required: true, message: "Vui lòng chọn loại hoạt động" }]}
           >
             <Select
               placeholder="Select activity type"
@@ -701,14 +812,14 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
                 { label: "Core", value: "Core" },
                 { label: "Optional", value: "Optional" },
                 { label: "Resting", value: "Resting" },
-                { label: "Check In", value: "CheckIn" },
-                { label: "Check Out", value: "CheckOut" },
+                { label: "Check In", value: "Checkin" },
+                { label: "Check Out", value: "Checkout" },
               ]}
             />
           </Form.Item>
 
-          <Form.Item label="Description" name="description">
-            <Input.TextArea placeholder="Enter activity description (optional)" rows={3} />
+          <Form.Item label={<span className="text-sm font-semibold text-[#374151]">Mô Tả</span>} name="description">
+            <Input.TextArea placeholder="Nhập mô tả hoạt động (tùy chọn)" rows={3} />
           </Form.Item>
         </Form>
       </Modal>

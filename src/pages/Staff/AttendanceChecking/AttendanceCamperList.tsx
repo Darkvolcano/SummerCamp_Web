@@ -45,7 +45,7 @@ const AttendanceCamperList: React.FC = () => {
           parseInt(scheduleId)
         );
       } else {
-        // For Core, Resting, CheckIn, CheckOut
+        // For Core, Resting, Checkin, Checkout
         campersData = await camperService.getCampersByCoreActivityId(
           parseInt(scheduleId)
         );
@@ -309,9 +309,9 @@ function getActivityTypeColor(type: string): string {
       return "gold";
     case "Resting":
       return "purple";
-    case "CheckIn":
+    case "Checkin":
       return "green";
-    case "CheckOut":
+    case "Checkout":
       return "red";
     default:
       return "default";

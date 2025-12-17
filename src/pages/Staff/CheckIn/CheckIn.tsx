@@ -53,9 +53,9 @@ const CheckIn: React.FC = () => {
 
   const getActivityTypeColor = (type: string) => {
     switch (type) {
-      case "CheckIn":
+      case "Checkin":
         return "text-green-600 bg-green-100";
-      case "CheckOut":
+      case "Checkout":
         return "text-red-600 bg-red-100";
       default:
         return "text-blue-600 bg-blue-100";
@@ -64,9 +64,9 @@ const CheckIn: React.FC = () => {
 
   const getActivityIcon = (type: string) => {
     switch (type) {
-      case "CheckIn":
+      case "Checkin":
         return <LogIn size={20} />;
-      case "CheckOut":
+      case "Checkout":
         return <LogOut size={20} />;
       default:
         return <Clock size={20} />;

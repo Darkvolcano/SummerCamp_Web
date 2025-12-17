@@ -154,10 +154,10 @@ const ActivityScheduleManagement: React.FC = () => {
       <div className="p-6 flex items-center justify-center min-h-[500px]">
         <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-indigo-200 p-12 rounded-2xl text-center shadow-lg max-w-md">
           <h3 className="text-xl font-bold text-indigo-900 mb-2">
-            Select Camp
+            Chọn Trại
           </h3>
           <p className="text-indigo-700 text-base leading-relaxed">
-            Please select a camp from the left sidebar to manage activities
+            Vui lòng chọn một trại từ thanh bên trái để quản lý hoạt động
           </p>
         </div>
       </div>
@@ -182,8 +182,8 @@ const ActivityScheduleManagement: React.FC = () => {
       | "Core"
       | "Optional"
       | "Resting"
-      | "CheckIn"
-      | "CheckOut",
+      | "Checkin"
+      | "Checkout",
     description: `Status: ${schedule.status}`,
     location: schedule.location?.name || "No location",
     participants: schedule.currentCapacity || 0,
@@ -194,10 +194,10 @@ const ActivityScheduleManagement: React.FC = () => {
     <div className="p-6">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-[#111827]">
-          Activity Schedule Management
+          Quản Lý Lịch Trình Hoạt Động
         </h1>
         <p className="text-[#6B7280] text-sm mt-1">
-          Create and manage activity schedules for your camp
+          Tạo và quản lý lịch trình hoạt động cho trại của bạn
         </p>
       </div>
 

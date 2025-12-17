@@ -110,8 +110,8 @@ const CampDetailSchedule: React.FC<CampDetailScheduleProps> = ({
       | "Core"
       | "Optional"
       | "Resting"
-      | "CheckIn"
-      | "CheckOut",
+      | "Checkin"
+      | "Checkout",
     description: `Trạng thái: ${schedule.status}`,
     location: schedule.location?.name || "Không có địa điểm",
     participants: schedule.currentCapacity || 0,

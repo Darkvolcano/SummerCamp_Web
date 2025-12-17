@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Spin, Tabs } from 'antd';
-import { User, Calendar, Heart, Users, Tent, MapPin, Mail, Phone, UserCircle } from 'lucide-react';
+import { Modal, Spin, Tabs, Form, Input, Upload, Button, Popover } from 'antd';
+import { User, Calendar, Heart, Users, Tent, MapPin, Mail, Phone, UserCircle, LogOut, Upload as UploadIcon } from 'lucide-react';
 import camperService, {
   type CamperResponseDto,
   type Guardian,
@@ -8,6 +8,9 @@ import camperService, {
 import registrationCamperService, {
   type RegistrationCamperResponseDto,
 } from '../services/registrationCamperService';
+import reportService from '../services/reportService';
+import { uploadGenericImage } from '../services/uploadService';
+import { useAuthStore } from '../services/userService';
 import { useNotification } from '../contexts/NotificationContext';
 
 interface CamperDetailModalProps {
@@ -23,12 +26,19 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
   camperId,
   campId,
 }) => {
-  const { toastError } = useNotification();
+  const { toastError, toastSuccess } = useNotification();
+  const { user } = useAuthStore();
   const [loading, setLoading] = useState(false);
   const [camperData, setCamperData] = useState<CamperResponseDto | null>(null);
   const [campRegistration, setCampRegistration] = useState<RegistrationCamperResponseDto | null>(null);
   const [guardians, setGuardians] = useState<Guardian[]>([]);
   const [activeTab, setActiveTab] = useState('info');
+  
+  const [showEarlyCheckoutModal, setShowEarlyCheckoutModal] = useState(false);
+  const [earlyCheckoutForm] = Form.useForm();
+  const [submittingCheckout, setSubmittingCheckout] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [showPopover, setShowPopover] = useState(false);
 
   useEffect(() => {
     if (isOpen && camperId) {
@@ -101,8 +111,49 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
   const handleClose = () => {
     setCamperData(null);
     setCampRegistration(null);
+    setShowPopover(false);
+    setShowEarlyCheckoutModal(false);
+    earlyCheckoutForm.resetFields();
+    setImageFile(null);
     onClose();
   };
+
+  const handleEarlyCheckoutClick = () => {
+    setShowPopover(false);
+    setShowEarlyCheckoutModal(true);
+  };
+
+  const handleEarlyCheckoutSubmit = async () => {
+    try {
+      const values = await earlyCheckoutForm.validateFields();
+      setSubmittingCheckout(true);
+
+      let imageUrl: string | null = null;
+      if (imageFile) {
+        const uploadResult = await uploadGenericImage(imageFile);
+        imageUrl = uploadResult.url;
+      }
+
+      await reportService.reportEarlyCheckout({
+        camperId: camperId,
+        note: values.note || null,
+        imageUrl: imageUrl,
+      });
+
+      toastSuccess('Thành công', 'Đã ghi nhận check out sớm');
+      
+      // Close all modals
+      handleClose();
+    } catch (error) {
+      console.error('Error submitting early checkout:', error);
+      toastError('Lỗi', 'Không thể ghi nhận check out sớm');
+    } finally {
+      setSubmittingCheckout(false);
+    }
+  };
+
+  const isStaff = user?.role === 'Staff';
+  const isCheckedIn = campRegistration?.status === 'CheckedIn';
 
   return (
     <Modal
@@ -114,7 +165,42 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
       }
       open={isOpen}
       onCancel={handleClose}
-      footer={null}
+      footer={
+        isStaff && isCheckedIn ? (
+          <div className="flex justify-end gap-2">
+            <Popover
+              content={
+                <div className="max-w-xs">
+                  <p className="text-sm mb-3">Chưa đến hoạt động check out. Trại viên có muốn check out sớm?</p>
+                  <div className="flex gap-2 justify-end">
+                    <Button size="small" onClick={() => setShowPopover(false)}>Hủy</Button>
+                    <Button 
+                      size="small" 
+                      type="primary" 
+                      danger
+                      onClick={handleEarlyCheckoutClick}
+                    >
+                      Xác nhận
+                    </Button>
+                  </div>
+                </div>
+              }
+              title="Check Out Sớm"
+              trigger="click"
+              open={showPopover}
+              onOpenChange={setShowPopover}
+            >
+              <Button 
+                type="primary" 
+                danger
+                icon={<LogOut size={16} />}
+              >
+                Check Out Sớm
+              </Button>
+            </Popover>
+          </div>
+        ) : null
+      }
       width={700}
       centered
     >
@@ -406,6 +492,67 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
           Không có dữ liệu trại viên
         </div>
       )}
+
+      {/* Early Checkout Modal */}
+      <Modal
+        title="Check Out Sớm"
+        open={showEarlyCheckoutModal}
+        onCancel={() => {
+          setShowEarlyCheckoutModal(false);
+          earlyCheckoutForm.resetFields();
+          setImageFile(null);
+        }}
+        onOk={handleEarlyCheckoutSubmit}
+        okText="Xác Nhận Check Out"
+        cancelText="Hủy"
+        confirmLoading={submittingCheckout}
+        okButtonProps={{ danger: true }}
+      >
+        <Form form={earlyCheckoutForm} layout="vertical" className="mt-4">
+          <Form.Item
+            label="Lý Do Check Out Sớm"
+            name="note"
+            rules={[{ required: true, message: 'Vui lòng nhập lý do' }]}
+          >
+            <Input.TextArea 
+              rows={4} 
+              placeholder="Nhập lý do trại viên check out sớm..."
+            />
+          </Form.Item>
+
+          <Form.Item label="Hình Ảnh (Tùy chọn)">
+            <Upload
+              maxCount={1}
+              listType="picture-card"
+              beforeUpload={(file) => {
+                setImageFile(file);
+                return false;
+              }}
+              onRemove={() => setImageFile(null)}
+              accept="image/*"
+              fileList={
+                imageFile
+                  ? [
+                      {
+                        uid: '-1',
+                        name: imageFile.name,
+                        status: 'done',
+                        url: URL.createObjectURL(imageFile),
+                      },
+                    ]
+                  : []
+              }
+            >
+              {!imageFile && (
+                <div>
+                  <UploadIcon size={20} />
+                  <div style={{ marginTop: 8 }}>Tải Ảnh Lên</div>
+                </div>
+              )}
+            </Upload>
+          </Form.Item>
+        </Form>
+      </Modal>
     </Modal>
   );
 };

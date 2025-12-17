@@ -47,9 +47,9 @@ const AttendanceChecking: React.FC = () => {
         return "gold";
       case "Resting":
         return "purple";
-      case "CheckIn":
+      case "Checkin":
         return "green";
-      case "CheckOut":
+      case "Checkout":
         return "red";
       default:
         return "default";

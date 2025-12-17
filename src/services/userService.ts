@@ -58,6 +58,7 @@ interface User {
   fullName: string;
   email: string;
   phone_number: string;
+  role: string;
 }
 
 interface AuthState {
@@ -160,6 +161,7 @@ export const useAuthStore = create<AuthState>((set) => {
             fullName: decoded.name,
             email: decoded.email,
             phone_number: "",
+            role: decoded.role,
           };
 
           // Store in localStorage or sessionStorage based on rememberMe

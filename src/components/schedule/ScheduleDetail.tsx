@@ -60,9 +60,9 @@ const ScheduleDetail: React.FC<ScheduleDetailProps> = ({
         return "gold";
       case "Resting":
         return "purple";
-      case "CheckIn":
+      case "Checkin":
         return "green";
-      case "CheckOut":
+      case "Checkout":
         return "red";
       default:
         return "default";
@@ -83,7 +83,7 @@ const ScheduleDetail: React.FC<ScheduleDetailProps> = ({
   return (
     <div className="schedule-detail-sidebar">
       <div className="schedule-detail-header">
-        <h2>Schedule Details</h2>
+        <h2>Chi Tiết Lịch Trình</h2>
         <div className="header-actions">
           <button className="icon-btn close-btn" onClick={onClose} style={{ width: '36px', height: '36px' }}>
             <X size={20} />
@@ -93,11 +93,11 @@ const ScheduleDetail: React.FC<ScheduleDetailProps> = ({
 
       <div className="schedule-detail-content">
       <Descriptions column={1} bordered>
-        <Descriptions.Item label="Activity Schedule ID">
+        <Descriptions.Item label="ID Lịch Trình Hoạt Động">
           <span className="font-mono">#{schedule.activityScheduleId}</span>
         </Descriptions.Item>
 
-        <Descriptions.Item label="Activity Name">
+        <Descriptions.Item label="Tên Hoạt Động">
           {schedule.activity?.name ? (
             <span className="font-medium">{schedule.activity.name}</span>
           ) : (
@@ -105,7 +105,7 @@ const ScheduleDetail: React.FC<ScheduleDetailProps> = ({
           )}
         </Descriptions.Item>
 
-        <Descriptions.Item label="Activity Type">
+        <Descriptions.Item label="Loại Hoạt Động">
           <Badge
             color={getActivityTypeColor(schedule.activity?.activityType || "Core")}
             text={schedule.activity?.activityType || "Core"}
@@ -113,31 +113,31 @@ const ScheduleDetail: React.FC<ScheduleDetailProps> = ({
         </Descriptions.Item>
 
         {schedule.activity?.description && (
-          <Descriptions.Item label="Description">
+          <Descriptions.Item label="Mô Tả">
             <span className="text-sm">{schedule.activity.description}</span>
           </Descriptions.Item>
         )}
 
-        <Descriptions.Item label="Status">
+        <Descriptions.Item label="Trạng Thái">
           <Badge
-            status={getStatusColor(schedule.status) as any}
+            color={getStatusColor(schedule.status)}
             text={schedule.status}
           />
         </Descriptions.Item>
 
-        <Descriptions.Item label="Start Time">
+        <Descriptions.Item label="Thời Gian Bắt Đầu">
           <span className="font-mono">
             {formatDateTime(schedule.startTime)}
           </span>
         </Descriptions.Item>
 
-        <Descriptions.Item label="End Time">
+        <Descriptions.Item label="Thời Gian Kết Thúc">
           <span className="font-mono">
             {formatDateTime(schedule.endTime)}
           </span>
         </Descriptions.Item>
 
-        <Descriptions.Item label="Staff ID">
+        <Descriptions.Item label="ID Nhân Viên">
           {schedule.staff?.userId ? (
             <span className="font-mono">#{schedule.staff.userId}</span>
           ) : (
@@ -145,7 +145,7 @@ const ScheduleDetail: React.FC<ScheduleDetailProps> = ({
           )}
         </Descriptions.Item>
 
-        <Descriptions.Item label="Staff Name">
+        <Descriptions.Item label="Tên Nhân Viên">
           {schedule.staff?.fullName ? (
             <span className="font-medium">{schedule.staff.fullName}</span>
           ) : (
@@ -153,7 +153,7 @@ const ScheduleDetail: React.FC<ScheduleDetailProps> = ({
           )}
         </Descriptions.Item>
 
-        <Descriptions.Item label="Location ID">
+        <Descriptions.Item label="ID Địa Điểm">
           {schedule.location?.id ? (
             <span className="font-mono">#{schedule.location.id}</span>
           ) : (
@@ -161,7 +161,7 @@ const ScheduleDetail: React.FC<ScheduleDetailProps> = ({
           )}
         </Descriptions.Item>
 
-        <Descriptions.Item label="Location Name">
+        <Descriptions.Item label="Tên Địa Điểm">
           {schedule.location?.name ? (
             <span className="font-medium">{schedule.location.name}</span>
           ) : (
@@ -170,7 +170,7 @@ const ScheduleDetail: React.FC<ScheduleDetailProps> = ({
         </Descriptions.Item>
 
         {schedule.liveStream?.roomId && (
-          <Descriptions.Item label="Room ID">
+          <Descriptions.Item label="ID Phòng">
             <span className="font-mono">#{schedule.liveStream.roomId}</span>
           </Descriptions.Item>
         )}
@@ -183,13 +183,13 @@ const ScheduleDetail: React.FC<ScheduleDetailProps> = ({
         </Descriptions.Item>
 
         {schedule.maxCapacity && (
-          <Descriptions.Item label="Max Capacity">
+          <Descriptions.Item label="Sức Chứa Tối Đa">
             <span className="font-medium">{schedule.maxCapacity} people</span>
           </Descriptions.Item>
         )}
 
         {schedule.currentCapacity !== null && (
-          <Descriptions.Item label="Current Capacity">
+          <Descriptions.Item label="Sức Chứa Hiện Tại">
             <span className="font-medium">
               {schedule.currentCapacity} / {schedule.maxCapacity || "Unlimited"}
             </span>
@@ -199,7 +199,7 @@ const ScheduleDetail: React.FC<ScheduleDetailProps> = ({
       </div>
 
       <div className="schedule-detail-footer">
-        <Button onClick={onClose}>Close</Button>
+        <Button onClick={onClose}>Đóng</Button>
         {canStartLiveStream && (
           <Button
             type="primary"
@@ -217,10 +217,10 @@ const ScheduleDetail: React.FC<ScheduleDetailProps> = ({
               icon={<Edit size={16} />}
               onClick={onEdit}
             >
-              Edit
+              Sửa
             </Button>
             <Button danger icon={<Trash2 size={16} />} onClick={onDelete}>
-              Delete
+              Xóa
             </Button>
           </>
         )}
@@ -232,10 +232,10 @@ const ScheduleDetail: React.FC<ScheduleDetailProps> = ({
               icon={<Check size={16} />}
               onClick={onApprove}
             >
-              Approve
+              Duyệt
             </Button>
             <Button danger icon={<X size={16} />} onClick={onReject}>
-              Reject
+              Từ Chối
             </Button>
           </>
         )}

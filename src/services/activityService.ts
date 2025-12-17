@@ -2,14 +2,14 @@ import axiosInstance from "../config/axios";
 
 export interface Activity {
   activityId: number;
-  activityType: "Core" | "Optional" | "Resting" | "CheckIn" | "CheckOut";
+  activityType: "Core" | "Optional" | "Resting" | "Checkin" | "Checkout";
   name: string;
   description: string | null;
   campId: number;
 }
 
 export interface ActivityCreateDto {
-  activityType: "Core" | "Optional" | "Resting" | "CheckIn" | "CheckOut";
+  activityType: "Core" | "Optional" | "Resting" | "Checkin" | "Checkout";
   name: string;
   description: string | null;
   campId: number;
@@ -17,7 +17,7 @@ export interface ActivityCreateDto {
 
 export interface ActivityResponseDto {
   activityId: number;
-  activityType: "Core" | "Optional" | "Resting" | "CheckIn" | "CheckOut";
+  activityType: "Core" | "Optional" | "Resting" | "Checkin" | "Checkout";
   name: string;
   description: string | null;
   campId: number;
