@@ -35,8 +35,8 @@ const CampDetailAccommodation: React.FC<CampDetailAccommodationProps> = ({
       setAccommodationTypes(typesData);
       setCampData(campInfo);
     } catch (error) {
-      console.error('Failed to load accommodations:', error);
-      toastError('Error', 'Failed to load accommodations');
+      console.error('Lỗi khi tải chỗ ở:', error);
+      toastError('Lỗi', 'Không thể tải chỗ ở cho trại này.');
     } finally {
       setLoading(false);
     }
@@ -71,9 +71,9 @@ const CampDetailAccommodation: React.FC<CampDetailAccommodationProps> = ({
       <div className="pb-12">
         <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-8">
           <div className="text-center">
-            <h3 className="text-xl font-bold text-blue-900 mb-2">Camp Not Set Up Yet</h3>
-            <p className="text-blue-700 mb-4">Your camp is still in Draft status. Please complete camp setup to continue.</p>
-            <p className="text-sm text-blue-600">Please assign a manager and wait for them to set up the camp to continue.</p>
+            <h3 className="text-xl font-bold text-blue-900 mb-2">Trại chưa được thiết lập</h3>
+            <p className="text-blue-700 mb-4">Trại của bạn vẫn đang ở trạng thái 'Draft'. Vui lòng hoàn thành thiết lập trại để tiếp tục.</p>
+            <p className="text-sm text-blue-600">Vui lòng chỉ định một quản lý và chờ họ thiết lập trại để tiếp tục.</p>
           </div>
         </div>
       </div>
@@ -94,7 +94,7 @@ const CampDetailAccommodation: React.FC<CampDetailAccommodationProps> = ({
               {/* Section Header */}
               <div className="px-6 py-4 border-b border-[#E5E7EB] bg-gradient-to-r from-[#F9FAFB] to-white">
                 <h3 className="text-lg font-bold text-[#111827]">
-                  Search
+                  Tìm kiếm
                 </h3>
               </div>
 
@@ -107,7 +107,7 @@ const CampDetailAccommodation: React.FC<CampDetailAccommodationProps> = ({
                   />
                   <input
                     type="text"
-                    placeholder="By name..."
+                    placeholder="Theo tên..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full pl-9 pr-4 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:border-transparent text-sm text-[#6B7280] placeholder:text-[#9CA3AF]"
@@ -118,10 +118,10 @@ const CampDetailAccommodation: React.FC<CampDetailAccommodationProps> = ({
               {/* Capacity Info */}
               {campData && (
                 <div className="px-6 py-4 border-b border-[#E5E7EB]">
-                  <p className="text-xs font-medium text-[#6B7280] mb-1">Capacity</p>
+                  <p className="text-xs font-medium text-[#6B7280] mb-1">Sức chứa</p>
                   <div className="flex items-center gap-1">
                     <span className="text-2xl font-bold text-[#111827]">{getTotalCapacity()}</span>
-                    <span className="text-xs text-[#6B7280]">/ {campData.maxParticipants} max capacity</span>
+                    <span className="text-xs text-[#6B7280]">/ {campData.maxParticipants} sức chứa tối đa</span>
                   </div>
                 </div>
               )}
@@ -136,7 +136,7 @@ const CampDetailAccommodation: React.FC<CampDetailAccommodationProps> = ({
                       onChange={() => setTypeFilter('All')}
                       className="w-4 h-4 rounded border-[#D1D5DB] text-[#6366F1] focus:ring-[#6366F1] focus:ring-2 bg-white cursor-pointer"
                     />
-                    <span className="text-sm font-medium text-[#111827]">All Types</span>
+                    <span className="text-sm font-medium text-[#111827]">Tất cả loại</span>
                   </label>
                   {accommodationTypes.map((type) => (
                     <label key={type.id} className="flex items-center gap-2 cursor-pointer">
@@ -160,10 +160,10 @@ const CampDetailAccommodation: React.FC<CampDetailAccommodationProps> = ({
               {/* Table Header */}
               <div className="px-6 py-4 border-b border-[#E5E7EB] bg-gradient-to-r from-[#F9FAFB] to-white">
                 <h3 className="text-lg font-bold text-[#111827]">
-                  Accommodations
+                  Chỗ ở
                 </h3>
                 <p className="text-xs text-[#6B7280] mt-1">
-                  Total accommodations: {filteredAccommodations.length}
+                  Tổng số chỗ ở: {filteredAccommodations.length}
                 </p>
               </div>
 
@@ -176,19 +176,19 @@ const CampDetailAccommodation: React.FC<CampDetailAccommodationProps> = ({
                         ID
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                        Name
+                        Tên
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                        Type
+                        Loại
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                        Capacity
+                        Sức chứa
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                        Supervisor
+                        Người giám sát
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                        Status
+                        Trạng thái
                       </th>
                     </tr>
                   </thead>
@@ -199,7 +199,7 @@ const CampDetailAccommodation: React.FC<CampDetailAccommodationProps> = ({
                           colSpan={6}
                           className="px-6 py-12 text-center text-[#6B7280]"
                         >
-                          No accommodations found matching your filters
+                          Không tìm thấy chỗ ở phù hợp với bộ lọc của bạn
                         </td>
                       </tr>
                     ) : (
@@ -229,13 +229,13 @@ const CampDetailAccommodation: React.FC<CampDetailAccommodationProps> = ({
                               accommodation.supervisor.fullName
                             ) : (
                               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">
-                                Unassigned
+                                Chưa được phân công
                               </span>
                             )}
                           </td>
                           <td className="px-6 py-4 text-sm">
                             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${accommodation.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                              {accommodation.isActive ? 'Active' : 'Inactive'}
+                              {accommodation.isActive ? 'Hoạt động' : 'Không hoạt động'}
                             </span>
                           </td>
                         </tr>
