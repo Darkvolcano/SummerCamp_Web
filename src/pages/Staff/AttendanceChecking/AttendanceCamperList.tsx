@@ -147,14 +147,14 @@ const AttendanceCamperList: React.FC = () => {
         <div className="bg-white rounded-lg shadow-sm border border-[#E5E7EB] p-4 mb-6">
           <div className="grid grid-cols-4 gap-4">
             <div>
-              <p className="text-sm text-gray-600 font-medium">Activity Type</p>
+              <p className="text-sm text-gray-600 font-medium">Loại hoạt động</p>
               <Badge
                 color={getActivityTypeColor(schedule.activity?.activityType || "Core")}
                 text={schedule.activity?.activityType || "Core"}
               />
             </div>
             <div>
-              <p className="text-sm text-gray-600 font-medium">Start Time</p>
+              <p className="text-sm text-gray-600 font-medium">Thời gian bắt đầu</p>
               <p className="text-gray-900 font-mono text-sm">
                 {new Date(schedule.startTime).toLocaleTimeString("vi-VN", {
                   hour: "2-digit",
@@ -163,7 +163,7 @@ const AttendanceCamperList: React.FC = () => {
               </p>
             </div>
             <div>
-              <p className="text-sm text-gray-600 font-medium">End Time</p>
+              <p className="text-sm text-gray-600 font-medium">Thời gian kết thúc</p>
               <p className="text-gray-900 font-mono text-sm">
                 {new Date(schedule.endTime).toLocaleTimeString("vi-VN", {
                   hour: "2-digit",
@@ -172,7 +172,7 @@ const AttendanceCamperList: React.FC = () => {
               </p>
             </div>
             <div>
-              <p className="text-sm text-gray-600 font-medium">Location</p>
+              <p className="text-sm text-gray-600 font-medium">Địa điểm</p>
               <p className="text-gray-900">{schedule.location?.name || "Không có"}</p>
             </div>
           </div>
@@ -195,19 +195,19 @@ const AttendanceCamperList: React.FC = () => {
               <thead className="bg-gray-50 border-b border-[#E5E7EB]">
                 <tr>
                   <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 w-1/4">
-                    Camper Name
+                    Tên trại viên
                   </th>
                   <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 w-1/8">
-                    Gender
+                    Giới tính
                   </th>
                   <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 w-1/6">
-                    Date of Birth
+                    Ngày sinh
                   </th>
                   <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 w-1/6">
-                    Status
+                    Trạng thái
                   </th>
                   <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 w-1/4">
-                    Attendance
+                    Điểm danh
                   </th>
                 </tr>
               </thead>
@@ -264,11 +264,11 @@ const AttendanceCamperList: React.FC = () => {
                         >
                           <Tooltip title="Mark as present">
                             <Radio value="Present" className="mr-4">
-                              Present
+                              Có mặt
                             </Radio>
                           </Tooltip>
                           <Tooltip title="Mark as absent">
-                            <Radio value="Absent">Absent</Radio>
+                            <Radio value="Absent">Vắng mặt</Radio>
                           </Tooltip>
                         </Radio.Group>
                       </td>
@@ -293,7 +293,7 @@ const AttendanceCamperList: React.FC = () => {
             disabled={!hasChanges}
             loading={submitting}
           >
-            Send Attendance Data
+            Gửi dữ liệu điểm danh
           </Button>
         </div>
       )}
