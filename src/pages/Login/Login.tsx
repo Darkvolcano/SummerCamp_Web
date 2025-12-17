@@ -198,7 +198,7 @@ const Login = () => {
             </button>
 
             <h1 className="hero-title">
-              Khám phá mùa hè <br />
+              Khám phá hội trại <br />
               <span className="gradient-text">đầy màu sắc</span>
             </h1>
 
@@ -206,23 +206,6 @@ const Login = () => {
               Tham gia cùng hàng nghìn gia đình đã tin tưởng chọn chúng tôi cho
               kỳ nghỉ hè tuyệt vời của con em họ
             </p>
-
-            <div className="hero-stats">
-              <div className="stat-item">
-                <div className="stat-number">500+</div>
-                <div className="stat-label">Trại hè</div>
-              </div>
-              <div className="stat-divider"></div>
-              <div className="stat-item">
-                <div className="stat-number">10k+</div>
-                <div className="stat-label">Học viên</div>
-              </div>
-              <div className="stat-divider"></div>
-              <div className="stat-item">
-                <div className="stat-number">4.9/5</div>
-                <div className="stat-label">Đánh giá</div>
-              </div>
-            </div>
 
             <div className="hero-features">
               <div className="feature-chip">🎨 Nghệ thuật</div>
@@ -278,7 +261,7 @@ const Login = () => {
                       onKeyDown={handleKeyDown}
                       placeholder="your.email@example.com"
                       disabled={loading}
-                      className="form-input"
+                      className="flex-1 px-4 py-4 pl-3 !border-0 !outline-none text-base text-slate-800 font-semibold !bg-transparent font-['Quicksand'] placeholder:font-normal placeholder:text-slate-300 autofill:!bg-transparent autofill:!shadow-[inset_0_0_0_1000px_transparent]"
                     />
                   </div>
                   {emailError && <p className="error-message">{emailError}</p>}
@@ -308,7 +291,7 @@ const Login = () => {
                       onKeyDown={handleKeyDown}
                       placeholder="••••••••"
                       disabled={loading}
-                      className="form-input"
+                      className="flex-1 px-4 py-4 pl-3 !border-0 !outline-none text-base text-slate-800 font-semibold !bg-transparent font-['Quicksand'] placeholder:font-normal placeholder:text-slate-300 autofill:!bg-transparent autofill:!shadow-[inset_0_0_0_1000px_transparent]"
                     />
                     <button
                       type="button"
