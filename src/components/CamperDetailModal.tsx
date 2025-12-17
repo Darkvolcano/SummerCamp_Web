@@ -68,11 +68,11 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
       }
     } catch (error: any) {
       console.error('Error fetching camper details:', error);
-      let errorMsg = 'Failed to load camper details';
+      let errorMsg = 'Không thể tải chi tiết trại viên';
       if (error.response?.data?.message) {
         errorMsg = error.response.data.message;
       }
-      toastError('Error', errorMsg);
+      toastError('Lỗi', errorMsg);
     } finally {
       setLoading(false);
     }
@@ -109,7 +109,7 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
       title={
         <div className="flex items-center gap-2">
           <User size={20} className="text-[#6366F1]" />
-          <span className="text-lg font-bold text-[#111827]">Camper Details</span>
+          <span className="text-lg font-bold text-[#111827]">Chi Tiết Trại Viên</span>
         </div>
       }
       open={isOpen}
@@ -120,7 +120,7 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
     >
       {loading ? (
         <div className="flex justify-center items-center py-12">
-          <Spin size="large" tip="Loading camper details..." />
+          <Spin size="large" tip="Đang tải chi tiết trại viên..." />
         </div>
       ) : camperData ? (
         <Tabs
@@ -129,7 +129,7 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
           items={[
             {
               key: 'info',
-              label: 'Information',
+              label: 'Thông Tin',
               children: (
                 <div className="space-y-6 min-h-[500px] max-h-[500px] overflow-y-auto pr-2">
                   {/* Avatar and Basic Info */}
@@ -156,14 +156,14 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
                       </h2>
                       <div className="flex items-center gap-4 text-sm text-[#6B7280]">
                         <span>
-                          <span className="font-medium">Gender:</span> {camperData.gender}
+                          <span className="font-medium">Giới tính:</span> {camperData.gender}
                         </span>
                         <span>
-                          <span className="font-medium">Age:</span> {calculateAge(camperData.dob)} years
+                          <span className="font-medium">Tuổi:</span> {calculateAge(camperData.dob)} tuổi
                         </span>
                       </div>
                       <div className="mt-2 text-sm text-[#6B7280]">
-                        <span className="font-medium">Date of Birth:</span> {formatDate(camperData.dob)}
+                        <span className="font-medium">Ngày sinh:</span> {formatDate(camperData.dob)}
                       </div>
                       {/* Camper Status */}
                       {campRegistration && campRegistration.status && (
@@ -180,7 +180,7 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
                   {campRegistration && campRegistration.userAccount && (
                     <div>
                       <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3 pb-2 border-b-2 border-blue-600 inline-block">
-                        Parent Information
+                        Thông Tin Phụ Huynh
                       </h3>
                       <div className="space-y-3 mt-4">
                         <div className="flex items-center gap-3">
@@ -188,7 +188,7 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
                             <User size={18} className="text-[#3B82F6]" />
                           </div>
                           <div className="flex-1">
-                            <p className="text-xs text-[#6B7280] font-medium">Parent/Guardian Name</p>
+                            <p className="text-xs text-[#6B7280] font-medium">Tên Phụ Huynh/Người Giám Hộ</p>
                             <p className="text-sm text-[#111827] font-semibold">
                               {campRegistration.userAccount.fullName}
                             </p>
@@ -202,7 +202,7 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
                   {camperData.healthRecord && (
                     <div>
                       <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3 pb-2 border-b-2 border-blue-600 inline-block">
-                        Health Information
+                        Thông Tin Sức Khỏe
                       </h3>
                       <div className="space-y-3 mt-4">
                         {camperData.healthRecord.condition && (
@@ -211,7 +211,7 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
                               <Heart size={18} className="text-[#3B82F6]" />
                             </div>
                             <div className="flex-1">
-                              <p className="text-xs text-[#6B7280] font-medium">Medical Condition</p>
+                              <p className="text-xs text-[#6B7280] font-medium">Tình Trạng Y Tế</p>
                               <p className="text-sm text-[#111827] font-medium">
                                 {camperData.healthRecord.condition}
                               </p>
@@ -225,9 +225,9 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
                               <Heart size={18} className="text-[#F59E0B]" />
                             </div>
                             <div className="flex-1">
-                              <p className="text-xs text-[#6B7280] font-medium">Allergies</p>
+                              <p className="text-xs text-[#6B7280] font-medium">Dị Ứng</p>
                               <p className="text-sm text-[#111827] font-medium">
-                                {camperData.healthRecord.allergies || 'Yes'}
+                                {camperData.healthRecord.allergies || 'Có'}
                               </p>
                             </div>
                           </div>
@@ -235,7 +235,7 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
 
                         {camperData.healthRecord.note && (
                           <div className="bg-[#F9FAFB] rounded-lg p-4 border border-[#E5E7EB]">
-                            <p className="text-xs text-[#6B7280] font-medium mb-1">Additional Notes</p>
+                            <p className="text-xs text-[#6B7280] font-medium mb-1">Ghi Chú Thêm</p>
                             <p className="text-sm text-[#374151]">{camperData.healthRecord.note}</p>
                           </div>
                         )}
@@ -247,7 +247,7 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
                   {campRegistration && (
                     <div>
                       <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3 pb-2 border-b-2 border-blue-600 inline-block">
-                        Camp Registration
+                        Đăng Ký Trại
                       </h3>
                       <div className="space-y-3 mt-4">
                         <div className="flex items-center gap-3">
@@ -255,7 +255,7 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
                             <Tent size={18} className="text-[#3B82F6]" />
                           </div>
                           <div className="flex-1">
-                            <p className="text-xs text-[#6B7280] font-medium">Camp Name</p>
+                            <p className="text-xs text-[#6B7280] font-medium">Tên Trại</p>
                             <p className="text-sm text-[#111827] font-semibold">
                               {campRegistration.camp.name}
                             </p>
@@ -267,7 +267,7 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
                             <Calendar size={18} className="text-[#3B82F6]" />
                           </div>
                           <div className="flex-1">
-                            <p className="text-xs text-[#6B7280] font-medium">Camp Duration</p>
+                            <p className="text-xs text-[#6B7280] font-medium">Thời Gian Trại</p>
                             <p className="text-sm text-[#111827] font-medium">
                               {formatDate(campRegistration.camp.startDate)} -{' '}
                               {formatDate(campRegistration.camp.endDate)}
@@ -283,13 +283,13 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
                                 <Users size={18} className="text-blue-600" />
                               </div>
                               <div className="flex-1">
-                                <p className="text-xs text-blue-600 font-semibold uppercase mb-1">Assigned Group</p>
+                                <p className="text-xs text-blue-600 font-semibold uppercase mb-1">Nhóm Được Phân Công</p>
                                 <p className="text-sm text-[#111827] font-bold mb-2">
                                   {campRegistration.groupName.groupName}
                                 </p>
                                 <div className="space-y-1">
                                   <div className="flex items-center gap-2 text-xs text-gray-700">
-                                    <span className="font-medium">Supervisor:</span>
+                                    <span className="font-medium">Người Phụ Trách:</span>
                                     <span>{campRegistration.groupName.supervisor.fullName}</span>
                                   </div>
                                 </div>
@@ -298,7 +298,7 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
                           </div>
                         ) : (
                           <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                            <p className="text-sm text-gray-500 italic text-center">Not assigned to a group yet</p>
+                            <p className="text-sm text-gray-500 italic text-center">Chưa được phân công vào nhóm</p>
                           </div>
                         )}
 
@@ -310,12 +310,12 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
                                 <Tent size={18} className="text-green-600" />
                               </div>
                               <div className="flex-1">
-                                <p className="text-xs text-green-600 font-semibold uppercase mb-1">Accommodation</p>
+                                <p className="text-xs text-green-600 font-semibold uppercase mb-1">Chỗ Ở</p>
                                 <p className="text-sm text-[#111827] font-bold mb-2">
                                   {campRegistration.accommodation.name}
                                 </p>
                                 <div className="flex items-center gap-2 text-xs text-gray-700">
-                                  <span className="font-medium">Supervisor:</span>
+                                  <span className="font-medium">Người Phụ Trách:</span>
                                   <span>{campRegistration.accommodation.supervisor.fullName}</span>
                                 </div>
                               </div>
@@ -323,7 +323,7 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
                           </div>
                         ) : (
                           <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                            <p className="text-sm text-gray-500 italic text-center">No accommodation assigned yet</p>
+                            <p className="text-sm text-gray-500 italic text-center">Chưa được phân công chỗ ở</p>
                           </div>
                         )}
 
@@ -332,7 +332,7 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
                             <div className="flex items-center gap-2">
                               <MapPin size={18} className="text-[#3B82F6]" />
                               <p className="text-sm font-medium text-[#3B82F6]">
-                                Transport Requested
+                                Yêu Cầu Đưa Đón
                               </p>
                             </div>
                           </div>
@@ -346,13 +346,13 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
             },
             {
               key: 'guardians',
-              label: `Guardians (${guardians.length})`,
+              label: `Người Giám Hộ (${guardians.length})`,
               children: (
                 <div className="space-y-4 min-h-[500px] max-h-[500px] overflow-y-auto pr-2">
                   {guardians.length === 0 ? (
                     <div className="text-center py-12 text-[#6B7280]">
                       <UserCircle size={48} className="mx-auto mb-4 text-gray-400" />
-                      <p>No guardian information available</p>
+                      <p>Không có thông tin người giám hộ</p>
                     </div>
                   ) : (
                     guardians.map((guardian, index) => (
@@ -370,10 +370,10 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
                             </h4>
                             <div className="space-y-2">
                               <div className="flex items-center gap-2 text-sm text-[#6B7280]">
-                                <span className="font-medium">Title:</span>
+                                <span className="font-medium">Danh xưng:</span>
                                 <span>{guardian.title}</span>
                                 <span className="mx-1">•</span>
-                                <span className="font-medium">Gender:</span>
+                                <span className="font-medium">Giới tính:</span>
                                 <span>{guardian.gender}</span>
                               </div>
 
@@ -403,7 +403,7 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
         />
       ) : (
         <div className="text-center py-12 text-[#6B7280]">
-          No camper data available
+          Không có dữ liệu trại viên
         </div>
       )}
     </Modal>

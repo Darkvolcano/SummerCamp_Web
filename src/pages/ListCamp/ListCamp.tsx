@@ -33,7 +33,7 @@ const ListCamp: React.FC = () => {
       setCampTypes(typesData);
     } catch (error) {
       console.error("Error fetching data:", error);
-      message.error("Không thể tải dữ liệu trại hè");
+      message.error("Không thể tải dữ liệu hội trại");
     } finally {
       setLoading(false);
     }
@@ -84,14 +84,14 @@ const ListCamp: React.FC = () => {
           <div className="max-w-3xl">
             <h1 className="text-5xl md:text-5xl font-bold mb-6 leading-tight">
               <span className="bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text text-transparent">
-                Tìm kiếm trại hè phù hợp
+                Tìm kiếm hội trại phù hợp
               </span>
               <span className="text-white text-4xl block mt-2">
                 Cho trẻ phát huy tối đa tiềm năng
               </span>
             </h1>
             <p className="text-xl text-white/90 mb-8 leading-relaxed">
-              Tham gia trại hè để con bạn có cơ hội phát triển toàn diện về kỹ
+              Tham gia hội trại để con bạn có cơ hội phát triển toàn diện về kỹ
               năng, kiến thức và trải nghiệm những kỷ niệm đáng nhớ cùng bạn bè
               mới.
             </p>
@@ -114,7 +114,7 @@ const ListCamp: React.FC = () => {
             <div className="flex-1 px-6">
               <input
                 type="text"
-                placeholder="Tìm kiếm trại hè..."
+                placeholder="Tìm kiếm hội trại..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full text-base font-semibold text-gray-800 border-none outline-none bg-transparent py-3"
@@ -195,7 +195,7 @@ const ListCamp: React.FC = () => {
               <div className="text-center py-20">
                 <div className="text-6xl mb-4">🏕️</div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                  Không tìm thấy trại hè
+                  Không tìm thấy hội trại
                 </h3>
                 <p className="text-gray-600">
                   Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm
@@ -206,12 +206,12 @@ const ListCamp: React.FC = () => {
                 <div className="mb-6">
                   <h2 className="text-2xl font-bold text-gray-900">
                     {selectedType === null
-                      ? "Tất cả trại hè"
+                      ? "Tất cả hội trại"
                       : campTypes.find((t) => t.campTypeId === selectedType)
                           ?.name}
                   </h2>
                   <p className="text-gray-600 mt-1">
-                    Hiển thị {filteredCamps.length} trại hè
+                    Hiển thị {filteredCamps.length} hội trại
                   </p>
                 </div>
 

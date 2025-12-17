@@ -24,7 +24,7 @@ const CampDetailDashboard: React.FC<CampDetailDashboardProps> = ({ campId: _camp
   return (
     <div className="pb-12">
       <div className="bg-white rounded-lg shadow-sm border border-[#E5E7EB] p-6">
-        <h2 className="text-2xl font-bold text-[#111827] mb-4">Bảng điều khiển</h2>
+        <h2 className="text-2xl font-bold text-[#111827] mb-4">Dashboard</h2>
         <p className="text-[#6B7280]">Phân tích bảng điều khiển sẽ sớm được cập nhật...</p>
       </div>
     </div>

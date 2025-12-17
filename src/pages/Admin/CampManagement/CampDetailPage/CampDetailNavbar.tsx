@@ -16,10 +16,10 @@ const CampDetailNavbar: React.FC<CampDetailNavbarProps> = ({
     { id: 'overview', label: 'Tổng quan' },
     { id: 'staff', label: 'Nhân viên' },
     { id: 'schedule', label: 'Lịch trình' },
-    { id: 'transportation', label: 'Vận chuyển' },
+    { id: 'transportation', label: 'Đưa đón' },
     { id: 'group', label: 'Nhóm' },
     { id: 'accommodation', label: 'Chỗ ở' },
-    { id: 'dashboard', label: 'Bảng điều khiển' },
+    { id: 'dashboard', label: 'Dashboard' },
   ];
 
   return (

@@ -343,7 +343,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
                   name="name"
                   value={formData.name}
                   onChange={handleInputChange}
-                  placeholder="Enter camp name"
+                  placeholder="Nhập tên trại"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 />
               </div>
@@ -358,7 +358,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
                     name="place"
                     value={formData.place}
                     onChange={handleInputChange}
-                    placeholder="e.g., Mountain Area, Beach"
+                    placeholder="ví dụ: Khu vực miền núi, Bãi biển"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   />
                 </div>
@@ -371,7 +371,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
                     name="address"
                     value={formData.address}
                     onChange={handleInputChange}
-                    placeholder="Enter full address"
+                    placeholder="Nhập địa chỉ đầy đủ"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   />
                 </div>
@@ -385,7 +385,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
                   name="description"
                   value={formData.description}
                   onChange={handleInputChange}
-                  placeholder="Enter camp description"
+                  placeholder="Nhập mô tả về trại"
                   className="w-full px-3 py-2 border text-black border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
                   rows={3}
                 />
@@ -410,7 +410,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
                         onClick={handleRemoveImage}
                         disabled={imageUploading}
                         className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 disabled:opacity-50"
-                        title="Remove image"
+                        title="Xóa hình ảnh"
                       >
                         <X size={16} />
                       </button>
@@ -654,7 +654,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Địa điểm * {locations.length > 0 && `(${locations.length} available)`}
+                  Địa điểm * {locations.length > 0 && `(${locations.length} địa điểm khả dụng)`}
                 </label>
                 <div className="flex gap-2">
                   <select
@@ -666,7 +666,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
                     className="flex-1 px-3 py-2 border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <option value="">
-                      {locationsLoading ? "Loading locations..." : "Chọn địa điểm"}
+                      {locationsLoading ? "Đang tải địa điểm..." : "Chọn địa điểm"}
                     </option>
                     {locations.map((loc) => (
                       <option key={loc.id} value={loc.id}>
@@ -677,7 +677,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
                   <button
                     onClick={() => setShowAddLocation(true)}
                     className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-medium flex items-center justify-center"
-                    title="Add new location"
+                    title="Thêm địa điểm mới"
                   >
                     <Plus size={18} />
                   </button>
@@ -720,7 +720,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
                   <option value="">Không có khuyến mãi</option>
                   {promotions.map((promo) => (
                     <option key={promo.id} value={promo.id}>
-                      {promo.name} ({promo.percent}% off)
+                      {promo.name} (giảm {promo.percent}%)
                     </option>
                   ))}
                 </select>

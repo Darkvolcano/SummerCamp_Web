@@ -60,7 +60,7 @@ const ManagerDashboard: React.FC = () => {
         <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-indigo-200 p-12 rounded-2xl text-center shadow-lg hover:shadow-xl transition-shadow duration-300 max-w-md">
           <h3 className="text-xl font-bold text-indigo-900 mb-2">Chọn Trại</h3>
           <p className="text-indigo-700 text-base leading-relaxed">
-            Vui lòng chọn một trại từ thanh bên trái để xem bảng điều khiển
+            Vui lòng chọn một trại từ thanh bên trái để xem Dashboard
           </p>
         </div>
       </div>
@@ -167,7 +167,7 @@ const ManagerDashboard: React.FC = () => {
                     <span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${isRejected ? "bg-red-600 text-white" : "bg-blue-600 text-white"
                       }`}>6</span>
                     <span className={`text-xs font-semibold ${isRejected ? "text-red-900 group-hover:text-red-700" : "text-blue-900 group-hover:text-blue-700"
-                      }`}>Vận Chuyển</span>
+                      }`}>Đưa Đón</span>
                   </button>
                 </div>
               </div>

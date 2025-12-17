@@ -162,8 +162,8 @@ const MyCalendar: React.FC = () => {
       }, 1500);
     } catch (error: any) {
       console.error("[MyCalendar] Error starting livestream:", error);
-      const errorMessage = error.response?.data?.message || error.response?.data?.title || "Unable to start livestream. Please try again.";
-      toastError("Error", errorMessage);
+      const errorMessage = error.response?.data?.message || error.response?.data?.title || "Không thể bắt đầu livestream. Vui lòng thử lại.";
+      toastError("Lỗi", errorMessage);
     } finally {
       setLoading(false);
     }
@@ -175,10 +175,10 @@ const MyCalendar: React.FC = () => {
       <div className="p-6 flex items-center justify-center min-h-[500px]">
         <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-indigo-200 p-12 rounded-2xl text-center shadow-lg max-w-md">
           <h3 className="text-xl font-bold text-indigo-900 mb-2">
-            Select Camp
+            Chọn Trại
           </h3>
           <p className="text-indigo-700 text-base leading-relaxed">
-            Please select a camp from the left sidebar to view your calendar
+            Vui lòng chọn một chương trình trại từ menu bên trái để xem lịch của bạn
           </p>
         </div>
       </div>
@@ -230,10 +230,10 @@ const MyCalendar: React.FC = () => {
     <div className="p-6">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-[#111827]">
-          My Calendar
+          Lịch Của Tôi
         </h1>
         <p className="text-[#6B7280] text-sm mt-1">
-          View your assigned activity schedules on calendar
+          Xem lịch hoạt động được phân công của bạn trên lịch
         </p>
       </div>
 
@@ -245,7 +245,7 @@ const MyCalendar: React.FC = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
             <span className="text-sm text-gray-700">
-              <span className="font-medium">Supervising Group:</span> {campGroups?.groupName || "Unassigned"}
+              <span className="font-medium">Nhóm Phụ Trách:</span> {campGroups?.groupName || "Chưa phân công"}
             </span>
           </div>
           <div className="flex items-center gap-2">
@@ -253,8 +253,8 @@ const MyCalendar: React.FC = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
             </svg>
             <span className="text-sm text-gray-700">
-              <span className="font-medium">Supervising Accommodations:</span>{" "}
-              {campAccommodations.length > 0 ? campAccommodations.map((acc) => acc.name).join(", ") : "Unassigned"}
+              <span className="font-medium">Chỗ Ở Phụ Trách:</span>{" "}
+              {campAccommodations.length > 0 ? campAccommodations.map((acc) => acc.name).join(", ") : "Chưa phân công"}
             </span>
           </div>
         </div>
