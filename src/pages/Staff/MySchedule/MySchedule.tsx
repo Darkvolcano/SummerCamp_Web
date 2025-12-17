@@ -190,7 +190,7 @@ export default function MySchedule() {
         <div className="page-header">
           <div>
             <h1 className="page-title">My Schedule</h1>
-            <p className="page-subtitle">View and manage your work schedule</p>
+            <p className="page-subtitle">Xem và quản lý lịch làm việc của bạn</p>
           </div>
         </div>
 
@@ -230,17 +230,15 @@ export default function MySchedule() {
               {calendarDays.map((day, index) => (
                 <div
                   key={index}
-                  className={`calendar-day ${!day ? "empty" : ""} ${
-                    day && isToday(day) ? "today" : ""
-                  } ${day && hasWorkSchedule(day) ? "has-schedule" : ""} ${
-                    day &&
-                    selectedDate ===
+                  className={`calendar-day ${!day ? "empty" : ""} ${day && isToday(day) ? "today" : ""
+                    } ${day && hasWorkSchedule(day) ? "has-schedule" : ""} ${day &&
+                      selectedDate ===
                       `${year}-${String(month + 1).padStart(2, "0")}-${String(
                         day
                       ).padStart(2, "0")}`
                       ? "selected"
                       : ""
-                  }`}
+                    }`}
                   onClick={() => day && handleDayClick(day)}
                 >
                   {day && (

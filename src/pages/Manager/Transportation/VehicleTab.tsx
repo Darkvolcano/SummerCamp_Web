@@ -342,7 +342,7 @@ const VehicleTab: React.FC = () => {
                               <button
                                 onClick={() => handleViewClick(vehicle)}
                                 className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#F3F4F6] text-[#6B7280] rounded-lg hover:bg-[#E5E7EB] transition-all font-medium text-sm"
-                                title="View Details"
+                                title="Xem Chi Tiết"
                               >
                                 <Edit2 size={16} />
                                 Detail

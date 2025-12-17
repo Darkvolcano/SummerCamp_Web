@@ -57,7 +57,7 @@ const CamperSchedule: React.FC = () => {
         // Fetch camp details
         const campData = await campService.getCampById(campIdNum);
         setCamp(campData);
-        
+
         // Set current date to camp start date
         setCurrentDate(new Date(campData.startDate));
 
@@ -74,8 +74,8 @@ const CamperSchedule: React.FC = () => {
           start: new Date(schedule.startTime),
           end: new Date(schedule.endTime),
           resource: {
-            activityName: schedule.activity?.name || "N/A",
-            locationName: schedule.location?.name || "N/A",
+            activityName: schedule.activity?.name || "Không có",
+            locationName: schedule.location?.name || "Không có",
             attendanceStatus: schedule.status || null,
             activityType: schedule.activity?.activityType || "Core",
             isLivestream: schedule.isLivestream || false,
@@ -100,7 +100,7 @@ const CamperSchedule: React.FC = () => {
     try {
       setScheduleLoading(true);
       setIsModalVisible(true);
-      
+
       const scheduleDetail = await activityScheduleService.getActivityScheduleById(event.id);
       setSelectedSchedule(scheduleDetail);
     } catch (error: any) {
@@ -265,7 +265,7 @@ const CamperSchedule: React.FC = () => {
                 style={{ height: 600 }}
                 view="week"
                 views={["week"]}
-                onView={() => {}}
+                onView={() => { }}
                 date={currentDate}
                 onNavigate={(date) => setCurrentDate(date)}
                 onSelectEvent={handleEventClick}
@@ -351,7 +351,7 @@ const CamperSchedule: React.FC = () => {
             <div>
               <p className="text-sm text-gray-600 font-medium mb-1">Tên hoạt động</p>
               <p className="text-lg font-semibold text-gray-900">
-                {selectedSchedule.activity?.name || "N/A"}
+                {selectedSchedule.activity?.name || "Không có"}
               </p>
             </div>
 

@@ -72,11 +72,11 @@ export default function MyBlogs() {
                 <div className="page-header">
                     <div>
                         <h1 className="page-title">My Blogs</h1>
-                        <p className="page-subtitle">Create and manage your blog posts</p>
+                        <p className="page-subtitle">Tạo và quản lý các bài viết blog của bạn</p>
                     </div>
                     <button className="create-blog-btn">
                         <Plus size={20} />
-                        <span>Create New Blog</span>
+                        <span>Tạo Blog Mới</span>
                     </button>
                 </div>
 
@@ -140,13 +140,13 @@ export default function MyBlogs() {
                                 </div>
 
                                 <div className="blog-actions">
-                                    <button className="action-btn view-btn" title="View">
+                                    <button className="action-btn view-btn" title="Xem">
                                         <Eye size={18} />
                                     </button>
-                                    <button className="action-btn edit-btn" title="Edit">
+                                    <button className="action-btn edit-btn" title="Sửa">
                                         <Edit size={18} />
                                     </button>
-                                    <button className="action-btn delete-btn" title="Delete">
+                                    <button className="action-btn delete-btn" title="Xóa">
                                         <Trash2 size={18} />
                                     </button>
                                 </div>
@@ -158,7 +158,7 @@ export default function MyBlogs() {
                             <p>No blog posts found</p>
                             <button className="create-blog-btn">
                                 <Plus size={20} />
-                                <span>Create Your First Blog</span>
+                                <span>Tạo Blog Đầu Tiên</span>
                             </button>
                         </div>
                     )}

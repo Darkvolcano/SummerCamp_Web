@@ -56,7 +56,7 @@ const RouteTab: React.FC = () => {
       calculateTypeCounts(campRoutes);
     } catch (error) {
       console.error('Failed to load routes:', error);
-      toastError('Error', 'Unable to load routes');
+      toastError('Lỗi', 'Không thể tải tuyến đường');
     } finally {
       setLoading(false);
     }
@@ -150,7 +150,7 @@ const RouteTab: React.FC = () => {
       setLocations(allLocations);
     } catch (error) {
       console.error('Failed to load route details:', error);
-      toastError('Error', 'Failed to load route details');
+      toastError('Lỗi', 'Không thể tải chi tiết tuyến đường');
     } finally {
       setLoadingStops(false);
     }
@@ -169,14 +169,14 @@ const RouteTab: React.FC = () => {
       };
 
       await routeService.updateRoute(detailRoute!.routeId, requestData);
-      toastSuccess('Success', 'Route updated successfully');
-      
+      toastSuccess('Thành công', 'Cập nhật tuyến đường thành công');
+
       // Update detailRoute state
       setDetailRoute({
         ...detailRoute!,
         ...requestData,
       });
-      
+
       setIsEditingInDetail(false);
       fetchRoutes();
     } catch (error) {
@@ -211,7 +211,7 @@ const RouteTab: React.FC = () => {
         // Edit mode - update directly
         setSubmitting(true);
         await routeService.updateRoute(editingRoute.routeId, requestData);
-        toastSuccess('Success', 'Route updated successfully');
+        toastSuccess('Thành công', 'Cập nhật tuyến đường thành công');
         setIsModalVisible(false);
         form.resetFields();
         setEditingRoute(null);
@@ -232,10 +232,10 @@ const RouteTab: React.FC = () => {
   const handleCreateRouteWithStops = async () => {
     try {
       setSubmitting(true);
-      
+
       // Use saved form values
       if (!routeFormValues) {
-        toastError('Error', 'Route information is missing');
+        toastError('Lỗi', 'Thiếu thông tin tuyến đường');
         return;
       }
 
@@ -264,7 +264,7 @@ const RouteTab: React.FC = () => {
         );
       }
 
-      toastSuccess('Success', `Route created with ${newRouteStops.length} stops`);
+      toastSuccess('Thành công', `Tạo tuyến đường với ${newRouteStops.length} điểm dừng`);
       setIsModalVisible(false);
       form.resetFields();
       setCreationStep('info');
@@ -283,12 +283,12 @@ const RouteTab: React.FC = () => {
   const handleDeleteRoute = async (routeId: number) => {
     try {
       await routeService.deleteRoute(routeId);
-      toastSuccess('Success', 'Route deleted successfully');
+      toastSuccess('Thành công', 'Xóa tuyến đường thành công');
       setDeletePopoverOpen(null);
       fetchRoutes();
     } catch (error) {
       console.error('Failed to delete route:', error);
-      toastError('Error', 'Failed to delete route');
+      toastError('Lỗi', 'Không thể xóa tuyến đường');
     }
   };
 
@@ -438,11 +438,10 @@ const RouteTab: React.FC = () => {
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          route.status === 'Active' 
-                            ? 'bg-green-100 text-green-700' 
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${route.status === 'Active'
+                            ? 'bg-green-100 text-green-700'
                             : 'bg-gray-100 text-gray-700'
-                        }`}>
+                          }`}>
                           {route.status}
                         </span>
                       </td>
@@ -451,7 +450,7 @@ const RouteTab: React.FC = () => {
                           <button
                             onClick={() => handleDetailClick(route)}
                             className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#F3F4F6] text-[#6B7280] rounded-lg hover:bg-[#E5E7EB] transition-all font-medium text-sm"
-                            title="View Details"
+                            title="Xem Chi Tiết"
                           >
                             <Eye size={16} />
                             Detail
@@ -500,8 +499,8 @@ const RouteTab: React.FC = () => {
               name="routeName"
               rules={[{ required: true, message: 'Please enter route name' }]}
             >
-              <Input 
-                placeholder="Enter route name" 
+              <Input
+                placeholder="Enter route name"
                 className="rounded-lg"
               />
             </Form.Item>
@@ -528,8 +527,8 @@ const RouteTab: React.FC = () => {
                 { type: 'number', min: 1, message: 'Duration must be at least 1 minute' },
               ]}
             >
-              <InputNumber 
-                placeholder="Enter duration in minutes" 
+              <InputNumber
+                placeholder="Enter duration in minutes"
                 className="w-full rounded-lg"
                 min={1}
               />
@@ -731,17 +730,16 @@ const RouteTab: React.FC = () => {
                   </div>
                   <div>
                     <p className="text-xs font-medium text-[#6B7280] mb-1">Status</p>
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      detailRoute.status === 'Active' 
-                        ? 'bg-green-100 text-green-700' 
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${detailRoute.status === 'Active'
+                        ? 'bg-green-100 text-green-700'
                         : 'bg-gray-100 text-gray-700'
-                    }`}>
+                      }`}>
                       {detailRoute.status}
                     </span>
                   </div>
                 </div>
               )}
-              
+
               {/* Action Buttons */}
               <div className="flex justify-end gap-2 pt-2 border-t border-[#E5E7EB]">
                 {isEditingInDetail ? (

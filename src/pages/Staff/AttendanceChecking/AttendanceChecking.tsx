@@ -105,7 +105,7 @@ const AttendanceChecking: React.FC = () => {
   if (loading && schedules.length === 0) {
     return (
       <div className="flex justify-center items-center h-96">
-        <Spin size="large" tip="Loading attendance schedules..." />
+        <Spin size="large" tip="Đang tải lịch điểm danh..." />
       </div>
     );
   }
@@ -184,13 +184,13 @@ const AttendanceChecking: React.FC = () => {
                       <div>
                         <p className="text-gray-600 font-medium">Location</p>
                         <p className="text-gray-900">
-                          {schedule.location?.name || "N/A"}
+                          {schedule.location?.name || "Không có"}
                         </p>
                       </div>
                       <div>
                         <p className="text-gray-600 font-medium">Assigned Staff</p>
                         <p className="text-gray-900">
-                          {schedule.staff?.fullName || "N/A"}
+                          {schedule.staff?.fullName || "Không có"}
                         </p>
                       </div>
                     </div>

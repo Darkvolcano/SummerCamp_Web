@@ -40,7 +40,7 @@ export default function VehicleTypeFormModal({
         const newErrors: Record<string, string> = {};
 
         if (!formData.name || !formData.name.trim()) {
-            newErrors.name = "Type name is required";
+            newErrors.name = "Tên loại là bắt buộc";
         }
 
         setErrors(newErrors);
@@ -69,7 +69,7 @@ export default function VehicleTypeFormModal({
             }
             onSuccess();
         } catch (error: any) {
-            console.error("Error saving vehicle type:", error);
+            console.error("Lỗi khi lưu loại phương tiện:", error);
             message.error(error.response?.data?.message || "Không thể lưu loại phương tiện");
         } finally {
             setLoading(false);

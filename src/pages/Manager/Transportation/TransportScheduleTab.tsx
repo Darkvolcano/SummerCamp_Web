@@ -36,7 +36,7 @@ const TransportScheduleTab: React.FC = () => {
   const [loadingDropdowns, setLoadingDropdowns] = useState(false);
   const [loadingVehicles, setLoadingVehicles] = useState(false);
   const [loadingDrivers, setLoadingDrivers] = useState(false);
-  
+
   // Track selected transport type for route filtering
   const [selectedTransportType, setSelectedTransportType] = useState<string | undefined>(undefined);
 
@@ -64,7 +64,7 @@ const TransportScheduleTab: React.FC = () => {
       setSchedules(data);
     } catch (error) {
       console.error('Failed to load schedules:', error);
-      toastError('Error', 'Unable to load transport schedules');
+      toastError('Lỗi', 'Không thể tải lịch trình vận chuyển');
     } finally {
       setLoading(false);
     }
@@ -92,7 +92,7 @@ const TransportScheduleTab: React.FC = () => {
       setRoutes(campRoutes);
     } catch (error) {
       console.error('Failed to load dropdown data:', error);
-      toastError('Error', 'Failed to load form options');
+      toastError('Lỗi', 'Không thể tải tùy chọn form');
     } finally {
       setLoadingDropdowns(false);
     }
@@ -140,7 +140,7 @@ const TransportScheduleTab: React.FC = () => {
         await transportScheduleService.bulkCreateTransportSchedules({
           schedules: [pickupPayload, dropoffPayload],
         });
-        toastSuccess('Success', 'Round trip schedules created successfully');
+        toastSuccess('Thành công', 'Tạo lịch trình khứ hồi thành công');
       } else {
         // Create single schedule
         const payload: TransportScheduleRequestDto = {
@@ -155,7 +155,7 @@ const TransportScheduleTab: React.FC = () => {
         };
 
         await transportScheduleService.createTransportSchedule(payload);
-        toastSuccess('Success', 'Transport schedule created successfully');
+        toastSuccess('Thành công', 'Tạo lịch trình vận chuyển thành công');
       }
 
       setIsModalVisible(false);
@@ -174,12 +174,12 @@ const TransportScheduleTab: React.FC = () => {
   const handleDelete = async (scheduleId: number) => {
     try {
       await transportScheduleService.deleteTransportSchedule(scheduleId);
-      toastSuccess('Success', 'Schedule deleted successfully');
+      toastSuccess('Thành công', 'Xóa lịch trình thành công');
       fetchSchedules();
       setDeletePopoverOpen(null);
     } catch (error) {
       console.error('Failed to delete schedule:', error);
-      toastError('Error', 'Failed to delete schedule');
+      toastError('Lỗi', 'Không thể xóa lịch trình');
     }
   };
 
@@ -463,7 +463,7 @@ const TransportScheduleTab: React.FC = () => {
                   name="transportType"
                   rules={[{ required: true, message: 'Please select transport type!' }]}
                 >
-                  <Select 
+                  <Select
                     placeholder="Select transport type"
                     onChange={(value) => {
                       // Reset route selection when transport type changes
@@ -486,160 +486,160 @@ const TransportScheduleTab: React.FC = () => {
                   </Select>
                 </Form.Item>
 
-            <Form.Item
-              label="Route"
-              name="routeId"
-              rules={[{ required: true, message: 'Please select a route!' }]}
-            >
-              <Select 
-                placeholder={!selectedTransportType ? "Select transport type first" : "Select route"} 
-                showSearch 
-                optionFilterProp="children"
-                disabled={!selectedTransportType}
-                key={selectedTransportType}
-              >
-                {routes
-                  .filter(route => route.routeType === selectedTransportType)
-                  .map((route) => (
-                    <Option key={route.routeId} value={route.routeId}>
-                      {route.routeName} - {route.routeType}
-                    </Option>
-                  ))}
-              </Select>
-            </Form.Item>
+                <Form.Item
+                  label="Route"
+                  name="routeId"
+                  rules={[{ required: true, message: 'Please select a route!' }]}
+                >
+                  <Select
+                    placeholder={!selectedTransportType ? "Select transport type first" : "Select route"}
+                    showSearch
+                    optionFilterProp="children"
+                    disabled={!selectedTransportType}
+                    key={selectedTransportType}
+                  >
+                    {routes
+                      .filter(route => route.routeType === selectedTransportType)
+                      .map((route) => (
+                        <Option key={route.routeId} value={route.routeId}>
+                          {route.routeName} - {route.routeType}
+                        </Option>
+                      ))}
+                  </Select>
+                </Form.Item>
 
-            <Form.Item
-              label="Date"
-              name="date"
-              rules={[{ required: true, message: 'Please select date!' }]}
-            >
-              <DatePicker
-                className="w-full"
-                format="DD/MM/YYYY"
-              />
-            </Form.Item>
+                <Form.Item
+                  label="Date"
+                  name="date"
+                  rules={[{ required: true, message: 'Please select date!' }]}
+                >
+                  <DatePicker
+                    className="w-full"
+                    format="DD/MM/YYYY"
+                  />
+                </Form.Item>
 
-            <div className="grid grid-cols-2 gap-4">
-              <Form.Item
-                label="Start Time"
-                name="startTime"
-                rules={[{ required: true, message: 'Please select start time!' }]}
-              >
-                <TimePicker className="w-full" format="HH:mm" />
-              </Form.Item>
+                <div className="grid grid-cols-2 gap-4">
+                  <Form.Item
+                    label="Start Time"
+                    name="startTime"
+                    rules={[{ required: true, message: 'Please select start time!' }]}
+                  >
+                    <TimePicker className="w-full" format="HH:mm" />
+                  </Form.Item>
 
-              <Form.Item
-                label="End Time"
-                name="endTime"
-                rules={[{ required: true, message: 'Please select end time!' }]}
-              >
-                <TimePicker className="w-full" format="HH:mm" />
-              </Form.Item>
-            </div>
+                  <Form.Item
+                    label="End Time"
+                    name="endTime"
+                    rules={[{ required: true, message: 'Please select end time!' }]}
+                  >
+                    <TimePicker className="w-full" format="HH:mm" />
+                  </Form.Item>
+                </div>
 
-            <Form.Item
-              label="Vehicle"
-              name="vehicleId"
-              rules={[{ required: true, message: 'Please select a vehicle!' }]}
-            >
-              <Select 
-                placeholder="Select vehicle"
-                showSearch 
-                optionFilterProp="children"
-                loading={loadingVehicles}
-                notFoundContent={
-                  !form.getFieldValue('date') || !form.getFieldValue('startTime') || !form.getFieldValue('endTime')
-                    ? "Please fill in date and time first"
-                    : loadingVehicles
-                    ? null
-                    : "No available vehicles"
-                }
-                onDropdownVisibleChange={async (open) => {
-                  if (open) {
-                    const date = form.getFieldValue('date');
-                    const startTime = form.getFieldValue('startTime');
-                    const endTime = form.getFieldValue('endTime');
-
-                    if (!date || !startTime || !endTime) {
-                      return;
+                <Form.Item
+                  label="Vehicle"
+                  name="vehicleId"
+                  rules={[{ required: true, message: 'Please select a vehicle!' }]}
+                >
+                  <Select
+                    placeholder="Select vehicle"
+                    showSearch
+                    optionFilterProp="children"
+                    loading={loadingVehicles}
+                    notFoundContent={
+                      !form.getFieldValue('date') || !form.getFieldValue('startTime') || !form.getFieldValue('endTime')
+                        ? "Vui lòng điền ngày và giờ trước"
+                        : loadingVehicles
+                          ? null
+                          : "Không có xe khả dụng"
                     }
+                    onDropdownVisibleChange={async (open) => {
+                      if (open) {
+                        const date = form.getFieldValue('date');
+                        const startTime = form.getFieldValue('startTime');
+                        const endTime = form.getFieldValue('endTime');
 
-                    try {
-                      setLoadingVehicles(true);
-                      const vehiclesData = await vehicleService.getAvailableVehicles(
-                        date.format('YYYY-MM-DD'),
-                        startTime.format('HH:mm:ss'),
-                        endTime.format('HH:mm:ss')
-                      );
-                      setVehicles(vehiclesData);
-                    } catch (error) {
-                      console.error('Failed to load available vehicles:', error);
-                      toastError('Error', 'Failed to load available vehicles');
-                    } finally {
-                      setLoadingVehicles(false);
+                        if (!date || !startTime || !endTime) {
+                          return;
+                        }
+
+                        try {
+                          setLoadingVehicles(true);
+                          const vehiclesData = await vehicleService.getAvailableVehicles(
+                            date.format('YYYY-MM-DD'),
+                            startTime.format('HH:mm:ss'),
+                            endTime.format('HH:mm:ss')
+                          );
+                          setVehicles(vehiclesData);
+                        } catch (error) {
+                          console.error('Failed to load available vehicles:', error);
+                          toastError('Lỗi', 'Không thể tải xe khả dụng');
+                        } finally {
+                          setLoadingVehicles(false);
+                        }
+                      }
+                    }}
+                  >
+                    {vehicles.map((vehicle) => (
+                      <Option key={vehicle.vehicleId} value={vehicle.vehicleId}>
+                        {vehicle.vehicleName} - {vehicle.vehicleNumber} (Capacity: {vehicle.capacity})
+                      </Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+
+                <Form.Item
+                  label="Driver"
+                  name="driverId"
+                  rules={[{ required: true, message: 'Please select a driver!' }]}
+                >
+                  <Select
+                    placeholder="Select driver"
+                    showSearch
+                    optionFilterProp="children"
+                    loading={loadingDrivers}
+                    notFoundContent={
+                      !form.getFieldValue('date') || !form.getFieldValue('startTime') || !form.getFieldValue('endTime')
+                        ? "Vui lòng điền ngày và giờ trước"
+                        : loadingDrivers
+                          ? null
+                          : "Không có tài xế khả dụng"
                     }
-                  }
-                }}
-              >
-                {vehicles.map((vehicle) => (
-                  <Option key={vehicle.vehicleId} value={vehicle.vehicleId}>
-                    {vehicle.vehicleName} - {vehicle.vehicleNumber} (Capacity: {vehicle.capacity})
-                  </Option>
-                ))}
-              </Select>
-            </Form.Item>
+                    onDropdownVisibleChange={async (open) => {
+                      if (open) {
+                        const date = form.getFieldValue('date');
+                        const startTime = form.getFieldValue('startTime');
+                        const endTime = form.getFieldValue('endTime');
 
-            <Form.Item
-              label="Driver"
-              name="driverId"
-              rules={[{ required: true, message: 'Please select a driver!' }]}
-            >
-              <Select 
-                placeholder="Select driver"
-                showSearch 
-                optionFilterProp="children"
-                loading={loadingDrivers}
-                notFoundContent={
-                  !form.getFieldValue('date') || !form.getFieldValue('startTime') || !form.getFieldValue('endTime')
-                    ? "Please fill in date and time first"
-                    : loadingDrivers
-                    ? null
-                    : "No available drivers"
-                }
-                onDropdownVisibleChange={async (open) => {
-                  if (open) {
-                    const date = form.getFieldValue('date');
-                    const startTime = form.getFieldValue('startTime');
-                    const endTime = form.getFieldValue('endTime');
+                        if (!date || !startTime || !endTime) {
+                          return;
+                        }
 
-                    if (!date || !startTime || !endTime) {
-                      return;
-                    }
-
-                    try {
-                      setLoadingDrivers(true);
-                      const driversData = await driverService.getAvailableDrivers(
-                        date.format('YYYY-MM-DD'),
-                        startTime.format('HH:mm:ss'),
-                        endTime.format('HH:mm:ss')
-                      );
-                      setDrivers(driversData);
-                    } catch (error) {
-                      console.error('Failed to load available drivers:', error);
-                      toastError('Error', 'Failed to load available drivers');
-                    } finally {
-                      setLoadingDrivers(false);
-                    }
-                  }
-                }}
-              >
-                {drivers.map((driver) => (
-                  <Option key={driver.driverId} value={driver.driverId}>
-                    {driver.firstName} {driver.lastName} - {driver.email}
-                  </Option>
-                ))}
-              </Select>
-            </Form.Item>
+                        try {
+                          setLoadingDrivers(true);
+                          const driversData = await driverService.getAvailableDrivers(
+                            date.format('YYYY-MM-DD'),
+                            startTime.format('HH:mm:ss'),
+                            endTime.format('HH:mm:ss')
+                          );
+                          setDrivers(driversData);
+                        } catch (error) {
+                          console.error('Failed to load available drivers:', error);
+                          toastError('Lỗi', 'Không thể tải tài xế khả dụng');
+                        } finally {
+                          setLoadingDrivers(false);
+                        }
+                      }
+                    }}
+                  >
+                    {drivers.map((driver) => (
+                      <Option key={driver.driverId} value={driver.driverId}>
+                        {driver.firstName} {driver.lastName} - {driver.email}
+                      </Option>
+                    ))}
+                  </Select>
+                </Form.Item>
               </>
             ) : (
               // Round Trip Form - Two Sections
@@ -656,9 +656,9 @@ const TransportScheduleTab: React.FC = () => {
                     name="pickupRouteId"
                     rules={[{ required: true, message: 'Please select pickup route!' }]}
                   >
-                    <Select 
-                      placeholder="Select pickup route" 
-                      showSearch 
+                    <Select
+                      placeholder="Select pickup route"
+                      showSearch
                       optionFilterProp="children"
                     >
                       {routes
@@ -713,9 +713,9 @@ const TransportScheduleTab: React.FC = () => {
                     name="dropoffRouteId"
                     rules={[{ required: true, message: 'Please select drop-off route!' }]}
                   >
-                    <Select 
-                      placeholder="Select drop-off route" 
-                      showSearch 
+                    <Select
+                      placeholder="Select drop-off route"
+                      showSearch
                       optionFilterProp="children"
                     >
                       {routes
@@ -770,17 +770,17 @@ const TransportScheduleTab: React.FC = () => {
                     name="vehicleId"
                     rules={[{ required: true, message: 'Please select a vehicle!' }]}
                   >
-                    <Select 
+                    <Select
                       placeholder="Select vehicle"
-                      showSearch 
+                      showSearch
                       optionFilterProp="children"
                       loading={loadingVehicles}
                       notFoundContent={
                         !form.getFieldValue('pickupDate') || !form.getFieldValue('pickupStartTime') || !form.getFieldValue('pickupEndTime')
-                          ? "Please fill in pickup date and time first"
+                          ? "Vui lòng điền ngày và giờ đón trước"
                           : loadingVehicles
-                          ? null
-                          : "No available vehicles"
+                            ? null
+                            : "Không có xe khả dụng"
                       }
                       onDropdownVisibleChange={async (open) => {
                         if (open) {
@@ -802,7 +802,7 @@ const TransportScheduleTab: React.FC = () => {
                             setVehicles(vehiclesData);
                           } catch (error) {
                             console.error('Failed to load available vehicles:', error);
-                            toastError('Error', 'Failed to load available vehicles');
+                            toastError('Lỗi', 'Không thể tải xe khả dụng');
                           } finally {
                             setLoadingVehicles(false);
                           }
@@ -822,17 +822,17 @@ const TransportScheduleTab: React.FC = () => {
                     name="driverId"
                     rules={[{ required: true, message: 'Please select a driver!' }]}
                   >
-                    <Select 
+                    <Select
                       placeholder="Select driver"
-                      showSearch 
+                      showSearch
                       optionFilterProp="children"
                       loading={loadingDrivers}
                       notFoundContent={
                         !form.getFieldValue('pickupDate') || !form.getFieldValue('pickupStartTime') || !form.getFieldValue('pickupEndTime')
-                          ? "Please fill in pickup date and time first"
+                          ? "Vui lòng điền ngày và giờ đón trước"
                           : loadingDrivers
-                          ? null
-                          : "No available drivers"
+                            ? null
+                            : "Không có tài xế khả dụng"
                       }
                       onDropdownVisibleChange={async (open) => {
                         if (open) {
@@ -854,7 +854,7 @@ const TransportScheduleTab: React.FC = () => {
                             setDrivers(driversData);
                           } catch (error) {
                             console.error('Failed to load available drivers:', error);
-                            toastError('Error', 'Failed to load available drivers');
+                            toastError('Lỗi', 'Không thể tải tài xế khả dụng');
                           } finally {
                             setLoadingDrivers(false);
                           }

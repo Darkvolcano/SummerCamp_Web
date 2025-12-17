@@ -146,11 +146,11 @@ export default function BlogFormModal({
           };
           await updateMutation.mutateAsync({ id: blog.id, blog: blogDataWithoutNewImage });
         }
-        toastSuccess("Success", "Blog updated successfully");
+        toastSuccess("Thành công", "Cập nhật blog thành công");
       } else {
         // For create, imageFile is required
         if (!imageFile) {
-          toastError("Validation Error", "Please select an image");
+          toastError("Lỗi xác thực", "Vui lòng chọn hình ảnh");
           return;
         }
 
@@ -227,8 +227,8 @@ export default function BlogFormModal({
           <div className="flex items-center gap-3">
             <label className="flex-1 cursor-pointer">
               <div className={`flex items-center justify-center gap-2 px-4 py-2.5 border-2 border-dashed rounded-lg transition-all ${errors.imageUrl
-                  ? "border-red-500 bg-red-50"
-                  : "border-[#E5E7EB] hover:border-[#6366F1] hover:bg-[#F9FAFB]"
+                ? "border-red-500 bg-red-50"
+                : "border-[#E5E7EB] hover:border-[#6366F1] hover:bg-[#F9FAFB]"
                 }`}>
                 <Upload size={20} className="text-[#6B7280]" />
                 <span className="text-sm text-[#6B7280]">

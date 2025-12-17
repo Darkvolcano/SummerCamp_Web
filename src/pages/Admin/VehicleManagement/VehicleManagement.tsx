@@ -128,7 +128,7 @@ export default function VehicleManagement() {
   const getStatusBadge = (status: string) => {
     const statusClass = status?.toLowerCase() || "";
     return (
-      <span className={`status-badge ${statusClass}`}>{status || "N/A"}</span>
+      <span className={`status-badge ${statusClass}`}>{status || "Không có"}</span>
     );
   };
 
@@ -291,7 +291,7 @@ export default function VehicleManagement() {
                   </td>
                   <td>
                     <span className="vehicle-type">
-                      {vehicle.vehicleType?.name || "N/A"}
+                      {vehicle.vehicleType?.name || "Không có"}
                     </span>
                   </td>
                   <td>
@@ -306,7 +306,7 @@ export default function VehicleManagement() {
                       <button
                         className="action-btn view"
                         onClick={() => handleView(vehicle)}
-                        title="View Details"
+                        title="Xem Chi Tiết"
                       >
                         <Eye size={18} />
                       </button>

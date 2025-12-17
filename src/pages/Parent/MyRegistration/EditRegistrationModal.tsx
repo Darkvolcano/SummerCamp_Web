@@ -93,14 +93,14 @@ const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
         camperService.getMyCampers(),
         promotionService.getAllPromotions(),
       ]);
-      
+
       setMyCampers(campersData);
       setPromotions(promotionsData.filter(p => p.status === "Active"));
 
       // Set initial camper IDs
       const initialCamperIds = registration.campers?.map(c => c.camperId) || [];
       setSelectedCamperIds(initialCamperIds);
-      
+
       // Initialize guardians arrays
       setGuardiansByIndex(new Array(initialCamperIds.length).fill([]));
       setGuardianLoadingByIndex(new Array(initialCamperIds.length).fill(false));
@@ -129,11 +129,11 @@ const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
 
   const handleCamperIdsChange = async (value: number[]) => {
     setSelectedCamperIds(value);
-    
+
     // Reset and reload guardians for new selection
     setGuardiansByIndex(new Array(value.length).fill([]));
     setGuardianLoadingByIndex(new Array(value.length).fill(false));
-    
+
     if (value.length > 0) {
       await loadGuardiansForCampers(value);
     }
@@ -231,7 +231,7 @@ const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
             <h3 className="text-lg font-bold text-gray-900 mb-4">
               1. Chọn trại viên
             </h3>
-            
+
             <Form.Item
               name="camperIds"
               label={<span className="font-semibold text-gray-900">Trại viên tham gia</span>}
@@ -282,7 +282,7 @@ const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
                       <h4 className="text-sm font-semibold text-gray-900 mb-2">
                         Trại viên {index + 1}: {camper.camperName}
                       </h4>
-                      
+
                       <div className="flex gap-4 mb-3">
                         {camper.avatar ? (
                           <img
@@ -328,7 +328,7 @@ const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
                                   <div>
                                     <p className="text-gray-500">Họ tên</p>
                                     <p className="font-semibold text-gray-900">
-                                      {guardian.fullName || "N/A"}
+                                      {guardian.fullName || "Không có"}
                                     </p>
                                   </div>
                                   {guardian.title && (

@@ -104,7 +104,7 @@ export default function VehicleDetailModal({
                             <div className="info-content">
                                 <p className="info-label">Type</p>
                                 <p className="info-value">
-                                    {vehicle.vehicleType?.name || "N/A"}
+                                    {vehicle.vehicleType?.name || "Không có"}
                                 </p>
                             </div>
                         </div>

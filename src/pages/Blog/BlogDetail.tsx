@@ -118,7 +118,7 @@ const BlogDetail: React.FC = () => {
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <CalendarOutlined className="text-[#FF8F50]" />
-                                    <span>{blog.createdAt ? formatDate(new Date(blog.createdAt)) : "N/A"}</span>
+                                    <span>{blog.createdAt ? formatDate(new Date(blog.createdAt)) : "Không có"}</span>
                                 </div>
                             </div>
 
@@ -150,7 +150,7 @@ const BlogDetail: React.FC = () => {
                                         Ngày đăng
                                     </span>
                                     <span className="font-bold text-gray-900">
-                                        {blog.createdAt ? formatDateTime(new Date(blog.createdAt)) : "N/A"}
+                                        {blog.createdAt ? formatDateTime(new Date(blog.createdAt)) : "Không có"}
                                     </span>
                                 </div>
 

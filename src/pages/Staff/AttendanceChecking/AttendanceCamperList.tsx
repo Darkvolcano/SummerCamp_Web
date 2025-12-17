@@ -173,7 +173,7 @@ const AttendanceCamperList: React.FC = () => {
             </div>
             <div>
               <p className="text-sm text-gray-600 font-medium">Location</p>
-              <p className="text-gray-900">{schedule.location?.name || "N/A"}</p>
+              <p className="text-gray-900">{schedule.location?.name || "Không có"}</p>
             </div>
           </div>
         </div>

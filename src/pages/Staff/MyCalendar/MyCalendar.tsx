@@ -153,7 +153,7 @@ const MyCalendar: React.FC = () => {
               hostId: selectedSchedule.liveStream.hostId,
             }
           );
-          toastSuccess("Success", "Livestream room created and updated");
+          toastSuccess("Thành công", "Tạo và cập nhật phòng livestream");
         }
       }
 

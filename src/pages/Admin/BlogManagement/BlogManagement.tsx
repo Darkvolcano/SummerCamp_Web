@@ -64,12 +64,12 @@ export default function BlogManagement() {
   const handleDelete = async (blogId: number) => {
     try {
       await deleteMutation.mutateAsync(blogId);
-      toastSuccess("Success", "Blog deleted successfully");
+      toastSuccess("Thành công", "Xóa blog thành công");
       refetch();
       setDeletePopoverOpen(null);
     } catch (error) {
       console.error("Error deleting blog:", error);
-      toastError("Error", "Failed to delete blog");
+      toastError("Lỗi", "Không thể xóa blog");
     }
   };
 
@@ -274,7 +274,7 @@ export default function BlogManagement() {
                                 <button
                                   onClick={() => handleView(blog)}
                                   className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#EFF6FF] text-[#3B82F6] rounded-lg hover:bg-[#DBEAFE] transition-all font-medium text-sm"
-                                  title="View Details"
+                                  title="Xem Chi Tiết"
                                 >
                                   <Eye size={16} />
                                   Xem

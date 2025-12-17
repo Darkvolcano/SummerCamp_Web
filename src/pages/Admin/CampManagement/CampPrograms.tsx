@@ -267,11 +267,10 @@ const CampPrograms: React.FC = () => {
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => setSelectedCampType("All")}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                selectedCampType === "All"
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${selectedCampType === "All"
                   ? "bg-[#6366F1] text-white"
                   : "bg-[#F3F4F6] text-[#6B7280] hover:bg-[#E5E7EB]"
-              }`}
+                }`}
             >
               Tất Cả
             </button>
@@ -279,11 +278,10 @@ const CampPrograms: React.FC = () => {
               <button
                 key={type.campTypeId}
                 onClick={() => setSelectedCampType(type.name)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                  selectedCampType === type.name
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${selectedCampType === type.name
                     ? "bg-[#6366F1] text-white"
                     : "bg-[#F3F4F6] text-[#6B7280] hover:bg-[#E5E7EB]"
-                }`}
+                  }`}
               >
                 {type.name}
               </button>
@@ -472,7 +470,7 @@ const CampPrograms: React.FC = () => {
                     </td>
                     <td className="px-6 py-4">
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#EFF6FF] text-[#3B82F6]">
-                        {camp.campType?.name || "N/A"}
+                        {camp.campType?.name || "Không có"}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-sm text-[#6B7280]">
@@ -506,7 +504,7 @@ const CampPrograms: React.FC = () => {
                       <button
                         onClick={() => navigate(`/admin/camps/${camp.campId}`)}
                         className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-all font-medium text-sm"
-                        title="View Details"
+                        title="Xem Chi Tiết"
                       >
                         <Eye size={16} />
                         Chi Tiết
@@ -529,11 +527,10 @@ const CampPrograms: React.FC = () => {
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                  currentPage === 1
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${currentPage === 1
                     ? "bg-[#F3F4F6] text-[#9CA3AF] cursor-not-allowed"
                     : "bg-[#F3F4F6] text-[#374151] hover:bg-[#E5E7EB]"
-                }`}
+                  }`}
               >
                 Trước
               </button>
@@ -549,11 +546,10 @@ const CampPrograms: React.FC = () => {
                       <button
                         key={page}
                         onClick={() => setCurrentPage(page)}
-                        className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                          currentPage === page
+                        className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${currentPage === page
                             ? "bg-[#6366F1] text-white"
                             : "bg-[#F3F4F6] text-[#374151] hover:bg-[#E5E7EB]"
-                        }`}
+                          }`}
                       >
                         {page}
                       </button>
@@ -575,11 +571,10 @@ const CampPrograms: React.FC = () => {
               <button
                 onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                 disabled={currentPage === totalPages}
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                  currentPage === totalPages
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${currentPage === totalPages
                     ? "bg-[#F3F4F6] text-[#9CA3AF] cursor-not-allowed"
                     : "bg-[#F3F4F6] text-[#374151] hover:bg-[#E5E7EB]"
-                }`}
+                  }`}
               >
                 Sau
               </button>

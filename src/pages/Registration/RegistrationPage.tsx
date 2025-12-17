@@ -313,15 +313,15 @@ const RegistrationPage: React.FC = () => {
       // Build health record if any fields are provided
       const healthRecord: HealthRecordCreateDto | undefined =
         values.condition ||
-        values.allergies ||
-        values.isAllergy !== undefined ||
-        values.healthNote
+          values.allergies ||
+          values.isAllergy !== undefined ||
+          values.healthNote
           ? {
-              condition: values.condition || undefined,
-              allergies: values.allergies || undefined,
-              isAllergy: values.isAllergy || undefined,
-              note: values.healthNote || undefined,
-            }
+            condition: values.condition || undefined,
+            allergies: values.allergies || undefined,
+            isAllergy: values.isAllergy || undefined,
+            note: values.healthNote || undefined,
+          }
           : undefined;
 
       const newCamperData: CamperRequestDto = {
@@ -553,13 +553,13 @@ const RegistrationPage: React.FC = () => {
     const campersWithoutAvatar = campers
       .map((c, index) => ({ camper: c, index }))
       .filter(({ camper }) => camper && !camper.avatar);
-    
+
     if (campersWithoutAvatar.length > 0) {
       const camperNames = campersWithoutAvatar
         .map(({ camper }) => camper?.camperName)
         .join(", ");
       toastError(
-        "Thiếu ảnh đại diện", 
+        "Thiếu ảnh đại diện",
         `Vui lòng vào trang Quản lý trại viên để upload ảnh cho: ${camperNames}`
       );
       return;
@@ -725,7 +725,7 @@ const RegistrationPage: React.FC = () => {
                                     Yêu cầu bổ sung ảnh đại diện (Bắt buộc)
                                   </p>
                                   <p className="text-xs text-red-700">
-                                    Trại viên <span className="font-semibold">{campers[index]?.camperName}</span> chưa có ảnh đại diện. 
+                                    Trại viên <span className="font-semibold">{campers[index]?.camperName}</span> chưa có ảnh đại diện.
                                     Vui lòng vào trang <Link to="/user/my-campers" className="font-semibold text-red-800 underline hover:text-red-900">Quản lý trại viên</Link> để upload ảnh trước khi đăng ký.
                                   </p>
                                 </div>
@@ -868,7 +868,7 @@ const RegistrationPage: React.FC = () => {
                               <div>
                                 <p className="text-xs text-gray-500 mb-0.5">Họ tên</p>
                                 <p className="text-sm font-semibold text-gray-900">
-                                  {guardian.fullName || "N/A"}
+                                  {guardian.fullName || "Không có"}
                                 </p>
                               </div>
                               {guardian.title && (
@@ -949,12 +949,12 @@ const RegistrationPage: React.FC = () => {
               {campers.every(
                 (camper) => !selectedCamperIds[campers.indexOf(camper)]
               ) && (
-                <div className="p-4 bg-blue-50 rounded border border-blue-200">
-                  <p className="text-sm text-blue-800">
-                    ℹ️ Vui lòng chọn trại viên.
-                  </p>
-                </div>
-              )}
+                  <div className="p-4 bg-blue-50 rounded border border-blue-200">
+                    <p className="text-sm text-blue-800">
+                      ℹ️ Vui lòng chọn trại viên.
+                    </p>
+                  </div>
+                )}
             </div>
 
             {/* Step 3: Select Camp */}
@@ -1125,8 +1125,8 @@ const RegistrationPage: React.FC = () => {
                       value
                         ? Promise.resolve()
                         : Promise.reject(
-                            new Error("Vui lòng đồng ý với quy định")
-                          ),
+                          new Error("Vui lòng đồng ý với quy định")
+                        ),
                   },
                 ]}
               >

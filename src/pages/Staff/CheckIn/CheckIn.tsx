@@ -109,7 +109,7 @@ const CheckIn: React.FC = () => {
   if (loading && schedules.length === 0) {
     return (
       <div className="flex justify-center items-center h-96">
-        <Spin size="large" tip="Loading schedules..." />
+        <Spin size="large" tip="Đang tải lịch trình..." />
       </div>
     );
   }
@@ -191,7 +191,7 @@ const CheckIn: React.FC = () => {
                       onClick={() => handleCheckAttendance(schedule)}
                       className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                     >
-                      {schedule.status === "Completed" ? "View Details" : "Check List"}
+                      {schedule.status === "Completed" ? "Xem Chi Tiết" : "Danh Sách Điểm Danh"}
                     </button>
                   </div>
                 </div>

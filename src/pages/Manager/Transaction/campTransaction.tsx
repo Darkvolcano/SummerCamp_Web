@@ -35,7 +35,7 @@ const CampTransaction: React.FC = () => {
       setTransactions(data);
     } catch (error) {
       console.error('Failed to load transactions:', error);
-      toastError('Error', 'Unable to load transactions');
+      toastError('Lỗi', 'Không thể tải giao dịch');
     } finally {
       setLoading(false);
     }

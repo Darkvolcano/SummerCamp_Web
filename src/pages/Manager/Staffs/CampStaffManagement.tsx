@@ -164,7 +164,7 @@ const CampStaffManagement: React.FC = () => {
       }
     } catch (error) {
       console.error('Failed to assign staff:', error);
-      toastError('Error', 'Failed to assign staff');
+      toastError('Lỗi', 'Không thể phân công nhân viên');
     } finally {
       setAssigning(false);
     }
@@ -175,7 +175,7 @@ const CampStaffManagement: React.FC = () => {
     try {
       setAssigning(true);
       await campStaffService.removeStaffFromCamp(assignmentId);
-      toastSuccess('Success', 'Staff assignment removed successfully');
+      toastSuccess('Thành công', 'Xóa phân công nhân viên thành công');
       setDeletePopoverOpen(null);
 
       if (selectedCampId) {
@@ -409,7 +409,7 @@ const CampStaffManagement: React.FC = () => {
                                     setStaffDetailModalOpen(true);
                                   }}
                                   className="inline-flex items-center gap-1 px-3 py-1.5 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-all font-medium text-sm"
-                                  title="View Details"
+                                  title="Xem Chi Tiết"
                                 >
                                   <Eye size={14} />
                                   Chi Tiết
