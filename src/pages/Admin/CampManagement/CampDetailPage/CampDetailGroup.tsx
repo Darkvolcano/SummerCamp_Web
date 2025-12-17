@@ -27,8 +27,8 @@ const CampDetailGroup: React.FC<CampDetailGroupProps> = ({ campId, campStatus })
       setGroups(groupsData);
       setCampData(campInfo);
     } catch (error) {
-      console.error('Failed to load groups:', error);
-      toastError('Error', 'Failed to load groups');
+      console.error('Lỗi khi tải nhóm:', error);
+      toastError('Lỗi', 'Không thể tải nhóm cho trại này. Vui lòng thử lại sau.');
     } finally {
       setLoading(false);
     }
@@ -50,7 +50,7 @@ const CampDetailGroup: React.FC<CampDetailGroupProps> = ({ campId, campStatus })
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       if (!group.groupName.toLowerCase().includes(query) &&
-          !(group.description?.toLowerCase().includes(query))) {
+        !(group.description?.toLowerCase().includes(query))) {
         return false;
       }
     }
@@ -62,9 +62,9 @@ const CampDetailGroup: React.FC<CampDetailGroupProps> = ({ campId, campStatus })
       <div className="pb-12">
         <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-8">
           <div className="text-center">
-            <h3 className="text-xl font-bold text-blue-900 mb-2">Camp Not Set Up Yet</h3>
-            <p className="text-blue-700 mb-4">Your camp is still in Draft status. Please complete camp setup to continue.</p>
-            <p className="text-sm text-blue-600">Please assign a manager and wait for them to set up the camp to continue.</p>
+            <h3 className="text-xl font-bold text-blue-900 mb-2">Trại chưa được thiết lập</h3>
+            <p className="text-blue-700 mb-4">Trại của bạn vẫn đang ở trạng thái 'Draft'. Vui lòng hoàn thành thiết lập trại để tiếp tục.</p>
+            <p className="text-sm text-blue-600">Vui lòng chỉ định một quản lý và chờ họ thiết lập trại để tiếp tục.</p>
           </div>
         </div>
       </div>
@@ -85,7 +85,7 @@ const CampDetailGroup: React.FC<CampDetailGroupProps> = ({ campId, campStatus })
               {/* Section Header */}
               <div className="px-6 py-4 border-b border-[#E5E7EB] bg-gradient-to-r from-[#F9FAFB] to-white">
                 <h3 className="text-lg font-bold text-[#111827]">
-                  Search
+                  Tìm kiếm
                 </h3>
               </div>
 
@@ -109,10 +109,10 @@ const CampDetailGroup: React.FC<CampDetailGroupProps> = ({ campId, campStatus })
               {/* Capacity Info */}
               {campData && (
                 <div className="px-6 py-4">
-                  <p className="text-xs font-medium text-[#6B7280] mb-1">Capacity</p>
+                  <p className="text-xs font-medium text-[#6B7280] mb-1">Sức chứa</p>
                   <div className="flex items-center gap-1">
                     <span className="text-2xl font-bold text-[#111827]">{getTotalMaxSize()}</span>
-                    <span className="text-xs text-[#6B7280]">/ {campData.maxParticipants} max</span>
+                    <span className="text-xs text-[#6B7280]">/ {campData.maxParticipants} sức chứa tối đa</span>
                   </div>
                 </div>
               )}
@@ -125,10 +125,10 @@ const CampDetailGroup: React.FC<CampDetailGroupProps> = ({ campId, campStatus })
               {/* Table Header */}
               <div className="px-6 py-4 border-b border-[#E5E7EB] bg-gradient-to-r from-[#F9FAFB] to-white">
                 <h3 className="text-lg font-bold text-[#111827]">
-                  Groups
+                  Nhóm
                 </h3>
                 <p className="text-xs text-[#6B7280] mt-1">
-                  Total groups: {filteredGroups.length}
+                  Tổng số nhóm: {filteredGroups.length}
                 </p>
               </div>
 
@@ -141,16 +141,16 @@ const CampDetailGroup: React.FC<CampDetailGroupProps> = ({ campId, campStatus })
                         ID
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                        Group Name
+                        Tên nhóm
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                        Description
+                        Mô tả
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                        Size / Age
+                        Sức chứa / Tuổi
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                        Supervisor
+                        Người giám sát
                       </th>
                     </tr>
                   </thead>
@@ -161,7 +161,7 @@ const CampDetailGroup: React.FC<CampDetailGroupProps> = ({ campId, campStatus })
                           colSpan={5}
                           className="px-6 py-12 text-center text-[#6B7280]"
                         >
-                          No groups found matching your filters
+                          Không tìm thấy nhóm nào phù hợp với bộ lọc của bạn
                         </td>
                       </tr>
                     ) : (
@@ -181,7 +181,7 @@ const CampDetailGroup: React.FC<CampDetailGroupProps> = ({ campId, campStatus })
                           </td>
                           <td className="px-6 py-4 text-sm text-[#6B7280]">
                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
-                              Max {group.maxSize}
+                              Tối đa {group.maxSize}
                             </span>
                             <span className="ml-2 text-xs text-[#6B7280]">
                               ({group.minAge} - {group.maxAge} yrs)
@@ -192,7 +192,7 @@ const CampDetailGroup: React.FC<CampDetailGroupProps> = ({ campId, campStatus })
                               group.supervisorName
                             ) : (
                               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">
-                                Unassigned
+                                Chưa được phân công
                               </span>
                             )}
                           </td>
