@@ -43,7 +43,7 @@ const CampDetailTransportSchedule: React.FC<CampDetailTransportScheduleProps> = 
       setSchedules(data);
     } catch (error) {
       console.error('Failed to load schedules:', error);
-      toastError('Error', 'Unable to load transport schedules');
+      toastError('Lỗi', 'Không thể tải lịch trình vận chuyển');
     } finally {
       setLoading(false);
     }
@@ -91,15 +91,13 @@ const CampDetailTransportSchedule: React.FC<CampDetailTransportScheduleProps> = 
         <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-8">
           <div className="text-center">
             <h3 className="text-xl font-bold text-blue-900 mb-2">
-              Camp Not Set Up Yet
+              Trại chưa được thiết lập
             </h3>
             <p className="text-blue-700 mb-4">
-              Your camp is still in Draft status. Please complete camp setup to
-              continue.
+              Trại của bạn vẫn đang ở trạng thái 'Draft'. Vui lòng hoàn thành thiết lập trại để tiếp tục.
             </p>
             <p className="text-sm text-blue-600">
-              Please assign a manager and wait for them to set up the camp to
-              continue.
+              Vui lòng chỉ định một quản lý và chờ họ thiết lập trại để tiếp tục.
             </p>
           </div>
         </div>
@@ -120,10 +118,10 @@ const CampDetailTransportSchedule: React.FC<CampDetailTransportScheduleProps> = 
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-[#111827]">
-          Transport Schedules
+          Lịch trình vận chuyển
         </h1>
         <p className="text-[#6B7280] text-sm mt-1">
-          View transport schedules for this camp (Read-only)
+          Xem lịch trình vận chuyển cho trại này (Chỉ xem)
         </p>
       </div>
 
@@ -138,10 +136,10 @@ const CampDetailTransportSchedule: React.FC<CampDetailTransportScheduleProps> = 
               <h3 className="text-lg font-bold text-indigo-900">{camp.name}</h3>
               <div className="flex items-center gap-4 mt-1">
                 <span className="text-sm text-indigo-700">
-                  <strong>Start:</strong> {formatDate(camp.startDate)}
+                  <strong>Bắt đầu:</strong> {formatDate(camp.startDate)}
                 </span>
                 <span className="text-sm text-indigo-700">
-                  <strong>End:</strong> {formatDate(camp.endDate)}
+                  <strong>Kết thúc:</strong> {formatDate(camp.endDate)}
                 </span>
               </div>
             </div>
@@ -157,7 +155,7 @@ const CampDetailTransportSchedule: React.FC<CampDetailTransportScheduleProps> = 
             <div className="flex items-center gap-2">
               <ArrowUpCircle size={20} className="text-green-600" />
               <h2 className="text-lg font-bold text-[#111827]">
-                Pickup Schedules ({pickupSchedules.length})
+                Lịch đón ({pickupSchedules.length})
               </h2>
             </div>
           </div>
@@ -166,7 +164,7 @@ const CampDetailTransportSchedule: React.FC<CampDetailTransportScheduleProps> = 
             {pickupSchedules.length === 0 ? (
               <div className="px-6 py-12 text-center text-[#6B7280]">
                 <ArrowUpCircle size={48} className="mx-auto mb-4 text-[#9CA3AF]" />
-                <p>No pickup schedules yet</p>
+                <p>Chưa có lịch đón</p>
               </div>
             ) : (
               pickupSchedules.map((schedule) => (
@@ -217,7 +215,7 @@ const CampDetailTransportSchedule: React.FC<CampDetailTransportScheduleProps> = 
             <div className="flex items-center gap-2">
               <ArrowDownCircle size={20} className="text-orange-600" />
               <h2 className="text-lg font-bold text-[#111827]">
-                Drop-off Schedules ({dropoffSchedules.length})
+                Lịch trả ({dropoffSchedules.length})
               </h2>
             </div>
           </div>
@@ -226,7 +224,7 @@ const CampDetailTransportSchedule: React.FC<CampDetailTransportScheduleProps> = 
             {dropoffSchedules.length === 0 ? (
               <div className="px-6 py-12 text-center text-[#6B7280]">
                 <ArrowDownCircle size={48} className="mx-auto mb-4 text-[#9CA3AF]" />
-                <p>No drop-off schedules yet</p>
+                <p>Chưa có lịch trả</p>
               </div>
             ) : (
               dropoffSchedules.map((schedule) => (

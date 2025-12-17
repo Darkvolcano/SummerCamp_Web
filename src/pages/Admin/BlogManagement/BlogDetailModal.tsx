@@ -16,17 +16,17 @@ export default function BlogDetailModal({
   onDelete,
 }: BlogDetailModalProps) {
   const formatDate = (dateString: string | Date | null | undefined) => {
-    if (!dateString) return "N/A";
+    if (!dateString) return "Không có";
     try {
       const date = new Date(dateString);
-      if (isNaN(date.getTime())) return "N/A";
+      if (isNaN(date.getTime())) return "Không có";
       return date.toLocaleDateString("en-GB", {
         day: "2-digit",
         month: "2-digit",
         year: "numeric",
       });
     } catch {
-      return "N/A";
+      return "Không có";
     }
   };
 

@@ -55,7 +55,7 @@ const ActivityScheduleManagement: React.FC = () => {
         setCampData(campInfo);
       } catch (error) {
         console.error("Failed to load activities and schedules:", error);
-        toastError("Error", "Unable to load activities and schedules");
+        toastError("Lỗi", "Không thể tải hoạt động và lịch trình");
       } finally {
         setLoading(false);
       }
@@ -98,7 +98,7 @@ const ActivityScheduleManagement: React.FC = () => {
       setSelectedSchedule(selectedSchedule);
       setShowScheduleDetail(true);
     } else {
-      toastError("Error", "Schedule not found");
+      toastError("Lỗi", "Không tìm thấy lịch trình");
     }
   };
 
@@ -112,21 +112,21 @@ const ActivityScheduleManagement: React.FC = () => {
   const handleSaveSchedule = async (scheduleData: any) => {
     try {
       setLoading(true);
-      
+
       if (!selectedCampId) {
-        toastError("Error", "No camp selected");
+        toastError("Lỗi", "Chưa chọn trại hè");
         return;
       }
-      
+
       setSchedules((prev) => [...prev, scheduleData]);
       setShowScheduleForm(false);
       setSelectedSchedule(null);
-      
+
       const updatedSchedules = await activityScheduleService.getActivitySchedulesByCamp(selectedCampId);
       setSchedules(updatedSchedules);
     } catch (error) {
       console.error("Failed to save schedule:", error);
-      toastError("Error", "Failed to save schedule");
+      toastError("Lỗi", "Không thể lưu lịch trình");
     } finally {
       setLoading(false);
     }
@@ -143,7 +143,7 @@ const ActivityScheduleManagement: React.FC = () => {
       setShowScheduleDetail(false);
     } catch (error) {
       console.error("Failed to delete schedule:", error);
-      toastError("Error", "Failed to delete schedule");
+      toastError("Lỗi", "Không thể xóa lịch trình");
     } finally {
       setLoading(false);
     }
@@ -207,11 +207,11 @@ const ActivityScheduleManagement: React.FC = () => {
           campInfo={
             campData
               ? {
-                  campId: campData.campId,
-                  name: campData.name,
-                  startDate: campData.startDate,
-                  endDate: campData.endDate,
-                }
+                campId: campData.campId,
+                name: campData.name,
+                startDate: campData.startDate,
+                endDate: campData.endDate,
+              }
               : undefined
           }
           userRole="manager"

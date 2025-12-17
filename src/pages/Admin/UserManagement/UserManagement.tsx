@@ -12,7 +12,7 @@ const UserManagement: React.FC = () => {
   const { toastSuccess, toastError } = useNotification();
   const [users, setUsers] = useState<UserAccountResponseDto[]>([]);
   const [loading, setLoading] = useState(true);
-  
+
   // Pending drivers - separate section
   const [pendingDrivers, setPendingDrivers] = useState<DriverResponseDto[]>([]);
   const [loadingPendingDrivers, setLoadingPendingDrivers] = useState(true);
@@ -41,7 +41,7 @@ const UserManagement: React.FC = () => {
       calculateCounts(usersData);
     } catch (error) {
       console.error("Error fetching users:", error);
-      toastError("Error", "Failed to load users");
+      toastError("Lỗi", "Không thể tải người dùng");
     } finally {
       setLoading(false);
     }
@@ -54,7 +54,7 @@ const UserManagement: React.FC = () => {
       setPendingDrivers(driversData);
     } catch (error) {
       console.error("Error fetching pending drivers:", error);
-      toastError("Error", "Failed to load pending drivers");
+      toastError("Lỗi", "Không thể tải tài xế chờ duyệt");
     } finally {
       setLoadingPendingDrivers(false);
     }
@@ -148,11 +148,11 @@ const UserManagement: React.FC = () => {
       onOk: async () => {
         try {
           await userAccountService.deleteUser(user.userId);
-          toastSuccess("Success", "User deleted successfully");
+          toastSuccess("Thành công", "Xóa người dùng thành công");
           fetchData();
         } catch (error) {
           console.error("Error deleting user:", error);
-          toastError("Error", "Failed to delete user");
+          toastError("Lỗi", "Không thể xóa người dùng");
         }
       },
     });
@@ -162,11 +162,11 @@ const UserManagement: React.FC = () => {
   const handleApproveDriver = async (driver: DriverResponseDto) => {
     try {
       await driverService.updateDriverStatus(driver.driverId, DriverStatus.Approved);
-      toastSuccess("Success", "Driver approved successfully!");
+      toastSuccess("Thành công", "Duyệt tài xế thành công!");
       fetchPendingDrivers();
     } catch (error) {
       console.error("Error approving driver:", error);
-      toastError("Error", "Failed to approve driver");
+      toastError("Lỗi", "Không thể duyệt tài xế");
     }
   };
 
@@ -181,11 +181,11 @@ const UserManagement: React.FC = () => {
       onOk: async () => {
         try {
           await driverService.updateDriverStatus(driver.driverId, DriverStatus.Rejected);
-          toastSuccess("Success", "Driver rejected successfully!");
+          toastSuccess("Thành công", "Từ chối tài xế thành công!");
           fetchPendingDrivers();
         } catch (error) {
           console.error("Error rejecting driver:", error);
-          toastError("Error", "Failed to reject driver");
+          toastError("Lỗi", "Không thể từ chối tài xế");
         }
       },
     });
@@ -202,7 +202,7 @@ const UserManagement: React.FC = () => {
       fetchData();
     } catch (error) {
       console.error("Error updating user status:", error);
-      toastError("Error", "Failed to update user status");
+      toastError("Lỗi", "Không thể cập nhật trạng thái người dùng");
     }
   };
 
@@ -226,7 +226,7 @@ const UserManagement: React.FC = () => {
 
   // Format date
   const formatDate = (dateString: string | null | undefined) => {
-    if (!dateString) return "N/A";
+    if (!dateString) return "Không có";
     return new Date(dateString).toLocaleDateString("en-GB", {
       day: "2-digit",
       month: "2-digit",
@@ -296,7 +296,7 @@ const UserManagement: React.FC = () => {
                         </div>
                         <div className="flex items-center gap-1 text-xs text-[#6B7280]">
                           <span className="font-medium">Giấy phép:</span>
-                          {driver.licenseNumber || "N/A"}
+                          {driver.licenseNumber || "Không có"}
                         </div>
                         <div className="flex items-center gap-1 text-xs text-[#6B7280]">
                           <Calendar size={12} />
@@ -358,11 +358,10 @@ const UserManagement: React.FC = () => {
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => setSelectedRole("All")}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                selectedRole === "All"
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${selectedRole === "All"
                   ? "bg-[#6366F1] text-white"
                   : "bg-[#F3F4F6] text-[#6B7280] hover:bg-[#E5E7EB]"
-              }`}
+                }`}
             >
               Tất Cả
             </button>
@@ -370,11 +369,10 @@ const UserManagement: React.FC = () => {
               <button
                 key={role}
                 onClick={() => setSelectedRole(role)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                  selectedRole === role
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${selectedRole === role
                     ? "bg-[#6366F1] text-white"
                     : "bg-[#F3F4F6] text-[#6B7280] hover:bg-[#E5E7EB]"
-                }`}
+                  }`}
               >
                 {role}
                 <span className="ml-2 text-xs font-semibold text-[#6366F1] bg-[#EFF6FF] px-2 py-0.5 rounded-full">
@@ -571,7 +569,7 @@ const UserManagement: React.FC = () => {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2 text-sm text-[#6B7280]">
                         <Phone size={14} />
-                        {user.phoneNumber || "N/A"}
+                        {user.phoneNumber || "Không có"}
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -592,11 +590,10 @@ const UserManagement: React.FC = () => {
                     <td className="px-6 py-4">
                       <button
                         onClick={() => handleToggleStatus(user)}
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium cursor-pointer transition-all ${
-                          user.isActive
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium cursor-pointer transition-all ${user.isActive
                             ? "bg-green-100 text-green-700 hover:bg-green-200"
                             : "bg-red-100 text-red-700 hover:bg-red-200"
-                        }`}
+                          }`}
                       >
                         {user.isActive ? "Active" : "Inactive"}
                       </button>
@@ -630,11 +627,10 @@ const UserManagement: React.FC = () => {
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                  currentPage === 1
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${currentPage === 1
                     ? "bg-[#F3F4F6] text-[#9CA3AF] cursor-not-allowed"
                     : "bg-[#F3F4F6] text-[#374151] hover:bg-[#E5E7EB]"
-                }`}
+                  }`}
               >
                 Trước
               </button>
@@ -650,11 +646,10 @@ const UserManagement: React.FC = () => {
                       <button
                         key={page}
                         onClick={() => setCurrentPage(page)}
-                        className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                          currentPage === page
+                        className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${currentPage === page
                             ? "bg-[#6366F1] text-white"
                             : "bg-[#F3F4F6] text-[#374151] hover:bg-[#E5E7EB]"
-                        }`}
+                          }`}
                       >
                         {page}
                       </button>
@@ -676,11 +671,10 @@ const UserManagement: React.FC = () => {
               <button
                 onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                 disabled={currentPage === totalPages}
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                  currentPage === totalPages
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${currentPage === totalPages
                     ? "bg-[#F3F4F6] text-[#9CA3AF] cursor-not-allowed"
                     : "bg-[#F3F4F6] text-[#374151] hover:bg-[#E5E7EB]"
-                }`}
+                  }`}
               >
                 Sau
               </button>

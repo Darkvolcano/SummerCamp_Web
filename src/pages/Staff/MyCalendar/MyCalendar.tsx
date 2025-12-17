@@ -39,8 +39,8 @@ const MyCalendar: React.FC = () => {
         setCampData(data);
       } catch (error: any) {
         console.error("Failed to load camp:", error);
-        const errorMessage = error.response?.data?.message || error.response?.data?.title || "Unable to load camp details";
-        toastError("Error", errorMessage);
+        const errorMessage = error.response?.data?.message || error.response?.data?.title || "Không thể tải chi tiết trại";
+        toastError("Lỗi", errorMessage);
       } finally {
         setLoading(false);
       }
@@ -70,8 +70,8 @@ const MyCalendar: React.FC = () => {
         setGroupStaffActivities(groupActivitiesData || []);
       } catch (error: any) {
         console.error("Failed to load activities:", error);
-        const errorMessage = error.response?.data?.message || error.response?.data?.title || "Unable to load calendar activities";
-        toastError("Error", errorMessage);
+        const errorMessage = error.response?.data?.message || error.response?.data?.title || "Không thể tải hoạt động lịch";
+        toastError("Lỗi", errorMessage);
         setCampActivities([]);
         setGroupStaffActivities([]);
       } finally {
@@ -122,8 +122,8 @@ const MyCalendar: React.FC = () => {
       setShowScheduleDetail(true);
     } catch (error: any) {
       console.error("Failed to load schedule details:", error);
-      const errorMessage = error.response?.data?.message || error.response?.data?.title || "Unable to load schedule details";
-      toastError("Error", errorMessage);
+      const errorMessage = error.response?.data?.message || error.response?.data?.title || "Không thể tải chi tiết lịch";
+      toastError("Lỗi", errorMessage);
     } finally {
       setLoading(false);
     }
@@ -138,7 +138,7 @@ const MyCalendar: React.FC = () => {
 
       if (selectedSchedule.liveStream?.roomId) {
         roomId = selectedSchedule.liveStream.roomId;
-        toastSuccess("Info", "Using existing livestream room");
+        toastSuccess("Thông tin", "Sử dụng phòng livestream hiện tại");
       } else {
         const videoSDKService = (await import("../../../services/videoSDKService")).default;
         roomId = await videoSDKService.createRoom();
@@ -153,7 +153,7 @@ const MyCalendar: React.FC = () => {
               hostId: selectedSchedule.liveStream.hostId,
             }
           );
-          toastSuccess("Success", "Livestream room created and updated");
+          toastSuccess("Thành công", "Tạo và cập nhật phòng livestream");
         }
       }
 
@@ -266,11 +266,11 @@ const MyCalendar: React.FC = () => {
           campInfo={
             campData
               ? {
-                  campId: campData.campId,
-                  name: campData.name,
-                  startDate: campData.startDate,
-                  endDate: campData.endDate,
-                }
+                campId: campData.campId,
+                name: campData.name,
+                startDate: campData.startDate,
+                endDate: campData.endDate,
+              }
               : undefined
           }
           userRole="staff"

@@ -59,7 +59,7 @@ const AccommodationManagement: React.FC = () => {
         setCampData(campInfo);
       } catch (error) {
         console.error('Failed to load data:', error);
-        toastError('Error', 'Unable to load accommodations');
+        toastError('Lỗi', 'Không thể tải nơi ở');
       } finally {
         setLoading(false);
       }
@@ -77,7 +77,7 @@ const AccommodationManagement: React.FC = () => {
           setStaffList(staffData);
         } catch (error) {
           console.error('Failed to load staff:', error);
-          toastError('Error', 'Unable to load supervisors');
+          toastError('Lỗi', 'Không thể tải người giám sát');
         }
       };
 
@@ -131,7 +131,7 @@ const AccommodationManagement: React.FC = () => {
       setIsModalVisible(true);
     } catch (error) {
       console.error('Failed to load accommodation details:', error);
-      toastError('Error', 'Failed to load accommodation details');
+      toastError('Lỗi', 'Không thể tải chi tiết nơi ở');
     }
   };
 
@@ -176,11 +176,11 @@ const AccommodationManagement: React.FC = () => {
       if (editingAccommodation) {
         // Update accommodation
         await accommodationService.updateAccommodation(editingAccommodation.accommodationId, payload);
-        toastSuccess('Success', 'Accommodation updated successfully');
+        toastSuccess('Thành công', 'Cập nhật nơi ở thành công');
       } else {
         // Create new accommodation
         await accommodationService.createAccommodation(payload);
-        toastSuccess('Success', 'Accommodation created successfully');
+        toastSuccess('Thành công', 'Tạo nơi ở thành công');
       }
 
       // Refresh accommodations
@@ -193,7 +193,7 @@ const AccommodationManagement: React.FC = () => {
       form.resetFields();
     } catch (error) {
       console.error('Error submitting accommodation:', error);
-      toastError('Error', 'Failed to save accommodation');
+      toastError('Lỗi', 'Không thể lưu nơi ở');
     } finally {
       setSubmitting(false);
     }
@@ -213,7 +213,7 @@ const AccommodationManagement: React.FC = () => {
       setDeletePopoverOpen(null);
     } catch (error) {
       console.error('Failed to toggle accommodation status:', error);
-      toastError('Error', 'Failed to update accommodation status');
+      toastError('Lỗi', 'Không thể cập nhật trạng thái nơi ở');
     }
   };
 

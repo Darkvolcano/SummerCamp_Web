@@ -30,7 +30,7 @@ const CampTypePage: React.FC = () => {
       setCampTypes(data);
     } catch (error) {
       console.error("Error fetching camp types:", error);
-      toastError("Error", "Failed to load camp types");
+      toastError("Lỗi", "Không thể tải loại trại hè");
     } finally {
       setLoading(false);
     }
@@ -78,10 +78,10 @@ const CampTypePage: React.FC = () => {
 
       if (editingCampType) {
         await campTypeService.updateCampType(editingCampType.campTypeId, payload);
-        toastSuccess("Success", "Camp type updated successfully");
+        toastSuccess("Thành công", "Cập nhật loại trại hè thành công");
       } else {
         await campTypeService.createCampType(payload);
-        toastSuccess("Success", "Camp type created successfully");
+        toastSuccess("Thành công", "Tạo loại trại hè thành công");
       }
 
       await fetchCampTypes();
@@ -89,7 +89,7 @@ const CampTypePage: React.FC = () => {
       form.resetFields();
     } catch (error) {
       console.error("Error submitting camp type:", error);
-      toastError("Error", "Failed to save camp type");
+      toastError("Lỗi", "Không thể lưu loại trại hè");
     } finally {
       setSubmitting(false);
     }
@@ -98,12 +98,12 @@ const CampTypePage: React.FC = () => {
   const handleDelete = async (campTypeId: number) => {
     try {
       await campTypeService.deleteCampType(campTypeId);
-      toastSuccess("Success", "Camp type deleted successfully");
+      toastSuccess("Thành công", "Xóa loại trại hè thành công");
       await fetchCampTypes();
       setDeletePopoverOpen(null);
     } catch (error) {
       console.error("Failed to delete camp type:", error);
-      toastError("Error", "Failed to delete camp type");
+      toastError("Lỗi", "Không thể xóa loại trại hè");
     }
   };
 
@@ -257,11 +257,10 @@ const CampTypePage: React.FC = () => {
                             </td>
                             <td className="px-6 py-4 text-sm">
                               <span
-                                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                  campType.isActive
+                                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${campType.isActive
                                     ? "bg-green-100 text-green-700"
                                     : "bg-red-100 text-red-700"
-                                }`}
+                                  }`}
                               >
                                 {campType.isActive ? "Active" : "Inactive"}
                               </span>

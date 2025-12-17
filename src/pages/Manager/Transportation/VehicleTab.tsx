@@ -3,10 +3,10 @@ import { Spin, Modal, Form, Input, InputNumber, Select, Button } from 'antd';
 import { Search, Plus, Edit2 } from 'lucide-react';
 import { useManagerContext } from '../../../hooks/useManagerContext';
 import { useNotification } from '../../../contexts/NotificationContext';
-import vehicleService, { 
-  type VehicleResponseDto, 
+import vehicleService, {
+  type VehicleResponseDto,
   type VehicleRequestDto,
-  type VehicleType 
+  type VehicleType
 } from '../../../services/vehicleService';
 import DeletePopover from '../../../components/DeletePopover';
 
@@ -53,7 +53,7 @@ const VehicleTab: React.FC = () => {
       setVehicles(data);
     } catch (error) {
       console.error('Failed to load vehicles:', error);
-      toastError('Error', 'Unable to load vehicles');
+      toastError('Lỗi', 'Không thể tải phương tiện');
     } finally {
       setLoading(false);
     }
@@ -72,7 +72,7 @@ const VehicleTab: React.FC = () => {
       setVehicleTypes(types);
     } catch (error) {
       console.error('Failed to load vehicle types:', error);
-      toastError('Error', 'Unable to load vehicle types');
+      toastError('Lỗi', 'Không thể tải loại phương tiện');
     }
   };
 
@@ -95,7 +95,7 @@ const VehicleTab: React.FC = () => {
     setEditingVehicle(null);
     setIsEditMode(true); // Adding new vehicle = edit mode
     form.resetFields();
-    form.setFieldsValue({ status: 'Active' }); 
+    form.setFieldsValue({ status: 'Active' });
     setIsModalVisible(true);
   };
 
@@ -108,17 +108,17 @@ const VehicleTab: React.FC = () => {
       setIsModalVisible(true);
     } catch (error) {
       console.error('Failed to load vehicle details:', error);
-      toastError('Error', 'Failed to load vehicle details');
+      toastError('Lỗi', 'Không thể tải chi tiết phương tiện');
     }
   };
 
   // Handle enable edit mode
   const handleEnableEdit = async () => {
     if (!editingVehicle) return;
-    
+
     // Fetch vehicle types before enabling edit
     await fetchVehicleTypes();
-    
+
     // Set form values
     form.setFieldsValue({
       vehicleName: editingVehicle.vehicleName,
@@ -127,7 +127,7 @@ const VehicleTab: React.FC = () => {
       status: editingVehicle.status,
       vehicleType: editingVehicle.vehicleType?.vehicleTypeId || null,
     });
-    
+
     setIsEditMode(true);
   };
 
@@ -147,10 +147,10 @@ const VehicleTab: React.FC = () => {
 
       if (editingVehicle) {
         await vehicleService.updateVehicle(editingVehicle.vehicleId, payload);
-        toastSuccess('Success', 'Vehicle updated successfully');
+        toastSuccess('Thành công', 'Cập nhật phương tiện thành công');
       } else {
         await vehicleService.createVehicle(payload);
-        toastSuccess('Success', 'Vehicle created successfully');
+        toastSuccess('Thành công', 'Tạo phương tiện thành công');
       }
 
       await fetchVehicles();
@@ -158,7 +158,7 @@ const VehicleTab: React.FC = () => {
       form.resetFields();
     } catch (error) {
       console.error('Error submitting vehicle:', error);
-      toastError('Error', 'Failed to save vehicle');
+      toastError('Lỗi', 'Không thể lưu phương tiện');
     } finally {
       setSubmitting(false);
     }
@@ -168,12 +168,12 @@ const VehicleTab: React.FC = () => {
   const handleDelete = async (vehicleId: number) => {
     try {
       await vehicleService.deleteVehicle(vehicleId);
-      toastSuccess('Success', 'Vehicle deleted successfully');
+      toastSuccess('Thành công', 'Xóa phương tiện thành công');
       await fetchVehicles();
       setDeletePopoverOpen(null);
     } catch (error) {
       console.error('Failed to delete vehicle:', error);
-      toastError('Error', 'Failed to delete vehicle');
+      toastError('Lỗi', 'Không thể xóa phương tiện');
     }
   };
 
@@ -189,13 +189,13 @@ const VehicleTab: React.FC = () => {
         isActive: true,
       });
 
-      toastSuccess('Success', 'Vehicle type created successfully');
+      toastSuccess('Thành công', 'Tạo loại phương tiện thành công');
       await fetchVehicleTypes();
       setIsTypeModalVisible(false);
       typeForm.resetFields();
     } catch (error) {
       console.error('Error creating vehicle type:', error);
-      toastError('Error', 'Failed to create vehicle type');
+      toastError('Lỗi', 'Không thể tạo loại phương tiện');
     } finally {
       setTypeSubmitting(false);
     }
@@ -342,7 +342,7 @@ const VehicleTab: React.FC = () => {
                               <button
                                 onClick={() => handleViewClick(vehicle)}
                                 className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#F3F4F6] text-[#6B7280] rounded-lg hover:bg-[#E5E7EB] transition-all font-medium text-sm"
-                                title="View Details"
+                                title="Xem Chi Tiết"
                               >
                                 <Edit2 size={16} />
                                 Detail
@@ -417,7 +417,7 @@ const VehicleTab: React.FC = () => {
                 <p className="text-sm font-mono text-gray-900 mt-1">{editingVehicle.vehicleNumber}</p>
               </div>
             </div>
-            
+
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-xs font-medium text-gray-500">Vehicle Type</label>
@@ -430,7 +430,7 @@ const VehicleTab: React.FC = () => {
                 <p className="text-sm text-gray-900 mt-1">{editingVehicle.capacity} seats</p>
               </div>
             </div>
-            
+
             <div>
               <label className="text-xs font-medium text-gray-500">Status</label>
               <div className="mt-1">{getStatusBadge(editingVehicle.status)}</div>
@@ -439,66 +439,66 @@ const VehicleTab: React.FC = () => {
         ) : (
           // Edit Form
           <Form form={form} layout="vertical" className="mt-4">
-          <Form.Item
-            label="Vehicle Name"
-            name="vehicleName"
-            rules={[{ required: true, message: 'Please input vehicle name!' }]}
-          >
-            <Input placeholder="e.g., Bus A1" />
-          </Form.Item>
-
-          <Form.Item
-            label="Vehicle Number"
-            name="vehicleNumber"
-            rules={[{ required: true, message: 'Please input vehicle number!' }]}
-          >
-            <Input placeholder="e.g., 50A-12345" />
-          </Form.Item>
-
-          <div className="flex gap-2">
             <Form.Item
-              label="Vehicle Type"
-              name="vehicleType"
-              className="flex-1 mb-0"
+              label="Vehicle Name"
+              name="vehicleName"
+              rules={[{ required: true, message: 'Please input vehicle name!' }]}
             >
-              <Select
-                placeholder="Select vehicle type (optional)"
-                allowClear
-                options={vehicleTypes.map((type) => ({
-                  label: type.name,
-                  value: type.vehicleTypeId,
-                }))}
-              />
+              <Input placeholder="e.g., Bus A1" />
             </Form.Item>
-            <Button
-              icon={<Plus size={16} />}
-              onClick={() => setIsTypeModalVisible(true)}
-              title="Add New Vehicle Type"
-              style={{ marginTop: '30px' }}
+
+            <Form.Item
+              label="Vehicle Number"
+              name="vehicleNumber"
+              rules={[{ required: true, message: 'Please input vehicle number!' }]}
             >
-              Add Type
-            </Button>
-          </div>
+              <Input placeholder="e.g., 50A-12345" />
+            </Form.Item>
 
-          <Form.Item
-            label="Capacity"
-            name="capacity"
-            rules={[
-              { required: true, message: 'Please input capacity!' },
-              { type: 'number', min: 1, message: 'Capacity must be at least 1!' },
-            ]}
-          >
-            <InputNumber min={1} placeholder="e.g., 45" className="w-full" />
-          </Form.Item>
+            <div className="flex gap-2">
+              <Form.Item
+                label="Vehicle Type"
+                name="vehicleType"
+                className="flex-1 mb-0"
+              >
+                <Select
+                  placeholder="Select vehicle type (optional)"
+                  allowClear
+                  options={vehicleTypes.map((type) => ({
+                    label: type.name,
+                    value: type.vehicleTypeId,
+                  }))}
+                />
+              </Form.Item>
+              <Button
+                icon={<Plus size={16} />}
+                onClick={() => setIsTypeModalVisible(true)}
+                title="Add New Vehicle Type"
+                style={{ marginTop: '30px' }}
+              >
+                Add Type
+              </Button>
+            </div>
 
-          <Form.Item
-            name="status"
-            initialValue="Active"
-            hidden
-          >
-            <Input />
-          </Form.Item>
-        </Form>
+            <Form.Item
+              label="Capacity"
+              name="capacity"
+              rules={[
+                { required: true, message: 'Please input capacity!' },
+                { type: 'number', min: 1, message: 'Capacity must be at least 1!' },
+              ]}
+            >
+              <InputNumber min={1} placeholder="e.g., 45" className="w-full" />
+            </Form.Item>
+
+            <Form.Item
+              name="status"
+              initialValue="Active"
+              hidden
+            >
+              <Input />
+            </Form.Item>
+          </Form>
         )}
       </Modal>
 

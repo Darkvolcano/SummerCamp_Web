@@ -48,7 +48,7 @@ const CampDetailSchedule: React.FC<CampDetailScheduleProps> = ({
         setCampData(campInfo);
       } catch (error) {
         console.error("Failed to load schedules:", error);
-        toastError("Error", "Unable to load activity schedules");
+        toastError("Lỗi", "Không thể tải lịch trình hoạt động");
       } finally {
         setLoading(false);
       }
@@ -68,7 +68,7 @@ const CampDetailSchedule: React.FC<CampDetailScheduleProps> = ({
       setSelectedSchedule(selectedSchedule);
       setShowScheduleDetail(true);
     } else {
-      toastError("Error", "Schedule not found");
+      toastError("Lỗi", "Không tìm thấy lịch trình");
     }
   };
 
@@ -78,15 +78,13 @@ const CampDetailSchedule: React.FC<CampDetailScheduleProps> = ({
         <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-8">
           <div className="text-center">
             <h3 className="text-xl font-bold text-blue-900 mb-2">
-              Camp Not Set Up Yet
+              Trại chưa được thiết lập
             </h3>
             <p className="text-blue-700 mb-4">
-              Your camp is still in Draft status. Please complete camp setup to
-              continue.
+              Trại của bạn vẫn đang ở trạng thái 'Draft'. Vui lòng hoàn thành thiết lập trại để tiếp tục.
             </p>
             <p className="text-sm text-blue-600">
-              Please assign a manager and wait for them to set up the camp to
-              continue.
+              Vui lòng chỉ định một quản lý và chờ họ thiết lập trại để tiếp tục.
             </p>
           </div>
         </div>
@@ -105,7 +103,7 @@ const CampDetailSchedule: React.FC<CampDetailScheduleProps> = ({
   // Convert schedules to calendar activity format
   const calendarActivities = schedules.map((schedule) => ({
     id: schedule.activityScheduleId.toString(),
-    title: schedule.activity?.name || "Untitled",
+    title: schedule.activity?.name || "Chưa đặt tên",
     start: new Date(schedule.startTime),
     end: new Date(schedule.endTime),
     type: (schedule.activity?.activityType || "Core") as
@@ -114,8 +112,8 @@ const CampDetailSchedule: React.FC<CampDetailScheduleProps> = ({
       | "Resting"
       | "CheckIn"
       | "CheckOut",
-    description: `Status: ${schedule.status}`,
-    location: schedule.location?.name || "No location",
+    description: `Trạng thái: ${schedule.status}`,
+    location: schedule.location?.name || "Không có địa điểm",
     participants: schedule.currentCapacity || 0,
     isOptional: schedule.isOptional,
   }));
@@ -124,10 +122,10 @@ const CampDetailSchedule: React.FC<CampDetailScheduleProps> = ({
     <div className="pb-12">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-[#111827]">
-          Activity Schedule
+          Lịch trình hoạt động
         </h1>
         <p className="text-[#6B7280] text-sm mt-1">
-          View activity schedules for this camp (Read-only)
+          Xem lịch trình hoạt động cho trại này (Chỉ xem)
         </p>
       </div>
 
@@ -137,18 +135,18 @@ const CampDetailSchedule: React.FC<CampDetailScheduleProps> = ({
           campInfo={
             campData
               ? {
-                  campId: campData.campId,
-                  name: campData.name,
-                  startDate: campData.startDate,
-                  endDate: campData.endDate,
-                }
+                campId: campData.campId,
+                name: campData.name,
+                startDate: campData.startDate,
+                endDate: campData.endDate,
+              }
               : undefined
           }
           userRole="admin"
           onSelectSchedule={handleViewSchedule}
-          // No onAddClick - Admin cannot add schedules
-          // No onSelectSlot - Admin cannot select slots to create
-          // No onCreateOptional - Admin cannot create optional activities
+        // No onAddClick - Admin cannot add schedules
+        // No onSelectSlot - Admin cannot select slots to create
+        // No onCreateOptional - Admin cannot create optional activities
         />
       </div>
 
@@ -161,8 +159,8 @@ const CampDetailSchedule: React.FC<CampDetailScheduleProps> = ({
             setShowScheduleDetail(false);
             setSelectedSchedule(null);
           }}
-          // No onEdit - Admin cannot edit
-          // No onDelete - Admin cannot delete
+        // No onEdit - Admin cannot edit
+        // No onDelete - Admin cannot delete
         />
       )}
     </div>

@@ -152,13 +152,13 @@ export default function MyCamps() {
                                     </div>
                                 </div>
 
-                                <button className="view-details-btn">View Details</button>
+                                <button className="view-details-btn">Xem Chi Tiết</button>
                             </div>
                         ))
                     ) : (
                         <div className="no-camps">
                             <Tent size={64} />
-                            <p>No camps found</p>
+                            <p>Không tìm thấy trại hè</p>
                         </div>
                     )}
                 </div>

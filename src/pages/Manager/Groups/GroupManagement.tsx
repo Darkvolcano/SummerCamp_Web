@@ -86,7 +86,7 @@ const GroupManagement: React.FC = () => {
           setStaffList(staffData);
         } catch (error) {
           console.error('Failed to load staff:', error);
-          toastError('Error', 'Unable to load supervisors');
+          toastError('Lỗi', 'Không thể tải người giám sát');
         }
       };
 
@@ -110,7 +110,7 @@ const GroupManagement: React.FC = () => {
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       if (!group.groupName.toLowerCase().includes(query) &&
-          !(group.description?.toLowerCase().includes(query))) {
+        !(group.description?.toLowerCase().includes(query))) {
         return false;
       }
     }
@@ -156,7 +156,7 @@ const GroupManagement: React.FC = () => {
       setIsModalVisible(true);
     } catch (error) {
       console.error('Failed to load group details:', error);
-      toastError('Error', 'Failed to load group details');
+      toastError('Lỗi', 'Không thể tải chi tiết nhóm');
     }
   };
 
@@ -197,11 +197,11 @@ const GroupManagement: React.FC = () => {
       if (editingGroup) {
         // Update group
         await groupService.updateGroup(editingGroup.groupId, payload);
-        toastSuccess('Success', 'Group updated successfully');
+        toastSuccess('Thành công', 'Cập nhật nhóm thành công');
       } else {
         // Create new group
         await groupService.createGroup(payload);
-        toastSuccess('Success', 'Group created successfully');
+        toastSuccess('Thành công', 'Tạo nhóm thành công');
       }
 
       // Refresh groups
@@ -214,7 +214,7 @@ const GroupManagement: React.FC = () => {
       form.resetFields();
     } catch (error) {
       console.error('Error submitting group:', error);
-      toastError('Error', 'Failed to save group');
+      toastError('Lỗi', 'Không thể lưu nhóm');
     } finally {
       setSubmitting(false);
     }
@@ -224,7 +224,7 @@ const GroupManagement: React.FC = () => {
   const handleDelete = async (groupId: number) => {
     try {
       await groupService.deleteGroup(groupId);
-      toastSuccess('Success', 'Group deleted successfully');
+      toastSuccess('Thành công', 'Xóa nhóm thành công');
       // Refresh groups
       if (selectedCampId) {
         const groupsData = await groupService.getGroupsByCampId(selectedCampId);
@@ -233,7 +233,7 @@ const GroupManagement: React.FC = () => {
       setDeletePopoverOpen(null);
     } catch (error) {
       console.error('Failed to delete group:', error);
-      toastError('Error', 'Failed to delete group');
+      toastError('Lỗi', 'Không thể xóa nhóm');
     }
   };
 

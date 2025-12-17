@@ -42,7 +42,7 @@ const ManagerDashboard: React.FC = () => {
       setLoading(true);
       // Submit camp for approval
       const updatedCamp = await campService.submitCampForApproval(camp.campId);
-      toastSuccess("Success", "Camp submitted for approval");
+      toastSuccess("Thành công", "Gửi trại hè để phê duyệt");
       setCamp(updatedCamp);
     } catch (error: any) {
       console.error("Failed to submit camp:", error);
@@ -85,110 +85,89 @@ const ManagerDashboard: React.FC = () => {
       <div className="p-6 space-y-6">
         {/* Status Card - Top - Centered */}
         <div className="flex justify-center">
-          <div className={`rounded-lg p-4 w-full max-w-2xl ${
-            isRejected
+          <div className={`rounded-lg p-4 w-full max-w-2xl ${isRejected
               ? "bg-red-50 border-2 border-red-200"
               : "bg-blue-50 border-2 border-blue-200"
-          }`}>
+            }`}>
             <div className="flex items-center justify-between gap-4">
               <div className="flex-1">
-                <h3 className={`text-base font-bold mb-1 ${
-                  isRejected ? "text-red-900" : "text-blue-900"
-                }`}>
+                <h3 className={`text-base font-bold mb-1 ${isRejected ? "text-red-900" : "text-blue-900"
+                  }`}>
                   {isRejected ? "⚠️ Approval Required" : "📋 Camp Not Published"}
                 </h3>
-                <p className={`text-md mb-3 ${
-                  isRejected ? "text-red-700" : "text-blue-700"
-                }`}>
+                <p className={`text-md mb-3 ${isRejected ? "text-red-700" : "text-blue-700"
+                  }`}>
                   {isRejected
                     ? "Bị từ chối - kiểm tra và hoàn thành tất cả thiết lập để gửi duyệt"
                     : "Hoàn thành tất cả thiết lập để gửi duyệt"}
                 </p>
-                
+
                 {/* Setup Steps */}
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-3">
                   <button
                     onClick={() => navigate("/manager/staffs")}
-                    className={`${
-                      isRejected ? "bg-red-100 hover:bg-red-200 border-red-300" : "bg-blue-100 hover:bg-blue-200 border-blue-300"
-                    } border rounded-lg p-2 text-left transition-all group flex items-center gap-2`}
+                    className={`${isRejected ? "bg-red-100 hover:bg-red-200 border-red-300" : "bg-blue-100 hover:bg-blue-200 border-blue-300"
+                      } border rounded-lg p-2 text-left transition-all group flex items-center gap-2`}
                   >
-                    <span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
-                      isRejected ? "bg-red-600 text-white" : "bg-blue-600 text-white"
-                    }`}>1</span>
-                    <span className={`text-xs font-semibold ${
-                      isRejected ? "text-red-900 group-hover:text-red-700" : "text-blue-900 group-hover:text-blue-700"
-                    }`}>Phân Công NV</span>
+                    <span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${isRejected ? "bg-red-600 text-white" : "bg-blue-600 text-white"
+                      }`}>1</span>
+                    <span className={`text-xs font-semibold ${isRejected ? "text-red-900 group-hover:text-red-700" : "text-blue-900 group-hover:text-blue-700"
+                      }`}>Phân Công NV</span>
                   </button>
 
                   <button
                     onClick={() => navigate("/manager/locations")}
-                    className={`${
-                      isRejected ? "bg-red-100 hover:bg-red-200 border-red-300" : "bg-blue-100 hover:bg-blue-200 border-blue-300"
-                    } border rounded-lg p-2 text-left transition-all group flex items-center gap-2`}
+                    className={`${isRejected ? "bg-red-100 hover:bg-red-200 border-red-300" : "bg-blue-100 hover:bg-blue-200 border-blue-300"
+                      } border rounded-lg p-2 text-left transition-all group flex items-center gap-2`}
                   >
-                    <span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
-                      isRejected ? "bg-red-600 text-white" : "bg-blue-600 text-white"
-                    }`}>2</span>
-                    <span className={`text-xs font-semibold ${
-                      isRejected ? "text-red-900 group-hover:text-red-700" : "text-blue-900 group-hover:text-blue-700"
-                    }`}>Địa Điểm</span>
+                    <span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${isRejected ? "bg-red-600 text-white" : "bg-blue-600 text-white"
+                      }`}>2</span>
+                    <span className={`text-xs font-semibold ${isRejected ? "text-red-900 group-hover:text-red-700" : "text-blue-900 group-hover:text-blue-700"
+                      }`}>Địa Điểm</span>
                   </button>
 
                   <button
                     onClick={() => navigate("/manager/groups")}
-                    className={`${
-                      isRejected ? "bg-red-100 hover:bg-red-200 border-red-300" : "bg-blue-100 hover:bg-blue-200 border-blue-300"
-                    } border rounded-lg p-2 text-left transition-all group flex items-center gap-2`}
+                    className={`${isRejected ? "bg-red-100 hover:bg-red-200 border-red-300" : "bg-blue-100 hover:bg-blue-200 border-blue-300"
+                      } border rounded-lg p-2 text-left transition-all group flex items-center gap-2`}
                   >
-                    <span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
-                      isRejected ? "bg-red-600 text-white" : "bg-blue-600 text-white"
-                    }`}>3</span>
-                    <span className={`text-xs font-semibold ${
-                      isRejected ? "text-red-900 group-hover:text-red-700" : "text-blue-900 group-hover:text-blue-700"
-                    }`}>Nhóm</span>
+                    <span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${isRejected ? "bg-red-600 text-white" : "bg-blue-600 text-white"
+                      }`}>3</span>
+                    <span className={`text-xs font-semibold ${isRejected ? "text-red-900 group-hover:text-red-700" : "text-blue-900 group-hover:text-blue-700"
+                      }`}>Nhóm</span>
                   </button>
 
                   <button
                     onClick={() => navigate("/manager/accommodation")}
-                    className={`${
-                      isRejected ? "bg-red-100 hover:bg-red-200 border-red-300" : "bg-blue-100 hover:bg-blue-200 border-blue-300"
-                    } border rounded-lg p-2 text-left transition-all group flex items-center gap-2`}
+                    className={`${isRejected ? "bg-red-100 hover:bg-red-200 border-red-300" : "bg-blue-100 hover:bg-blue-200 border-blue-300"
+                      } border rounded-lg p-2 text-left transition-all group flex items-center gap-2`}
                   >
-                    <span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
-                      isRejected ? "bg-red-600 text-white" : "bg-blue-600 text-white"
-                    }`}>4</span>
-                    <span className={`text-xs font-semibold ${
-                      isRejected ? "text-red-900 group-hover:text-red-700" : "text-blue-900 group-hover:text-blue-700"
-                    }`}>Chỗ Ở</span>
+                    <span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${isRejected ? "bg-red-600 text-white" : "bg-blue-600 text-white"
+                      }`}>4</span>
+                    <span className={`text-xs font-semibold ${isRejected ? "text-red-900 group-hover:text-red-700" : "text-blue-900 group-hover:text-blue-700"
+                      }`}>Chỗ Ở</span>
                   </button>
 
                   <button
                     onClick={() => navigate("/manager/activities")}
-                    className={`${
-                      isRejected ? "bg-red-100 hover:bg-red-200 border-red-300" : "bg-blue-100 hover:bg-blue-200 border-blue-300"
-                    } border rounded-lg p-2 text-left transition-all group flex items-center gap-2`}
+                    className={`${isRejected ? "bg-red-100 hover:bg-red-200 border-red-300" : "bg-blue-100 hover:bg-blue-200 border-blue-300"
+                      } border rounded-lg p-2 text-left transition-all group flex items-center gap-2`}
                   >
-                    <span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
-                      isRejected ? "bg-red-600 text-white" : "bg-blue-600 text-white"
-                    }`}>5</span>
-                    <span className={`text-xs font-semibold ${
-                      isRejected ? "text-red-900 group-hover:text-red-700" : "text-blue-900 group-hover:text-blue-700"
-                    }`}>Hoạt Động</span>
+                    <span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${isRejected ? "bg-red-600 text-white" : "bg-blue-600 text-white"
+                      }`}>5</span>
+                    <span className={`text-xs font-semibold ${isRejected ? "text-red-900 group-hover:text-red-700" : "text-blue-900 group-hover:text-blue-700"
+                      }`}>Hoạt Động</span>
                   </button>
 
                   <button
                     onClick={() => navigate("/manager/transportation")}
-                    className={`${
-                      isRejected ? "bg-red-100 hover:bg-red-200 border-red-300" : "bg-blue-100 hover:bg-blue-200 border-blue-300"
-                    } border rounded-lg p-2 text-left transition-all group flex items-center gap-2`}
+                    className={`${isRejected ? "bg-red-100 hover:bg-red-200 border-red-300" : "bg-blue-100 hover:bg-blue-200 border-blue-300"
+                      } border rounded-lg p-2 text-left transition-all group flex items-center gap-2`}
                   >
-                    <span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
-                      isRejected ? "bg-red-600 text-white" : "bg-blue-600 text-white"
-                    }`}>6</span>
-                    <span className={`text-xs font-semibold ${
-                      isRejected ? "text-red-900 group-hover:text-red-700" : "text-blue-900 group-hover:text-blue-700"
-                    }`}>Vận Chuyển</span>
+                    <span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${isRejected ? "bg-red-600 text-white" : "bg-blue-600 text-white"
+                      }`}>6</span>
+                    <span className={`text-xs font-semibold ${isRejected ? "text-red-900 group-hover:text-red-700" : "text-blue-900 group-hover:text-blue-700"
+                      }`}>Vận Chuyển</span>
                   </button>
                 </div>
               </div>
@@ -210,110 +189,109 @@ const ManagerDashboard: React.FC = () => {
 
         {/* Camp Info */}
         <div className="space-y-6">
-            {/* Camp Header with All Info Combined */}
-            <div className="bg-white rounded-lg shadow-sm border border-[#E5E7EB] p-6">
-              <div className="flex items-start justify-between gap-4 mb-6">
-                <div className="flex-1">
-                  <h1 className="text-2xl font-bold text-[#111827] mb-2">
-                    {camp.name}
-                  </h1>
-                  <p className="text-[#6B7280] text-sm mb-4 line-clamp-2">
-                    {camp.description}
-                  </p>
-                  <div className="flex items-center gap-3">
-                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-                      isRejected
-                        ? "bg-red-100 text-red-700"
-                        : "bg-yellow-100 text-yellow-700"
+          {/* Camp Header with All Info Combined */}
+          <div className="bg-white rounded-lg shadow-sm border border-[#E5E7EB] p-6">
+            <div className="flex items-start justify-between gap-4 mb-6">
+              <div className="flex-1">
+                <h1 className="text-2xl font-bold text-[#111827] mb-2">
+                  {camp.name}
+                </h1>
+                <p className="text-[#6B7280] text-sm mb-4 line-clamp-2">
+                  {camp.description}
+                </p>
+                <div className="flex items-center gap-3">
+                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${isRejected
+                      ? "bg-red-100 text-red-700"
+                      : "bg-yellow-100 text-yellow-700"
                     }`}>
-                      {camp.status}
-                    </span>
-                    <span className="text-[#6B7280] text-xs">
-                      📍 {camp.location?.name || "N/A"}
-                    </span>
-                  </div>
+                    {camp.status}
+                  </span>
+                  <span className="text-[#6B7280] text-xs">
+                    📍 {camp.location?.name || "Không có"}
+                  </span>
                 </div>
-                {camp.image && (
-                  <img
-                    src={camp.image}
-                    alt={camp.name}
-                    className="w-32 h-32 rounded-lg object-cover flex-shrink-0"
-                  />
-                )}
+              </div>
+              {camp.image && (
+                <img
+                  src={camp.image}
+                  alt={camp.name}
+                  className="w-32 h-32 rounded-lg object-cover flex-shrink-0"
+                />
+              )}
+            </div>
+
+            {/* All Camp Details in One Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pt-6 border-t border-[#E5E7EB]">
+              <div>
+                <p className="text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-1">
+                  Thời Gian
+                </p>
+                <p className="text-sm font-bold text-[#111827]">
+                  {new Date(camp.startDate).toLocaleDateString("vi-VN")}
+                </p>
+                <p className="text-xs text-[#6B7280]">
+                  đến {new Date(camp.endDate).toLocaleDateString("vi-VN")}
+                </p>
               </div>
 
-              {/* All Camp Details in One Grid */}
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pt-6 border-t border-[#E5E7EB]">
-                <div>
-                  <p className="text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-1">
-                    Thời Gian
-                  </p>
-                  <p className="text-sm font-bold text-[#111827]">
-                    {new Date(camp.startDate).toLocaleDateString("vi-VN")}
-                  </p>
-                  <p className="text-xs text-[#6B7280]">
-                    đến {new Date(camp.endDate).toLocaleDateString("vi-VN")}
-                  </p>
-                </div>
+              <div>
+                <p className="text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-1">
+                  Giá
+                </p>
+                <p className="text-sm font-bold text-[#111827]">
+                  {camp.price.toLocaleString()} VND
+                </p>
+                <p className="text-xs text-[#6B7280]">Mỗi người</p>
+              </div>
 
-                <div>
-                  <p className="text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-1">
-                    Giá
-                  </p>
-                  <p className="text-sm font-bold text-[#111827]">
-                    {camp.price.toLocaleString()} VND
-                  </p>
-                  <p className="text-xs text-[#6B7280]">Mỗi người</p>
-                </div>
+              <div>
+                <p className="text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-1">
+                  Số Người
+                </p>
+                <p className="text-sm font-bold text-[#111827]">
+                  {camp.minParticipants}-{camp.maxParticipants}
+                </p>
+                <p className="text-xs text-[#6B7280]">Tối thiểu-Tối đa</p>
+              </div>
 
-                <div>
-                  <p className="text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-1">
-                    Số Người
-                  </p>
-                  <p className="text-sm font-bold text-[#111827]">
-                    {camp.minParticipants}-{camp.maxParticipants}
-                  </p>
-                  <p className="text-xs text-[#6B7280]">Tối thiểu-Tối đa</p>
-                </div>
+              <div>
+                <p className="text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-1">
+                  Độ Tuổi
+                </p>
+                <p className="text-sm font-bold text-[#111827]">
+                  {camp.minAge} - {camp.maxAge}
+                </p>
+                <p className="text-xs text-[#6B7280]">tuổi</p>
+              </div>
 
-                <div>
-                  <p className="text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-1">
-                    Độ Tuổi
-                  </p>
-                  <p className="text-sm font-bold text-[#111827]">
-                    {camp.minAge} - {camp.maxAge}
-                  </p>
-                  <p className="text-xs text-[#6B7280]">tuổi</p>
-                </div>
+              <div>
+                <p className="text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-1">
+                  Loại Trại
+                </p>
+                <p className="text-sm font-medium text-[#111827]">
+                  {camp.campType?.name || "Không có"}
+                </p>
+              </div>
 
-                <div>
-                  <p className="text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-1">
-                    Loại Trại
-                  </p>
-                  <p className="text-sm font-medium text-[#111827]">
-                    {camp.campType?.name || "N/A"}
-                  </p>
-                </div>
+              <div>
+                <p className="text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-1">
+                  Mở Đăng Ký
+                </p>
+                <p className="text-sm font-medium text-[#111827]">
+                  {new Date(camp.registrationStartDate).toLocaleDateString("vi-VN")}
+                </p>
+              </div>
 
-                <div>
-                  <p className="text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-1">
-                    Mở Đăng Ký
-                  </p>
-                  <p className="text-sm font-medium text-[#111827]">
-                    {new Date(camp.registrationStartDate).toLocaleDateString("vi-VN")}
-                  </p>
-                </div>
-
-                <div>
-                  <p className="text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-1">
-                    Đóng Đăng Ký
-                  </p>
-                  <p className="text-sm font-medium text-[#111827]">
-                    {new Date(camp.registrationEndDate).toLocaleDateString("vi-VN")}
-                  </p>
-                </div>
+              <div>
+                <p className="text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-1">
+                  Đóng Đăng Ký
+                </p>
+                <p className="text-sm font-medium text-[#111827]">
+                  {new Date(camp.registrationEndDate).toLocaleDateString("vi-VN")}
+                </p>
               </div>
             </div>
+          </div>
         </div>
       </div>
     );
@@ -398,7 +376,7 @@ const ManagerDashboard: React.FC = () => {
                 Loại Trại
               </p>
               <p className="text-[#111827] font-medium">
-                {camp.campType?.name || "N/A"}
+                {camp.campType?.name || "Không có"}
               </p>
             </div>
 

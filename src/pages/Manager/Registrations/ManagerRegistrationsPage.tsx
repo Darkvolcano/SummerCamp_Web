@@ -38,7 +38,7 @@ const ManagerRegistrationsPage: React.FC = () => {
         calculateStatusCounts(data);
       } catch (error) {
         console.error('[ManagerRegistrationsPage] Failed to load registrations:', error);
-        toastError('Error', 'Unable to load registrations');
+        toastError('Lỗi', 'Không thể tải đăng ký');
       } finally {
         setLoading(false);
       }
@@ -140,7 +140,7 @@ const ManagerRegistrationsPage: React.FC = () => {
   const handleApprove = async (registrationId: number) => {
     try {
       await registrationService.approveRegistration(registrationId);
-      toastSuccess('Success', 'Registration approved successfully');
+      toastSuccess('Thành công', 'Phê duyệt đăng ký thành công');
       // Refresh registrations
       if (selectedCampId) {
         const data = await registrationService.getRegistrationsByCampId(selectedCampId);
@@ -149,7 +149,7 @@ const ManagerRegistrationsPage: React.FC = () => {
       }
     } catch (error) {
       console.error('Failed to approve registration:', error);
-      toastError('Error', 'Failed to approve registration');
+      toastError('Lỗi', 'Không thể phê duyệt đăng ký');
     }
   };
 
@@ -223,7 +223,7 @@ const ManagerRegistrationsPage: React.FC = () => {
                               {reg.campers?.length || 0} trại viên
                             </span>
                             <span className="text-xs text-[#6B7280]">
-                              {reg.campers?.map(c => c.camperName).join(', ') || 'N/A'}
+                              {reg.campers?.map(c => c.camperName).join(', ') || 'Không có'}
                             </span>
                           </div>
                         </td>
@@ -238,7 +238,7 @@ const ManagerRegistrationsPage: React.FC = () => {
                                 setRegistrationDetailModalOpen(true);
                               }}
                               className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#F3F4F6] text-[#6B7280] rounded-lg hover:bg-[#E5E7EB] transition-all font-medium text-sm"
-                              title="View Details"
+                              title="Xem Chi Tiết"
                             >
                               <Eye size={16} />
                               Chi Tiết
@@ -471,7 +471,7 @@ const ManagerRegistrationsPage: React.FC = () => {
                                   setRegistrationDetailModalOpen(true);
                                 }}
                                 className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-all font-medium text-sm"
-                                title="View Details"
+                                title="Xem Chi Tiết"
                               >
                                 <Eye size={16} />
                                 Chi Tiết

@@ -21,7 +21,7 @@ const TransactionPage: React.FC = () => {
             setTransactions(data);
         } catch (error) {
             console.error("Error fetching transactions:", error);
-            toastError("Error", "Failed to load transactions");
+            toastError("Lỗi", "Không thể tải danh sách giao dịch");
         } finally {
             setLoading(false);
         }
@@ -106,9 +106,9 @@ const TransactionPage: React.FC = () => {
         <div className="min-h-screen bg-[#F9FAFB] p-6">
             {/* Header */}
             <div className="mb-4">
-                <h1 className="text-2xl font-bold text-[#111827]">Transactions</h1>
+                <h1 className="text-2xl font-bold text-[#111827]">Giao dịch</h1>
                 <p className="text-xs text-[#6B7280] mt-0.5">
-                    View all payment transactions across the system
+                    Xem tất cả giao dịch thanh toán trong hệ thống
                 </p>
             </div>
 
@@ -118,7 +118,7 @@ const TransactionPage: React.FC = () => {
                 </div>
             ) : transactions.length === 0 ? (
                 <div className="bg-white rounded-xl shadow-sm border border-[#E5E7EB] p-12 text-center">
-                    <p className="text-[#6B7280] text-lg mb-4">No transactions found</p>
+                    <p className="text-[#6B7280] text-lg mb-4">Không tìm thấy giao dịch</p>
                 </div>
             ) : (
                 <>
@@ -127,19 +127,19 @@ const TransactionPage: React.FC = () => {
                         {/* Left Sidebar - Stats */}
                         <div className="lg:col-span-1">
                             <div className="bg-white rounded-xl shadow-sm border border-[#E5E7EB] p-6 sticky top-6">
-                                <h3 className="text-lg font-bold text-[#111827] mb-4">Statistics</h3>
+                                <h3 className="text-lg font-bold text-[#111827] mb-4">Thống kê</h3>
 
                                 {/* Sort Control */}
                                 <div className="mb-6">
                                     <label className="block text-xs font-semibold text-[#374151] mb-2 uppercase tracking-wider">
-                                        Sort by Time
+                                        Sắp xếp theo thời gian
                                     </label>
                                     <button
                                         onClick={toggleSortOrder}
                                         className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#F3F4F6] text-[#6B7280] rounded-lg hover:bg-[#E5E7EB] transition-all font-medium text-sm"
                                     >
                                         <ArrowUpDown size={16} />
-                                        {sortOrder === "asc" ? "Oldest First" : "Newest First"}
+                                        {sortOrder === "asc" ? "Cũ nhất trước" : "Mới nhất trước"}
                                     </button>
                                 </div>
 
@@ -147,13 +147,13 @@ const TransactionPage: React.FC = () => {
                                 <div className="pt-6 border-t border-[#E5E7EB]">
                                     <div className="space-y-3">
                                         <div>
-                                            <span className="text-xs text-[#6B7280]">Total: </span>
+                                            <span className="text-xs text-[#6B7280]">Tổng: </span>
                                             <span className="text-lg font-bold text-[#111827]">
                                                 {transactions.length}
                                             </span>
                                         </div>
                                         <div>
-                                            <span className="text-xs text-[#6B7280]">Success: </span>
+                                            <span className="text-xs text-[#6B7280]">Thành công: </span>
                                             <span className="text-lg font-bold text-[#10B981]">
                                                 {
                                                     transactions.filter((t) =>
@@ -163,7 +163,7 @@ const TransactionPage: React.FC = () => {
                                             </span>
                                         </div>
                                         <div>
-                                            <span className="text-xs text-[#6B7280]">Pending: </span>
+                                            <span className="text-xs text-[#6B7280]">Đang chờ: </span>
                                             <span className="text-lg font-bold text-[#F59E0B]">
                                                 {
                                                     transactions.filter((t) =>
@@ -173,7 +173,7 @@ const TransactionPage: React.FC = () => {
                                             </span>
                                         </div>
                                         <div>
-                                            <span className="text-xs text-[#6B7280]">Failed: </span>
+                                            <span className="text-xs text-[#6B7280]">Thất bại: </span>
                                             <span className="text-lg font-bold text-[#EF4444]">
                                                 {
                                                     transactions.filter((t) =>
@@ -193,10 +193,10 @@ const TransactionPage: React.FC = () => {
                                 {/* Table Header */}
                                 <div className="px-6 py-4 border-b border-[#E5E7EB] flex items-center justify-between">
                                     <h2 className="text-lg font-bold text-[#111827]">
-                                        Total: {sortedTransactions.length}
+                                        Tổng: {sortedTransactions.length}
                                     </h2>
                                     <div className="flex items-center gap-2">
-                                        <span className="text-sm text-[#6B7280]">Show:</span>
+                                        <span className="text-sm text-[#6B7280]">Hiển thị:</span>
                                         <select
                                             value={itemsPerPage}
                                             onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
@@ -208,7 +208,7 @@ const TransactionPage: React.FC = () => {
                                             <option value={50}>50</option>
                                             <option value={100}>100</option>
                                         </select>
-                                        <span className="text-sm text-[#6B7280]">per page</span>
+                                        <span className="text-sm text-[#6B7280]">mỗi trang</span>
                                     </div>
                                 </div>
 
@@ -221,28 +221,28 @@ const TransactionPage: React.FC = () => {
                                                     ID
                                                 </th>
                                                 <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                                                    Code
+                                                    Mã GD
                                                 </th>
                                                 <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                                                    Camp Name
+                                                    Tên trại
                                                 </th>
                                                 <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                                                    User ID
+                                                    ID người dùng
                                                 </th>
                                                 <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                                                    Amount
+                                                    Số tiền
                                                 </th>
                                                 <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                                                    Type
+                                                    Loại
                                                 </th>
                                                 <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                                                    Method
+                                                    Phương thức
                                                 </th>
                                                 <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                                                    Status
+                                                    Trạng thái
                                                 </th>
                                                 <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                                                    Time
+                                                    Thời gian
                                                 </th>
                                             </tr>
                                         </thead>
@@ -253,7 +253,7 @@ const TransactionPage: React.FC = () => {
                                                         colSpan={9}
                                                         className="px-6 py-12 text-center text-[#6B7280]"
                                                     >
-                                                        No transactions found
+                                                        Không tìm thấy giao dịch
                                                     </td>
                                                 </tr>
                                             ) : (
@@ -314,7 +314,7 @@ const TransactionPage: React.FC = () => {
                                 {totalPages > 1 && (
                                     <div className="px-6 py-4 border-t border-[#E5E7EB] flex items-center justify-between">
                                         <div className="text-sm text-[#6B7280]">
-                                            Showing {startIndex + 1} to {Math.min(endIndex, sortedTransactions.length)} of {sortedTransactions.length} transactions
+                                            Hiển thị {startIndex + 1} đến {Math.min(endIndex, sortedTransactions.length)} trong tổng {sortedTransactions.length} giao dịch
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <button
@@ -323,7 +323,7 @@ const TransactionPage: React.FC = () => {
                                                 className="inline-flex items-center gap-1 px-3 py-2 bg-[#F3F4F6] text-[#6B7280] rounded-lg hover:bg-[#E5E7EB] transition-all font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                                             >
                                                 <ChevronLeft size={16} />
-                                                Previous
+                                                Trước
                                             </button>
 
                                             <div className="flex items-center gap-1">
@@ -346,8 +346,8 @@ const TransactionPage: React.FC = () => {
                                                                 <button
                                                                     onClick={() => handlePageChange(page)}
                                                                     className={`px-3 py-2 rounded-lg font-medium text-sm transition-all ${currentPage === page
-                                                                            ? "bg-[#6366F1] text-white"
-                                                                            : "bg-[#F3F4F6] text-[#6B7280] hover:bg-[#E5E7EB]"
+                                                                        ? "bg-[#6366F1] text-white"
+                                                                        : "bg-[#F3F4F6] text-[#6B7280] hover:bg-[#E5E7EB]"
                                                                         }`}
                                                                 >
                                                                     {page}
@@ -362,7 +362,7 @@ const TransactionPage: React.FC = () => {
                                                 disabled={currentPage === totalPages}
                                                 className="inline-flex items-center gap-1 px-3 py-2 bg-[#F3F4F6] text-[#6B7280] rounded-lg hover:bg-[#E5E7EB] transition-all font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                                             >
-                                                Next
+                                                Sau
                                                 <ChevronRight size={16} />
                                             </button>
                                         </div>

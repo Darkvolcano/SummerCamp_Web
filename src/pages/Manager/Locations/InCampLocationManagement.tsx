@@ -64,7 +64,7 @@ const InCampLocationManagement: React.FC = () => {
         }
       } catch (error) {
         console.error("Failed to load data:", error);
-        toastError("Error", "Unable to load data");
+        toastError("Lỗi", "Không thể tải dữ liệu");
       } finally {
         setLoading(false);
       }
@@ -144,7 +144,7 @@ const InCampLocationManagement: React.FC = () => {
       form.resetFields();
     } catch (error) {
       console.error("Error submitting location:", error);
-      toastError("Error", "Failed to save location");
+      toastError("Lỗi", "Không thể lưu địa điểm");
     } finally {
       setSubmitting(false);
     }
@@ -173,8 +173,8 @@ const InCampLocationManagement: React.FC = () => {
     } catch (error) {
       console.error("Error deleting location:", error);
       toastError(
-        "Failed to Delete",
-        "Unable to delete location. Please try again."
+        "Xóa Thất Bại",
+        "Không thể xóa địa điểm. Vui lòng thử lại."
       );
     } finally {
       setSubmitting(false);
@@ -311,11 +311,10 @@ const InCampLocationManagement: React.FC = () => {
                           </td>
                           <td className="px-6 py-4">
                             <span
-                              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                location.isActive
+                              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${location.isActive
                                   ? "bg-green-100 text-green-700"
                                   : "bg-gray-100 text-gray-700"
-                              }`}
+                                }`}
                             >
                               {location.isActive ? "Active" : "Inactive"}
                             </span>
@@ -398,7 +397,7 @@ const InCampLocationManagement: React.FC = () => {
           <Form.Item
             label="Location Name"
             name="name"
-            rules={[{ required: true, message: "Please enter location name" }]}
+            rules={[{ required: true, message: "Vui lòng nhập tên địa điểm" }]}
           >
             <Input placeholder="e.g., Dining Area, Sports Field, etc." />
           </Form.Item>

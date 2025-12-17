@@ -77,7 +77,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
   useEffect(() => {
     // Reset flag when dates change
     setLocationsFetched(false);
-    
+
     // Auto-fetch if both dates are present
     if (formData.startDate && formData.endDate) {
       fetchLocations();
@@ -90,13 +90,13 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
       const data = await campTypeService.getAllCampTypes();
       setCampTypes(data);
     } catch (error) {
-      console.error("Error fetching camp types:", error);
+      console.error("Lỗi khi truy suất loại trại:", error);
     }
   };
 
   const fetchLocations = async () => {
     if (!formData.startDate || !formData.endDate) {
-      toastError("Validation Error", "Please select start date and end date first");
+      toastError("Lỗi xác thực", "Vui lòng chọn ngày bắt đầu và ngày kết thúc trước");
       return;
     }
 
@@ -107,18 +107,18 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
 
     try {
       setLocationsLoading(true);
-      
+
       const data = await locationService.getAvailableCampLocationsByTime(
         formData.startDate,
         formData.endDate
       );
-      
+
       setLocations(data);
       setLocationsFetched(true);
     } catch (error: any) {
-      console.error("Error fetching locations:", error);
-      const errorMsg = error.response?.data?.message || "Failed to fetch available locations";
-      toastError("Error", errorMsg);
+      console.error("Lỗi khi truy suất địa điểm:", error);
+      const errorMsg = error.response?.data?.message || "Không thể lấy địa điểm khả dụng";
+      toastError("Lỗi", errorMsg);
     } finally {
       setLocationsLoading(false);
     }
@@ -129,7 +129,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
       const data = await promotionService.getAllPromotions();
       setPromotions(data);
     } catch (error) {
-      console.error("Error fetching promotions:", error);
+      console.error("Lỗi khi truy suất khuyến mãi:", error);
     }
   };
 
@@ -144,13 +144,13 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
       ...prev,
       [name]:
         name === "campTypeId" ||
-        name === "locationId" ||
-        name === "promotionId" ||
-        name === "minParticipants" ||
-        name === "maxParticipants" ||
-        name === "minAge" ||
-        name === "maxAge" ||
-        name === "price"
+          name === "locationId" ||
+          name === "promotionId" ||
+          name === "minParticipants" ||
+          name === "maxParticipants" ||
+          name === "minAge" ||
+          name === "maxAge" ||
+          name === "price"
           ? value === ""
             ? null
             : Number(value)
@@ -172,7 +172,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
       !formData.campTypeId ||
       !formData.locationId
     ) {
-      toastError("Validation Error", "Please fill in all required fields");
+      toastError("Lỗi xác thực", "Vui lòng điền tất cả các trường bắt buộc dấu *");
       return;
     }
 
@@ -180,27 +180,27 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
       setLoading(true);
       await campService.createCamp(formData);
 
-      toastSuccess("Success", "Camp created successfully!");
+      toastSuccess("Thành công", "Tạo trại thành công!");
       handleClose();
       onSuccess();
     } catch (error: any) {
       // Get error message
-      let errorMsg = "Failed to create camp. Please try again.";
+      let errorMsg = "Không thể tạo trại. Vui lòng thử lại.";
 
       if (error.response?.status === 401) {
-        errorMsg = "Session expired. Please login again.";
+        errorMsg = "Phiên làm việc đã hết hạn. Vui lòng đăng nhập lại.";
       } else if (error.response?.status === 400) {
         errorMsg =
           error.response.data?.message ||
-          "Validation error. Please check your input.";
+          "Lỗi xác thực. Vui lòng kiểm tra lại thông tin nhập.";
       } else if (error.response?.status === 403) {
-        errorMsg = "You don't have permission to create camps.";
+        errorMsg = "Bạn không có quyền tạo trại.";
       } else if (error instanceof Error) {
         errorMsg = error.message;
       }
 
       // Show error notification
-      toastError("Error", errorMsg);
+      toastError("Lỗi", errorMsg);
     } finally {
       setLoading(false);
     }
@@ -247,8 +247,8 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
       const validation = validateImageFile(file, 5); // Max 5MB
       if (!validation.valid) {
         toastError(
-          "Validation Error",
-          validation.error || "Invalid image file"
+          "Lỗi xác thực",
+          validation.error || "Tệp hình ảnh không hợp lệ"
         );
         return;
       }
@@ -268,14 +268,14 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
           image: result.url,
         }));
       } catch (error: any) {
-        let errorMsg = "Failed to upload image";
+        let errorMsg = "Không thể tải lên hình ảnh. Vui lòng thử lại.";
         if (error.response?.data?.message) {
           errorMsg = error.response.data.message;
         } else if (error instanceof Error) {
           errorMsg = error.message;
         }
-        toastError("Upload Error", errorMsg);
-        console.error("Image upload error:", error);
+        toastError("Lỗi tải lên", errorMsg);
+        console.error("Lỗi tải lên hình ảnh:", error);
       } finally {
         setImageUploading(false);
       }
@@ -294,7 +294,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
   return (
     <>
       <Modal
-        title="Create New Camp"
+        title="Tạo trại mới"
         open={isOpen}
         onCancel={handleClose}
         width={1000}
@@ -330,13 +330,13 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
           {/* Basic Info */}
           <div className="pb-4 border-b border-gray-100">
             <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3 pb-2 border-b-2 border-blue-600 inline-block">
-              Basic Information
+              Thông tin cơ bản
             </h3>
 
             <div className="space-y-4 mt-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Camp Name *
+                  Tên trại *
                 </label>
                 <input
                   type="text"
@@ -351,7 +351,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Place *
+                    Địa điểm *
                   </label>
                   <input
                     type="text"
@@ -364,7 +364,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Address *
+                    Địa chỉ *
                   </label>
                   <input
                     type="text"
@@ -379,7 +379,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Description
+                  Mô tả
                 </label>
                 <textarea
                   name="description"
@@ -394,7 +394,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
               {/* Image Upload */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Camp Image
+                  Hình ảnh trại *
                 </label>
                 <div className="space-y-3">
                   {/* Preview */}
@@ -433,14 +433,14 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
                             className="text-blue-500 animate-spin"
                           />
                           <span className="text-sm font-medium text-gray-700">
-                            Uploading...
+                            Đang tải lên...
                           </span>
                         </>
                       ) : (
                         <>
                           <Upload size={18} className="text-gray-500" />
                           <span className="text-sm font-medium text-gray-700">
-                            {imagePreview ? "Change Image" : "Upload Image"}
+                            {imagePreview ? "Đổi hình ảnh" : "Tải hình ảnh"}
                           </span>
                         </>
                       )}
@@ -461,14 +461,14 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
           {/* Dates */}
           <div className="pb-4 border-b border-gray-100">
             <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3 pb-2 border-b-2 border-blue-600 inline-block">
-              Program Dates
+              Thiết lập ngày tháng
             </h3>
 
             <div className="space-y-4 mt-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Start Date *
+                    Ngày bắt đầu Trại *
                   </label>
                   <DatePicker
                     showTime
@@ -488,7 +488,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    End Date *
+                    Ngày kết thúc Trại *
                   </label>
                   <DatePicker
                     showTime
@@ -511,7 +511,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Registration Start *
+                    Ngày mở đăng ký *
                   </label>
                   <DatePicker
                     showTime
@@ -535,7 +535,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Registration End *
+                    Ngày đóng đăng ký *
                   </label>
                   <DatePicker
                     showTime
@@ -562,14 +562,14 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
           {/* Participants & Age */}
           <div className="pb-4 border-b border-gray-100">
             <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3 pb-2 border-b-2 border-blue-600 inline-block">
-              Participants
+              Thiết lập Trại viên
             </h3>
 
             <div className="space-y-4 mt-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Min Participants *
+                    Số lượng trại viên tối thiểu *
                   </label>
                   <input
                     type="number"
@@ -582,7 +582,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Max Participants *
+                    Số lượng trại viên tối đa *
                   </label>
                   <input
                     type="number"
@@ -598,7 +598,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Min Age *
+                    Tuổi tối thiểu *
                   </label>
                   <input
                     type="number"
@@ -611,7 +611,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Max Age *
+                    Tuổi tối đa *
                   </label>
                   <input
                     type="number"
@@ -629,13 +629,13 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
           {/* Camp Type & Location */}
           <div className="pb-4 border-b border-gray-100">
             <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3 pb-2 border-b-2 border-blue-600 inline-block">
-              Classification
+              Phân loại Trại và Địa điểm
             </h3>
 
             <div className="grid grid-cols-2 gap-4 mt-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Camp Type *
+                  Loại Trại *
                 </label>
                 <select
                   name="campTypeId"
@@ -643,7 +643,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
                   onChange={handleInputChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 >
-                  <option value="">Select Camp Type</option>
+                  <option value="">Chọn loại trại</option>
                   {campTypes.map((type) => (
                     <option key={type.campTypeId} value={type.campTypeId}>
                       {type.name}
@@ -654,7 +654,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Location * {locations.length > 0 && `(${locations.length} available)`}
+                  Địa điểm * {locations.length > 0 && `(${locations.length} available)`}
                 </label>
                 <div className="flex gap-2">
                   <select
@@ -666,7 +666,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
                     className="flex-1 px-3 py-2 border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <option value="">
-                      {locationsLoading ? "Loading locations..." : "Select Location"}
+                      {locationsLoading ? "Loading locations..." : "Chọn địa điểm"}
                     </option>
                     {locations.map((loc) => (
                       <option key={loc.id} value={loc.id}>
@@ -689,13 +689,13 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
           {/* Pricing */}
           <div>
             <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3 pb-2 border-b-2 border-blue-600 inline-block">
-              Pricing
+              Thiết lập giá
             </h3>
 
             <div className="grid grid-cols-2 gap-4 mt-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Price *
+                  Giá *
                 </label>
                 <input
                   type="number"
@@ -709,7 +709,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Promotion (Optional)
+                  Khuyến mãi (Tùy chọn)
                 </label>
                 <select
                   name="promotionId"
@@ -717,7 +717,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
                   onChange={handleInputChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 >
-                  <option value="">No Promotion</option>
+                  <option value="">Không có khuyến mãi</option>
                   {promotions.map((promo) => (
                     <option key={promo.id} value={promo.id}>
                       {promo.name} ({promo.percent}% off)
@@ -736,14 +736,14 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
             disabled={loading}
             className="px-6 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Cancel
+            Hủy
           </button>
           <button
             onClick={handleCreate}
             disabled={loading}
             className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? "Creating..." : "Create Camp"}
+            {loading ? "Đang tạo..." : "Tạo trại mới"}
           </button>
         </div>
       </Modal>

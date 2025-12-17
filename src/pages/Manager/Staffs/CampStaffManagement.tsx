@@ -61,7 +61,7 @@ const CampStaffManagement: React.FC = () => {
         setFilteredAssignedStaff(assignedData);
       } catch (error) {
         console.error('Failed to load staff data:', error);
-        toastError('Error', 'Unable to load staff data');
+        toastError('Lỗi', 'Không thể tải dữ liệu nhân viên');
       } finally {
         setLoading(false);
       }
@@ -115,7 +115,7 @@ const CampStaffManagement: React.FC = () => {
   // Handle bulk assign
   const handleBulkAssign = async () => {
     if (selectedStaffIds.size === 0) {
-      toastError('Error', 'Please select at least one staff member');
+      toastError('Lỗi', 'Vui lòng chọn ít nhất một nhân viên');
       return;
     }
 
@@ -152,21 +152,19 @@ const CampStaffManagement: React.FC = () => {
       if (failCount === 0) {
         toastSuccess(
           'Success',
-          `Successfully assigned ${successCount} staff member${
-            successCount > 1 ? 's' : ''
+          `Successfully assigned ${successCount} staff member${successCount > 1 ? 's' : ''
           }`
         );
       } else {
         toastSuccess(
           'Partial Success',
-          `Successfully assigned ${successCount} staff member${
-            successCount > 1 ? 's' : ''
+          `Successfully assigned ${successCount} staff member${successCount > 1 ? 's' : ''
           }, failed: ${failedStaffNames.join(', ')}`
         );
       }
     } catch (error) {
       console.error('Failed to assign staff:', error);
-      toastError('Error', 'Failed to assign staff');
+      toastError('Lỗi', 'Không thể phân công nhân viên');
     } finally {
       setAssigning(false);
     }
@@ -177,7 +175,7 @@ const CampStaffManagement: React.FC = () => {
     try {
       setAssigning(true);
       await campStaffService.removeStaffFromCamp(assignmentId);
-      toastSuccess('Success', 'Staff assignment removed successfully');
+      toastSuccess('Thành công', 'Xóa phân công nhân viên thành công');
       setDeletePopoverOpen(null);
 
       if (selectedCampId) {
@@ -253,7 +251,7 @@ const CampStaffManagement: React.FC = () => {
                 <div className="px-6 py-3 border-b border-[#E5E7EB]">
                   <div className="flex justify-between items-center">
                     <span className="text-sm font-semibold text-[#6B7280]">
-                        Tìm Thấy: {filteredAvailableStaff.length}
+                      Tìm Thấy: {filteredAvailableStaff.length}
                     </span>
                     <Popover
                       content={
@@ -411,32 +409,32 @@ const CampStaffManagement: React.FC = () => {
                                     setStaffDetailModalOpen(true);
                                   }}
                                   className="inline-flex items-center gap-1 px-3 py-1.5 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-all font-medium text-sm"
-                                  title="View Details"
+                                  title="Xem Chi Tiết"
                                 >
                                   <Eye size={14} />
                                   Chi Tiết
                                 </button>
                                 <DeletePopover
-                                onConfirm={() =>
-                                  handleRemoveStaff(
+                                  onConfirm={() =>
+                                    handleRemoveStaff(
+                                      assignment.campStaffAssignmentId
+                                    )
+                                  }
+                                  title="Gỡ Nhân Viên"
+                                  message={`Bạn có chắc muốn gỡ "${assignment.staff.fullName}" khỏi trại này?`}
+                                  buttonText="Gỡ"
+                                  disabled={assigning}
+                                  isOpen={
+                                    deletePopoverOpen ===
                                     assignment.campStaffAssignmentId
-                                  )
-                                }
-                                title="Gỡ Nhân Viên"
-                                message={`Bạn có chắc muốn gỡ "${assignment.staff.fullName}" khỏi trại này?`}
-                                buttonText="Gỡ"
-                                disabled={assigning}
-                                isOpen={
-                                  deletePopoverOpen ===
-                                  assignment.campStaffAssignmentId
-                                }
-                                onOpenChange={(open) =>
-                                  setDeletePopoverOpen(
-                                    open
-                                      ? assignment.campStaffAssignmentId
-                                      : null
-                                  )
-                                }
+                                  }
+                                  onOpenChange={(open) =>
+                                    setDeletePopoverOpen(
+                                      open
+                                        ? assignment.campStaffAssignmentId
+                                        : null
+                                    )
+                                  }
                                 />
                               </div>
                             </td>

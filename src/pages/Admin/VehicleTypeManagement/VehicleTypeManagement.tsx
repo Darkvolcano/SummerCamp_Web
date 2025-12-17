@@ -32,11 +32,11 @@ export default function VehicleTypeManagement() {
       const data = await vehicleService.getAllVehicleTypes();
       setVehicleTypes(data);
       setFilteredTypes(data);
-      message.success("Vehicle types loaded successfully");
+      message.success("Tải loại xe thành công");
     } catch (error: any) {
-      console.error("Error fetching vehicle types:", error);
+      console.error("Lỗi khi tải loại xe:", error);
       message.error(
-        error.response?.data?.message || "Failed to load vehicle types"
+        error.response?.data?.message || "Lỗi khi tải loại xe"
       );
     } finally {
       setLoading(false);
@@ -76,7 +76,7 @@ export default function VehicleTypeManagement() {
   const handleDelete = async (type: VehicleType) => {
     if (
       !window.confirm(
-        `Are you sure you want to delete vehicle type "${type.name}"? This action cannot be undone.`
+        `Bạn có chắc chắn muốn xóa loại xe "${type.name}"? Hành động này không thể hoàn tác.`
       )
     ) {
       return;
@@ -84,12 +84,12 @@ export default function VehicleTypeManagement() {
 
     try {
       await vehicleService.deleteVehicleType(type.vehicleTypeId);
-      message.success("Vehicle type deleted successfully");
+      message.success("Xóa loại xe thành công");
       fetchVehicleTypes();
     } catch (error: any) {
-      console.error("Error deleting vehicle type:", error);
+      console.error("Lỗi khi xóa loại xe:", error);
       message.error(
-        error.response?.data?.message || "Failed to delete vehicle type"
+        error.response?.data?.message || "Lỗi khi xóa loại xe"
       );
     }
   };
@@ -218,9 +218,8 @@ export default function VehicleTypeManagement() {
                   </td>
                   <td>
                     <span
-                      className={`status-badge ${
-                        type.isActive ? "active" : "inactive"
-                      }`}
+                      className={`status-badge ${type.isActive ? "active" : "inactive"
+                        }`}
                     >
                       {type.isActive ? "Active" : "Inactive"}
                     </span>

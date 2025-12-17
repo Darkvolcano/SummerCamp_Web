@@ -137,7 +137,7 @@ const BlogList: React.FC = () => {
                                                     </span>
                                                     <span className="flex items-center gap-1">
                                                         <CalendarOutlined className="flex-shrink-0" />
-                                                        {blog.createdAt ? formatDate(new Date(blog.createdAt)) : "N/A"}
+                                                        {blog.createdAt ? formatDate(new Date(blog.createdAt)) : "Không có"}
                                                     </span>
                                                 </div>
 

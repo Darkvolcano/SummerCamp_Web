@@ -35,7 +35,7 @@ const PromotionPage: React.FC = () => {
       setPromotions(data);
     } catch (error) {
       console.error("Error fetching promotions:", error);
-      toastError("Error", "Failed to load promotions");
+      toastError("Lỗi", "Không thể tải khuyến mãi");
     } finally {
       setLoading(false);
     }
@@ -47,7 +47,7 @@ const PromotionPage: React.FC = () => {
       setPromotionTypes(data);
     } catch (error) {
       console.error("Error fetching promotion types:", error);
-      toastError("Error", "Failed to load promotion types");
+      toastError("Lỗi", "Không thể tải loại khuyến mãi");
     }
   }, [toastError]);
 
@@ -107,10 +107,10 @@ const PromotionPage: React.FC = () => {
 
       if (editingPromotion) {
         await promotionService.updatePromotion(editingPromotion.id, payload);
-        toastSuccess("Success", "Promotion updated successfully");
+        toastSuccess("Thành công", "Cập nhật khuyến mãi thành công");
       } else {
         await promotionService.createPromotion(payload);
-        toastSuccess("Success", "Promotion created successfully");
+        toastSuccess("Thành công", "Tạo khuyến mãi thành công");
       }
 
       await fetchPromotions();
@@ -118,7 +118,7 @@ const PromotionPage: React.FC = () => {
       form.resetFields();
     } catch (error) {
       console.error("Error submitting promotion:", error);
-      toastError("Error", "Failed to save promotion");
+      toastError("Lỗi", "Không thể lưu khuyến mãi");
     } finally {
       setSubmitting(false);
     }
@@ -127,12 +127,12 @@ const PromotionPage: React.FC = () => {
   const handleDelete = async (id: number) => {
     try {
       await promotionService.deletePromotion(id);
-      toastSuccess("Success", "Promotion deleted successfully");
+      toastSuccess("Thành công", "Xóa khuyến mãi thành công");
       await fetchPromotions();
       setDeletePopoverOpen(null);
     } catch (error) {
       console.error("Failed to delete promotion:", error);
-      toastError("Error", "Failed to delete promotion");
+      toastError("Lỗi", "Không thể xóa khuyến mãi");
     }
   };
 

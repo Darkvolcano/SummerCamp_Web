@@ -67,7 +67,7 @@ export default function BlogFormModal({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
     setImageFile(file);
-    
+
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -75,7 +75,7 @@ export default function BlogFormModal({
       };
       reader.readAsDataURL(file);
     }
-    
+
     if (errors.imageUrl) {
       setErrors((prev) => ({ ...prev, imageUrl: "" }));
     }
@@ -85,19 +85,19 @@ export default function BlogFormModal({
     const newErrors: Record<string, string> = {};
 
     if (!formData.title.trim()) {
-      newErrors.title = "Title is required";
+      newErrors.title = "Tiêu đề là bắt buộc";
     } else if (formData.title.length < 5) {
-      newErrors.title = "Title must be at least 5 characters";
+      newErrors.title = "Tiêu đề phải có ít nhất 5 ký tự";
     }
 
     if (!formData.content.trim()) {
-      newErrors.content = "Content is required";
+      newErrors.content = "Nội dung là bắt buộc";
     } else if (formData.content.length < 20) {
-      newErrors.content = "Content must be at least 20 characters";
+      newErrors.content = "Nội dung phải có ít nhất 20 ký tự";
     }
 
     if (!imageFile && !isEditing && !formData.imageUrl) {
-      newErrors.imageUrl = "Image is required";
+      newErrors.imageUrl = "Hình ảnh là bắt buộc";
     }
 
     setErrors(newErrors);
@@ -108,13 +108,13 @@ export default function BlogFormModal({
     e.preventDefault();
 
     if (!validate()) {
-      toastError("Validation Error", "Please fix the validation errors");
+      toastError("Lỗi xác thực", "Vui lòng sửa lỗi xác thực");
       return;
     }
 
     const { user } = useAuthStore.getState();
     if (!user || !user.id) {
-      toastError("Authentication Error", "User not authenticated. Please login again.");
+      toastError("Lỗi xác thực", "Người dùng chưa xác thực. Vui lòng đăng nhập lại.");
       return;
     }
 
@@ -146,11 +146,11 @@ export default function BlogFormModal({
           };
           await updateMutation.mutateAsync({ id: blog.id, blog: blogDataWithoutNewImage });
         }
-        toastSuccess("Success", "Blog updated successfully");
+        toastSuccess("Thành công", "Cập nhật blog thành công");
       } else {
         // For create, imageFile is required
         if (!imageFile) {
-          toastError("Validation Error", "Please select an image");
+          toastError("Lỗi xác thực", "Vui lòng chọn hình ảnh");
           return;
         }
 
@@ -161,14 +161,14 @@ export default function BlogFormModal({
           authorId: user.id,
         };
         await createMutation.mutateAsync(blogDataWithAuthor);
-        toastSuccess("Success", "Blog created successfully");
+        toastSuccess("Thành công", "Tạo blog thành công");
       }
 
       onSuccess();
     } catch (error) {
       console.error("Error saving blog:", error);
-      const errorMessage = error instanceof Error ? error.message : "Failed to save blog";
-      toastError("Error", errorMessage);
+      const errorMessage = error instanceof Error ? error.message : "Không thể lưu blog";
+      toastError("Lỗi", errorMessage);
     } finally {
       setSaving(false);
     }
@@ -184,7 +184,7 @@ export default function BlogFormModal({
       closeIcon={<X size={20} />}
       title={
         <h2 className="text-xl font-bold text-[#111827]">
-          {isEditing ? "Edit Blog Post" : "Create Blog Post"}
+          {isEditing ? "Chỉnh Sửa Bài Viết" : "Tạo Bài Viết"}
         </h2>
       }
     >
@@ -192,17 +192,16 @@ export default function BlogFormModal({
         {/* Title */}
         <div>
           <label className="block text-sm font-semibold text-[#374151] mb-2">
-            Title <span className="text-red-500">*</span>
+            Tiêu Đề <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
             name="title"
             value={formData.title}
             onChange={handleChange}
-            placeholder="Enter blog title"
-            className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:border-transparent text-sm ${
-              errors.title ? "border-red-500" : "border-[#E5E7EB]"
-            }`}
+            placeholder="Nhập tiêu đề blog"
+            className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:border-transparent text-sm ${errors.title ? "border-red-500" : "border-[#E5E7EB]"
+              }`}
           />
           {errors.title && (
             <p className="text-red-500 text-xs mt-1">{errors.title}</p>
@@ -212,9 +211,9 @@ export default function BlogFormModal({
         {/* Image Upload */}
         <div>
           <label className="block text-sm font-semibold text-[#374151] mb-2">
-            Featured Image <span className="text-red-500">*</span>
+            Hình Ảnh Nổi Bật <span className="text-red-500">*</span>
           </label>
-          
+
           {imagePreview && (
             <div className="mb-3 rounded-xl overflow-hidden border border-[#E5E7EB]">
               <img
@@ -224,17 +223,16 @@ export default function BlogFormModal({
               />
             </div>
           )}
-          
+
           <div className="flex items-center gap-3">
             <label className="flex-1 cursor-pointer">
-              <div className={`flex items-center justify-center gap-2 px-4 py-2.5 border-2 border-dashed rounded-lg transition-all ${
-                errors.imageUrl 
-                  ? "border-red-500 bg-red-50" 
-                  : "border-[#E5E7EB] hover:border-[#6366F1] hover:bg-[#F9FAFB]"
-              }`}>
+              <div className={`flex items-center justify-center gap-2 px-4 py-2.5 border-2 border-dashed rounded-lg transition-all ${errors.imageUrl
+                ? "border-red-500 bg-red-50"
+                : "border-[#E5E7EB] hover:border-[#6366F1] hover:bg-[#F9FAFB]"
+                }`}>
                 <Upload size={20} className="text-[#6B7280]" />
                 <span className="text-sm text-[#6B7280]">
-                  {imageFile ? imageFile.name : "Choose image file"}
+                  {imageFile ? imageFile.name : "Chọn tệp hình ảnh"}
                 </span>
               </div>
               <input
@@ -254,7 +252,7 @@ export default function BlogFormModal({
         <div>
           <CKEditorComponent
             name="content"
-            label="Content"
+            label="Nội Dung"
             value={formData.content}
             onChange={handleContentChange}
             required={true}
@@ -272,7 +270,7 @@ export default function BlogFormModal({
             disabled={saving}
             className="inline-flex items-center gap-2 px-4 py-2 bg-[#F3F4F6] text-[#6B7280] rounded-lg hover:bg-[#E5E7EB] transition-all font-medium text-sm disabled:opacity-50"
           >
-            Cancel
+            Hủy
           </button>
           <button
             type="submit"
@@ -282,12 +280,12 @@ export default function BlogFormModal({
             {saving ? (
               <>
                 <Spin size="small" />
-                Saving...
+                Đang lưu...
               </>
             ) : (
               <>
                 <Save size={16} />
-                {isEditing ? "Update" : "Create"} Blog
+                {isEditing ? "Cập Nhật" : "Tạo"} Blog
               </>
             )}
           </button>

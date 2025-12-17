@@ -120,8 +120,8 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
       // Set status separately (for display only, not sent to server)
       setCampStatus(campData.status);
     } catch (error) {
-      console.error("Error fetching camp data:", error);
-      toastError("Error", "Failed to load camp details");
+      console.error("Lỗi khi tải dữ liệu trại:", error);
+      toastError("Lỗi", "Không thể tải chi tiết trại. Vui lòng thử lại sau.");
     } finally {
       setLoading(false);
     }
@@ -166,37 +166,37 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
         !formData.endDate ||
         !formData.price || formData.price <= 0
       ) {
-        toastError("Validation Error", "Please fill in all required fields");
+        toastError("Lỗi", "Vui lòng điền vào tất cả các trường bắt buộc.");
         return;
       }
 
       await campService.updateCamp(campId, formData);
-      toastSuccess("Success", "Camp updated successfully!");
+      toastSuccess("Thành công", "Cập nhật trại thành công!");
       setIsEditing(false);
       fetchCampData();
       onUpdate?.();
     } catch (error: any) {
-      let errorMsg = "Failed to update camp";
+      let errorMsg = "Không thể cập nhật trại";
       if (error.response?.data?.message) {
         errorMsg = error.response.data.message;
       }
-      toastError("Error", errorMsg);
+      toastError("Lỗi", errorMsg);
     }
   };
 
   const handleDelete = async () => {
-    if (!window.confirm("Are you sure you want to delete this camp?")) return;
+    if (!window.confirm("Bạn có chắc chắn muốn xóa trại này?")) return;
 
     try {
       await campService.deleteCamp(campId);
-      toastSuccess("Success", "Camp deleted successfully!");
+      toastSuccess("Thành công", "Xóa trại thành công!");
       onBack();
     } catch (error: any) {
-      let errorMsg = "Failed to delete camp";
+      let errorMsg = "Không thể xóa trại";
       if (error.response?.data?.message) {
         errorMsg = error.response.data.message;
       }
-      toastError("Error", errorMsg);
+      toastError("Lỗi", errorMsg);
     }
   };
 
@@ -205,69 +205,69 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
   const handleOpenRegistration = async () => {
     try {
       await campService.updateCampStatusTest(campId, CampStatus.OPEN_FOR_REGISTRATION);
-      toastSuccess('Success', 'Camp registration opened successfully!');
+      toastSuccess('Thành công', 'Mở đăng ký trại thành công!');
       fetchCampData();
       onUpdate?.();
     } catch (error: any) {
-      let errorMsg = 'Failed to open registration';
+      let errorMsg = 'Không thể mở đăng ký';
       if (error.response?.data?.message) {
         errorMsg = error.response.data.message;
       }
-      toastError('Error', errorMsg);
+      toastError('Lỗi', errorMsg);
     }
   };
 
   const handleCloseRegistration = async () => {
     try {
       await campService.updateCampStatusTest(campId, CampStatus.REGISTRATION_CLOSED);
-      toastSuccess('Success', 'Camp registration closed successfully!');
+      toastSuccess('Thành công', 'Đóng đăng ký trại thành công!');
       fetchCampData();
       onUpdate?.();
     } catch (error: any) {
-      let errorMsg = 'Failed to close registration';
+      let errorMsg = 'Không thể đóng đăng ký';
       if (error.response?.data?.message) {
         errorMsg = error.response.data.message;
       }
-      toastError('Error', errorMsg);
+      toastError('Lỗi', errorMsg);
     }
   };
 
   const handleCreateAttendanceLogs = async () => {
     try {
       await attendanceLogService.createLogsForRegistrationClosedCamps();
-      toastSuccess('Success', 'Attendance logs created successfully!');
+      toastSuccess('Thành công', 'Tạo nhật ký điểm danh thành công!');
     } catch (error: any) {
-      let errorMsg = 'Failed to create attendance logs';
+      let errorMsg = 'Không thể tạo nhật ký điểm danh';
       if (error.response?.data?.message) {
         errorMsg = error.response.data.message;
       }
-      toastError('Error', errorMsg);
+      toastError('Lỗi', errorMsg);
     }
   };
 
   const handleCreateFolders = async () => {
     try {
       await attendanceFolderService.createFolders(campId);
-      toastSuccess('Success', 'Attendance folders created successfully!');
+      toastSuccess('Thành công', 'Tạo thư mục điểm danh thành công!');
     } catch (error: any) {
-      let errorMsg = 'Failed to create folders';
+      let errorMsg = 'Không thể tạo thư mục điểm danh';
       if (error.response?.data?.message) {
         errorMsg = error.response.data.message;
       }
-      toastError('Error', errorMsg);
+      toastError('Lỗi', errorMsg);
     }
   };
 
   const handlePreloadFaceDatabase = async () => {
     try {
       await attendanceFolderService.preloadFaceDatabase(campId, false);
-      toastSuccess('Success', 'Face database preloaded successfully!');
+      toastSuccess('Thành công', 'Tải trước cơ sở dữ liệu khuôn mặt thành công!');
     } catch (error: any) {
-      let errorMsg = 'Failed to preload face database';
+      let errorMsg = 'Không thể tải trước cơ sở dữ liệu khuôn mặt';
       if (error.response?.data?.message) {
         errorMsg = error.response.data.message;
       }
-      toastError('Error', errorMsg);
+      toastError('Lỗi', errorMsg);
     }
   };
 
@@ -276,24 +276,24 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
       const response = await attendanceFolderService.getLoadedCampsStats();
 
       if (response.totalCamps === 0) {
-        toastError('No Camps Loaded', 'No camp is currently loaded in the Python AI service');
+        toastError('Không có trại nào được tải', 'Hiện không có trại nào được tải trong dịch vụ AI Python.');
         return;
       }
 
       const campsList = Object.entries(response.data)
-        .map(([campId, faceCount]) => `Camp ${campId}: ${faceCount} faces`)
+        .map(([campId, faceCount]) => `Trại ${campId}: ${faceCount} khuôn mặt`)
         .join(', ');
 
       toastSuccess(
-        'Loaded Camps Statistics',
-        `Total: ${response.totalCamps} camp(s), ${response.totalFaces} faces. ${campsList}`
+        'Thống kê trại đã tải',
+        `Tổng: ${response.totalCamps} trại, ${response.totalFaces} khuôn mặt. ${campsList}`
       );
     } catch (error: any) {
-      let errorMsg = 'Failed to get loaded camps statistics';
+      let errorMsg = 'Không thể lấy thống kê trại đã tải';
       if (error.response?.data?.message) {
         errorMsg = error.response.data.message;
       }
-      toastError('Error', errorMsg);
+      toastError('Lỗi', errorMsg);
     }
   };
 
@@ -303,8 +303,8 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
       const validation = validateImageFile(file, 5); // Max 5MB
       if (!validation.valid) {
         toastError(
-          "Validation Error",
-          validation.error || "Invalid image file"
+          "Lỗi xác thực hình ảnh",
+          validation.error || "Tệp hình ảnh không hợp lệ"
         );
         return;
       }
@@ -321,14 +321,14 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
           image: result.url,
         }));
       } catch (error: any) {
-        let errorMsg = "Failed to upload image";
+        let errorMsg = "Không thể tải lên hình ảnh";
         if (error.response?.data?.message) {
           errorMsg = error.response.data.message;
         } else if (error instanceof Error) {
           errorMsg = error.message;
         }
-        toastError("Upload Error", errorMsg);
-        console.error("Image upload error:", error);
+        toastError("Lỗi tải lên", errorMsg);
+        console.error("Lỗi khi tải lên hình ảnh", error);
       } finally {
         setImageUploading(false);
       }
@@ -351,13 +351,13 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <Spin size="large" tip="Loading camp details..." />
+        <Spin size="large" tip="Đang tải chi tiết trại..." />
       </div>
     );
   }
 
   if (!camp) {
-    return <div className="p-6 text-center text-[#6B7280]">Camp not found</div>;
+    return <div className="p-6 text-center text-[#6B7280]">Không tìm thấy trại</div>;
   }
 
   return (
@@ -379,12 +379,12 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
                   className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-medium"
                 >
                   <Edit2 size={18} />
-                  Update
+                  Cập nhật
                 </button>
                 <Popover
                   content={
                     <div className="space-y-2">
-                      <p className="text-sm font-medium">Cancel this camp?</p>
+                      <p className="text-sm font-medium">Hủy trại này?</p>
                       <div className="flex gap-2">
                         <Button
                           size="small"
@@ -394,25 +394,25 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
                             setOpenDeletePopover(false);
                           }}
                         >
-                          Yes
+                          Có
                         </Button>
                         <Button
                           size="small"
                           onClick={() => setOpenDeletePopover(false)}
                         >
-                          No
+                          Không
                         </Button>
                       </div>
                     </div>
                   }
-                  title="Confirm Delete"
+                  title="Xác nhận hủy trại"
                   trigger="click"
                   open={openDeletePopover}
                   onOpenChange={setOpenDeletePopover}
                 >
                   <button className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all font-medium">
                     <Trash2 size={18} />
-                    Cancel
+                    Hủy
                   </button>
                 </Popover>
               </>
@@ -423,7 +423,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
                 onClick={handleSave}
                 className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-medium"
               >
-                Save
+                Lưu
               </button>
               <button
                 onClick={() => {
@@ -432,7 +432,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
                 }}
                 className="flex items-center gap-2 px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 transition-all font-medium"
               >
-                Cancel
+                Hủy
               </button>
             </>
           )}
@@ -454,12 +454,12 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
           {/* Basic Information */}
           <div className="mb-6 pb-6 border-b border-[#E5E7EB]">
             <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4 pb-3 border-b-2 border-blue-600 inline-block">
-              Basic Information
+              Thông tin cơ bản
             </h3>
             <div className="space-y-4 mt-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Camp Name *
+                  Tên trại *
                 </label>
                 <input
                   type="text"
@@ -474,7 +474,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Place *
+                    Địa điểm *
                   </label>
                   <input
                     type="text"
@@ -487,7 +487,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Address *
+                    Địa chỉ *
                   </label>
                   <input
                     type="text"
@@ -502,7 +502,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Description
+                  Mô tả
                 </label>
                 <textarea
                   name="description"
@@ -516,7 +516,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Status
+                  Trạng thái
                 </label>
                 <input
                   type="text"
@@ -529,7 +529,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
               {isEditing && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Camp Image
+                    Hình ảnh trại
                   </label>
                   <div className="space-y-3">
                     {/* Preview */}
@@ -568,7 +568,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
                               className="text-blue-500 animate-spin"
                             />
                             <span className="text-sm font-medium text-gray-700">
-                              Uploading...
+                              Đang tải lên...
                             </span>
                           </>
                         ) : (
@@ -576,8 +576,8 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
                             <Upload size={18} className="text-gray-500" />
                             <span className="text-sm font-medium text-gray-700">
                               {imagePreview || formData.image
-                                ? "Change Image"
-                                : "Upload Image"}
+                                ? "Thay đổi hình ảnh"
+                                : "Tải lên hình ảnh trại"}
                             </span>
                           </>
                         )}
@@ -599,13 +599,13 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
           {/* Program Dates */}
           <div className="mb-6 pb-6 border-b border-[#E5E7EB]">
             <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4 pb-3 border-b-2 border-blue-600 inline-block">
-              Program Dates
+              Thiết lập ngày tháng
             </h3>
             <div className="space-y-4 mt-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Start Date *
+                    Ngày bắt đầu *
                   </label>
                   <DatePicker
                     showTime
@@ -626,7 +626,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    End Date *
+                    Ngày kết thúc *
                   </label>
                   <DatePicker
                     showTime
@@ -648,7 +648,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Registration Start *
+                    Ngày mở đăng ký *
                   </label>
                   <DatePicker
                     showTime
@@ -671,7 +671,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Registration End *
+                    Ngày kết thúc đăng ký *
                   </label>
                   <DatePicker
                     showTime
@@ -699,13 +699,13 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
           {/* Participants & Age */}
           <div className="mb-6 pb-6 border-b border-[#E5E7EB]">
             <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4 pb-3 border-b-2 border-blue-600 inline-block">
-              Participants
+              Trại viên
             </h3>
             <div className="space-y-4 mt-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Min Participants *
+                    Số trại viên tối thiểu *
                   </label>
                   <input
                     type="number"
@@ -719,7 +719,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Max Participants *
+                    Số trại viên tối đa *
                   </label>
                   <input
                     type="number"
@@ -736,7 +736,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Min Age *
+                    Độ tuổi tối thiểu *
                   </label>
                   <input
                     type="number"
@@ -750,7 +750,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Max Age *
+                    Độ tuổi tối đa *
                   </label>
                   <input
                     type="number"
@@ -769,12 +769,12 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
           {/* Classification */}
           <div className="mb-6 pb-6 border-b border-[#E5E7EB]">
             <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4 pb-3 border-b-2 border-blue-600 inline-block">
-              Classification
+              Phân loại
             </h3>
             <div className="grid grid-cols-2 gap-4 mt-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Camp Type *
+                  Loại trại *
                 </label>
                 <select
                   name="campTypeId"
@@ -783,7 +783,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
                   disabled={!isEditing}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-black disabled:bg-gray-100 disabled:cursor-not-allowed"
                 >
-                  <option value="">Select Camp Type</option>
+                  <option value="">Chọn loại trại</option>
                   {campTypes.map((type) => (
                     <option key={type.campTypeId} value={type.campTypeId}>
                       {type.name}
@@ -793,7 +793,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Location *
+                  Địa điểm *
                 </label>
                 <div className="flex gap-2">
                   <select
@@ -803,7 +803,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
                     disabled={!isEditing}
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-black disabled:bg-gray-100 disabled:cursor-not-allowed"
                   >
-                    <option value="">Select Location</option>
+                    <option value="">Chọn địa điểm</option>
                     {locations.map((loc) => (
                       <option key={loc.locationId} value={loc.locationId}>
                         {loc.name}
@@ -815,7 +815,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
                       type="button"
                       onClick={() => setShowAddLocation(true)}
                       className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-medium flex items-center justify-center"
-                      title="Add new location"
+                      title="Thêm địa điểm mới"
                     >
                       <Plus size={18} />
                     </button>
@@ -828,12 +828,12 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
           {/* Pricing */}
           <div>
             <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4 pb-3 border-b-2 border-blue-600 inline-block">
-              Pricing
+              Giá cả
             </h3>
             <div className="grid grid-cols-2 gap-4 mt-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Price *
+                  Giá *
                 </label>
                 <input
                   type="number"
@@ -847,7 +847,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Promotion (Optional)
+                  Khuyến mãi (Tùy chọn)
                 </label>
                 <select
                   name="promotionId"
@@ -856,7 +856,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
                   disabled={!isEditing}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-black disabled:bg-gray-100 disabled:cursor-not-allowed"
                 >
-                  <option value="">No Promotion</option>
+                  <option value="">Không khuyến mãi</option>
                   {promotions.map((promo) => (
                     <option key={promo.id} value={promo.id}>
                       {promo.name} ({promo.percent}% off)
@@ -871,7 +871,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
         {/* Registration Control Buttons */}
         <div className="mt-8 pt-6 border-t border-[#E5E7EB]">
           <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4">
-            TEST
+            KIỂM THỎ
           </h3>
           <div className="flex gap-3">
             <button
@@ -879,42 +879,42 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
               className="flex items-center gap-1.5 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-medium text-sm"
             >
               <CheckCircle size={16} />
-              Open
+              Mở đăng ký
             </button>
             <button
               onClick={handleCloseRegistration}
               className="flex items-center gap-1.5 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all font-medium text-sm"
             >
               <XCircle size={16} />
-              Close
+              Đóng đăng ký
             </button>
             <button
               onClick={handleCreateAttendanceLogs}
               className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-medium text-sm"
             >
               <CheckCircle size={16} />
-              Create Logs
+              Tạo nhật ký điểm danh
             </button>
             <button
               onClick={handleCreateFolders}
               className="flex items-center gap-1.5 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all font-medium text-sm"
             >
               <CheckCircle size={16} />
-              Create Folders
+              Tạo thư mục
             </button>
             <button
               onClick={handlePreloadFaceDatabase}
               className="flex items-center gap-1.5 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all font-medium text-sm"
             >
               <CheckCircle size={16} />
-              Preload Face DB
+              Nạp dữ liệu khuôn mặt
             </button>
             <button
               onClick={handleCheckLoadedCamps}
               className="flex items-center gap-1.5 px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-all font-medium text-sm"
             >
               <CheckCircle size={16} />
-              Check Loaded Camps
+              Kiểm tra trại đã nạp
             </button>
           </div>
         </div>
