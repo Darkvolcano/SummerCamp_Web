@@ -35,7 +35,7 @@ export default function AdminDashboard() {
   const stats: StatData[] = [
     {
       id: 1,
-      title: "Total Users",
+      title: "Tổng Người Dùng",
       value: "2,543",
       change: "+12.5%",
       trend: "up",
@@ -44,7 +44,7 @@ export default function AdminDashboard() {
     },
     {
       id: 2,
-      title: "Active Camps",
+      title: "Trại Hoạt Động",
       value: "48",
       change: "+8.2%",
       trend: "up",
@@ -53,7 +53,7 @@ export default function AdminDashboard() {
     },
     {
       id: 3,
-      title: "Blog Posts",
+      title: "Bài Viết",
       value: "156",
       change: "+23.1%",
       trend: "up",
@@ -62,7 +62,7 @@ export default function AdminDashboard() {
     },
     {
       id: 4,
-      title: "Revenue",
+      title: "Doanh Thu",
       value: "$45,231",
       change: "+15.3%",
       trend: "up",
@@ -71,7 +71,7 @@ export default function AdminDashboard() {
     },
     {
       id: 5,
-      title: "Bookings Today",
+      title: "Đăng Ký Hôm Nay",
       value: "127",
       change: "+5.4%",
       trend: "up",
@@ -80,7 +80,7 @@ export default function AdminDashboard() {
     },
     {
       id: 6,
-      title: "Active Staff",
+      title: "Nhân Viên",
       value: "34",
       change: "+2.1%",
       trend: "up",
@@ -93,35 +93,35 @@ export default function AdminDashboard() {
     {
       id: 1,
       user: "Nguyễn Văn A",
-      action: "registered for Summer Camp 2025",
+      action: "đã đăng ký Trại Hè 2025",
       time: "5 phút trước",
       type: "booking",
     },
     {
       id: 2,
       user: "Admin",
-      action: "published new blog post",
+      action: "đã đăng bài viết mới",
       time: "15 phút trước",
       type: "blog",
     },
     {
       id: 3,
       user: "Trần Thị B",
-      action: "created new account",
+      action: "đã tạo tài khoản mới",
       time: "32 phút trước",
       type: "user",
     },
     {
       id: 4,
       user: "Staff Manager",
-      action: "updated Camp Schedule",
+      action: "đã cập nhật Lịch Trại",
       time: "1 giờ trước",
       type: "camp",
     },
     {
       id: 5,
       user: "Lê Văn C",
-      action: "cancelled booking",
+      action: "đã hủy đăng ký",
       time: "2 giờ trước",
       type: "booking",
     },
@@ -131,19 +131,19 @@ export default function AdminDashboard() {
     <>
       <header className="dashboard-header">
         <div>
-          <h1 className="dashboard-title">Dashboard Overview</h1>
+          <h1 className="dashboard-title">Tổng Quan</h1>
           <p className="dashboard-subtitle">
-            Welcome back! Here's what's happening today.
+            Chào mừng trở lại! Đây là những gì đang diễn ra hôm nay.
           </p>
         </div>
         <div className="header-actions">
           <button className="action-button">
             <Activity size={18} />
-            <span>View Reports</span>
+            <span>Xem Báo Cáo</span>
           </button>
           <button className="action-button primary">
             <TrendingUp size={18} />
-            <span>Analytics</span>
+            <span>Phân Tích</span>
           </button>
         </div>
       </header>

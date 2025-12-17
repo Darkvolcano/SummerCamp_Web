@@ -98,8 +98,8 @@ const GroupManagement: React.FC = () => {
     return (
       <div className="p-6 flex items-center justify-center min-h-[500px]">
         <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-indigo-200 p-12 rounded-2xl text-center shadow-lg hover:shadow-xl transition-shadow duration-300 max-w-md">
-          <h3 className="text-xl font-bold text-indigo-900 mb-2">Select Camp</h3>
-          <p className="text-indigo-700 text-base leading-relaxed">Please select a camp from the left sidebar to view groups</p>
+          <h3 className="text-xl font-bold text-indigo-900 mb-2">Chọn Trại</h3>
+          <p className="text-indigo-700 text-base leading-relaxed">Vui lòng chọn một trại từ thanh bên trái để xem nhóm</p>
         </div>
       </div>
     );
@@ -241,9 +241,9 @@ const GroupManagement: React.FC = () => {
     <div className="min-h-screen bg-[#F9FAFB] p-6">
       {/* Header */}
       <div className="mb-4">
-        <h1 className="text-2xl font-bold text-[#111827]">Camper Groups</h1>
+        <h1 className="text-2xl font-bold text-[#111827]">Nhóm Trại Viên</h1>
         <p className="text-xs text-[#6B7280] mt-0.5">
-          Manage and organize camper groups
+          Quản lý và sắp xếp các nhóm trại viên
         </p>
       </div>
 
@@ -253,7 +253,7 @@ const GroupManagement: React.FC = () => {
           {/* Header */}
           <div className="px-6 py-4 border-b border-[#E5E7EB]">
             <h2 className="text-lg font-bold text-[#111827]">
-              Pending Group Assignment ({pendingCampers.length})
+              Chờ Phân Công Nhóm ({pendingCampers.length})
             </h2>
           </div>
 
@@ -263,13 +263,13 @@ const GroupManagement: React.FC = () => {
               <thead className="bg-[#F9FAFB] border-b border-[#E5E7EB]">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                    Camper Name
+                    Tên Trại Viên
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                    Camper ID
+                    ID Trại Viên
                   </th>
                   <th className="px-6 py-3 text-right text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                    Actions
+                    Hành Động
                   </th>
                 </tr>
               </thead>
@@ -288,7 +288,7 @@ const GroupManagement: React.FC = () => {
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <Select
-                          placeholder="Select group"
+                          placeholder="Chọn nhóm"
                           size="small"
                           className="w-48"
                           value={selectedGroups[registration?.camper?.camperId]}
@@ -314,7 +314,7 @@ const GroupManagement: React.FC = () => {
                                   camperId: registration.camper.camperId,
                                   groupId: groupId
                                 });
-                                toastSuccess('Success', 'Camper assigned to group');
+                                toastSuccess('Thành công', 'Trại viên đã được phân công vào nhóm');
                                 // Clear selection
                                 setSelectedGroups(prev => {
                                   const newState = { ...prev };
@@ -328,18 +328,18 @@ const GroupManagement: React.FC = () => {
                                 }
                               } catch (error: any) {
                                 console.error('Failed to assign camper:', error);
-                                const errorMsg = error.response?.data?.message || error.message || 'Failed to assign camper to group';
-                                toastError('Error', errorMsg);
+                                const errorMsg = error.response?.data?.message || error.message || 'Không thể phân công trại viên vào nhóm';
+                                toastError('Lỗi', errorMsg);
                               }
                             } else {
-                              toastError('Error', 'Please select a group first');
+                              toastError('Lỗi', 'Vui lòng chọn một nhóm trước');
                             }
                           }}
                           disabled={!selectedGroups[registration?.camper?.camperId]}
                           className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] disabled:bg-gray-300 disabled:cursor-not-allowed transition-all font-medium text-sm"
                         >
                           <CheckCircle2 size={16} />
-                          Assign
+                          Phân công
                         </button>
                       </div>
                     </td>
@@ -362,7 +362,7 @@ const GroupManagement: React.FC = () => {
             {/* Left Sidebar - Filters */}
             <div className="lg:col-span-1">
               <div className="bg-white rounded-xl shadow-sm border border-[#E5E7EB] p-6 sticky top-6">
-                <h3 className="text-lg font-bold text-[#111827] mb-4">Search</h3>
+                <h3 className="text-lg font-bold text-[#111827] mb-4">Tìm Kiếm</h3>
 
                 {/* Search */}
                 <div className="mb-6">
@@ -373,7 +373,7 @@ const GroupManagement: React.FC = () => {
                     />
                     <input
                       type="text"
-                      placeholder="By name or description..."
+                      placeholder="Theo tên hoặc mô tả..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="w-full pl-9 pr-4 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:border-transparent text-sm text-[#6B7280] placeholder:text-[#9CA3AF]"
@@ -384,7 +384,7 @@ const GroupManagement: React.FC = () => {
                 {/* Max Size Info */}
                 {campData && (
                   <div className="mb-6">
-                    <p className="text-xs font-medium text-[#6B7280] mb-1">Capacity</p>
+                    <p className="text-xs font-medium text-[#6B7280] mb-1">Sức Chứa</p>
                     <div className="flex items-center gap-1">
                       <span className="text-2xl font-bold text-[#111827]">{getTotalMaxSize()}</span>
                       <span className="text-xs text-[#6B7280]">/ {campData.maxParticipants} max</span>
@@ -398,7 +398,7 @@ const GroupManagement: React.FC = () => {
                   className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-all font-medium text-sm"
                 >
                   <Plus size={16} />
-                  Add Group
+                  Thêm Nhóm
                 </button>
 
               </div>
@@ -410,7 +410,7 @@ const GroupManagement: React.FC = () => {
                 {/* Table Header */}
                 <div className="px-6 py-4 border-b border-[#E5E7EB]">
                   <h2 className="text-lg font-bold text-[#111827]">
-                    Found: {filteredGroups.length}
+                    Tìm thấy: {filteredGroups.length}
                   </h2>
                 </div>
 
@@ -423,19 +423,19 @@ const GroupManagement: React.FC = () => {
                           ID
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Group Name
+                          Tên Nhóm
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Description
+                          Mô Tả
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Size / Age
+                          Số Lượng / Tuổi
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Supervisor
+                          Giám Sát Viên
                         </th>
                         <th className="px-6 py-3 text-right text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Actions
+                          Hành Động
                         </th>
                       </tr>
                     </thead>
@@ -446,7 +446,7 @@ const GroupManagement: React.FC = () => {
                             colSpan={6}
                             className="px-6 py-12 text-center text-[#6B7280]"
                           >
-                            No groups found matching your filters
+                            Không tìm thấy nhóm nào phù hợp với bộ lọc của bạn
                           </td>
                         </tr>
                       ) : (
@@ -466,10 +466,10 @@ const GroupManagement: React.FC = () => {
                             </td>
                             <td className="px-6 py-4 text-sm text-[#6B7280]">
                               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
-                                Max {group.maxSize}
+                                Tối đa {group.maxSize}
                               </span>
                               <span className="ml-2 text-xs text-[#6B7280]">
-                                ({group.minAge} - {group.maxAge} yrs)
+                                ({group.minAge} - {group.maxAge} tuổi)
                               </span>
                             </td>
                             <td className="px-6 py-4 text-sm text-[#6B7280]">
@@ -477,7 +477,7 @@ const GroupManagement: React.FC = () => {
                                 group.supervisorName
                               ) : (
                                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">
-                                  Unassigned
+                                  Chưa phân công
                                 </span>
                               )}
                             </td>
@@ -486,16 +486,16 @@ const GroupManagement: React.FC = () => {
                                 <button
                                   onClick={() => handleEditClick(group)}
                                   className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#F3F4F6] text-[#6B7280] rounded-lg hover:bg-[#E5E7EB] transition-all font-medium text-sm"
-                                  title="Edit Group"
+                                  title="Chỉnh Sửa Nhóm"
                                 >
                                   <Edit2 size={16} />
-                                  Edit
+                                  Sửa
                                 </button>
                                 <DeletePopover
                                   onConfirm={() => handleDelete(group.groupId)}
-                                  title="Delete Group"
-                                  message={`Are you sure you want to delete "${group.groupName}"?`}
-                                  buttonText="Delete"
+                                  title="Xóa Nhóm"
+                                  message={`Bạn có chắc chắn muốn xóa "${group.groupName}"?`}
+                                  buttonText="Xóa"
                                   isOpen={deletePopoverOpen === group.groupId}
                                   onOpenChange={(open) =>
                                     setDeletePopoverOpen(open ? group.groupId : null)
@@ -517,7 +517,7 @@ const GroupManagement: React.FC = () => {
 
       {/* Add/Edit Modal */}
       <Modal
-        title={editingGroup ? 'Edit Group' : 'Add New Group'}
+        title={editingGroup ? 'Chỉnh Sửa Nhóm' : 'Thêm Nhóm Mới'}
         open={isModalVisible}
         onOk={handleSubmit}
         onCancel={() => {
@@ -534,47 +534,47 @@ const GroupManagement: React.FC = () => {
           className="mt-4"
         >
           <Form.Item
-            label="Group Name"
+            label="Tên Nhóm"
             name="groupName"
             rules={[
-              { required: true, message: 'Please input group name!' },
-              { min: 1, message: 'Group name cannot be empty!' },
+              { required: true, message: 'Vui lòng nhập tên nhóm!' },
+              { min: 1, message: 'Tên nhóm không được để trống!' },
             ]}
           >
-            <Input placeholder="e.g., Group A1, Group B2" />
+            <Input placeholder="Ví dụ: Nhóm A1, Nhóm B2" />
           </Form.Item>
 
           <Form.Item
-            label="Description"
+            label="Mô Tả"
             name="description"
             rules={[
-              { required: true, message: 'Please input description!' },
+              { required: true, message: 'Vui lòng nhập mô tả!' },
             ]}
           >
-            <Input.TextArea placeholder="e.g., Group for elementary students" rows={3} />
+            <Input.TextArea placeholder="Ví dụ: Nhóm dành cho học sinh tiểu học" rows={3} />
           </Form.Item>
 
           <Form.Item
-            label="Max Size"
+            label="Số Lượng Tối Đa"
             name="maxSize"
             rules={[
-              { required: true, message: 'Please input max size!' },
-              { type: 'number', min: 1, message: 'Max size must be at least 1!' },
+              { required: true, message: 'Vui lòng nhập số lượng tối đa!' },
+              { type: 'number', min: 1, message: 'Số lượng tối đa phải ít nhất là 1!' },
             ]}
           >
-            <InputNumber min={1} placeholder="e.g., 30" className="w-full" />
+            <InputNumber min={1} placeholder="Ví dụ: 30" className="w-full" />
           </Form.Item>
 
           <Form.Item
-            label="Supervisor"
+            label="Giám Sát Viên"
             name="supervisorId"
             rules={[
               { required: false },
             ]}
-            help={!editingGroup?.supervisorName ? '⚠️ No supervisor assigned' : ''}
+            help={!editingGroup?.supervisorName ? '⚠️ Chưa phân công giám sát viên' : ''}
           >
             <Select
-              placeholder="Select a supervisor (optional)"
+              placeholder="Chọn giám sát viên (tùy chọn)"
               allowClear
               optionLabelProp="label"
               options={staffList.map((staff) => ({
@@ -592,25 +592,25 @@ const GroupManagement: React.FC = () => {
 
           <div className="grid grid-cols-2 gap-4">
             <Form.Item
-              label="Min Age"
+              label="Tuổi Tối Thiểu"
               name="minAge"
               rules={[
-                { required: true, message: 'Please input min age!' },
-                { type: 'number', min: 0, message: 'Min age must be >= 0!' },
+                { required: true, message: 'Vui lòng nhập tuổi tối thiểu!' },
+                { type: 'number', min: 0, message: 'Tuổi tối thiểu phải >= 0!' },
               ]}
             >
-              <InputNumber min={0} placeholder="e.g., 5" className="w-full" />
+              <InputNumber min={0} placeholder="Ví dụ: 5" className="w-full" />
             </Form.Item>
 
             <Form.Item
-              label="Max Age"
+              label="Tuổi Tối Đa"
               name="maxAge"
               rules={[
-                { required: true, message: 'Please input max age!' },
-                { type: 'number', min: 0, message: 'Max age must be >= 0!' },
+                { required: true, message: 'Vui lòng nhập tuổi tối đa!' },
+                { type: 'number', min: 0, message: 'Tuổi tối đa phải >= 0!' },
               ]}
             >
-              <InputNumber min={0} placeholder="e.g., 15" className="w-full" />
+              <InputNumber min={0} placeholder="Ví dụ: 15" className="w-full" />
             </Form.Item>
           </div>
 
@@ -619,7 +619,7 @@ const GroupManagement: React.FC = () => {
             <div className="mt-6 pt-6 border-t border-gray-200">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-sm font-semibold text-gray-700">
-                  Group Members ({groupMembers.length || 0})
+                  Thành Viên Nhóm ({groupMembers.length || 0})
                 </h3>
                 {loadingMembers && <Spin size="small" />}
               </div>
@@ -632,7 +632,7 @@ const GroupManagement: React.FC = () => {
                     >
                       <div>
                         <p className="text-sm font-medium text-gray-900">
-                          {member.camperName?.camperName || 'Unknown'}
+                          {member.camperName?.camperName || 'Không rõ'}
                         </p>
                         <p className="text-xs text-gray-500">
                           ID: {member.camperName?.camperId || 'N/A'}
@@ -640,29 +640,29 @@ const GroupManagement: React.FC = () => {
                       </div>
                       <button
                         onClick={async () => {
-                          if (window.confirm(`Remove ${member.camperName?.camperName} from this group?`)) {
+                          if (window.confirm(`Loại bỏ ${member.camperName?.camperName} khỏi nhóm này?`)) {
                             try {
                               await camperGroupService.deleteCamperGroup(member.camperGroupId);
-                              toastSuccess('Success', 'Camper removed from group');
+                              toastSuccess('Thành công', 'Trại viên đã được loại khỏi nhóm');
                               // Refresh group members
                               const members = await camperGroupService.getCamperGroups({ groupId: editingGroup?.groupId });
                               setGroupMembers(Array.isArray(members) ? members : []);
                             } catch (error: any) {
                               console.error('Failed to remove camper:', error);
-                              const errorMsg = error.response?.data?.message || error.message || 'Failed to remove camper from group';
-                              toastError('Error', errorMsg);
+                              const errorMsg = error.response?.data?.message || error.message || 'Không thể loại trại viên khỏi nhóm';
+                              toastError('Lỗi', errorMsg);
                             }
                           }
                         }}
                         className="text-red-600 hover:text-red-800 text-xs font-medium px-2 py-1 rounded bg-white border border-red-300 hover:bg-red-50 transition-colors"
                       >
-                        Remove
+                        Loại bỏ
                       </button>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-gray-500 italic">No campers assigned yet</p>
+                <p className="text-sm text-gray-500 italic">Chưa có trại viên nào được phân công</p>
               )}
             </div>
           )}

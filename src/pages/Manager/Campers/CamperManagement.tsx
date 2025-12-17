@@ -56,8 +56,8 @@ const CamperManagement: React.FC = () => {
     return (
       <div className="p-6 flex items-center justify-center min-h-[500px]">
         <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-indigo-200 p-12 rounded-2xl text-center shadow-lg hover:shadow-xl transition-shadow duration-300 max-w-md">
-          <h3 className="text-xl font-bold text-indigo-900 mb-2">Select Camp</h3>
-          <p className="text-indigo-700 text-base leading-relaxed">Please select a camp from the left sidebar to view campers</p>
+          <h3 className="text-xl font-bold text-indigo-900 mb-2">Chọn trại</h3>
+          <p className="text-indigo-700 text-base leading-relaxed">Vui lòng chọn một trại từ thanh bên trái để xem trại viên</p>
         </div>
       </div>
     );
@@ -133,9 +133,9 @@ const CamperManagement: React.FC = () => {
     <div className="min-h-screen bg-[#F9FAFB] p-6">
       {/* Header */}
       <div className="mb-4">
-        <h1 className="text-2xl font-bold text-[#111827]">Campers</h1>
+        <h1 className="text-2xl font-bold text-[#111827]">Trại Viên</h1>
         <p className="text-xs text-[#6B7280] mt-0.5">
-          View and manage camp campers
+          Xem và quản lý trại viên của trải
         </p>
       </div>
 
@@ -145,7 +145,7 @@ const CamperManagement: React.FC = () => {
         </div>
       ) : campers.length === 0 ? (
         <div className="bg-white rounded-xl shadow-sm border border-[#E5E7EB] p-12 text-center">
-          <p className="text-[#6B7280] text-lg">No campers found for this camp</p>
+          <p className="text-[#6B7280] text-lg">Không tìm thấy trại viên nào cho trại này</p>
         </div>
       ) : (
         <>
@@ -154,12 +154,12 @@ const CamperManagement: React.FC = () => {
             {/* Left Sidebar - Filters */}
             <div className="lg:col-span-1">
               <div className="bg-white rounded-xl shadow-sm border border-[#E5E7EB] p-6 sticky top-6">
-                <h3 className="text-lg font-bold text-[#111827] mb-4">Filters</h3>
+                <h3 className="text-lg font-bold text-[#111827] mb-4">Bộ Lọc</h3>
 
                 {/* Search */}
                 <div className="mb-6">
                   <label className="block text-xs font-semibold text-[#374151] mb-2 uppercase tracking-wider">
-                    Search
+                    Tìm Kiếm
                   </label>
                   <div className="relative">
                     <Search
@@ -168,7 +168,7 @@ const CamperManagement: React.FC = () => {
                     />
                     <input
                       type="text"
-                      placeholder="By name..."
+                      placeholder="Theo tên..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="w-full pl-9 pr-4 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:border-transparent text-sm text-[#6B7280] placeholder:text-[#9CA3AF]"
@@ -179,7 +179,7 @@ const CamperManagement: React.FC = () => {
                 {/* Gender Filter */}
                 <div>
                   <label className="block text-xs font-semibold text-[#374151] mb-3 uppercase tracking-wider">
-                    Gender
+                    Giới Tính
                   </label>
                   <div className="space-y-2">
                     {/* All checkbox */}
@@ -191,7 +191,7 @@ const CamperManagement: React.FC = () => {
                         className="w-4 h-4 rounded border-[#D1D5DB] text-[#6366F1] focus:ring-[#6366F1] focus:ring-2 bg-white"
                       />
                       <span className="text-sm text-[#374151] group-hover:text-[#111827] font-medium">
-                        All
+                        Tất cả
                       </span>
                       <span className="text-xs font-semibold text-[#6366F1] bg-[#EFF6FF] px-2 py-0.5 rounded-full ml-auto">
                         {campers.length}
@@ -225,19 +225,19 @@ const CamperManagement: React.FC = () => {
                 <div className="mt-6 pt-6 border-t border-[#E5E7EB]">
                   <div className="space-y-3">
                     <div>
-                      <span className="text-xs text-[#6B7280]">Total: </span>
+                      <span className="text-xs text-[#6B7280]">Tổng: </span>
                       <span className="text-lg font-bold text-[#111827]">
                         {campers.length}
                       </span>
                     </div>
                     <div>
-                      <span className="text-xs text-[#6B7280]">Male: </span>
+                      <span className="text-xs text-[#6B7280]">Nam: </span>
                       <span className="text-lg font-bold text-blue-600">
                         {genderCounts['Male'] || 0}
                       </span>
                     </div>
                     <div>
-                      <span className="text-xs text-[#6B7280]">Female: </span>
+                      <span className="text-xs text-[#6B7280]">Nữ: </span>
                       <span className="text-lg font-bold text-pink-600">
                         {genderCounts['Female'] || 0}
                       </span>
@@ -253,7 +253,7 @@ const CamperManagement: React.FC = () => {
                 {/* Table Header */}
                 <div className="px-6 py-4 border-b border-[#E5E7EB]">
                   <h2 className="text-lg font-bold text-[#111827]">
-                    Found: {filteredCampers.length}
+                    Tìm thấy: {filteredCampers.length}
                   </h2>
                 </div>
 
@@ -266,22 +266,22 @@ const CamperManagement: React.FC = () => {
                           ID
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Name
+                          Tên
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Gender
+                          Giới Tính
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Date of Birth
+                          Ngày Sinh
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Age
+                          Tuổi
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Status
+                          Trạng Thái
                         </th>
                         <th className="px-6 py-3 text-right text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Actions
+                          Hành Động
                         </th>
                       </tr>
                     </thead>
@@ -292,7 +292,7 @@ const CamperManagement: React.FC = () => {
                             colSpan={7}
                             className="px-6 py-12 text-center text-[#6B7280]"
                           >
-                            No campers found matching your filters
+                            Không tìm thấy trại viên nào phù hợp với bộ lọc của bạn
                           </td>
                         </tr>
                       ) : (
@@ -320,7 +320,7 @@ const CamperManagement: React.FC = () => {
                               {formatDate(camper.dob)}
                             </td>
                             <td className="px-6 py-4 text-sm text-[#6B7280]">
-                              {calculateAge(camper.dob)} years old
+                              {calculateAge(camper.dob)} tuổi
                             </td>
                             <td className="px-6 py-4">
                               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
@@ -334,10 +334,10 @@ const CamperManagement: React.FC = () => {
                                   setCamperDetailModalOpen(true);
                                 }}
                                 className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#F3F4F6] text-[#6B7280] rounded-lg hover:bg-[#E5E7EB] transition-all font-medium text-sm"
-                                title="View Details"
+                                title="Xem Chi Tiết"
                               >
                                 <Eye size={16} />
-                                Detail
+                                Chi tiết
                               </button>
                             </td>
                           </tr>

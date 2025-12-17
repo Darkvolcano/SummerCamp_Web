@@ -41,7 +41,7 @@ const ManagerSidebar: React.FC<ManagerSidebarProps> = ({
   const { user, logout } = useAuthStore();
   const context = useContext(ManagerContext);
 
-  const [selectedCamp, setSelectedCamp] = useState("Choose a camp program");
+  const [selectedCamp, setSelectedCamp] = useState("Chọn chương trình trại");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
@@ -65,52 +65,52 @@ const ManagerSidebar: React.FC<ManagerSidebarProps> = ({
   const mainMenuItems: MenuItem[] = [
     {
       path: PagePath.MANAGER_DASHBOARD,
-      label: "Dashboard",
+      label: "Bảng Điều Khiển",
       icon: <LayoutDashboard size={20} />,
     },
     {
       path: PagePath.MANAGER_STAFFS,
-      label: "Staffs",
+      label: "Nhân Viên",
       icon: <UserRoundPlus size={20} />,
     },
     {
       path: PagePath.MANAGER_REGIS,
-      label: "Registrations",
+      label: "Đăng Ký",
       icon: <ClipboardList size={20} />,
     },
     {
       path: PagePath.MANAGER_CAMPERS,
-      label: "Campers",
+      label: "Trại Viên",
       icon: <Users size={20} />,
     },
     {
       path: PagePath.MANAGER_ACTIVITIES,
-      label: "Activities",
+      label: "Hoạt Động",
       icon: <SmilePlus  size={20} />,
     },
     {
       path: PagePath.MANAGER_GROUPS,
-      label: "Groups",
+      label: "Nhóm",
       icon: <UsersRound size={20} />,
     },
     {
       path: PagePath.MANAGER_TRANSPORTATION,
-      label: "Transportation",
+      label: "Vận Chuyển",
       icon: <Bus size={20} />,
     },
     {
       path: PagePath.MANAGER_LOCATIONS,
-      label: "Locations",
+      label: "Địa Điểm",
       icon: <MapPinHouse  size={20} />,
     },
     {
       path: PagePath.MANAGER_ACCOMODATION,
-      label: "Accommodation",
+      label: "Chỗ Ở",
       icon: <Bed size={20} />,
     },
     {
       path: PagePath.MANAGER_PAYMENTS,
-      label: "Transactions",
+      label: "Giao Dịch",
       icon: <CreditCard size={20} />,
     },
   ];
@@ -118,12 +118,12 @@ const ManagerSidebar: React.FC<ManagerSidebarProps> = ({
   const bottomMenuItems: MenuItem[] = [
     {
       path: PagePath.MANAGER_CALENDAR,
-      label: "Calendar",
+      label: "Lịch",
       icon: <Calendar size={20} />,
     },
     {
       path: PagePath.MANAGER_INCIDENTS,
-      label: "Reports",
+      label: "Báo Cáo Sự Cố",
       icon: <AlertTriangle size={20} />,
     },
   ];
@@ -225,7 +225,7 @@ const ManagerSidebar: React.FC<ManagerSidebarProps> = ({
       {/* Camp Dropdown */}
       {!isCollapsed && (
         <div className="camp-selector-section">
-          <label className="camp-label">Camp program management</label>
+          <label className="camp-label">Quản lý chương trình trại</label>
           <div className="camp-dropdown">
             <button
               className="dropdown-toggle"
@@ -243,11 +243,11 @@ const ManagerSidebar: React.FC<ManagerSidebarProps> = ({
               <div className="dropdown-menu">
                 {isLoadingCamps ? (
                   <div className="dropdown-item text-gray-500">
-                    Loading camps...
+                    Đang tải trại...
                   </div>
                 ) : camps.length === 0 ? (
                   <div className="dropdown-item text-gray-500">
-                    No camps assigned
+                    Không có trại được phân công
                   </div>
                 ) : (
                   camps.map((camp) => (
@@ -324,7 +324,7 @@ const ManagerSidebar: React.FC<ManagerSidebarProps> = ({
             <>
               <div className="user-details">
                 <div className="user-name">{user?.fullName || "Manager"}</div>
-                <div className="user-role">Project Manager</div>
+                <div className="user-role">Quản Lý Dự Án</div>
               </div>
               <button className="user-menu-toggle">
                 <ChevronDown
@@ -349,7 +349,7 @@ const ManagerSidebar: React.FC<ManagerSidebarProps> = ({
               className="user-dropdown-item"
             >
               <UserCircle size={18} />
-              <span>Profile Settings</span>
+              <span>Cài Đặt Hồ Sơ</span>
             </button>
             <div className="user-dropdown-divider"></div>
             <button
@@ -357,7 +357,7 @@ const ManagerSidebar: React.FC<ManagerSidebarProps> = ({
               className="user-dropdown-item logout"
             >
               <LogOut size={18} />
-              <span>Logout</span>
+              <span>Đăng Xuất</span>
             </button>
           </div>
         )}

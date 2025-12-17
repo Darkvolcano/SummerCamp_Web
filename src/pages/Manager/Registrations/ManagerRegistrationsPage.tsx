@@ -59,8 +59,8 @@ const ManagerRegistrationsPage: React.FC = () => {
     return (
       <div className="p-6 flex items-center justify-center min-h-[500px]">
         <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-indigo-200 p-12 rounded-2xl text-center shadow-lg hover:shadow-xl transition-shadow duration-300 max-w-md">
-          <h3 className="text-xl font-bold text-indigo-900 mb-2">Select Camp</h3>
-          <p className="text-indigo-700 text-base leading-relaxed">Please select a camp from the left sidebar to view registrations</p>
+          <h3 className="text-xl font-bold text-indigo-900 mb-2">Chọn Trại</h3>
+          <p className="text-indigo-700 text-base leading-relaxed">Vui lòng chọn một trại từ thanh bên trái để xem đăng ký</p>
         </div>
       </div>
     );
@@ -157,9 +157,9 @@ const ManagerRegistrationsPage: React.FC = () => {
     <div className="min-h-screen bg-[#F9FAFB] p-6">
       {/* Header */}
       <div className="mb-4">
-        <h1 className="text-2xl font-bold text-[#111827]">Registrations</h1>
+        <h1 className="text-2xl font-bold text-[#111827]">Đăng Ký</h1>
         <p className="text-xs text-[#6B7280] mt-0.5">
-          Manage and review camp registrations
+          Quản lý và xem xét đăng ký trại
         </p>
       </div>
 
@@ -169,7 +169,7 @@ const ManagerRegistrationsPage: React.FC = () => {
         </div>
       ) : registrations.length === 0 ? (
         <div className="bg-white rounded-xl shadow-sm border border-[#E5E7EB] p-12 text-center">
-          <p className="text-[#6B7280] text-lg">No registrations found for this camp</p>
+          <p className="text-[#6B7280] text-lg">Không tìm thấy đăng ký cho trại này</p>
         </div>
       ) : (
         <>
@@ -179,7 +179,7 @@ const ManagerRegistrationsPage: React.FC = () => {
               {/* Header */}
               <div className="px-6 py-4 border-b border-[#E5E7EB]">
                 <h2 className="text-lg font-bold text-[#111827]">
-                  Pending Approvals ({pendingApprovals.length})
+                  Chờ Duyệt ({pendingApprovals.length})
                 </h2>
               </div>
 
@@ -189,19 +189,19 @@ const ManagerRegistrationsPage: React.FC = () => {
                   <thead className="bg-[#F9FAFB] border-b border-[#E5E7EB]">
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                        Registration ID
+                        Mã ĐK
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                        Created By
+                        Người Tạo
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                        Campers
+                        Trại Viên
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                        Price
+                        Giá
                       </th>
                       <th className="px-6 py-3 text-right text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                        Actions
+                        Thao Tác
                       </th>
                     </tr>
                   </thead>
@@ -220,7 +220,7 @@ const ManagerRegistrationsPage: React.FC = () => {
                         <td className="px-6 py-4">
                           <div className="flex flex-col gap-0.5">
                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#EFF6FF] text-[#3B82F6] w-fit">
-                              {reg.campers?.length || 0} camper(s)
+                              {reg.campers?.length || 0} trại viên
                             </span>
                             <span className="text-xs text-[#6B7280]">
                               {reg.campers?.map(c => c.camperName).join(', ') || 'N/A'}
@@ -241,14 +241,14 @@ const ManagerRegistrationsPage: React.FC = () => {
                               title="View Details"
                             >
                               <Eye size={16} />
-                              Detail
+                              Chi Tiết
                             </button>
                             <Popconfirm
                               title="Approve Registration"
-                              description="Are you sure you want to approve this registration?"
+                              description="Bạn có chắc muốn duyệt đăng ký này?"
                               onConfirm={() => handleApprove(reg.registrationId)}
-                              okText="Yes, Approve"
-                              cancelText="Cancel"
+                              okText="Duyệt"
+                              cancelText="Hủy"
                               okButtonProps={{
                                 className: "bg-[#6366F1] hover:bg-[#4F46E5]",
                               }}
@@ -258,7 +258,7 @@ const ManagerRegistrationsPage: React.FC = () => {
                                 title="Approve Registration"
                               >
                                 <CheckCircle2 size={16} />
-                                Approve
+                                Duyệt
                               </button>
                             </Popconfirm>
                           </div>
@@ -276,12 +276,12 @@ const ManagerRegistrationsPage: React.FC = () => {
             {/* Left Sidebar - Filters */}
             <div className="lg:col-span-1">
               <div className="bg-white rounded-xl shadow-sm border border-[#E5E7EB] p-6 sticky top-6">
-                <h3 className="text-lg font-bold text-[#111827] mb-4">Filters</h3>
+                <h3 className="text-lg font-bold text-[#111827] mb-4">Bộ Lọc</h3>
 
                 {/* Search */}
                 <div className="mb-6">
                   <label className="block text-xs font-semibold text-[#374151] mb-2 uppercase tracking-wider">
-                    Search
+                    Tìm Kiếm
                   </label>
                   <div className="relative">
                     <Search
@@ -290,7 +290,7 @@ const ManagerRegistrationsPage: React.FC = () => {
                     />
                     <input
                       type="text"
-                      placeholder="By name or ID..."
+                      placeholder="Theo tên hoặc mã..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="w-full pl-9 pr-4 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:border-transparent text-sm text-[#6B7280] placeholder:text-[#9CA3AF]"
@@ -301,7 +301,7 @@ const ManagerRegistrationsPage: React.FC = () => {
                 {/* Status Filter */}
                 <div>
                   <label className="block text-xs font-semibold text-[#374151] mb-3 uppercase tracking-wider">
-                    Status
+                    Trạng Thái
                   </label>
                   <div className="space-y-2">
                     {/* All checkbox */}
@@ -313,7 +313,7 @@ const ManagerRegistrationsPage: React.FC = () => {
                         className="w-4 h-4 rounded border-[#D1D5DB] text-[#6366F1] focus:ring-[#6366F1] focus:ring-2 bg-white"
                       />
                       <span className="text-sm text-[#374151] group-hover:text-[#111827] font-medium">
-                        All
+                        Tất Cả
                       </span>
                       <span className="text-xs font-semibold text-[#6366F1] bg-[#EFF6FF] px-2 py-0.5 rounded-full ml-auto">
                         {registrations.length}
@@ -354,19 +354,19 @@ const ManagerRegistrationsPage: React.FC = () => {
                 <div className="mt-6 pt-6 border-t border-[#E5E7EB]">
                   <div className="space-y-3">
                     <div>
-                      <span className="text-xs text-[#6B7280]">Total: </span>
+                      <span className="text-xs text-[#6B7280]">Tổng: </span>
                       <span className="text-lg font-bold text-[#111827]">
                         {registrations.length}
                       </span>
                     </div>
                     <div>
-                      <span className="text-xs text-[#6B7280]">Pending: </span>
+                      <span className="text-xs text-[#6B7280]">Chờ: </span>
                       <span className="text-lg font-bold text-amber-600">
                         {statusCounts[RegistrationStatus.PENDING_APPROVAL] || 0}
                       </span>
                     </div>
                     <div>
-                      <span className="text-xs text-[#6B7280]">Approved: </span>
+                      <span className="text-xs text-[#6B7280]">Đã Duyệt: </span>
                       <span className="text-lg font-bold text-green-600">
                         {statusCounts[RegistrationStatus.APPROVED] || 0}
                       </span>
@@ -382,7 +382,7 @@ const ManagerRegistrationsPage: React.FC = () => {
                 {/* Table Header */}
                 <div className="px-6 py-4 border-b border-[#E5E7EB]">
                   <h2 className="text-lg font-bold text-[#111827]">
-                    Found: {filteredRegistrations.length}
+                    Tìm Thấy: {filteredRegistrations.length}
                   </h2>
                 </div>
 
@@ -395,25 +395,25 @@ const ManagerRegistrationsPage: React.FC = () => {
                           ID
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Campers
+                          Trại Viên
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Registration Date
+                          Ngày ĐK
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Price
+                          Giá
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Promotion
+                          Khuyến Mãi
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Note
+                          Ghi Chú
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Status
+                          Trạng Thái
                         </th>
                         <th className="px-6 py-3 text-right text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Actions
+                          Thao Tác
                         </th>
                       </tr>
                     </thead>
@@ -424,7 +424,7 @@ const ManagerRegistrationsPage: React.FC = () => {
                             colSpan={8}
                             className="px-6 py-12 text-center text-[#6B7280]"
                           >
-                            No registrations found matching your filters
+                            Không tìm thấy đăng ký phù hợp
                           </td>
                         </tr>
                       ) : (
@@ -438,7 +438,7 @@ const ManagerRegistrationsPage: React.FC = () => {
                             </td>
                             <td className="px-6 py-4">
                               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#EFF6FF] text-[#3B82F6]">
-                                {reg.campers?.length || 0} camper(s)
+                                {reg.campers?.length || 0} trại viên
                               </span>
                             </td>
                             <td className="px-6 py-4 text-sm text-[#374151]">
@@ -474,7 +474,7 @@ const ManagerRegistrationsPage: React.FC = () => {
                                 title="View Details"
                               >
                                 <Eye size={16} />
-                                Detail
+                                Chi Tiết
                               </button>
                             </td>
                           </tr>

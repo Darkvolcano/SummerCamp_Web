@@ -18,8 +18,8 @@ export default function ChartCard() {
         <div className="chart-card">
             <div className="card-header">
                 <div>
-                    <h3 className="card-title">Monthly Revenue</h3>
-                    <p className="card-subtitle">Revenue growth over the last 6 months</p>
+                    <h3 className="card-title">Doanh Thu Tháng</h3>
+                    <p className="card-subtitle">Tăng trưởng doanh thu trong 6 tháng qua</p>
                 </div>
                 <div className="chart-badge">
                     <TrendingUp size={16} />
@@ -49,15 +49,15 @@ export default function ChartCard() {
             {/* Additional Stats */}
             <div className="chart-stats">
                 <div className="chart-stat-item">
-                    <span className="stat-label">Average</span>
+                    <span className="stat-label">Trung Bình</span>
                     <span className="stat-value">78.3%</span>
                 </div>
                 <div className="chart-stat-item">
-                    <span className="stat-label">Peak</span>
+                    <span className="stat-label">Cao Nhất</span>
                     <span className="stat-value">95.0%</span>
                 </div>
                 <div className="chart-stat-item">
-                    <span className="stat-label">Growth</span>
+                    <span className="stat-label">Tăng Trưởng</span>
                     <span className="stat-value green">+18.2%</span>
                 </div>
             </div>

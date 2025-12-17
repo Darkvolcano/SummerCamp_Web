@@ -103,14 +103,14 @@ export default function VehicleTypeManagement() {
     <>
       <div className="vehicle-type-management-header">
         <div className="header-left">
-          <h1 className="page-title">Vehicle Types Management</h1>
+          <h1 className="page-title">Quản Lý Loại Xe</h1>
           <p className="page-subtitle">
-            Manage vehicle type categories for your fleet
+            Quản lý các danh mục loại xe cho đội xe
           </p>
         </div>
         <button className="btn-create" onClick={handleCreate}>
           <Plus size={20} />
-          <span>Create Vehicle Type</span>
+          <span>Tạo Loại Xe</span>
         </button>
       </div>
 
@@ -120,7 +120,7 @@ export default function VehicleTypeManagement() {
             <Tag size={24} />
           </div>
           <div className="stat-content">
-            <p className="stat-label">Total Types</p>
+            <p className="stat-label">Tổng Loại</p>
             <h3 className="stat-value">{vehicleTypes.length}</h3>
           </div>
         </div>
@@ -130,7 +130,7 @@ export default function VehicleTypeManagement() {
             <CheckCircle size={24} />
           </div>
           <div className="stat-content">
-            <p className="stat-label">Active Types</p>
+            <p className="stat-label">Loại Hoạt Động</p>
             <h3 className="stat-value">
               {vehicleTypes.filter((t) => t.isActive).length}
             </h3>
@@ -142,7 +142,7 @@ export default function VehicleTypeManagement() {
             <XCircle size={24} />
           </div>
           <div className="stat-content">
-            <p className="stat-label">Inactive Types</p>
+            <p className="stat-label">Loại Không Hoạt Động</p>
             <h3 className="stat-value">
               {vehicleTypes.filter((t) => !t.isActive).length}
             </h3>
@@ -155,7 +155,7 @@ export default function VehicleTypeManagement() {
           <Search size={20} />
           <input
             type="text"
-            placeholder="Search vehicle types by name or description..."
+            placeholder="Tìm loại xe theo tên hoặc mô tả..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -174,21 +174,21 @@ export default function VehicleTypeManagement() {
         {loading ? (
           <div className="loading-state">
             <RefreshCw size={48} className="spinning" />
-            <p>Loading vehicle types...</p>
+            <p>Đang tải loại xe...</p>
           </div>
         ) : filteredTypes.length === 0 ? (
           <div className="empty-state">
             <Tag size={64} />
-            <h3>No vehicle types found</h3>
+            <h3>Không tìm thấy loại xe</h3>
             <p>
               {searchTerm
-                ? "Try adjusting your search"
-                : "Create your first vehicle type to get started"}
+                ? "Thử điều chỉnh tìm kiếm"
+                : "Tạo loại xe đầu tiên để bắt đầu"}
             </p>
             {!searchTerm && (
               <button className="btn-create" onClick={handleCreate}>
                 <Plus size={20} />
-                Create Vehicle Type
+                Tạo Loại Xe
               </button>
             )}
           </div>
@@ -196,10 +196,10 @@ export default function VehicleTypeManagement() {
           <table className="vehicle-types-table">
             <thead>
               <tr>
-                <th>Type Name</th>
-                <th>Description</th>
-                <th>Status</th>
-                <th>Actions</th>
+                <th>Tên Loại</th>
+                <th>Mô Tả</th>
+                <th>Trạng Thái</th>
+                <th>Thao Tác</th>
               </tr>
             </thead>
             <tbody>
@@ -213,7 +213,7 @@ export default function VehicleTypeManagement() {
                   </td>
                   <td>
                     <span className="type-description">
-                      {type.description || "No description"}
+                      {type.description || "Không có mô tả"}
                     </span>
                   </td>
                   <td>
@@ -253,8 +253,7 @@ export default function VehicleTypeManagement() {
       {!loading && filteredTypes.length > 0 && (
         <div className="results-footer">
           <p>
-            Showing {filteredTypes.length} of {vehicleTypes.length} vehicle
-            types
+            Hiển thị {filteredTypes.length} trong {vehicleTypes.length} loại xe
           </p>
         </div>
       )}

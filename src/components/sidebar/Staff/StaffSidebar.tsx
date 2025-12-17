@@ -33,7 +33,7 @@ const StaffSidebar: React.FC<StaffSidebarProps> = ({ onCollapsedChange }) => {
   const { user, logout } = useAuthStore();
   const context = useContext(StaffContext);
   
-  const [selectedCamp, setSelectedCamp] = useState("Choose a camp program");
+  const [selectedCamp, setSelectedCamp] = useState("Chọn chương trình trại");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
@@ -55,22 +55,22 @@ const StaffSidebar: React.FC<StaffSidebarProps> = ({ onCollapsedChange }) => {
   const mainMenuItems: MenuItem[] = [
     {
       path: PagePath.STAFF_CALENDAR,
-      label: "My Calendar",
+      label: "Lịch Của Tôi",
       icon: <Calendar size={20} />,
     },
     {
       path: PagePath.STAFF_CAMP_DETAIL,
-      label: "Camp Detail",
+      label: "Chi Tiết Trại",
       icon: <Info size={20} />,
     },
     {
       path: PagePath.STAFF_ATTENDANCE_CHECKING,
-      label: "Attendance Checking",
+      label: "Điểm Danh",
       icon: <ClipboardCheck size={20} />,
     },
     {
       path: PagePath.STAFF_PHOTOS,
-      label: "Photo Sharing",
+      label: "Chia Sẻ Ảnh",
       icon: <Image size={20} />,
     },
     {
@@ -153,7 +153,7 @@ const StaffSidebar: React.FC<StaffSidebarProps> = ({ onCollapsedChange }) => {
       {/* Camp Dropdown */}
       {!isCollapsed && (
         <div className="camp-selector-section">
-          <label className="camp-label">Camp program assignment</label>
+          <label className="camp-label">Phân công chương trình trại</label>
           <div className="camp-dropdown">
             <button
               className="dropdown-toggle"
@@ -171,11 +171,11 @@ const StaffSidebar: React.FC<StaffSidebarProps> = ({ onCollapsedChange }) => {
               <div className="dropdown-menu">
                 {isLoadingCamps ? (
                   <div className="dropdown-item text-gray-500">
-                    Loading camps...
+                    Đang tải trại...
                   </div>
                 ) : camps.length === 0 ? (
                   <div className="dropdown-item text-gray-500">
-                    No camps assigned
+                    Không có trại được phân công
                   </div>
                 ) : (
                   camps.map((camp) => (
@@ -229,7 +229,7 @@ const StaffSidebar: React.FC<StaffSidebarProps> = ({ onCollapsedChange }) => {
             <>
               <div className="user-details">
                 <div className="user-name">{user?.fullName || "Staff"}</div>
-                <div className="user-role">Camp Staff</div>
+                <div className="user-role">Nhân Viên Trại</div>
               </div>
               <button className="user-menu-toggle">
                 <ChevronDown
@@ -254,7 +254,7 @@ const StaffSidebar: React.FC<StaffSidebarProps> = ({ onCollapsedChange }) => {
               className="user-dropdown-item"
             >
               <UserCircle size={18} />
-              <span>Profile Settings</span>
+              <span>Cài Đặt Hồ Sơ</span>
             </button>
             <div className="user-dropdown-divider"></div>
             <button
@@ -262,7 +262,7 @@ const StaffSidebar: React.FC<StaffSidebarProps> = ({ onCollapsedChange }) => {
               className="user-dropdown-item logout"
             >
               <LogOut size={18} />
-              <span>Logout</span>
+              <span>Đăng Xuất</span>
             </button>
           </div>
         )}

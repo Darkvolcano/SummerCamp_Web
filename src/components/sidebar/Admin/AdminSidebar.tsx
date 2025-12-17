@@ -42,47 +42,47 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ onCollapsedChange }) => {
   const mainMenuItems: MenuItem[] = [
     {
       path: PagePath.ADMIN_DASHBOARD,
-      label: "Dashboard",
+      label: "Bảng Điều Khiển",
       icon: <LayoutDashboard size={20} />,
     },
     {
       path: PagePath.ADMIN_CAMPS,
-      label: "Camp Programs",
+      label: "Chương Trình Trại",
       icon: <Tent size={20} />,
     },
         {
       path: PagePath.ADMIN_CAMPTYPES,
-      label: "Camp Types",
+      label: "Loại Trại",
       icon: <Logs size={20} />,
     },
     {
       path: PagePath.ADMIN_CAMP_LOCATIONS,
-      label: "Camp Locations",
+      label: "Địa Điểm Trại",
       icon: <MapPin size={20} />,
     },
     {
       path: PagePath.ADMIN_PROMOTIONS,
-      label: "Promotions",
+      label: "Khuyến Mãi",
       icon: <Tag size={20} />,
     },
     {
       path: PagePath.ADMIN_USERS,
-      label: "Users",
+      label: "Người Dùng",
       icon: <Users size={20} />,
     },
     {
       path: PagePath.ADMIN_BLOGS,
-      label: "Blog Posts",
+      label: "Bài Viết Blog",
       icon: <FileText size={20} />,
     },
     {
       path: PagePath.ADMIN_FAQS,
-      label: "FAQs",
+      label: "Câu Hỏi Thường Gặp",
       icon: <HelpCircle size={20} />,
     },
     {
       path: PagePath.ADMIN_TRANSACTIONS,
-      label: "Transactions",
+      label: "Giao Dịch",
       icon: <CreditCard size={20} />,
     },
   ];
@@ -90,12 +90,12 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ onCollapsedChange }) => {
   const bottomMenuItems: MenuItem[] = [
     {
       path: PagePath.ADMIN_CALENDAR,
-      label: "Calendar",
+      label: "Lịch",
       icon: <Calendar size={20} />,
     },
     {
       path: PagePath.ADMIN_REPORTS,
-      label: "Reports",
+      label: "Báo Cáo Sự Cố",
       icon: <AlertTriangle size={20} />,
     },
   ];
@@ -210,7 +210,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ onCollapsedChange }) => {
             <>
               <div className="user-details">
                 <div className="user-name">{user?.fullName || "Admin"}</div>
-                <div className="user-role">System Administrator</div>
+                <div className="user-role">Quản Trị Viên Hệ Thống</div>
               </div>
               <button className="user-menu-toggle">
                 <ChevronDown
@@ -235,7 +235,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ onCollapsedChange }) => {
               className="user-dropdown-item"
             >
               <UserCircle size={18} />
-              <span>Profile Settings</span>
+              <span>Cài Đặt Hồ Sơ</span>
             </button>
             <div className="user-dropdown-divider"></div>
             <button
@@ -243,7 +243,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ onCollapsedChange }) => {
               className="user-dropdown-item logout"
             >
               <LogOut size={18} />
-              <span>Logout</span>
+              <span>Đăng Xuất</span>
             </button>
           </div>
         )}

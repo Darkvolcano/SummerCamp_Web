@@ -155,9 +155,9 @@ const PromotionPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#F9FAFB] p-6">
       <div className="mb-4">
-        <h1 className="text-2xl font-bold text-[#111827]">Promotions</h1>
+        <h1 className="text-2xl font-bold text-[#111827]">Khuyến Mãi</h1>
         <p className="text-xs text-[#6B7280] mt-0.5">
-          Manage discount promotions and special offers
+          Quản lý khuyến mãi giảm giá và ưu đãi đặc biệt
         </p>
       </div>
 
@@ -167,13 +167,13 @@ const PromotionPage: React.FC = () => {
         </div>
       ) : promotions.length === 0 ? (
         <div className="bg-white rounded-xl shadow-sm border border-[#E5E7EB] p-12 text-center">
-          <p className="text-[#6B7280] text-lg mb-4">No promotions found</p>
+          <p className="text-[#6B7280] text-lg mb-4">Không tìm thấy khuyến mãi</p>
           <button
             onClick={handleAddClick}
             className="inline-flex items-center gap-2 px-4 py-2 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-all font-medium text-sm"
           >
             <Plus size={16} />
-            Create Promotion
+            Tạo Khuyến Mãi
           </button>
         </div>
       ) : (
@@ -181,11 +181,11 @@ const PromotionPage: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
             <div className="lg:col-span-1">
               <div className="bg-white rounded-xl shadow-sm border border-[#E5E7EB] p-6">
-                <h3 className="text-lg font-bold text-[#111827] mb-4">Filters</h3>
+                <h3 className="text-lg font-bold text-[#111827] mb-4">Bộ Lọc</h3>
 
                 <div className="mb-6">
                   <label className="block text-xs font-semibold text-[#374151] mb-2 uppercase tracking-wider">
-                    Search
+                    Tìm Kiếm
                   </label>
                   <div className="relative">
                     <Search
@@ -194,7 +194,7 @@ const PromotionPage: React.FC = () => {
                     />
                     <input
                       type="text"
-                      placeholder="By name or code..."
+                      placeholder="Theo tên hoặc mã..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="w-full pl-9 pr-4 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:border-transparent text-sm text-[#6B7280] placeholder:text-[#9CA3AF]"
@@ -204,7 +204,7 @@ const PromotionPage: React.FC = () => {
 
                 <div className="mb-6">
                   <label className="block text-xs font-semibold text-[#374151] mb-2 uppercase tracking-wider">
-                    Status
+                    Trạng Thái
                   </label>
                   <select
                     value={statusFilter}
@@ -223,25 +223,25 @@ const PromotionPage: React.FC = () => {
                   className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-all font-medium text-sm"
                 >
                   <Plus size={16} />
-                  Create Promotion
+                  Tạo Khuyến Mãi
                 </button>
 
                 <div className="mt-6 pt-6 border-t border-[#E5E7EB]">
                   <div className="space-y-3">
                     <div>
-                      <span className="text-xs text-[#6B7280]">Total: </span>
+                      <span className="text-xs text-[#6B7280]">Tổng: </span>
                       <span className="text-lg font-bold text-[#111827]">
                         {promotions.length}
                       </span>
                     </div>
                     <div>
-                      <span className="text-xs text-[#6B7280]">Found: </span>
+                      <span className="text-xs text-[#6B7280]">Tìm Thấy: </span>
                       <span className="text-lg font-bold text-[#6366F1]">
                         {filteredPromotions.length}
                       </span>
                     </div>
                     <div>
-                      <span className="text-xs text-[#6B7280]">Active: </span>
+                      <span className="text-xs text-[#6B7280]">Hoạt Động: </span>
                       <span className="text-lg font-bold text-[#10B981]">
                         {promotions.filter((p) => p.status === "Active").length}
                       </span>
@@ -255,7 +255,7 @@ const PromotionPage: React.FC = () => {
               <div className="bg-white rounded-xl shadow-sm border border-[#E5E7EB] overflow-hidden">
                 <div className="px-6 py-4 border-b border-[#E5E7EB]">
                   <h2 className="text-lg font-bold text-[#111827]">
-                    Found: {filteredPromotions.length}
+                    Tìm Thấy: {filteredPromotions.length}
                   </h2>
                 </div>
 
@@ -264,25 +264,25 @@ const PromotionPage: React.FC = () => {
                     <thead className="bg-[#F9FAFB] border-b border-[#E5E7EB]">
                       <tr>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Code
+                          Mã
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Name
+                          Tên
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Type
+                          Loại
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Discount
+                          Giảm Giá
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Period
+                          Thời Gian
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Status
+                          Trạng Thái
                         </th>
                         <th className="px-6 py-3 text-right text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Actions
+                          Thao Tác
                         </th>
                       </tr>
                     </thead>
@@ -293,7 +293,7 @@ const PromotionPage: React.FC = () => {
                             colSpan={7}
                             className="px-6 py-12 text-center text-[#6B7280]"
                           >
-                            No promotions found matching your filters
+                            Không tìm thấy khuyến mãi phù hợp
                           </td>
                         </tr>
                       ) : (
@@ -345,13 +345,13 @@ const PromotionPage: React.FC = () => {
                                   title="Edit Promotion"
                                 >
                                   <Edit2 size={16} />
-                                  Edit
+                                  Sửa
                                 </button>
                                 <DeletePopover
                                   onConfirm={() => handleDelete(promotion.id)}
-                                  title="Delete Promotion"
-                                  message={`Are you sure you want to delete "${promotion.name}"?`}
-                                  buttonText="Delete"
+                                  title="Xóa Khuyến Mãi"
+                                  message={`Bạn có chắc muốn xóa "${promotion.name}"?`}
+                                  buttonText="Xóa"
                                   isOpen={deletePopoverOpen === promotion.id}
                                   onOpenChange={(open) =>
                                     setDeletePopoverOpen(open ? promotion.id : null)
