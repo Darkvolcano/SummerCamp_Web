@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Spin, Modal, Form, Input, InputNumber, Select } from 'antd';
+import { Spin, Modal, Form, Input, InputNumber, Select, Checkbox } from 'antd';
 import { Search, Plus, Edit2, Clock, Eye, MapPin, Trash2 } from 'lucide-react';
 import { useManagerContext } from '../../../hooks/useManagerContext';
 import { useNotification } from '../../../contexts/NotificationContext';
@@ -36,6 +36,8 @@ const RouteTab: React.FC = () => {
     routeName: string;
     routeType: string;
     estimateDuration: number;
+    createReturnRoute?: boolean;
+    returnRouteName?: string;
   } | null>(null);
 
   // Detail modal states
@@ -233,38 +235,35 @@ const RouteTab: React.FC = () => {
     try {
       setSubmitting(true);
 
-      // Use saved form values
       if (!routeFormValues) {
         toastError('Lỗi', 'Thiếu thông tin tuyến đường');
         return;
       }
 
-      // Step 1: Create the route
-      const routeData: RouteRequestDto = {
+      const compositeData = {
         campId: selectedCampId!,
         routeName: routeFormValues.routeName,
         routeType: routeFormValues.routeType,
         estimateDuration: routeFormValues.estimateDuration,
+        routeStops: newRouteStops.map((stop) => ({
+          routeId: 0,
+          locationId: stop.locationId!,
+          stopOrder: stop.stopOrder,
+          estimatedTime: stop.estimatedTime,
+        })),
+        createReturnRoute: routeFormValues.createReturnRoute || false,
+        returnRouteName: routeFormValues.returnRouteName || null,
       };
 
-      console.log('[RouteTab] Creating route with data:', routeData);
-      const createdRoute = await routeService.createRoute(routeData);
+      console.log('[RouteTab] Creating composite route with data:', compositeData);
+      const createdRoutes = await routeService.createCompositeRoute(compositeData);
 
-      // Step 2: Create route stops
-      if (newRouteStops.length > 0) {
-        await Promise.all(
-          newRouteStops.map((stop) =>
-            routeService.createRouteStop({
-              routeId: createdRoute.routeId,
-              locationId: stop.locationId!,
-              stopOrder: stop.stopOrder,
-              estimatedTime: stop.estimatedTime,
-            })
-          )
-        );
-      }
+      const routeCount = createdRoutes.length;
+      const message = routeFormValues.createReturnRoute
+        ? `Tạo ${routeCount} tuyến đường (đi và về) với ${newRouteStops.length} điểm dừng`
+        : `Tạo tuyến đường với ${newRouteStops.length} điểm dừng`;
 
-      toastSuccess('Thành công', `Tạo tuyến đường với ${newRouteStops.length} điểm dừng`);
+      toastSuccess('Thành công', message);
       setIsModalVisible(false);
       form.resetFields();
       setCreationStep('info');
@@ -272,7 +271,7 @@ const RouteTab: React.FC = () => {
       setRouteFormValues(null);
       fetchRoutes();
     } catch (error: any) {
-      console.error('Failed to create route with stops:', error);
+      console.error('Failed to create composite route:', error);
       const errorMessage = error.response?.data?.message || 'Không thể tạo tuyến đường';
       toastError('Lỗi', errorMessage);
     } finally {
@@ -533,6 +532,37 @@ const RouteTab: React.FC = () => {
                 className="w-full rounded-lg"
                 min={1}
               />
+            </Form.Item>
+
+            <Form.Item
+              name="createReturnRoute"
+              valuePropName="checked"
+            >
+              <Checkbox>
+                <span className="text-sm font-semibold text-[#374151]">Tạo tuyến đường về</span>
+              </Checkbox>
+            </Form.Item>
+
+            <Form.Item
+              noStyle
+              shouldUpdate={(prevValues, currentValues) => prevValues.createReturnRoute !== currentValues.createReturnRoute}
+            >
+              {({ getFieldValue }) =>
+                getFieldValue('createReturnRoute') ? (
+                  <Form.Item
+                    label={<span className="text-sm font-semibold text-[#374151]">Tên Tuyến Đường Về</span>}
+                    name="returnRouteName"
+                    rules={[
+                      { required: true, message: 'Vui lòng nhập tên tuyến đường về' },
+                    ]}
+                  >
+                    <Input
+                      placeholder="Nhập tên tuyến đường về"
+                      className="rounded-lg"
+                    />
+                  </Form.Item>
+                ) : null
+              }
             </Form.Item>
 
             <div className="flex gap-2 justify-end mt-6">
