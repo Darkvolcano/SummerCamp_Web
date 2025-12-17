@@ -35,7 +35,7 @@ const AddLocationModal: React.FC<AddLocationModalProps> = ({
 
   const handleSubmit = async () => {
     if (!formData.name.trim() || !formData.address.trim()) {
-      toastError("Validation Error", "Please fill in all fields");
+      toastError("Lỗi xác thực", "Vui lòng điền đầy đủ thông tin");
       return;
     }
 
@@ -51,17 +51,17 @@ const AddLocationModal: React.FC<AddLocationModalProps> = ({
       };
 
       await locationService.createLocation(newLocation);
-      toastSuccess("Success", "Location added successfully!");
+      toastSuccess("Thành công", "Đã thêm địa điểm thành công!");
       setFormData({ name: "", address: "" });
       onSuccess();
       onClose();
     } catch (error: any) {
       console.error("Error creating location:", error);
-      let errorMsg = "Failed to add location";
+      let errorMsg = "Không thể thêm địa điểm";
       if (error.response?.data?.message) {
         errorMsg = error.response.data.message;
       }
-      toastError("Error", errorMsg);
+      toastError("Lỗi", errorMsg);
     } finally {
       setLoading(false);
     }
@@ -74,7 +74,7 @@ const AddLocationModal: React.FC<AddLocationModalProps> = ({
 
   return (
     <Modal
-      title="Add New Camp Location"
+      title="Thêm Địa Điểm Trại Mới"
       open={isOpen}
       onCancel={handleClose}
       width={500}
@@ -103,27 +103,27 @@ const AddLocationModal: React.FC<AddLocationModalProps> = ({
       <div className="space-y-3">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Location Name *
+            Tên Địa Điểm *
           </label>
           <input
             type="text"
             name="name"
             value={formData.name}
             onChange={handleInputChange}
-            placeholder="e.g., Mountain Camp, Beach Camp"
+            placeholder="Ví dụ: Trại Núi, Trại Biển"
             className="w-full px-3 py-2 border text-black border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
           />
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Address *
+            Địa Chỉ *
           </label>
           <textarea
             name="address"
             value={formData.address}
             onChange={handleInputChange}
-            placeholder="e.g., 123 Main St, City, State, Country"
+            placeholder="Ví dụ: 123 Đường Chính, Thành Phố, Tỉnh, Quốc Gia"
             className="w-full px-3 py-2 border text-black border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
             rows={3}
           />
@@ -137,14 +137,14 @@ const AddLocationModal: React.FC<AddLocationModalProps> = ({
           disabled={loading}
           className="px-6 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Cancel
+          Hủy
         </button>
         <button
           onClick={handleSubmit}
           disabled={loading}
           className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {loading ? "Adding..." : "Add Location"}
+          {loading ? "Đang thêm..." : "Thêm Địa Điểm"}
         </button>
       </div>
     </Modal>

@@ -102,7 +102,7 @@ export default function VehicleFormModal({
         console.log("📋 [VehicleFormModal] Current formData:", formData);
 
         if (!validate()) {
-            message.error("Please fix the errors in the form");
+            message.error("Vui lòng sửa lỗi trong biểu mẫu");
             return;
         }
 
@@ -113,19 +113,19 @@ export default function VehicleFormModal({
                 console.log("📤 [VehicleFormModal] Update payload:", formData);
 
                 await vehicleService.updateVehicle(vehicle.vehicleId, formData);
-                message.success("Vehicle updated successfully");
+                message.success("Cập nhật phương tiện thành công");
             } else {
                 console.log("➕ [VehicleFormModal] Creating new vehicle");
                 console.log("📤 [VehicleFormModal] Create payload:", formData);
 
                 await vehicleService.createVehicle(formData);
-                message.success("Vehicle created successfully");
+                message.success("Tạo phương tiện thành công");
             }
             onSuccess();
         } catch (error: any) {
             console.error("❌ [VehicleFormModal] Error saving vehicle:", error);
             console.error("❌ [VehicleFormModal] Error response:", error.response?.data);
-            message.error(error.response?.data?.message || "Failed to save vehicle");
+            message.error(error.response?.data?.message || "Không thể lưu phương tiện");
         } finally {
             setLoading(false);
         }
@@ -151,7 +151,7 @@ export default function VehicleFormModal({
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 {/* Header */}
                 <div className="modal-header">
-                    <h2>{isEditing ? "Edit Vehicle" : "Add New Vehicle"}</h2>
+                    <h2>{isEditing ? "Chỉnh Sửa Phương Tiện" : "Thêm Phương Tiện Mới"}</h2>
                     <button className="btn-close" onClick={onClose} disabled={loading}>
                         <X size={24} />
                     </button>
@@ -163,12 +163,12 @@ export default function VehicleFormModal({
                         {/* Vehicle Name */}
                         <div className="form-group full-width">
                             <label htmlFor="vehicleName">
-                                Vehicle Name <span className="required">*</span>
+                                Tên Phương Tiện <span className="required">*</span>
                             </label>
                             <input
                                 id="vehicleName"
                                 type="text"
-                                placeholder="e.g., School Bus #1"
+                                placeholder="Ví dụ: Xe Buýt Trường #1"
                                 value={formData.vehicleName}
                                 onChange={(e) => handleChange("vehicleName", e.target.value)}
                                 className={errors.vehicleName ? "error" : ""}
@@ -182,12 +182,12 @@ export default function VehicleFormModal({
                         {/* Vehicle Number */}
                         <div className="form-group">
                             <label htmlFor="vehicleNumber">
-                                Vehicle Number <span className="required">*</span>
+                                Biển Số Xe <span className="required">*</span>
                             </label>
                             <input
                                 id="vehicleNumber"
                                 type="text"
-                                placeholder="e.g., ABC-1234"
+                                placeholder="Ví dụ: 51A-12345"
                                 value={formData.vehicleNumber}
                                 onChange={(e) => handleChange("vehicleNumber", e.target.value)}
                                 className={errors.vehicleNumber ? "error" : ""}
@@ -201,7 +201,7 @@ export default function VehicleFormModal({
                         {/* Capacity */}
                         <div className="form-group">
                             <label htmlFor="capacity">
-                                Capacity <span className="required">*</span>
+                                Sức Chứa <span className="required">*</span>
                             </label>
                             <input
                                 id="capacity"
@@ -222,7 +222,7 @@ export default function VehicleFormModal({
 
                         {/* Vehicle Type */}
                         <div className="form-group">
-                            <label htmlFor="vehicleType">Vehicle Type</label>
+                            <label htmlFor="vehicleType">Loại Phương Tiện</label>
                             <select
                                 id="vehicleType"
                                 value={formData.vehicleType || ""}
@@ -234,20 +234,20 @@ export default function VehicleFormModal({
                                 }
                                 disabled={loading}
                             >
-                                <option value="">Select Vehicle Type</option>
+                                <option value="">Chọn loại phương tiện</option>
                                 {vehicleTypes.map((type) => (
                                     <option key={type.vehicleTypeId} value={type.vehicleTypeId}>
                                         {type.name}
                                     </option>
                                 ))}
                             </select>
-                            <p className="field-hint">Optional: Categorize this vehicle</p>
+                            <p className="field-hint">Tùy chọn: Phân loại phương tiện này</p>
                         </div>
 
                         {/* Status */}
                         <div className="form-group">
                             <label htmlFor="status">
-                                Status <span className="required">*</span>
+                                Trạng Thái <span className="required">*</span>
                             </label>
                             <select
                                 id="status"
@@ -256,10 +256,10 @@ export default function VehicleFormModal({
                                 className={errors.status ? "error" : ""}
                                 disabled={loading}
                             >
-                                <option value="Available">Available</option>
-                                <option value="In Use">In Use</option>
-                                <option value="Maintenance">Maintenance</option>
-                                <option value="Inactive">Inactive</option>
+                                <option value="Available">Khả dụng</option>
+                                <option value="In Use">Đang sử dụng</option>
+                                <option value="Maintenance">Bảo trì</option>
+                                <option value="Inactive">Ngừng hoạt động</option>
                             </select>
                             {errors.status && (
                                 <span className="error-message">{errors.status}</span>
@@ -275,18 +275,18 @@ export default function VehicleFormModal({
                             onClick={onClose}
                             disabled={loading}
                         >
-                            Cancel
+                            Hủy
                         </button>
                         <button type="submit" className="btn-submit" disabled={loading}>
                             {loading ? (
                                 <>
                                     <Loader2 size={18} className="spinning" />
-                                    <span>Saving...</span>
+                                    <span>Đang lưu...</span>
                                 </>
                             ) : (
                                 <>
                                     <Save size={18} />
-                                    <span>{isEditing ? "Update" : "Create"} Vehicle</span>
+                                    <span>{isEditing ? "Cập Nhật" : "Tạo"} Phương Tiện</span>
                                 </>
                             )}
                         </button>

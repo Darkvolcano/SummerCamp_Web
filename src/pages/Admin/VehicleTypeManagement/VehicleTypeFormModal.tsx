@@ -51,7 +51,7 @@ export default function VehicleTypeFormModal({
         e.preventDefault();
 
         if (!validate()) {
-            message.error("Please fix the errors in the form");
+            message.error("Vui lòng sửa lỗi trong biểu mẫu");
             return;
         }
 
@@ -62,15 +62,15 @@ export default function VehicleTypeFormModal({
                     vehicleTypeId: vehicleType.vehicleTypeId,
                     ...formData,
                 });
-                message.success("Vehicle type updated successfully");
+                message.success("Cập nhật loại phương tiện thành công");
             } else {
                 await vehicleService.createVehicleType(formData);
-                message.success("Vehicle type created successfully");
+                message.success("Tạo loại phương tiện thành công");
             }
             onSuccess();
         } catch (error: any) {
             console.error("Error saving vehicle type:", error);
-            message.error(error.response?.data?.message || "Failed to save vehicle type");
+            message.error(error.response?.data?.message || "Không thể lưu loại phương tiện");
         } finally {
             setLoading(false);
         }
@@ -88,7 +88,7 @@ export default function VehicleTypeFormModal({
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 {/* Header */}
                 <div className="modal-header">
-                    <h2>{isEditing ? "Edit Vehicle Type" : "Create Vehicle Type"}</h2>
+                    <h2>{isEditing ? "Chỉnh Sửa Loại Phương Tiện" : "Tạo Loại Phương Tiện"}</h2>
                     <button className="btn-close" onClick={onClose} disabled={loading}>
                         <X size={24} />
                     </button>
@@ -100,12 +100,12 @@ export default function VehicleTypeFormModal({
                         {/* Type Name */}
                         <div className="form-group full-width">
                             <label htmlFor="name">
-                                Type Name <span className="required">*</span>
+                                Tên Loại <span className="required">*</span>
                             </label>
                             <input
                                 id="name"
                                 type="text"
-                                placeholder="e.g., Bus, Van, Mini Van"
+                                placeholder="Ví dụ: Xe Buýt, Xe Van, Xe 16 Chỗ"
                                 value={formData.name}
                                 onChange={(e) => handleChange("name", e.target.value)}
                                 className={errors.name ? "error" : ""}
@@ -116,10 +116,10 @@ export default function VehicleTypeFormModal({
 
                         {/* Description */}
                         <div className="form-group full-width">
-                            <label htmlFor="description">Description</label>
+                            <label htmlFor="description">Mô Tả</label>
                             <textarea
                                 id="description"
-                                placeholder="Enter vehicle type description..."
+                                placeholder="Nhập mô tả loại phương tiện..."
                                 value={formData.description}
                                 onChange={(e) => handleChange("description", e.target.value)}
                                 rows={4}
@@ -136,10 +136,10 @@ export default function VehicleTypeFormModal({
                                     onChange={(e) => handleChange("isActive", e.target.checked)}
                                     disabled={loading}
                                 />
-                                <span>Active</span>
+                                <span>Hoạt động</span>
                             </label>
                             <p className="field-hint">
-                                Active vehicle types can be assigned to vehicles
+                                Loại phương tiện hoạt động có thể được gán cho các phương tiện
                             </p>
                         </div>
                     </div>
@@ -152,7 +152,7 @@ export default function VehicleTypeFormModal({
                             onClick={onClose}
                             disabled={loading}
                         >
-                            Cancel
+                            Hủy
                         </button>
                         <button
                             type="submit"
@@ -162,12 +162,12 @@ export default function VehicleTypeFormModal({
                             {loading ? (
                                 <>
                                     <Loader2 size={18} className="spinning" />
-                                    <span>Saving...</span>
+                                    <span>Đang lưu...</span>
                                 </>
                             ) : (
                                 <>
                                     <Save size={18} />
-                                    <span>{isEditing ? "Update" : "Create"} Type</span>
+                                    <span>{isEditing ? "Cập Nhật" : "Tạo"} Loại</span>
                                 </>
                             )}
                         </button>

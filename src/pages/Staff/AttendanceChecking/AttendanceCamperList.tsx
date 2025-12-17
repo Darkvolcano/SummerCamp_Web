@@ -60,8 +60,8 @@ const AttendanceCamperList: React.FC = () => {
       });
       setAttendanceData(initialData);
     } catch (error) {
-      console.error("Failed to load campers:", error);
-      toastError("Error", "Unable to load campers for this activity");
+      console.error("Lỗi tải danh sách trại viên:", error);
+      toastError("Lỗi", "Không thể tải danh sách trại viên cho hoạt động này");
       setCampers([]);
     } finally {
       setLoading(false);
@@ -90,14 +90,14 @@ const AttendanceCamperList: React.FC = () => {
         }));
 
       if (updates.length === 0) {
-        toastError("Validation", "Please mark attendance for at least one camper");
+        toastError("Xác thực", "Vui lòng điểm danh ít nhất một trại viên");
         return;
       }
 
       await attendanceLogService.updateAttendanceLogsV2({
         attendanceLogs: updates,
       });
-      toastSuccess("Success", "Attendance records updated successfully");
+      toastSuccess("Thành công", "Cập nhật điểm danh thành công");
       setHasChanges(false);
 
       // Navigate back after 1.5 seconds
@@ -105,8 +105,8 @@ const AttendanceCamperList: React.FC = () => {
         navigate(-1);
       }, 1500);
     } catch (error) {
-      console.error("Failed to update attendance:", error);
-      toastError("Error", "Failed to update attendance records");
+      console.error("Lỗi cập nhật điểm danh:", error);
+      toastError("Lỗi", "Không thể cập nhật điểm danh");
     } finally {
       setSubmitting(false);
     }
@@ -115,7 +115,7 @@ const AttendanceCamperList: React.FC = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-96">
-        <Spin size="large" tip="Loading campers..." />
+        <Spin size="large" tip="Đang tải danh sách trại viên..." />
       </div>
     );
   }
@@ -133,10 +133,10 @@ const AttendanceCamperList: React.FC = () => {
           </button>
           <div>
             <h1 className="text-2xl font-bold text-[#111827]">
-              Check Attendance
+              Điểm danh
             </h1>
             <p className="text-[#6B7280] text-sm mt-1">
-              {schedule?.activity?.name || "Activity"} - Mark camper attendance
+              {schedule?.activity?.name || "Activity"} - Điểm danh trại viên
             </p>
           </div>
         </div>
@@ -223,9 +223,8 @@ const AttendanceCamperList: React.FC = () => {
                   return (
                     <tr
                       key={camper.camperId}
-                      className={`border-b border-[#E5E7EB] hover:bg-gray-50 transition-colors ${
-                        index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                      } ${isChanged ? "bg-blue-50" : ""}`}
+                      className={`border-b border-[#E5E7EB] hover:bg-gray-50 transition-colors ${index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                        } ${isChanged ? "bg-blue-50" : ""}`}
                     >
                       <td className="px-6 py-4 text-sm w-1/4">
                         <div className="flex items-center gap-3">

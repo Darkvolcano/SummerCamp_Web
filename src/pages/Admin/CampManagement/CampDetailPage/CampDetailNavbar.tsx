@@ -14,7 +14,7 @@ const CampDetailNavbar: React.FC<CampDetailNavbarProps> = ({
 }) => {
   const tabs = [
     { id: 'overview', label: 'Tổng quan' },
-    { id: 'staff', label: 'Staff' },
+    { id: 'staff', label: 'Nhân viên' },
     { id: 'schedule', label: 'Lịch trình' },
     { id: 'transportation', label: 'Vận chuyển' },
     { id: 'group', label: 'Nhóm' },
@@ -39,8 +39,8 @@ const CampDetailNavbar: React.FC<CampDetailNavbarProps> = ({
           key={tab.id}
           onClick={() => onTabChange(tab.id)}
           className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${activeTab === tab.id
-              ? 'bg-[#6366F1] text-white'
-              : 'bg-[#e5e6e9] text-[#6B7280] hover:bg-[#E5E7EB]'
+            ? 'bg-[#6366F1] text-white'
+            : 'bg-[#e5e6e9] text-[#6B7280] hover:bg-[#E5E7EB]'
             }`}
         >
           {tab.label}

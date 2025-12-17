@@ -68,8 +68,8 @@ const StaffCampDetail: React.FC = () => {
         setAccommodation(accommodationData);
       } catch (error: any) {
         console.error('Failed to load camp details:', error);
-        const errorMessage = error.response?.data?.message || error.response?.data?.title || 'Unable to load camp details';
-        toastError('Error', errorMessage);
+        const errorMessage = error.response?.data?.message || error.response?.data?.title || 'Không thể tải chi tiết trại';
+        toastError('Lỗi', errorMessage);
       } finally {
         setLoading(false);
       }
@@ -89,8 +89,8 @@ const StaffCampDetail: React.FC = () => {
       setShowCampersModal(true);
     } catch (error: any) {
       console.error('Failed to load campers:', error);
-      const errorMessage = error.response?.data?.message || error.response?.data?.title || 'Unable to load campers';
-      toastError('Error', errorMessage);
+      const errorMessage = error.response?.data?.message || error.response?.data?.title || 'Không thể tải danh sách trại viên';
+      toastError('Lỗi', errorMessage);
     } finally {
       setLoadingCampers(false);
     }
@@ -109,8 +109,8 @@ const StaffCampDetail: React.FC = () => {
       setShowGroupCampersModal(true);
     } catch (error: any) {
       console.error('Failed to load group campers:', error);
-      const errorMessage = error.response?.data?.message || error.response?.data?.title || 'Unable to load group campers';
-      toastError('Error', errorMessage);
+      const errorMessage = error.response?.data?.message || error.response?.data?.title || 'Không thể tải trại viên nhóm';
+      toastError('Lỗi', errorMessage);
     } finally {
       setLoadingCampers(false);
     }
@@ -129,8 +129,8 @@ const StaffCampDetail: React.FC = () => {
       setShowAccommodationCampersModal(true);
     } catch (error: any) {
       console.error('Failed to load accommodation campers:', error);
-      const errorMessage = error.response?.data?.message || error.response?.data?.title || 'Unable to load accommodation campers';
-      toastError('Error', errorMessage);
+      const errorMessage = error.response?.data?.message || error.response?.data?.title || 'Không thể tải trại viên chỗ ở';
+      toastError('Lỗi', errorMessage);
     } finally {
       setLoadingCampers(false);
     }
@@ -417,8 +417,8 @@ const StaffCampDetail: React.FC = () => {
             ) : (
               <div className="divide-y divide-gray-200">
                 {allCampers.map((camper) => (
-                  <div 
-                    key={camper.camperId} 
+                  <div
+                    key={camper.camperId}
                     onClick={() => {
                       setSelectedCamperId(camper.camperId);
                       setCamperDetailModalOpen(true);
@@ -467,8 +467,8 @@ const StaffCampDetail: React.FC = () => {
             ) : (
               <div className="divide-y divide-gray-200">
                 {groupCampers.map((camper) => (
-                  <div 
-                    key={camper.camperId} 
+                  <div
+                    key={camper.camperId}
                     onClick={() => {
                       setSelectedCamperId(camper.camperId);
                       setCamperDetailModalOpen(true);
@@ -517,8 +517,8 @@ const StaffCampDetail: React.FC = () => {
             ) : (
               <div className="divide-y divide-gray-200">
                 {accommodationCampers.map((camper) => (
-                  <div 
-                    key={camper.camperId} 
+                  <div
+                    key={camper.camperId}
                     onClick={() => {
                       setSelectedCamperId(camper.camperId);
                       setCamperDetailModalOpen(true);

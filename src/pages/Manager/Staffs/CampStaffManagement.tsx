@@ -61,7 +61,7 @@ const CampStaffManagement: React.FC = () => {
         setFilteredAssignedStaff(assignedData);
       } catch (error) {
         console.error('Failed to load staff data:', error);
-        toastError('Error', 'Unable to load staff data');
+        toastError('Lỗi', 'Không thể tải dữ liệu nhân viên');
       } finally {
         setLoading(false);
       }
@@ -115,7 +115,7 @@ const CampStaffManagement: React.FC = () => {
   // Handle bulk assign
   const handleBulkAssign = async () => {
     if (selectedStaffIds.size === 0) {
-      toastError('Error', 'Please select at least one staff member');
+      toastError('Lỗi', 'Vui lòng chọn ít nhất một nhân viên');
       return;
     }
 
@@ -152,15 +152,13 @@ const CampStaffManagement: React.FC = () => {
       if (failCount === 0) {
         toastSuccess(
           'Success',
-          `Successfully assigned ${successCount} staff member${
-            successCount > 1 ? 's' : ''
+          `Successfully assigned ${successCount} staff member${successCount > 1 ? 's' : ''
           }`
         );
       } else {
         toastSuccess(
           'Partial Success',
-          `Successfully assigned ${successCount} staff member${
-            successCount > 1 ? 's' : ''
+          `Successfully assigned ${successCount} staff member${successCount > 1 ? 's' : ''
           }, failed: ${failedStaffNames.join(', ')}`
         );
       }
@@ -253,7 +251,7 @@ const CampStaffManagement: React.FC = () => {
                 <div className="px-6 py-3 border-b border-[#E5E7EB]">
                   <div className="flex justify-between items-center">
                     <span className="text-sm font-semibold text-[#6B7280]">
-                        Tìm Thấy: {filteredAvailableStaff.length}
+                      Tìm Thấy: {filteredAvailableStaff.length}
                     </span>
                     <Popover
                       content={
@@ -417,26 +415,26 @@ const CampStaffManagement: React.FC = () => {
                                   Chi Tiết
                                 </button>
                                 <DeletePopover
-                                onConfirm={() =>
-                                  handleRemoveStaff(
+                                  onConfirm={() =>
+                                    handleRemoveStaff(
+                                      assignment.campStaffAssignmentId
+                                    )
+                                  }
+                                  title="Gỡ Nhân Viên"
+                                  message={`Bạn có chắc muốn gỡ "${assignment.staff.fullName}" khỏi trại này?`}
+                                  buttonText="Gỡ"
+                                  disabled={assigning}
+                                  isOpen={
+                                    deletePopoverOpen ===
                                     assignment.campStaffAssignmentId
-                                  )
-                                }
-                                title="Gỡ Nhân Viên"
-                                message={`Bạn có chắc muốn gỡ "${assignment.staff.fullName}" khỏi trại này?`}
-                                buttonText="Gỡ"
-                                disabled={assigning}
-                                isOpen={
-                                  deletePopoverOpen ===
-                                  assignment.campStaffAssignmentId
-                                }
-                                onOpenChange={(open) =>
-                                  setDeletePopoverOpen(
-                                    open
-                                      ? assignment.campStaffAssignmentId
-                                      : null
-                                  )
-                                }
+                                  }
+                                  onOpenChange={(open) =>
+                                    setDeletePopoverOpen(
+                                      open
+                                        ? assignment.campStaffAssignmentId
+                                        : null
+                                    )
+                                  }
                                 />
                               </div>
                             </td>

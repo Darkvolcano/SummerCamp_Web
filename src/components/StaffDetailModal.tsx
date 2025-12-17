@@ -34,11 +34,11 @@ const StaffDetailModal: React.FC<StaffDetailModalProps> = ({
       setUserData(user);
     } catch (error: any) {
       console.error('Error fetching staff details:', error);
-      let errorMsg = 'Failed to load staff details';
+      let errorMsg = 'Không thể tải thông tin nhân viên';
       if (error.response?.data?.message) {
         errorMsg = error.response.data.message;
       }
-      toastError('Error', errorMsg);
+      toastError('Lỗi', errorMsg);
     } finally {
       setLoading(false);
     }
@@ -63,7 +63,7 @@ const StaffDetailModal: React.FC<StaffDetailModalProps> = ({
       title={
         <div className="flex items-center gap-2">
           <User size={20} className="text-[#6366F1]" />
-          <span className="text-lg font-bold text-[#111827]">Staff Details</span>
+          <span className="text-lg font-bold text-[#111827]">Chi Tiết Nhân Viên</span>
         </div>
       }
       open={isOpen}
@@ -74,7 +74,7 @@ const StaffDetailModal: React.FC<StaffDetailModalProps> = ({
     >
       {loading ? (
         <div className="flex justify-center items-center py-12">
-          <Spin size="large" tip="Loading staff details..." />
+          <Spin size="large" tip="Đang tải thông tin nhân viên..." />
         </div>
       ) : userData ? (
         <div className="space-y-6">
@@ -108,13 +108,12 @@ const StaffDetailModal: React.FC<StaffDetailModalProps> = ({
               </div>
               <div className="flex items-center gap-2">
                 <span
-                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    userData.isActive
+                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${userData.isActive
                       ? 'bg-green-100 text-green-700'
                       : 'bg-red-100 text-red-700'
-                  }`}
+                    }`}
                 >
-                  {userData.isActive ? 'Active' : 'Inactive'}
+                  {userData.isActive ? 'Hoạt động' : 'Không hoạt động'}
                 </span>
               </div>
             </div>
@@ -123,7 +122,7 @@ const StaffDetailModal: React.FC<StaffDetailModalProps> = ({
           {/* Contact Information */}
           <div>
             <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3 pb-2 border-b-2 border-blue-600 inline-block">
-              Contact Information
+              Thông Tin Liên Hệ
             </h3>
             <div className="space-y-3 mt-4">
               <div className="flex items-center gap-3">
@@ -141,7 +140,7 @@ const StaffDetailModal: React.FC<StaffDetailModalProps> = ({
                   <Phone size={18} className="text-[#3B82F6]" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-xs text-[#6B7280] font-medium">Phone Number</p>
+                  <p className="text-xs text-[#6B7280] font-medium">Số Điện Thoại</p>
                   <p className="text-sm text-[#111827] font-medium">
                     {userData.phoneNumber || 'N/A'}
                   </p>
@@ -153,7 +152,7 @@ const StaffDetailModal: React.FC<StaffDetailModalProps> = ({
                   <Calendar size={18} className="text-[#3B82F6]" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-xs text-[#6B7280] font-medium">Date of Birth</p>
+                  <p className="text-xs text-[#6B7280] font-medium">Ngày Sinh</p>
                   <p className="text-sm text-[#111827] font-medium">
                     {formatDate(userData.dateOfBirth)}
                   </p>
@@ -164,7 +163,7 @@ const StaffDetailModal: React.FC<StaffDetailModalProps> = ({
         </div>
       ) : (
         <div className="text-center py-12 text-[#6B7280]">
-          No staff data available
+          Không có dữ liệu nhân viên
         </div>
       )}
     </Modal>

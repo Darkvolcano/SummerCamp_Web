@@ -48,11 +48,11 @@ const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = ({
       setRegistrationData(data);
     } catch (error: any) {
       console.error('Error fetching registration details:', error);
-      let errorMsg = 'Failed to load registration details';
+      let errorMsg = 'Không thể tải chi tiết đăng ký';
       if (error.response?.data?.message) {
         errorMsg = error.response.data.message;
       }
-      toastError('Error', errorMsg);
+      toastError('Lỗi', errorMsg);
     } finally {
       setLoading(false);
     }
@@ -62,22 +62,22 @@ const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = ({
     try {
       setApproving(true);
       await registrationService.approveRegistration(registrationId);
-      toastSuccess('Success', 'Registration approved successfully');
-      
+      toastSuccess('Thành công', 'Duyệt đăng ký thành công');
+
       // Refresh data
       await fetchRegistrationDetails();
-      
+
       // Notify parent component
       if (onApproved) {
         onApproved();
       }
     } catch (error: any) {
       console.error('Error approving registration:', error);
-      let errorMsg = 'Failed to approve registration';
+      let errorMsg = 'Không thể duyệt đăng ký';
       if (error.response?.data?.message) {
         errorMsg = error.response.data.message;
       }
-      toastError('Error', errorMsg);
+      toastError('Lỗi', errorMsg);
     } finally {
       setApproving(false);
     }
@@ -91,13 +91,13 @@ const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = ({
 
   const handleReject = async () => {
     if (!rejectReason.trim()) {
-      toastError('Error', 'Please provide a reason for rejection');
+      toastError('Lỗi', 'Vui lòng cung cấp lý do từ chối');
       return;
     }
 
     try {
       setRejecting(true);
-      
+
       const rejectData = {
         registrationId: registrationId,
         rejectReason: rejectReason,
@@ -105,31 +105,31 @@ const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = ({
       };
 
       await registrationService.rejectRegistration(rejectData);
-      
+
       if (selectedCamperIdsForReject.length === 0) {
-        toastSuccess('Success', 'Registration rejected successfully');
+        toastSuccess('Thành công', 'Từ chối đăng ký thành công');
       } else if (selectedCamperIdsForReject.length === 1) {
-        toastSuccess('Success', 'Camper rejected successfully');
+        toastSuccess('Thành công', 'Từ chối trại viên thành công');
       } else {
-        toastSuccess('Success', `${selectedCamperIdsForReject.length} campers rejected successfully`);
+        toastSuccess('Thành công', `Từ chối ${selectedCamperIdsForReject.length} trại viên thành công`);
       }
-      
+
       setRejectModalVisible(false);
-      
+
       // Refresh data
       await fetchRegistrationDetails();
-      
+
       // Notify parent component
       if (onApproved) {
         onApproved();
       }
     } catch (error: any) {
       console.error('Error rejecting registration:', error);
-      let errorMsg = 'Failed to reject registration';
+      let errorMsg = 'Không thể từ chối đăng ký';
       if (error.response?.data?.message) {
         errorMsg = error.response.data.message;
       }
-      toastError('Error', errorMsg);
+      toastError('Lỗi', errorMsg);
     } finally {
       setRejecting(false);
     }

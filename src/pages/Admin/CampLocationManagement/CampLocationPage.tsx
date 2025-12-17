@@ -38,7 +38,7 @@ const CampLocationPage: React.FC = () => {
       setCampLocations(data);
     } catch (error) {
       console.error("Error fetching camp locations:", error);
-      toastError("Error", "Failed to load camp locations");
+      toastError("Lỗi", "Không thể tải danh sách địa điểm trại");
     } finally {
       setLoading(false);
     }
@@ -51,7 +51,7 @@ const CampLocationPage: React.FC = () => {
       setInCampLocations(inCampLocs);
     } catch (error) {
       console.error("Error fetching in-camp locations:", error);
-      toastError("Error", "Failed to load in-camp locations");
+      toastError("Lỗi", "Không thể tải danh sách địa điểm trong trại");
     }
   }, [toastError]);
 
@@ -85,7 +85,7 @@ const CampLocationPage: React.FC = () => {
       longitude: location.longitude,
     });
     setIsModalVisible(true);
-    
+
     if (location.locationId) {
       await fetchInCampLocations(location.locationId);
     }
@@ -135,25 +135,25 @@ const CampLocationPage: React.FC = () => {
           longitude: null,
           parentLocationId: editingLocation!.locationId,
         });
-        toastSuccess("Success", "In-camp location updated successfully");
+        toastSuccess("Thành công", "Cập nhật địa điểm trong trại thành công");
       } else {
         await locationService.createInCampLocation(
           values.name,
           values.description || null,
           editingLocation!.locationId
         );
-        toastSuccess("Success", "In-camp location created successfully");
+        toastSuccess("Thành công", "Tạo địa điểm trong trại thành công");
       }
 
       if (editingLocation?.locationId) {
         await fetchInCampLocations(editingLocation.locationId);
       }
-      
+
       setIsInCampModalVisible(false);
       inCampForm.resetFields();
     } catch (error) {
       console.error("Error submitting in-camp location:", error);
-      toastError("Error", "Failed to save in-camp location");
+      toastError("Lỗi", "Không thể lưu địa điểm trong trại");
     } finally {
       setInCampSubmitting(false);
     }
@@ -162,15 +162,15 @@ const CampLocationPage: React.FC = () => {
   const handleDeleteInCamp = async (locationId: number) => {
     try {
       await locationService.deleteLocation(locationId);
-      toastSuccess("Success", "In-camp location deleted successfully");
-      
+      toastSuccess("Thành công", "Xóa địa điểm trong trại thành công");
+
       if (editingLocation?.locationId) {
         await fetchInCampLocations(editingLocation.locationId);
       }
       setInCampDeletePopoverOpen(null);
     } catch (error) {
       console.error("Failed to delete in-camp location:", error);
-      toastError("Error", "Failed to delete in-camp location");
+      toastError("Lỗi", "Không thể xóa địa điểm trong trại");
     }
   };
 
@@ -191,7 +191,7 @@ const CampLocationPage: React.FC = () => {
         };
 
         await locationService.updateLocation(editingLocation.locationId, payload);
-        toastSuccess("Success", "Camp location updated successfully");
+        toastSuccess("Thành công", "Cập nhật địa điểm trại thành công");
       } else {
         const payload: LocationCreateDto = {
           name: values.name,
@@ -203,7 +203,7 @@ const CampLocationPage: React.FC = () => {
         };
 
         await locationService.createLocation(payload);
-        toastSuccess("Success", "Camp location created successfully");
+        toastSuccess("Thành công", "Tạo địa điểm trại thành công");
       }
 
       await fetchCampLocations();
@@ -211,7 +211,7 @@ const CampLocationPage: React.FC = () => {
       form.resetFields();
     } catch (error) {
       console.error("Error submitting camp location:", error);
-      toastError("Error", "Failed to save camp location");
+      toastError("Lỗi", "Không thể lưu địa điểm trại");
     } finally {
       setSubmitting(false);
     }
@@ -220,21 +220,21 @@ const CampLocationPage: React.FC = () => {
   const handleDelete = async (locationId: number) => {
     try {
       await locationService.deleteLocation(locationId);
-      toastSuccess("Success", "Camp location deleted successfully");
+      toastSuccess("Thành công", "Xóa địa điểm trại thành công");
       await fetchCampLocations();
       setDeletePopoverOpen(null);
     } catch (error) {
       console.error("Failed to delete camp location:", error);
-      toastError("Error", "Failed to delete camp location");
+      toastError("Lỗi", "Không thể xóa địa điểm trại");
     }
   };
 
   return (
     <div className="min-h-screen bg-[#F9FAFB] p-6">
       <div className="mb-4">
-        <h1 className="text-2xl font-bold text-[#111827]">Camp Locations</h1>
+        <h1 className="text-2xl font-bold text-[#111827]">Địa điểm trại</h1>
         <p className="text-xs text-[#6B7280] mt-0.5">
-          Manage camp locations for your programs
+          Quản lý địa điểm trại cho các chương trình của bạn
         </p>
       </div>
 
@@ -244,13 +244,13 @@ const CampLocationPage: React.FC = () => {
         </div>
       ) : campLocations.length === 0 ? (
         <div className="bg-white rounded-xl shadow-sm border border-[#E5E7EB] p-12 text-center">
-          <p className="text-[#6B7280] text-lg mb-4">No camp locations found</p>
+          <p className="text-[#6B7280] text-lg mb-4">Không tìm thấy địa điểm trại</p>
           <button
             onClick={handleAddClick}
             className="inline-flex items-center gap-2 px-4 py-2 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-all font-medium text-sm"
           >
             <Plus size={16} />
-            Create Camp Location
+            Tạo địa điểm trại
           </button>
         </div>
       ) : (
@@ -258,11 +258,11 @@ const CampLocationPage: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
             <div className="lg:col-span-1">
               <div className="bg-white rounded-xl shadow-sm border border-[#E5E7EB] p-6">
-                <h3 className="text-lg font-bold text-[#111827] mb-4">Filters</h3>
+                <h3 className="text-lg font-bold text-[#111827] mb-4">Bộ lọc</h3>
 
                 <div className="mb-6">
                   <label className="block text-xs font-semibold text-[#374151] mb-2 uppercase tracking-wider">
-                    Search
+                    Tìm kiếm
                   </label>
                   <div className="relative">
                     <Search
@@ -271,7 +271,7 @@ const CampLocationPage: React.FC = () => {
                     />
                     <input
                       type="text"
-                      placeholder="By name or address..."
+                      placeholder="Theo tên hoặc địa chỉ..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="w-full pl-9 pr-4 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:border-transparent text-sm text-[#6B7280] placeholder:text-[#9CA3AF]"
@@ -284,25 +284,25 @@ const CampLocationPage: React.FC = () => {
                   className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-all font-medium text-sm"
                 >
                   <Plus size={16} />
-                  Create Camp Location
+                  Tạo địa điểm trại
                 </button>
 
                 <div className="mt-6 pt-6 border-t border-[#E5E7EB]">
                   <div className="space-y-3">
                     <div>
-                      <span className="text-xs text-[#6B7280]">Total: </span>
+                      <span className="text-xs text-[#6B7280]">Tổng: </span>
                       <span className="text-lg font-bold text-[#111827]">
                         {campLocations.length}
                       </span>
                     </div>
                     <div>
-                      <span className="text-xs text-[#6B7280]">Found: </span>
+                      <span className="text-xs text-[#6B7280]">Tìm thấy: </span>
                       <span className="text-lg font-bold text-[#6366F1]">
                         {filteredCampLocations.length}
                       </span>
                     </div>
                     <div>
-                      <span className="text-xs text-[#6B7280]">Active: </span>
+                      <span className="text-xs text-[#6B7280]">Hoạt động: </span>
                       <span className="text-lg font-bold text-[#10B981]">
                         {campLocations.filter((l) => l.isActive).length}
                       </span>
@@ -316,7 +316,7 @@ const CampLocationPage: React.FC = () => {
               <div className="bg-white rounded-xl shadow-sm border border-[#E5E7EB] overflow-hidden">
                 <div className="px-6 py-4 border-b border-[#E5E7EB]">
                   <h2 className="text-lg font-bold text-[#111827]">
-                    Found: {filteredCampLocations.length}
+                    Tìm thấy: {filteredCampLocations.length}
                   </h2>
                 </div>
 
@@ -328,19 +328,19 @@ const CampLocationPage: React.FC = () => {
                           ID
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Name
+                          Tên
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Address
+                          Địa chỉ
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Coordinates
+                          Tọa độ
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Status
+                          Trạng thái
                         </th>
                         <th className="px-6 py-3 text-right text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Actions
+                          Hành động
                         </th>
                       </tr>
                     </thead>
@@ -351,7 +351,7 @@ const CampLocationPage: React.FC = () => {
                             colSpan={6}
                             className="px-6 py-12 text-center text-[#6B7280]"
                           >
-                            No camp locations found matching your filters
+                            Không tìm thấy địa điểm trại phù hợp với bộ lọc
                           </td>
                         </tr>
                       ) : (
@@ -378,13 +378,12 @@ const CampLocationPage: React.FC = () => {
                             </td>
                             <td className="px-6 py-4 text-sm">
                               <span
-                                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                  location.isActive
+                                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${location.isActive
                                     ? "bg-green-100 text-green-700"
                                     : "bg-red-100 text-red-700"
-                                }`}
+                                  }`}
                               >
-                                {location.isActive ? "Active" : "Inactive"}
+                                {location.isActive ? "Hoạt động" : "Không hoạt động"}
                               </span>
                             </td>
                             <td className="px-6 py-4 text-right">
@@ -392,18 +391,18 @@ const CampLocationPage: React.FC = () => {
                                 <button
                                   onClick={() => handleEditClick(location)}
                                   className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#F3F4F6] text-[#6B7280] rounded-lg hover:bg-[#E5E7EB] transition-all font-medium text-sm"
-                                  title="Edit Camp Location"
+                                  title="Chỉnh sửa địa điểm trại"
                                 >
                                   <Edit2 size={16} />
-                                  Edit
+                                  Chỉnh sửa
                                 </button>
                                 <DeletePopover
                                   onConfirm={() =>
                                     handleDelete(location.locationId)
                                   }
-                                  title="Delete Camp Location"
-                                  message={`Are you sure you want to delete "${location.name}"?`}
-                                  buttonText="Delete"
+                                  title="Xóa địa điểm trại"
+                                  message={`Bạn có chắc muốn xóa "${location.name}"?`}
+                                  buttonText="Xóa"
                                   isOpen={deletePopoverOpen === location.locationId}
                                   onOpenChange={(open) =>
                                     setDeletePopoverOpen(
@@ -426,7 +425,7 @@ const CampLocationPage: React.FC = () => {
       )}
 
       <Modal
-        title={editingLocation ? "Edit Camp Location" : "Create Camp Location"}
+        title={editingLocation ? "Chỉnh sửa địa điểm trại" : "Tạo địa điểm trại"}
         open={isModalVisible}
         onOk={handleSubmit}
         onCancel={() => {
@@ -437,7 +436,7 @@ const CampLocationPage: React.FC = () => {
         }}
         confirmLoading={submitting}
         width={editingLocation ? 1200 : 800}
-        okText={editingLocation ? "Update" : "Create"}
+        okText={editingLocation ? "Cập nhật" : "Tạo"}
       >
         <div className="mt-4">
           <div className={editingLocation ? "grid grid-cols-2 gap-6" : ""}>
@@ -449,60 +448,60 @@ const CampLocationPage: React.FC = () => {
                 initialLocation={
                   editingLocation && editingLocation.latitude && editingLocation.longitude
                     ? {
-                        name: editingLocation.name,
-                        address: editingLocation.address || '',
-                        latitude: editingLocation.latitude,
-                        longitude: editingLocation.longitude,
-                      }
+                      name: editingLocation.name,
+                      address: editingLocation.address || '',
+                      latitude: editingLocation.latitude,
+                      longitude: editingLocation.longitude,
+                    }
                     : null
                 }
               />
-              
+
               <Form form={form} layout="vertical">
                 <Form.Item
-                  label="Location Name"
+                  label="Tên địa điểm"
                   name="name"
                   rules={[
-                    { required: true, message: "Please input location name!" },
-                    { min: 2, message: "Name must be at least 2 characters!" },
-                    { max: 255, message: "Name cannot exceed 255 characters!" },
+                    { required: true, message: "Vui lòng nhập tên địa điểm!" },
+                    { min: 2, message: "Tên phải có ít nhất 2 ký tự!" },
+                    { max: 255, message: "Tên không được vượt quá 255 ký tự!" },
                   ]}
                 >
-                  <Input placeholder="e.g., Summer Camp Central Location" />
+                  <Input placeholder="VD: Địa điểm trại hè trung tâm" />
                 </Form.Item>
 
                 <Form.Item
-                  label="Address"
+                  label="Địa chỉ"
                   name="address"
                   rules={[
-                    { required: true, message: "Please input address!" },
+                    { required: true, message: "Vui lòng nhập địa chỉ!" },
                   ]}
                 >
                   <Input.TextArea
-                    placeholder="Full address of the camp location"
+                    placeholder="Địa chỉ đầy đủ của địa điểm trại"
                     rows={2}
                   />
                 </Form.Item>
 
                 <div className="grid grid-cols-2 gap-4">
                   <Form.Item
-                    label="Latitude"
+                    label="Vĩ độ"
                     name="latitude"
                     rules={[
-                      { required: true, message: "Please select location on map!" },
+                      { required: true, message: "Vui lòng chọn vị trí trên bản đồ!" },
                     ]}
                   >
-                    <Input placeholder="Latitude" disabled />
+                    <Input placeholder="Vĩ độ" disabled />
                   </Form.Item>
 
                   <Form.Item
-                    label="Longitude"
+                    label="Kinh độ"
                     name="longitude"
                     rules={[
-                      { required: true, message: "Please select location on map!" },
+                      { required: true, message: "Vui lòng chọn vị trí trên bản đồ!" },
                     ]}
                   >
-                    <Input placeholder="Longitude" disabled />
+                    <Input placeholder="Kinh độ" disabled />
                   </Form.Item>
                 </div>
               </Form>
@@ -512,14 +511,14 @@ const CampLocationPage: React.FC = () => {
               <div className="border-l border-[#E5E7EB] pl-6">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="text-base font-bold text-[#111827]">
-                    In-Camp Locations ({inCampLocations.length})
+                    Địa điểm trong trại ({inCampLocations.length})
                   </h3>
                   <button
                     onClick={handleAddInCampClick}
                     className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-all font-medium text-sm"
                   >
                     <Plus size={16} />
-                    Add
+                    Thêm
                   </button>
                 </div>
 
@@ -531,7 +530,7 @@ const CampLocationPage: React.FC = () => {
                     />
                     <input
                       type="text"
-                      placeholder="Search in-camp locations..."
+                      placeholder="Tìm kiếm địa điểm trong trại..."
                       value={inCampSearchQuery}
                       onChange={(e) => setInCampSearchQuery(e.target.value)}
                       className="w-full pl-9 pr-4 py-1.5 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:border-transparent text-sm text-[#6B7280] placeholder:text-[#9CA3AF]"
@@ -544,16 +543,16 @@ const CampLocationPage: React.FC = () => {
                     <thead className="bg-[#F9FAFB] border-b border-[#E5E7EB]">
                       <tr>
                         <th className="px-3 py-2 text-left text-xs font-semibold text-[#6B7280] uppercase">
-                          No.
+                          STT
                         </th>
                         <th className="px-3 py-2 text-left text-xs font-semibold text-[#6B7280] uppercase">
-                          Name
+                          Tên
                         </th>
                         <th className="px-3 py-2 text-left text-xs font-semibold text-[#6B7280] uppercase">
-                          Status
+                          Trạng thái
                         </th>
                         <th className="px-3 py-2 text-right text-xs font-semibold text-[#6B7280] uppercase">
-                          Actions
+                          Hành động
                         </th>
                       </tr>
                     </thead>
@@ -561,7 +560,7 @@ const CampLocationPage: React.FC = () => {
                       {filteredInCampLocations.length === 0 ? (
                         <tr>
                           <td colSpan={4} className="px-3 py-8 text-center text-sm text-[#6B7280]">
-                            No in-camp locations found
+                            Không tìm thấy địa điểm trong trại
                           </td>
                         </tr>
                       ) : (
@@ -582,13 +581,12 @@ const CampLocationPage: React.FC = () => {
                             </td>
                             <td className="px-3 py-2 text-sm">
                               <span
-                                className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                                  loc.isActive
+                                className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${loc.isActive
                                     ? "bg-green-100 text-green-700"
                                     : "bg-gray-100 text-gray-700"
-                                }`}
+                                  }`}
                               >
-                                {loc.isActive ? "Active" : "Inactive"}
+                                {loc.isActive ? "Hoạt động" : "Không hoạt động"}
                               </span>
                             </td>
                             <td className="px-3 py-2 text-right">
@@ -601,8 +599,8 @@ const CampLocationPage: React.FC = () => {
                                 </button>
                                 <DeletePopover
                                   onConfirm={() => handleDeleteInCamp(loc.locationId)}
-                                  message={`Delete "${loc.name}"?`}
-                                  buttonText="Delete"
+                                  message={`Xóa "${loc.name}"?`}
+                                  buttonText="Xóa"
                                   isOpen={inCampDeletePopoverOpen === loc.locationId}
                                   onOpenChange={(open) =>
                                     setInCampDeletePopoverOpen(open ? loc.locationId : null)
@@ -623,7 +621,7 @@ const CampLocationPage: React.FC = () => {
       </Modal>
 
       <Modal
-        title={editingInCampLocation ? "Edit In-Camp Location" : "Add In-Camp Location"}
+        title={editingInCampLocation ? "Chỉnh sửa địa điểm trong trại" : "Thêm địa điểm trong trại"}
         open={isInCampModalVisible}
         onOk={handleInCampSubmit}
         onCancel={() => {
@@ -631,27 +629,27 @@ const CampLocationPage: React.FC = () => {
           inCampForm.resetFields();
           setEditingInCampLocation(null);
         }}
-        okText={editingInCampLocation ? "Update" : "Add"}
-        cancelText="Cancel"
+        okText={editingInCampLocation ? "Cập nhật" : "Thêm"}
+        cancelText="Hủy"
         confirmLoading={inCampSubmitting}
         width={500}
       >
         <Form form={inCampForm} layout="vertical" className="mt-4">
           <Form.Item
-            label="Location Name"
+            label="Tên địa điểm"
             name="name"
-            rules={[{ required: true, message: "Please enter location name" }]}
+            rules={[{ required: true, message: "Vui lòng nhập tên địa điểm" }]}
           >
-            <Input placeholder="e.g., Dining Area, Sports Field, etc." />
+            <Input placeholder="VD: Khu nhà ăn, Sân thể thao, v.v." />
           </Form.Item>
 
           <Form.Item
-            label="Description"
+            label="Mô tả"
             name="description"
             rules={[{ required: false }]}
           >
             <Input.TextArea
-              placeholder="Enter description (optional)"
+              placeholder="Nhập mô tả (tùy chọn)"
               rows={3}
             />
           </Form.Item>
