@@ -92,9 +92,9 @@ const CampStaffManagement: React.FC = () => {
     return (
       <div className="p-6 flex items-center justify-center min-h-[500px]">
         <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-indigo-200 p-12 rounded-2xl text-center shadow-lg hover:shadow-xl transition-shadow duration-300 max-w-md">
-          <h3 className="text-xl font-bold text-indigo-900 mb-2">Select Camp</h3>
+          <h3 className="text-xl font-bold text-indigo-900 mb-2">Chọn Trại</h3>
           <p className="text-indigo-700 text-base leading-relaxed">
-            Please select a camp from the left sidebar to manage staff
+            Vui lòng chọn một trại từ thanh bên trái để quản lý nhân viên
           </p>
         </div>
       </div>
@@ -210,9 +210,9 @@ const CampStaffManagement: React.FC = () => {
 
       {/* Header */}
       <div className="mb-4">
-        <h1 className="text-2xl font-bold text-[#111827]">Staff Management</h1>
+        <h1 className="text-2xl font-bold text-[#111827]">Quản Lý Nhân Viên</h1>
         <p className="text-xs text-[#6B7280] mt-0.5">
-          Assign and manage camp staff members
+          Phân công và quản lý nhân viên trại
         </p>
       </div>
 
@@ -229,7 +229,7 @@ const CampStaffManagement: React.FC = () => {
               <div className="bg-white rounded-xl shadow-sm border border-[#E5E7EB] overflow-hidden sticky top-6">
                 {/* Header */}
                 <div className="px-6 py-4 border-b border-[#E5E7EB]">
-                  <h3 className="text-lg font-bold text-[#111827]">Available Staff</h3>
+                  <h3 className="text-lg font-bold text-[#111827]">NV Sẵn Sàng</h3>
                 </div>
 
                 {/* Search */}
@@ -241,7 +241,7 @@ const CampStaffManagement: React.FC = () => {
                     />
                     <input
                       type="text"
-                      placeholder="Search staff..."
+                      placeholder="Tìm nhân viên..."
                       value={searchAvailableQuery}
                       onChange={(e) => setSearchAvailableQuery(e.target.value)}
                       className="w-full pl-9 pr-4 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:border-transparent text-sm text-[#6B7280] placeholder:text-[#9CA3AF]"
@@ -253,14 +253,14 @@ const CampStaffManagement: React.FC = () => {
                 <div className="px-6 py-3 border-b border-[#E5E7EB]">
                   <div className="flex justify-between items-center">
                     <span className="text-sm font-semibold text-[#6B7280]">
-                        Found: {filteredAvailableStaff.length}
+                        Tìm Thấy: {filteredAvailableStaff.length}
                     </span>
                     <Popover
                       content={
                         <div className="space-y-2">
                           <p className="text-sm font-medium">
-                            Assign {selectedStaffIds.size} staff member
-                            {selectedStaffIds.size > 1 ? 's' : ''}?
+                            Phân công {selectedStaffIds.size} nhân viên
+                            {selectedStaffIds.size > 1 ? '' : ''}?
                           </p>
                           <div className="flex gap-2">
                             <button
@@ -270,13 +270,13 @@ const CampStaffManagement: React.FC = () => {
                               }}
                               className="flex-1 px-3 py-1 bg-[#6366F1] text-white text-sm font-medium rounded-lg hover:bg-[#4F46E5]"
                             >
-                              Yes
+                              Có
                             </button>
                             <button
                               onClick={() => setAssignPopoverOpen(false)}
                               className="flex-1 px-3 py-1 bg-[#F3F4F6] text-[#6B7280] text-sm font-medium rounded-lg hover:bg-[#E5E7EB]"
                             >
-                              No
+                              Không
                             </button>
                           </div>
                         </div>
@@ -290,7 +290,7 @@ const CampStaffManagement: React.FC = () => {
                         className="inline-flex items-center justify-center gap-2 px-3 py-2 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-all font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
                       >
                         <UserRoundPlus size={16} />
-                        Assign ({selectedStaffIds.size})
+                        Phân Công ({selectedStaffIds.size})
                       </button>
                     </Popover>
                   </div>
@@ -306,7 +306,7 @@ const CampStaffManagement: React.FC = () => {
                 >
                   {filteredAvailableStaff.length === 0 ? (
                     <div className="px-6 py-8 text-center text-xs text-[#6B7280]">
-                      No available staff
+                      Không có nhân viên sẵn sàng
                     </div>
                   ) : (
                     filteredAvailableStaff.map((staff) => (
@@ -336,7 +336,7 @@ const CampStaffManagement: React.FC = () => {
                 {/* Table Header */}
                 <div className="px-6 py-4 border-b border-[#E5E7EB]">
                   <h2 className="text-lg font-bold text-[#111827]">
-                    Assigned Staff ({filteredAssignedStaff.length})
+                    NV Đã Phân Công ({filteredAssignedStaff.length})
                   </h2>
                 </div>
 
@@ -349,7 +349,7 @@ const CampStaffManagement: React.FC = () => {
                     />
                     <input
                       type="text"
-                      placeholder="Search staff..."
+                      placeholder="Tìm nhân viên..."
                       value={searchAssignedQuery}
                       onChange={(e) => setSearchAssignedQuery(e.target.value)}
                       className="w-full pl-9 pr-4 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:border-transparent text-sm text-[#6B7280] placeholder:text-[#9CA3AF]"
@@ -366,13 +366,13 @@ const CampStaffManagement: React.FC = () => {
                           No.
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Name
+                          Tên
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Role
+                          Vai Trò
                         </th>
                         <th className="px-6 py-3 text-right text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Actions
+                          Thao Tác
                         </th>
                       </tr>
                     </thead>
@@ -383,7 +383,7 @@ const CampStaffManagement: React.FC = () => {
                             colSpan={4}
                             className="px-6 py-12 text-center text-[#6B7280]"
                           >
-                            No staff assigned to this camp yet
+                            Chưa có nhân viên nào được phân công cho trại này
                           </td>
                         </tr>
                       ) : (
@@ -414,7 +414,7 @@ const CampStaffManagement: React.FC = () => {
                                   title="View Details"
                                 >
                                   <Eye size={14} />
-                                  Details
+                                  Chi Tiết
                                 </button>
                                 <DeletePopover
                                 onConfirm={() =>
@@ -422,9 +422,9 @@ const CampStaffManagement: React.FC = () => {
                                     assignment.campStaffAssignmentId
                                   )
                                 }
-                                title="Remove Staff"
-                                message={`Are you sure you want to remove "${assignment.staff.fullName}" from this camp?`}
-                                buttonText="Remove"
+                                title="Gỡ Nhân Viên"
+                                message={`Bạn có chắc muốn gỡ "${assignment.staff.fullName}" khỏi trại này?`}
+                                buttonText="Gỡ"
                                 disabled={assigning}
                                 isOpen={
                                   deletePopoverOpen ===

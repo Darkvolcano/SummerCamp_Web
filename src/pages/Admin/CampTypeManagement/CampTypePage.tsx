@@ -111,9 +111,9 @@ const CampTypePage: React.FC = () => {
     <div className="min-h-screen bg-[#F9FAFB] p-6">
       {/* Header */}
       <div className="mb-4">
-        <h1 className="text-2xl font-bold text-[#111827]">Camp Types</h1>
+        <h1 className="text-2xl font-bold text-[#111827]">Loại Trại</h1>
         <p className="text-xs text-[#6B7280] mt-0.5">
-          Manage and organize camp types for your programs
+          Quản lý và tổ chức các loại trại cho chương trình
         </p>
       </div>
 
@@ -123,13 +123,13 @@ const CampTypePage: React.FC = () => {
         </div>
       ) : campTypes.length === 0 ? (
         <div className="bg-white rounded-xl shadow-sm border border-[#E5E7EB] p-12 text-center">
-          <p className="text-[#6B7280] text-lg mb-4">No camp types found</p>
+          <p className="text-[#6B7280] text-lg mb-4">Không tìm thấy loại trại</p>
           <button
             onClick={handleAddClick}
             className="inline-flex items-center gap-2 px-4 py-2 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-all font-medium text-sm"
           >
             <Plus size={16} />
-            Create Camp Type
+            Tạo Loại Trại
           </button>
         </div>
       ) : (
@@ -139,12 +139,12 @@ const CampTypePage: React.FC = () => {
             {/* Left Sidebar - Filters */}
             <div className="lg:col-span-1">
               <div className="bg-white rounded-xl shadow-sm border border-[#E5E7EB] p-6 sticky top-6">
-                <h3 className="text-lg font-bold text-[#111827] mb-4">Filters</h3>
+                <h3 className="text-lg font-bold text-[#111827] mb-4">Bộ Lọc</h3>
 
                 {/* Search */}
                 <div className="mb-6">
                   <label className="block text-xs font-semibold text-[#374151] mb-2 uppercase tracking-wider">
-                    Search
+                    Tìm Kiếm
                   </label>
                   <div className="relative">
                     <Search
@@ -153,7 +153,7 @@ const CampTypePage: React.FC = () => {
                     />
                     <input
                       type="text"
-                      placeholder="By name or description..."
+                      placeholder="Theo tên hoặc mô tả..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="w-full pl-9 pr-4 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:border-transparent text-sm text-[#6B7280] placeholder:text-[#9CA3AF]"
@@ -167,26 +167,26 @@ const CampTypePage: React.FC = () => {
                   className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-all font-medium text-sm"
                 >
                   <Plus size={16} />
-                  Create Camp Type
+                  Tạo Loại Trại
                 </button>
 
                 {/* Summary Stats */}
                 <div className="mt-6 pt-6 border-t border-[#E5E7EB]">
                   <div className="space-y-3">
                     <div>
-                      <span className="text-xs text-[#6B7280]">Total: </span>
+                      <span className="text-xs text-[#6B7280]">Tổng: </span>
                       <span className="text-lg font-bold text-[#111827]">
                         {campTypes.length}
                       </span>
                     </div>
                     <div>
-                      <span className="text-xs text-[#6B7280]">Found: </span>
+                      <span className="text-xs text-[#6B7280]">Tìm Thấy: </span>
                       <span className="text-lg font-bold text-[#6366F1]">
                         {filteredCampTypes.length}
                       </span>
                     </div>
                     <div>
-                      <span className="text-xs text-[#6B7280]">Active: </span>
+                      <span className="text-xs text-[#6B7280]">Hoạt Động: </span>
                       <span className="text-lg font-bold text-[#10B981]">
                         {campTypes.filter((t) => t.isActive).length}
                       </span>
@@ -202,7 +202,7 @@ const CampTypePage: React.FC = () => {
                 {/* Table Header */}
                 <div className="px-6 py-4 border-b border-[#E5E7EB]">
                   <h2 className="text-lg font-bold text-[#111827]">
-                    Found: {filteredCampTypes.length}
+                    Tìm Thấy: {filteredCampTypes.length}
                   </h2>
                 </div>
 
@@ -215,16 +215,16 @@ const CampTypePage: React.FC = () => {
                           ID
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Name
+                          Tên
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Description
+                          Mô Tả
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Status
+                          Trạng Thái
                         </th>
                         <th className="px-6 py-3 text-right text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Actions
+                          Thao Tác
                         </th>
                       </tr>
                     </thead>
@@ -235,7 +235,7 @@ const CampTypePage: React.FC = () => {
                             colSpan={5}
                             className="px-6 py-12 text-center text-[#6B7280]"
                           >
-                            No camp types found matching your filters
+                            Không tìm thấy loại trại phù hợp
                           </td>
                         </tr>
                       ) : (
@@ -274,15 +274,15 @@ const CampTypePage: React.FC = () => {
                                   title="Edit Camp Type"
                                 >
                                   <Edit2 size={16} />
-                                  Edit
+                                  Sửa
                                 </button>
                                 <DeletePopover
                                   onConfirm={() =>
                                     handleDelete(campType.campTypeId)
                                   }
-                                  title="Delete Camp Type"
-                                  message={`Are you sure you want to delete "${campType.name}"?`}
-                                  buttonText="Delete"
+                                  title="Xóa Loại Trại"
+                                  message={`Bạn có chắc muốn xóa "${campType.name}"?`}
+                                  buttonText="Xóa"
                                   isOpen={deletePopoverOpen === campType.campTypeId}
                                   onOpenChange={(open) =>
                                     setDeletePopoverOpen(

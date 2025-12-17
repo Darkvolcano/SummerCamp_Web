@@ -105,9 +105,9 @@ export default function BlogManagement() {
     <div className="min-h-screen bg-[#F9FAFB] p-6">
       {/* Header */}
       <div className="mb-4">
-        <h1 className="text-2xl font-bold text-[#111827]">Blog Management</h1>
+        <h1 className="text-2xl font-bold text-[#111827]">Quản Lý Blog</h1>
         <p className="text-xs text-[#6B7280] mt-0.5">
-          Manage and organize blog posts and articles
+          Quản lý và tổ chức các bài viết blog
         </p>
       </div>
 
@@ -117,13 +117,13 @@ export default function BlogManagement() {
         </div>
       ) : blogs.length === 0 ? (
         <div className="bg-white rounded-xl shadow-sm border border-[#E5E7EB] p-12 text-center">
-          <p className="text-[#6B7280] text-lg mb-4">No blog posts found</p>
+          <p className="text-[#6B7280] text-lg mb-4">Không tìm thấy bài viết</p>
           <button
             onClick={handleCreate}
             className="inline-flex items-center gap-2 px-4 py-2 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-all font-medium text-sm"
           >
             <Plus size={16} />
-            Create Blog Post
+            Tạo Bài Viết
           </button>
         </div>
       ) : (
@@ -133,12 +133,12 @@ export default function BlogManagement() {
             {/* Left Sidebar - Filters */}
             <div className="lg:col-span-1">
               <div className="bg-white rounded-xl shadow-sm border border-[#E5E7EB] p-6 sticky top-6">
-                <h3 className="text-lg font-bold text-[#111827] mb-4">Filters</h3>
+                <h3 className="text-lg font-bold text-[#111827] mb-4">Bộ Lọc</h3>
 
                 {/* Search */}
                 <div className="mb-6">
                   <label className="block text-xs font-semibold text-[#374151] mb-2 uppercase tracking-wider">
-                    Search
+                    Tìm Kiếm
                   </label>
                   <div className="relative">
                     <Search
@@ -147,7 +147,7 @@ export default function BlogManagement() {
                     />
                     <input
                       type="text"
-                      placeholder="By title, content, author..."
+                      placeholder="Theo tiêu đề, nội dung, tác giả..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="w-full pl-9 pr-4 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:border-transparent text-sm text-[#6B7280] placeholder:text-[#9CA3AF]"
@@ -161,26 +161,26 @@ export default function BlogManagement() {
                   className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-all font-medium text-sm"
                 >
                   <Plus size={16} />
-                  Create Blog Post
+                  Tạo Bài Viết
                 </button>
 
                 {/* Summary Stats */}
                 <div className="mt-6 pt-6 border-t border-[#E5E7EB]">
                   <div className="space-y-3">
                     <div>
-                      <span className="text-xs text-[#6B7280]">Total: </span>
+                      <span className="text-xs text-[#6B7280]">Tổng: </span>
                       <span className="text-lg font-bold text-[#111827]">
                         {stats.total}
                       </span>
                     </div>
                     <div>
-                      <span className="text-xs text-[#6B7280]">Found: </span>
+                      <span className="text-xs text-[#6B7280]">Tìm Thấy: </span>
                       <span className="text-lg font-bold text-[#6366F1]">
                         {filteredBlogs.length}
                       </span>
                     </div>
                     <div>
-                      <span className="text-xs text-[#6B7280]">Recent (7d): </span>
+                      <span className="text-xs text-[#6B7280]">Gần Đây (7 ngày): </span>
                       <span className="text-lg font-bold text-[#10B981]">
                         {stats.recent}
                       </span>
@@ -196,7 +196,7 @@ export default function BlogManagement() {
                 {/* Table Header */}
                 <div className="px-6 py-4 border-b border-[#E5E7EB]">
                   <h2 className="text-lg font-bold text-[#111827]">
-                    Found: {filteredBlogs.length}
+                    Tìm Thấy: {filteredBlogs.length}
                   </h2>
                 </div>
 
@@ -209,19 +209,19 @@ export default function BlogManagement() {
                           ID
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Title
+                          Tiêu Đề
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Author
+                          Tác Giả
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Created Date
+                          Ngày Tạo
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Preview
+                          Xem Trước
                         </th>
                         <th className="px-6 py-3 text-right text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Actions
+                          Thao Tác
                         </th>
                       </tr>
                     </thead>
@@ -232,7 +232,7 @@ export default function BlogManagement() {
                             colSpan={6}
                             className="px-6 py-12 text-center text-[#6B7280]"
                           >
-                            No blog posts found matching your filters
+                            Không tìm thấy bài viết phù hợp
                           </td>
                         </tr>
                       ) : (
@@ -277,7 +277,7 @@ export default function BlogManagement() {
                                   title="View Details"
                                 >
                                   <Eye size={16} />
-                                  View
+                                  Xem
                                 </button>
                                 <button
                                   onClick={() => handleEdit(blog)}
@@ -285,13 +285,13 @@ export default function BlogManagement() {
                                   title="Edit Blog"
                                 >
                                   <Edit2 size={16} />
-                                  Edit
+                                  Sửa
                                 </button>
                                 <DeletePopover
                                   onConfirm={() => handleDelete(blog.id)}
-                                  title="Delete Blog Post"
-                                  message={`Are you sure you want to delete "${blog.title}"?`}
-                                  buttonText="Delete"
+                                  title="Xóa Bài Viết"
+                                  message={`Bạn có chắc muốn xóa "${blog.title}"?`}
+                                  buttonText="Xóa"
                                   isOpen={deletePopoverOpen === blog.id}
                                   onOpenChange={(open) =>
                                     setDeletePopoverOpen(open ? blog.id : null)

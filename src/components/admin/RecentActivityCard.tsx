@@ -31,8 +31,8 @@ export default function RecentActivityCard({ activities }: RecentActivityCardPro
     return (
         <div className="activity-card">
             <div className="card-header">
-                <h3 className="card-title">Recent Activity</h3>
-                <button className="view-all-button">View All</button>
+                <h3 className="card-title">Hoạt Động Gần Đây</h3>
+                <button className="view-all-button">Xem Tất Cả</button>
             </div>
             <div className="activity-list">
                 {activities.map((activity) => (

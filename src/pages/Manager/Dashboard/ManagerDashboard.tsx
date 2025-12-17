@@ -58,9 +58,9 @@ const ManagerDashboard: React.FC = () => {
     return (
       <div className="p-6 flex items-center justify-center min-h-[500px]">
         <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-indigo-200 p-12 rounded-2xl text-center shadow-lg hover:shadow-xl transition-shadow duration-300 max-w-md">
-          <h3 className="text-xl font-bold text-indigo-900 mb-2">Select Camp</h3>
+          <h3 className="text-xl font-bold text-indigo-900 mb-2">Chọn Trại</h3>
           <p className="text-indigo-700 text-base leading-relaxed">
-            Please select a camp from the left sidebar to view the dashboard
+            Vui lòng chọn một trại từ thanh bên trái để xem bảng điều khiển
           </p>
         </div>
       </div>
@@ -101,8 +101,8 @@ const ManagerDashboard: React.FC = () => {
                   isRejected ? "text-red-700" : "text-blue-700"
                 }`}>
                   {isRejected
-                    ? "Submission rejected - review and complete all setup to submit for approval"
-                    : "Complete all setup to submit for approval"}
+                    ? "Bị từ chối - kiểm tra và hoàn thành tất cả thiết lập để gửi duyệt"
+                    : "Hoàn thành tất cả thiết lập để gửi duyệt"}
                 </p>
                 
                 {/* Setup Steps */}
@@ -118,7 +118,7 @@ const ManagerDashboard: React.FC = () => {
                     }`}>1</span>
                     <span className={`text-xs font-semibold ${
                       isRejected ? "text-red-900 group-hover:text-red-700" : "text-blue-900 group-hover:text-blue-700"
-                    }`}>Staff Assignment</span>
+                    }`}>Phân Công NV</span>
                   </button>
 
                   <button
@@ -132,7 +132,7 @@ const ManagerDashboard: React.FC = () => {
                     }`}>2</span>
                     <span className={`text-xs font-semibold ${
                       isRejected ? "text-red-900 group-hover:text-red-700" : "text-blue-900 group-hover:text-blue-700"
-                    }`}>Locations</span>
+                    }`}>Địa Điểm</span>
                   </button>
 
                   <button
@@ -146,7 +146,7 @@ const ManagerDashboard: React.FC = () => {
                     }`}>3</span>
                     <span className={`text-xs font-semibold ${
                       isRejected ? "text-red-900 group-hover:text-red-700" : "text-blue-900 group-hover:text-blue-700"
-                    }`}>Groups</span>
+                    }`}>Nhóm</span>
                   </button>
 
                   <button
@@ -160,7 +160,7 @@ const ManagerDashboard: React.FC = () => {
                     }`}>4</span>
                     <span className={`text-xs font-semibold ${
                       isRejected ? "text-red-900 group-hover:text-red-700" : "text-blue-900 group-hover:text-blue-700"
-                    }`}>Accommodation</span>
+                    }`}>Chỗ Ở</span>
                   </button>
 
                   <button
@@ -174,7 +174,7 @@ const ManagerDashboard: React.FC = () => {
                     }`}>5</span>
                     <span className={`text-xs font-semibold ${
                       isRejected ? "text-red-900 group-hover:text-red-700" : "text-blue-900 group-hover:text-blue-700"
-                    }`}>Activities</span>
+                    }`}>Hoạt Động</span>
                   </button>
 
                   <button
@@ -188,7 +188,7 @@ const ManagerDashboard: React.FC = () => {
                     }`}>6</span>
                     <span className={`text-xs font-semibold ${
                       isRejected ? "text-red-900 group-hover:text-red-700" : "text-blue-900 group-hover:text-blue-700"
-                    }`}>Transportation</span>
+                    }`}>Vận Chuyển</span>
                   </button>
                 </div>
               </div>
@@ -202,7 +202,7 @@ const ManagerDashboard: React.FC = () => {
                   : "bg-blue-600 hover:bg-blue-700 text-white flex-shrink-0"
                 }
               >
-                Submit
+                Gửi Duyệt
               </Button>
             </div>
           </div>
@@ -246,49 +246,49 @@ const ManagerDashboard: React.FC = () => {
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pt-6 border-t border-[#E5E7EB]">
                 <div>
                   <p className="text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-1">
-                    Duration
+                    Thời Gian
                   </p>
                   <p className="text-sm font-bold text-[#111827]">
                     {new Date(camp.startDate).toLocaleDateString("vi-VN")}
                   </p>
                   <p className="text-xs text-[#6B7280]">
-                    to {new Date(camp.endDate).toLocaleDateString("vi-VN")}
+                    đến {new Date(camp.endDate).toLocaleDateString("vi-VN")}
                   </p>
                 </div>
 
                 <div>
                   <p className="text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-1">
-                    Price
+                    Giá
                   </p>
                   <p className="text-sm font-bold text-[#111827]">
                     {camp.price.toLocaleString()} VND
                   </p>
-                  <p className="text-xs text-[#6B7280]">Per participant</p>
+                  <p className="text-xs text-[#6B7280]">Mỗi người</p>
                 </div>
 
                 <div>
                   <p className="text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-1">
-                    Participants
+                    Số Người
                   </p>
                   <p className="text-sm font-bold text-[#111827]">
                     {camp.minParticipants}-{camp.maxParticipants}
                   </p>
-                  <p className="text-xs text-[#6B7280]">Min-Max</p>
+                  <p className="text-xs text-[#6B7280]">Tối thiểu-Tối đa</p>
                 </div>
 
                 <div>
                   <p className="text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-1">
-                    Age Range
+                    Độ Tuổi
                   </p>
                   <p className="text-sm font-bold text-[#111827]">
                     {camp.minAge} - {camp.maxAge}
                   </p>
-                  <p className="text-xs text-[#6B7280]">years</p>
+                  <p className="text-xs text-[#6B7280]">tuổi</p>
                 </div>
 
                 <div>
                   <p className="text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-1">
-                    Camp Type
+                    Loại Trại
                   </p>
                   <p className="text-sm font-medium text-[#111827]">
                     {camp.campType?.name || "N/A"}
@@ -297,7 +297,7 @@ const ManagerDashboard: React.FC = () => {
 
                 <div>
                   <p className="text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-1">
-                    Registration Opens
+                    Mở Đăng Ký
                   </p>
                   <p className="text-sm font-medium text-[#111827]">
                     {new Date(camp.registrationStartDate).toLocaleDateString("vi-VN")}
@@ -306,7 +306,7 @@ const ManagerDashboard: React.FC = () => {
 
                 <div>
                   <p className="text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-1">
-                    Registration Closes
+                    Đóng Đăng Ký
                   </p>
                   <p className="text-sm font-medium text-[#111827]">
                     {new Date(camp.registrationEndDate).toLocaleDateString("vi-VN")}
@@ -353,49 +353,49 @@ const ManagerDashboard: React.FC = () => {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pt-6 border-t border-[#E5E7EB]">
             <div>
               <p className="text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-2">
-                Duration
+                Thời Gian
               </p>
               <p className="text-xl font-bold text-[#111827]">
                 {new Date(camp.startDate).toLocaleDateString()}
               </p>
               <p className="text-[#6B7280] text-sm">
-                to {new Date(camp.endDate).toLocaleDateString()}
+                đến {new Date(camp.endDate).toLocaleDateString()}
               </p>
             </div>
 
             <div>
               <p className="text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-2">
-                Price
+                Giá
               </p>
               <p className="text-xl font-bold text-[#111827]">
                 {camp.price.toLocaleString()} VND
               </p>
-              <p className="text-[#6B7280] text-sm">Per participant</p>
+              <p className="text-[#6B7280] text-sm">Mỗi người</p>
             </div>
 
             <div>
               <p className="text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-2">
-                Participants
+                Số Người
               </p>
               <p className="text-xl font-bold text-[#111827]">
                 {camp.minParticipants} - {camp.maxParticipants}
               </p>
-              <p className="text-[#6B7280] text-sm">Min - Max</p>
+              <p className="text-[#6B7280] text-sm">Tối thiểu - Tối đa</p>
             </div>
 
             <div>
               <p className="text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-2">
-                Age Range
+                Độ Tuổi
               </p>
               <p className="text-xl font-bold text-[#111827]">
                 {camp.minAge} - {camp.maxAge}
               </p>
-              <p className="text-[#6B7280] text-sm">years</p>
+              <p className="text-[#6B7280] text-sm">tuổi</p>
             </div>
 
             <div>
               <p className="text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-2">
-                Camp Type
+                Loại Trại
               </p>
               <p className="text-[#111827] font-medium">
                 {camp.campType?.name || "N/A"}
@@ -404,7 +404,7 @@ const ManagerDashboard: React.FC = () => {
 
             <div>
               <p className="text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-2">
-                Registration Opens
+                Mở Đăng Ký
               </p>
               <p className="text-[#111827] font-medium">
                 {new Date(camp.registrationStartDate).toLocaleDateString()}
@@ -413,7 +413,7 @@ const ManagerDashboard: React.FC = () => {
 
             <div>
               <p className="text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-2">
-                Registration Closes
+                Đóng Đăng Ký
               </p>
               <p className="text-[#111827] font-medium">
                 {new Date(camp.registrationEndDate).toLocaleDateString()}
@@ -422,10 +422,10 @@ const ManagerDashboard: React.FC = () => {
 
             <div>
               <p className="text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-2">
-                Promotion
+                Khuyến Mãi
               </p>
               <p className="text-[#111827] font-medium">
-                {camp.promotion?.name || "None"}
+                {camp.promotion?.name || "Không có"}
               </p>
             </div>
           </div>

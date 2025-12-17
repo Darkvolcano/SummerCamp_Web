@@ -238,9 +238,9 @@ const UserManagement: React.FC = () => {
     <div className="min-h-screen bg-[#F9FAFB] p-6">
       {/* Header */}
       <div className="mb-4">
-        <h1 className="text-2xl font-bold text-[#111827]">User Management</h1>
+        <h1 className="text-2xl font-bold text-[#111827]">Quản Lý Người Dùng</h1>
         <p className="text-xs text-[#6B7280] mt-0.5">
-          Manage system users and their permissions
+          Quản lý người dùng hệ thống và quyền hạn
         </p>
       </div>
 
@@ -254,10 +254,10 @@ const UserManagement: React.FC = () => {
               </div>
               <div>
                 <h2 className="text-base font-bold text-[#111827]">
-                  Pending Driver Approvals
+                  Tài Xế Chờ Duyệt
                 </h2>
                 <p className="text-xs text-[#6B7280] mt-0.5">
-                  {pendingDrivers.length} driver{pendingDrivers.length > 1 ? "s" : ""} waiting for approval
+                  {pendingDrivers.length} tài xế đang chờ duyệt
                 </p>
               </div>
             </div>
@@ -266,7 +266,7 @@ const UserManagement: React.FC = () => {
               className="flex items-center gap-2 px-3 py-1.5 bg-[#F3F4F6] text-[#374151] rounded-lg hover:bg-[#E5E7EB] transition-all font-medium text-sm"
             >
               <RefreshCw size={14} />
-              Refresh
+              Làm Mới
             </button>
           </div>
 
@@ -295,7 +295,7 @@ const UserManagement: React.FC = () => {
                           {driver.email}
                         </div>
                         <div className="flex items-center gap-1 text-xs text-[#6B7280]">
-                          <span className="font-medium">License:</span>
+                          <span className="font-medium">Giấy phép:</span>
                           {driver.licenseNumber || "N/A"}
                         </div>
                         <div className="flex items-center gap-1 text-xs text-[#6B7280]">
@@ -311,14 +311,14 @@ const UserManagement: React.FC = () => {
                       className="flex items-center gap-1.5 px-3 py-1.5 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition-all font-medium text-sm"
                     >
                       <CheckCircle size={14} />
-                      Approve
+                      Duyệt
                     </button>
                     <button
                       onClick={() => handleRejectDriver(driver)}
                       className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-all font-medium text-sm"
                     >
                       <XCircle size={14} />
-                      Reject
+                      Từ Chối
                     </button>
                   </div>
                 </div>
@@ -333,7 +333,7 @@ const UserManagement: React.FC = () => {
         {/* Search Filter */}
         <div className="mb-6">
           <label className="block text-sm font-semibold text-[#374151] mb-3">
-            Search
+            Tìm Kiếm
           </label>
           <div className="relative">
             <Search
@@ -342,7 +342,7 @@ const UserManagement: React.FC = () => {
             />
             <input
               type="text"
-              placeholder="Search by name, email, or phone..."
+              placeholder="Tìm theo tên, email, hoặc số điện thoại..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-1.5 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:border-transparent text-sm text-[#6B7280] placeholder:text-[#9CA3AF]"
@@ -353,7 +353,7 @@ const UserManagement: React.FC = () => {
         {/* Role Filter */}
         <div className="mb-6">
           <label className="block text-sm font-semibold text-[#374151] mb-3">
-            Role
+            Vai Trò
           </label>
           <div className="flex flex-wrap gap-2">
             <button
@@ -364,7 +364,7 @@ const UserManagement: React.FC = () => {
                   : "bg-[#F3F4F6] text-[#6B7280] hover:bg-[#E5E7EB]"
               }`}
             >
-              All
+              Tất Cả
             </button>
             {Object.values(Role).filter(role => role !== Role.PARENT).map((role) => (
               <button
@@ -388,7 +388,7 @@ const UserManagement: React.FC = () => {
         {/* Status Checkboxes */}
         <div>
           <label className="block text-sm font-semibold text-[#374151] mb-3">
-            Status
+            Trạng Thái
           </label>
           <div className="flex flex-wrap gap-4">
             <label className="flex items-center gap-2 cursor-pointer group">
@@ -399,7 +399,7 @@ const UserManagement: React.FC = () => {
                 className="w-4 h-4 rounded border-[#D1D5DB] text-[#6366F1] focus:ring-[#6366F1] focus:ring-2 bg-white"
               />
               <span className="text-sm text-[#374151] group-hover:text-[#111827] font-medium">
-                All
+                Tất Cả
               </span>
               <span className="text-xs font-semibold text-[#6366F1] bg-[#EFF6FF] px-2 py-0.5 rounded-full">
                 {users.length}
@@ -443,19 +443,19 @@ const UserManagement: React.FC = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-6">
               <div>
-                <span className="text-sm text-[#6B7280]">Total Users: </span>
+                <span className="text-sm text-[#6B7280]">Tổng Người Dùng: </span>
                 <span className="text-lg font-bold text-[#111827]">
                   {filteredUsers.length}
                 </span>
               </div>
               <div>
-                <span className="text-sm text-[#6B7280]">Active: </span>
+                <span className="text-sm text-[#6B7280]">Hoạt Động: </span>
                 <span className="text-lg font-bold text-[#10B981]">
                   {statusCounts.active}
                 </span>
               </div>
               <div>
-                <span className="text-sm text-[#6B7280]">Inactive: </span>
+                <span className="text-sm text-[#6B7280]">Không Hoạt Động: </span>
                 <span className="text-lg font-bold text-[#EF4444]">
                   {statusCounts.inactive}
                 </span>
@@ -466,7 +466,7 @@ const UserManagement: React.FC = () => {
               className="flex items-center gap-2 px-4 py-2 bg-[#F3F4F6] text-[#374151] rounded-lg hover:bg-[#E5E7EB] transition-all font-medium text-sm"
             >
               <RefreshCw size={16} />
-              Refresh
+              Làm Mới
             </button>
           </div>
         </div>
@@ -478,7 +478,7 @@ const UserManagement: React.FC = () => {
         <div className="flex items-center justify-between px-6 py-4 border-b border-[#E5E7EB]">
           <div>
             <h2 className="text-lg font-bold text-[#111827]">
-              Found: {filteredUsers.length}
+              Tìm Thấy: {filteredUsers.length}
             </h2>
           </div>
         </div>
@@ -489,28 +489,28 @@ const UserManagement: React.FC = () => {
             <thead className="bg-[#F9FAFB] border-b border-[#E5E7EB]">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                  User ID
+                  Mã NG
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                  Full Name
+                  Họ Tên
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
                   Email
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                  Phone
+                  SĐT
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                  Date of Birth
+                  Ngày Sinh
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                  Role
+                  Vai Trò
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                  Status
+                  Trạng Thái
                 </th>
                 <th className="px-6 py-3 text-right text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                  Actions
+                  Thao Tác
                 </th>
               </tr>
             </thead>
@@ -529,7 +529,7 @@ const UserManagement: React.FC = () => {
                     colSpan={8}
                     className="px-6 py-12 text-center text-[#6B7280]"
                   >
-                    No users found matching your filters
+                    Không tìm thấy người dùng phù hợp
                   </td>
                 </tr>
               ) : (
@@ -609,7 +609,7 @@ const UserManagement: React.FC = () => {
                           title="Delete User"
                         >
                           <Trash2 size={14} />
-                          Delete
+                          Xóa
                         </button>
                       </div>
                     </td>
@@ -624,7 +624,7 @@ const UserManagement: React.FC = () => {
         {filteredUsers.length > 0 && (
           <div className="px-6 py-4 border-t border-[#E5E7EB] flex items-center justify-between">
             <div className="text-sm text-[#6B7280]">
-              Showing {startIndex + 1} to {Math.min(endIndex, filteredUsers.length)} of {filteredUsers.length} results
+              Hiển thị {startIndex + 1} đến {Math.min(endIndex, filteredUsers.length)} trong {filteredUsers.length} kết quả
             </div>
             <div className="flex items-center gap-2">
               <button
@@ -636,7 +636,7 @@ const UserManagement: React.FC = () => {
                     : "bg-[#F3F4F6] text-[#374151] hover:bg-[#E5E7EB]"
                 }`}
               >
-                Previous
+                Trước
               </button>
 
               <div className="flex items-center gap-1">
@@ -682,7 +682,7 @@ const UserManagement: React.FC = () => {
                     : "bg-[#F3F4F6] text-[#374151] hover:bg-[#E5E7EB]"
                 }`}
               >
-                Next
+                Sau
               </button>
             </div>
           </div>

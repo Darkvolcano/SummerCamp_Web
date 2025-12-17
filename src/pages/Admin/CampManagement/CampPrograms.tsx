@@ -180,9 +180,9 @@ const CampPrograms: React.FC = () => {
     <div className="min-h-screen bg-[#F9FAFB] p-6">
       {/* Header */}
       <div className="mb-4">
-        <h1 className="text-2xl font-bold text-[#111827]">Camp Programs</h1>
+        <h1 className="text-2xl font-bold text-[#111827]">Chương Trình Trại</h1>
         <p className="text-xs text-[#6B7280] mt-0.5">
-          Manage and organize your summer camp programs
+          Quản lý và tổ chức các chương trình trại hè
         </p>
       </div>
 
@@ -191,7 +191,7 @@ const CampPrograms: React.FC = () => {
         {/* Search and Date Filters */}
         <div className="mb-6">
           <label className="block text-sm font-semibold text-[#374151] mb-3">
-            Search & Date Range
+            Tìm Kiếm & Khoảng Thời Gian
           </label>
           <div className="flex flex-wrap gap-3">
             {/* Search */}
@@ -203,7 +203,7 @@ const CampPrograms: React.FC = () => {
                 />
                 <input
                   type="text"
-                  placeholder="Search by camp name..."
+                  placeholder="Tìm theo tên trại..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-10 pr-4 py-1.5 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:border-transparent text-sm text-[#6B7280] placeholder:text-[#9CA3AF]"
@@ -219,7 +219,7 @@ const CampPrograms: React.FC = () => {
                   setStartDateFilter(date ? date.format("YYYY-MM-DD") : "")
                 }
                 format="YYYY-MM-DD"
-                placeholder="Start date"
+                placeholder="Ngày bắt đầu"
                 className="w-full antd-date-picker"
                 style={{ width: "100%" }}
               />
@@ -233,7 +233,7 @@ const CampPrograms: React.FC = () => {
                   setEndDateFilter(date ? date.format("YYYY-MM-DD") : "")
                 }
                 format="YYYY-MM-DD"
-                placeholder="End date"
+                placeholder="Ngày kết thúc"
                 className="w-full antd-date-picker"
                 style={{ width: "100%" }}
               />
@@ -262,7 +262,7 @@ const CampPrograms: React.FC = () => {
         {/* Camp Type Filter */}
         <div className="mb-6">
           <label className="block text-sm font-semibold text-[#374151] mb-3">
-            Camp Type
+            Loại Trại
           </label>
           <div className="flex flex-wrap gap-2">
             <button
@@ -273,7 +273,7 @@ const CampPrograms: React.FC = () => {
                   : "bg-[#F3F4F6] text-[#6B7280] hover:bg-[#E5E7EB]"
               }`}
             >
-              All
+              Tất Cả
             </button>
             {campTypes.map((type) => (
               <button
@@ -294,7 +294,7 @@ const CampPrograms: React.FC = () => {
         {/* Status Checkboxes with Counts */}
         <div>
           <label className="block text-sm font-semibold text-[#374151] mb-3">
-            Status
+            Trạng Thái
           </label>
           <div className="flex flex-wrap gap-4">
             {/* ✅ Added: "All" checkbox */}
@@ -306,7 +306,7 @@ const CampPrograms: React.FC = () => {
                 className="w-4 h-4 rounded border-[#D1D5DB] text-[#6366F1] focus:ring-[#6366F1] focus:ring-2 bg-white"
               />
               <span className="text-sm text-[#374151] group-hover:text-[#111827] font-medium">
-                All
+                Tất Cả
               </span>
               <span className="text-xs font-semibold text-[#6366F1] bg-[#EFF6FF] px-2 py-0.5 rounded-full">
                 {camps.length}
@@ -341,27 +341,27 @@ const CampPrograms: React.FC = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-6">
               <div>
-                <span className="text-sm text-[#6B7280]">Total Programs: </span>
+                <span className="text-sm text-[#6B7280]">Tổng Chương Trình: </span>
                 <span className="text-lg font-bold text-[#111827]">
                   {camps.length}
                 </span>
               </div>
               <div>
                 <span className="text-sm text-[#6B7280]">
-                  Pending Approval:{" "}
+                  Chờ Duyệt:{" "}
                 </span>
                 <span className="text-lg font-bold text-[#3B82F6]">
                   {statusCounts[CampStatus.PENDING_APPOVAL] || 0}
                 </span>
               </div>
               <div>
-                <span className="text-sm text-[#6B7280]">In Progress: </span>
+                <span className="text-sm text-[#6B7280]">Đang Diễn Ra: </span>
                 <span className="text-lg font-bold text-[#3B82F6]">
                   {statusCounts[CampStatus.IN_PROGRESS] || 0}
                 </span>
               </div>
               <div>
-                <span className="text-sm text-[#6B7280]">Upcoming: </span>
+                <span className="text-sm text-[#6B7280]">Sắp Tới: </span>
                 <span className="text-lg font-bold text-[#10B981]">
                   {statusCounts[CampStatus.OPEN_FOR_REGISTRATION] || 0}
                 </span>
@@ -377,7 +377,7 @@ const CampPrograms: React.FC = () => {
         <div className="flex items-center justify-between px-6 py-4 border-b border-[#E5E7EB]">
           <div>
             <h2 className="text-lg font-bold text-[#111827]">
-              Found: {filteredCamps.length}
+              Tìm Thấy: {filteredCamps.length}
             </h2>
           </div>
           <button
@@ -385,7 +385,7 @@ const CampPrograms: React.FC = () => {
             className="flex items-center gap-2 px-4 py-2.5 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-all font-medium"
           >
             <HousePlus size={18} />
-            Create new program
+            Tạo chương trình mới
           </button>
         </div>
 
@@ -395,20 +395,20 @@ const CampPrograms: React.FC = () => {
             <thead className="bg-[#F9FAFB] border-b border-[#E5E7EB]">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider w-[100px]">
-                  Camp ID
+                  Mã Trại
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider w-[200px]">
-                  Camp Name
+                  Tên Trại
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider w-[130px]">
-                  Camp Type
+                  Loại Trại
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider w-[150px]">
-                  Place
+                  Địa Điểm
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider w-[130px]">
                   <div className="flex items-center gap-1.5">
-                    Start Date
+                    Ngày Bắt Đầu
                     <button
                       onClick={toggleSortOrder}
                       className="p-0.5 rounded hover:bg-[#E5E7EB] transition-colors"
@@ -419,22 +419,22 @@ const CampPrograms: React.FC = () => {
                   </div>
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider w-[110px]">
-                  End Date
+                  Ngày Kết Thúc
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider w-[110px]">
-                  Reg. Start
+                  Mở ĐK
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider w-[110px]">
-                  Reg. End
+                  Đóng ĐK
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider w-[130px]">
-                  Price
+                  Giá
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider w-[140px]">
-                  Status
+                  Trạng Thái
                 </th>
                 <th className="px-6 py-3 text-right text-xs font-semibold text-[#6B7280] uppercase tracking-wider w-[120px]">
-                  Actions
+                  Thao Tác
                 </th>
               </tr>
             </thead>
@@ -443,7 +443,7 @@ const CampPrograms: React.FC = () => {
                 <tr>
                   <td colSpan={11} className="px-6 py-12 text-center">
                     <div className="flex items-center justify-center">
-                      <Spin size="large" tip="Loading programs..." />
+                      <Spin size="large" tip="Đang tải..." />
                     </div>
                   </td>
                 </tr>
@@ -453,7 +453,7 @@ const CampPrograms: React.FC = () => {
                     colSpan={11}
                     className="px-6 py-12 text-center text-[#6B7280]"
                   >
-                    No camps found matching your filters
+                    Không tìm thấy trại phù hợp
                   </td>
                 </tr>
               ) : (
@@ -509,7 +509,7 @@ const CampPrograms: React.FC = () => {
                         title="View Details"
                       >
                         <Eye size={16} />
-                        Details
+                        Chi Tiết
                       </button>
                     </td>
                   </tr>
@@ -523,7 +523,7 @@ const CampPrograms: React.FC = () => {
         {filteredCamps.length > 0 && (
           <div className="px-6 py-4 border-t border-[#E5E7EB] flex items-center justify-between">
             <div className="text-sm text-[#6B7280]">
-              Showing {startIndex + 1} to {Math.min(endIndex, sortedCamps.length)} of {sortedCamps.length} results
+              Hiển thị {startIndex + 1} đến {Math.min(endIndex, sortedCamps.length)} trong {sortedCamps.length} kết quả
             </div>
             <div className="flex items-center gap-2">
               <button
@@ -535,7 +535,7 @@ const CampPrograms: React.FC = () => {
                     : "bg-[#F3F4F6] text-[#374151] hover:bg-[#E5E7EB]"
                 }`}
               >
-                Previous
+                Trước
               </button>
 
               <div className="flex items-center gap-1">
@@ -581,7 +581,7 @@ const CampPrograms: React.FC = () => {
                     : "bg-[#F3F4F6] text-[#374151] hover:bg-[#E5E7EB]"
                 }`}
               >
-                Next
+                Sau
               </button>
             </div>
           </div>

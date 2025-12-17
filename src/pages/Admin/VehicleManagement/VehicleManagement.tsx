@@ -145,14 +145,14 @@ export default function VehicleManagement() {
     <>
       <div className="vehicle-management-header">
         <div className="header-left">
-          <h1 className="page-title">Vehicles Management</h1>
+          <h1 className="page-title">Quản Lý Xe</h1>
           <p className="page-subtitle">
-            Manage your fleet of vehicles for camp transportation
+            Quản lý đội xe cho việc vận chuyển trại
           </p>
         </div>
         <button className="btn-create" onClick={handleCreate}>
           <Plus size={20} />
-          <span>Add New Vehicle</span>
+          <span>Thêm Xe Mới</span>
         </button>
       </div>
 
@@ -162,7 +162,7 @@ export default function VehicleManagement() {
             <Truck size={24} />
           </div>
           <div className="stat-content">
-            <p className="stat-label">Total Vehicles</p>
+            <p className="stat-label">Tổng Số Xe</p>
             <h3 className="stat-value">{vehicles.length}</h3>
           </div>
         </div>
@@ -172,7 +172,7 @@ export default function VehicleManagement() {
             <CheckCircle size={24} />
           </div>
           <div className="stat-content">
-            <p className="stat-label">Available</p>
+            <p className="stat-label">Sẵn Sàng</p>
             <h3 className="stat-value">{getAvailableVehicles()}</h3>
           </div>
         </div>
@@ -182,7 +182,7 @@ export default function VehicleManagement() {
             <AlertCircle size={24} />
           </div>
           <div className="stat-content">
-            <p className="stat-label">In Maintenance</p>
+            <p className="stat-label">Đang Bảo Trì</p>
             <h3 className="stat-value">
               {
                 vehicles.filter(
@@ -198,7 +198,7 @@ export default function VehicleManagement() {
             <Users size={24} />
           </div>
           <div className="stat-content">
-            <p className="stat-label">Total Capacity</p>
+            <p className="stat-label">Tổng Sức Chứa</p>
             <h3 className="stat-value">{getTotalCapacity()}</h3>
           </div>
         </div>
@@ -209,7 +209,7 @@ export default function VehicleManagement() {
           <Search size={20} />
           <input
             type="text"
-            placeholder="Search vehicles by name, number, or type..."
+            placeholder="Tìm xe theo tên, biển số, loại..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -243,21 +243,21 @@ export default function VehicleManagement() {
         {loading ? (
           <div className="loading-state">
             <RefreshCw size={48} className="spinning" />
-            <p>Loading vehicles...</p>
+            <p>Đang tải xe...</p>
           </div>
         ) : filteredVehicles.length === 0 ? (
           <div className="empty-state">
             <Truck size={64} />
-            <h3>No vehicles found</h3>
+            <h3>Không tìm thấy xe</h3>
             <p>
               {searchTerm || statusFilter !== "all"
-                ? "Try adjusting your filters"
-                : "Add your first vehicle to get started"}
+                ? "Thử điều chỉnh bộ lọc"
+                : "Thêm xe đầu tiên để bắt đầu"}
             </p>
             {!searchTerm && statusFilter === "all" && (
               <button className="btn-create" onClick={handleCreate}>
                 <Plus size={20} />
-                Add Vehicle
+                Thêm Xe
               </button>
             )}
           </div>
@@ -265,12 +265,12 @@ export default function VehicleManagement() {
           <table className="vehicles-table">
             <thead>
               <tr>
-                <th>Vehicle Name</th>
-                <th>Vehicle Number</th>
-                <th>Type</th>
-                <th>Capacity</th>
-                <th>Status</th>
-                <th>Actions</th>
+                <th>Tên Xe</th>
+                <th>Biển Số</th>
+                <th>Loại</th>
+                <th>Sức Chứa</th>
+                <th>Trạng Thái</th>
+                <th>Thao Tác</th>
               </tr>
             </thead>
             <tbody>
@@ -336,7 +336,7 @@ export default function VehicleManagement() {
       {!loading && filteredVehicles.length > 0 && (
         <div className="results-footer">
           <p>
-            Showing {filteredVehicles.length} of {vehicles.length} vehicles
+            Hiển thị {filteredVehicles.length} trong {vehicles.length} xe
           </p>
         </div>
       )}
