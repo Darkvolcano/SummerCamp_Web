@@ -3,6 +3,7 @@ import axiosInstance from "../config/axios";
 // ==================== REQUEST DTOs ====================
 
 export interface ReportRequestDto {
+  campId: number;
   camperId: number;
   note?: string | null;
   image?: File | null;
@@ -12,6 +13,7 @@ export interface ReportRequestDto {
 }
 
 export interface ReportUpdateDto {
+  campId?: number;
   camperId?: number;
   note?: string | null;
   image?: File | null;
@@ -81,6 +83,7 @@ const reportService = {
     console.log("[reportService] POST /report");
     const formData = new FormData();
     
+    formData.append("campId", data.campId.toString());
     formData.append("camperId", data.camperId.toString());
     formData.append("activityId", data.activityId.toString());
     
@@ -124,6 +127,9 @@ const reportService = {
     console.log(`[reportService] PUT /report/${id}`);
     const formData = new FormData();
     
+    if (data.campId !== undefined) {
+      formData.append("campId", data.campId.toString());
+    }
     if (data.camperId !== undefined) {
       formData.append("camperId", data.camperId.toString());
     }

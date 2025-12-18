@@ -253,7 +253,7 @@ const GroupManagement: React.FC = () => {
           {/* Header */}
           <div className="px-6 py-4 border-b border-[#E5E7EB]">
             <h2 className="text-lg font-bold text-[#111827]">
-              Chờ Phân Công Nhóm ({pendingCampers.length})
+              Chờ Phân Nhóm ({pendingCampers.length})
             </h2>
           </div>
 
@@ -314,7 +314,7 @@ const GroupManagement: React.FC = () => {
                                   camperId: registration.camper.camperId,
                                   groupId: groupId
                                 });
-                                toastSuccess('Thành công', 'Trại viên đã được phân công vào nhóm');
+                                toastSuccess('Thành công', 'Trại viên đã được phân vào nhóm');
                                 // Clear selection
                                 setSelectedGroups(prev => {
                                   const newState = { ...prev };
@@ -328,7 +328,7 @@ const GroupManagement: React.FC = () => {
                                 }
                               } catch (error: any) {
                                 console.error('Failed to assign camper:', error);
-                                const errorMsg = error.response?.data?.message || error.message || 'Không thể phân công trại viên vào nhóm';
+                                const errorMsg = error.response?.data?.message || error.message || 'Không thể phân trại viên vào nhóm';
                                 toastError('Lỗi', errorMsg);
                               }
                             } else {
@@ -339,7 +339,7 @@ const GroupManagement: React.FC = () => {
                           className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] disabled:bg-gray-300 disabled:cursor-not-allowed transition-all font-medium text-sm"
                         >
                           <CheckCircle2 size={16} />
-                          Phân công
+                          Phân nhóm
                         </button>
                       </div>
                     </td>

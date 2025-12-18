@@ -62,6 +62,8 @@ const AttendanceChecking: React.FC = () => {
         return { icon: CheckCircle, color: "text-green-600", bg: "bg-green-50" };
       case "PendingAttendance":
         return { icon: Clock, color: "text-orange-600", bg: "bg-orange-50" };
+      case "AttendanceChecked":
+        return { icon: CheckCircle, color: "text-blue-600", bg: "bg-blue-50" };
       case "Cancelled":
         return { icon: AlertCircle, color: "text-red-600", bg: "bg-red-50" };
       default:
@@ -198,7 +200,7 @@ const AttendanceChecking: React.FC = () => {
 
                   {/* Actions */}
                   <div className="flex-shrink-0">
-                    {schedule.status === "PendingAttendance" && (
+                    {(schedule.status === "PendingAttendance" || schedule.status === "AttendanceChecked") && (
                       <Button
                         type="primary"
                         style={{ backgroundColor: "#10b981" }}

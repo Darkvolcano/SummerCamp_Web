@@ -328,7 +328,6 @@ const CamperDetail: React.FC = () => {
       Confirmed: { bg: "bg-green-100", text: "text-green-700", label: "Xác nhận" },
       PendingRefund: { bg: "bg-yellow-100", text: "text-yellow-700", label: "Chờ hoàn tiền" },
       OnGoing: { bg: "bg-purple-100", text: "text-purple-700", label: "Đang diễn ra" },
-      Completed: { bg: "bg-green-100", text: "text-green-700", label: "Hoàn thành" },
       Canceled: { bg: "bg-gray-100", text: "text-gray-700", label: "Đã hủy" },
     };
     return (

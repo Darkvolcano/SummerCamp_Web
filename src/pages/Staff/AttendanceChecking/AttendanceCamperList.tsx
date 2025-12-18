@@ -32,24 +32,14 @@ const AttendanceCamperList: React.FC = () => {
   }, [scheduleId]);
 
   const fetchCampers = async () => {
-    if (!scheduleId || !schedule) return;
+    if (!scheduleId) return;
 
     try {
       setLoading(true);
-      const activityType = schedule.activity?.activityType;
-      let campersData: CamperActivityResponseDto[] = [];
 
-      // Call appropriate API based on activity type
-      if (activityType === "Optional") {
-        campersData = await camperService.getCampersByOptionalActivityId(
-          parseInt(scheduleId)
-        );
-      } else {
-        // For Core, Resting, Checkin, Checkout
-        campersData = await camperService.getCampersByCoreActivityId(
-          parseInt(scheduleId)
-        );
-      }
+      const campersData = await camperService.getCampersByActivityScheduleId(
+        parseInt(scheduleId)
+      );
 
       setCampers(campersData);
 
@@ -219,12 +209,13 @@ const AttendanceCamperList: React.FC = () => {
                   const isChanged =
                     currentStatus !== null &&
                     currentStatus !== (camper.status as ParticipationStatus);
+                  const hasNoAttendanceLog = camper.attendanceLogId === null;
 
                   return (
                     <tr
                       key={camper.camperId}
                       className={`border-b border-[#E5E7EB] hover:bg-gray-50 transition-colors ${index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                        } ${isChanged ? "bg-blue-50" : ""}`}
+                        } ${isChanged ? "bg-blue-50" : ""} ${hasNoAttendanceLog ? "bg-yellow-50" : ""}`}
                     >
                       <td className="px-6 py-4 text-sm w-1/4">
                         <div className="flex items-center gap-3">
@@ -247,30 +238,40 @@ const AttendanceCamperList: React.FC = () => {
                         {new Date(camper.dob).toLocaleDateString("vi-VN")}
                       </td>
                       <td className="px-6 py-4 text-sm w-1/6">
-                        <Badge
-                          color={getStatusColor(currentStatus || "NotYet")}
-                          text={currentStatus || "NotYet"}
-                        />
+                        {hasNoAttendanceLog ? (
+                          <Badge color="orange" text="Chưa có dữ liệu" />
+                        ) : (
+                          <Badge
+                            color={getStatusColor(currentStatus || "NotYet")}
+                            text={currentStatus || "NotYet"}
+                          />
+                        )}
                       </td>
                       <td className="px-6 py-4 text-sm w-1/4">
-                        <Radio.Group
-                          value={currentStatus}
-                          onChange={(e) =>
-                            handleAttendanceChange(
-                              camper.camperId,
-                              e.target.value as ParticipationStatus | null
-                            )
-                          }
-                        >
-                          <Tooltip title="Mark as present">
-                            <Radio value="Present" className="mr-4">
-                              Present
-                            </Radio>
-                          </Tooltip>
-                          <Tooltip title="Mark as absent">
-                            <Radio value="Absent">Absent</Radio>
-                          </Tooltip>
-                        </Radio.Group>
+                        {hasNoAttendanceLog ? (
+                          <span className="text-gray-500 italic text-xs">
+                            Chưa có dữ liệu điểm danh
+                          </span>
+                        ) : (
+                          <Radio.Group
+                            value={currentStatus}
+                            onChange={(e) =>
+                              handleAttendanceChange(
+                                camper.camperId,
+                                e.target.value as ParticipationStatus | null
+                              )
+                            }
+                          >
+                            <Tooltip title="Mark as present">
+                              <Radio value="Present" className="mr-4">
+                                Present
+                              </Radio>
+                            </Tooltip>
+                            <Tooltip title="Mark as absent">
+                              <Radio value="Absent">Absent</Radio>
+                            </Tooltip>
+                          </Radio.Group>
+                        )}
                       </td>
                     </tr>
                   );
