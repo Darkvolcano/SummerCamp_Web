@@ -204,7 +204,7 @@ const AccommodationManagement: React.FC = () => {
     try {
       const newStatus = !isActive;
       await accommodationService.updateAccommodationStatus(accommodationId, newStatus);
-      toastSuccess('Success', `Accommodation ${newStatus ? 'activated' : 'deactivated'} successfully`);
+      toastSuccess('Thành Công', `Nơi ở đã được ${newStatus ? 'kích hoạt' : 'vô hiệu hóa'} thành công`);
       // Refresh accommodations
       if (selectedCampId) {
         const accommodationsData = await accommodationService.getAccommodationsByCampId(selectedCampId);
@@ -228,7 +228,7 @@ const AccommodationManagement: React.FC = () => {
         description: values.description || '',
       });
 
-      toastSuccess('Success', 'Accommodation type created successfully');
+      toastSuccess('Thành Công', 'Tạo loại nơi ở thành công');
 
       // Refresh accommodation types
       const typesData = await accommodationTypeService.getAllAccommodationTypes();
@@ -241,7 +241,7 @@ const AccommodationManagement: React.FC = () => {
       typeForm.resetFields();
     } catch (error) {
       console.error('Error creating accommodation type:', error);
-      toastError('Error', 'Failed to create accommodation type');
+      toastError('Lỗi', 'Không thể tạo loại nơi ở');
     } finally {
       setTypeSubmitting(false);
     }
@@ -401,10 +401,10 @@ const AccommodationManagement: React.FC = () => {
                                 <button
                                   onClick={() => handleEditClick(accommodation)}
                                   className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#F3F4F6] text-[#6B7280] rounded-lg hover:bg-[#E5E7EB] transition-all font-medium text-sm"
-                                  title="Edit Accommodation"
+                                  title="Sửa Nơi Ở"
                                 >
                                   <Edit2 size={16} />
-                                  Edit
+                                  Sửa
                                 </button>
                                 {accommodation.isActive ? (
                                   <DeletePopover
@@ -443,7 +443,7 @@ const AccommodationManagement: React.FC = () => {
 
       {/* Add/Edit Modal */}
       <Modal
-        title={editingAccommodation ? 'Edit Accommodation' : 'Add New Accommodation'}
+        title={editingAccommodation ? 'Sửa Nơi Ở' : 'Thêm Nơi Ở Mới'}
         open={isModalVisible}
         onOk={handleSubmit}
         onCancel={() => {
@@ -502,7 +502,7 @@ const AccommodationManagement: React.FC = () => {
                 className="flex-1 mb-0"
               >
                 <Select
-                  placeholder="Select accommodation type"
+                  placeholder="Chọn loại nơi ở"
                   options={accommodationTypes.map((type) => ({
                     label: type.name,
                     value: type.id,
@@ -513,7 +513,7 @@ const AccommodationManagement: React.FC = () => {
                 type="button"
                 onClick={() => setIsTypeModalVisible(true)}
                 className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-medium flex items-center justify-center"
-                title="Create new accommodation type"
+                title="Tạo loại nơi ở mới"
               >
                 <Plus size={18} />
               </button>
@@ -540,7 +540,7 @@ const AccommodationManagement: React.FC = () => {
             help={!editingAccommodation?.supervisor ? '⚠️ No supervisor assigned' : ''}
           >
             <Select
-              placeholder="Select a supervisor"
+              placeholder="Chọn người giám sát"
               optionLabelProp="label"
               options={staffList.map((staff) => ({
                 label: staff.fullName,
@@ -559,7 +559,7 @@ const AccommodationManagement: React.FC = () => {
 
       {/* Create Accommodation Type Modal */}
       <Modal
-        title="Create New Accommodation Type"
+        title="Tạo Loại Nơi Ở Mới"
         open={isTypeModalVisible}
         onOk={handleCreateType}
         onCancel={() => {
@@ -612,7 +612,7 @@ const AccommodationManagement: React.FC = () => {
             ]}
           >
             <Input.TextArea
-              placeholder="Enter type description (optional)"
+              placeholder="Nhập mô tả loại nơi ở (tùy chọn)"
               rows={3}
             />
           </Form.Item>

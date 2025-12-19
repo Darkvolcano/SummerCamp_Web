@@ -139,7 +139,7 @@ const ActivityScheduleManagement: React.FC = () => {
       setLoading(true);
       // await activityScheduleService.deleteActivitySchedule(scheduleId);
       // TODO: Implement delete method in activityScheduleService
-      toastError("Not Implemented", "Delete schedule functionality is not yet available. Please contact the administrator.");
+      toastError("Chưa Triển Khai", "Chức năng xóa lịch trình chưa khả dụng. Vui lòng liên hệ quản trị viên.");
       setShowScheduleDetail(false);
     } catch (error) {
       console.error("Failed to delete schedule:", error);
@@ -185,7 +185,7 @@ const ActivityScheduleManagement: React.FC = () => {
       | "CheckIn"
       | "CheckOut",
     description: `Status: ${schedule.status}`,
-    location: schedule.location?.name || "No location",
+    location: schedule.location?.name || "Không có địa điểm",
     participants: schedule.currentCapacity || 0,
     isOptional: schedule.isOptional,
   }));

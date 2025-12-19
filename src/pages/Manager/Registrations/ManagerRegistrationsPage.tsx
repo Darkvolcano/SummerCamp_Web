@@ -244,7 +244,7 @@ const ManagerRegistrationsPage: React.FC = () => {
                               Chi Tiết
                             </button>
                             <Popconfirm
-                              title="Approve Registration"
+                              title="Duyệt Đăng Ký"
                               description="Bạn có chắc muốn duyệt đăng ký này?"
                               onConfirm={() => handleApprove(reg.registrationId)}
                               okText="Duyệt"
@@ -255,7 +255,7 @@ const ManagerRegistrationsPage: React.FC = () => {
                             >
                               <button
                                 className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-all font-medium text-sm"
-                                title="Approve Registration"
+                                title="Duyệt Đăng Ký"
                               >
                                 <CheckCircle2 size={16} />
                                 Duyệt
