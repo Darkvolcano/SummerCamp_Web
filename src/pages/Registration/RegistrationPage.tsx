@@ -1184,9 +1184,8 @@ const RegistrationPage: React.FC = () => {
               rules={[{ required: true, message: "Vui lòng chọn giới tính" }]}
             >
               <Select placeholder="Chọn giới tính">
-                <Select.Option value="Nam">Nam</Select.Option>
-                <Select.Option value="Nữ">Nữ</Select.Option>
-                <Select.Option value="Khác">Khác</Select.Option>
+                <Select.Option value="Male">Nam</Select.Option>
+                <Select.Option value="Female">Nữ</Select.Option>
               </Select>
             </Form.Item>
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { Spin, Empty, Collapse, Modal, Form, Input } from "antd";
-import { SearchOutlined, CaretRightOutlined, EyeOutlined, EditOutlined } from "@ant-design/icons";
+import { SearchOutlined, CaretRightOutlined, EyeOutlined, EditOutlined, StarOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 import { Button } from "antd";
@@ -12,6 +12,7 @@ import registrationService, {
 } from "../../../services/registrationService";
 import CompleteRegistrationModal from "./CompleteRegistrationModal";
 import EditRegistrationModal from "./EditRegistrationModal";
+import FeedbackModal from "./FeedbackModal";
 
 const STATUS_OPTIONS = [
   { key: "PendingApproval", label: "Chờ duyệt" },
@@ -21,7 +22,6 @@ const STATUS_OPTIONS = [
   { key: "Confirmed", label: "Đã xác nhận" },
   { key: "PendingRefund", label: "Chờ hoàn tiền" },
   { key: "OnGoing", label: "Đang diễn ra" },
-  { key: "Completed", label: "Hoàn thành" },
   { key: "Canceled", label: "Đã hủy" },
 ];
 
@@ -41,6 +41,7 @@ const MyRegistration: React.FC = () => {
   const [cancelModalVisible, setCancelModalVisible] = useState(false);
   const [cancelLoading, setCancelLoading] = useState(false);
   const [cancelForm] = Form.useForm();
+  const [feedbackModalVisible, setFeedbackModalVisible] = useState(false);
 
   // Fetch registration history
   useEffect(() => {
@@ -134,6 +135,22 @@ const MyRegistration: React.FC = () => {
     handleCloseEditModal();
   };
 
+  // Handle feedback
+  const handleOpenFeedbackModal = (registration: RegistrationResponseDto) => {
+    setSelectedRegistration(registration);
+    setFeedbackModalVisible(true);
+  };
+
+  const handleCloseFeedbackModal = () => {
+    setFeedbackModalVisible(false);
+    setSelectedRegistration(null);
+  };
+
+  const handleFeedbackSuccess = () => {
+    toastSuccess("Thành công", "Đánh giá của bạn đã được gửi!");
+    handleCloseFeedbackModal();
+  };
+
   // Handle cancel registration
   const handleCancelRegistration = async () => {
     if (!selectedRegistration) return;
@@ -169,7 +186,6 @@ const MyRegistration: React.FC = () => {
       Confirmed: { bg: "bg-green-100", text: "text-green-700" },
       PendingRefund: { bg: "bg-yellow-100", text: "text-yellow-700" },
       OnGoing: { bg: "bg-purple-100", text: "text-purple-700" },
-      Completed: { bg: "bg-green-100", text: "text-green-700" },
       Canceled: { bg: "bg-gray-100", text: "text-gray-700" },
     };
     return statusMap[status] || { bg: "bg-gray-100", text: "text-gray-700" };
@@ -442,6 +458,16 @@ const MyRegistration: React.FC = () => {
                         </button>
                       )}
 
+                      {registration.status === "Confirmed" && registration.camp?.status === "Completed" && (
+                        <button
+                          onClick={() => handleOpenFeedbackModal(registration)}
+                          className="flex items-center justify-center gap-1 bg-yellow-500 text-white font-medium py-1.5 px-4 rounded-full text-sm hover:bg-yellow-600 transition-colors"
+                        >
+                          <StarOutlined />
+                          Đánh giá
+                        </button>
+                      )}
+
                     </div>
                   </div>
                 </div>
@@ -467,6 +493,17 @@ const MyRegistration: React.FC = () => {
         onClose={handleCloseEditModal}
         onSuccess={handleEditSuccess}
       />
+
+      {/* Feedback Modal */}
+      {selectedRegistration && (
+        <FeedbackModal
+          visible={feedbackModalVisible}
+          registrationId={selectedRegistration.registrationId}
+          campName={selectedRegistration.camp?.name || "Trải hè"}
+          onClose={handleCloseFeedbackModal}
+          onSuccess={handleFeedbackSuccess}
+        />
+      )}
 
       {/* Cancel Registration Modal */}
       <Modal

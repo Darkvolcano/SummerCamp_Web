@@ -196,8 +196,8 @@ const CamperSchedule: React.FC = () => {
       Core: "Hoạt động chính",
       Optional: "Hoạt động tự chọn",
       Resting: "Nghỉ ngơi",
-      CheckIn: "Check-in",
-      CheckOut: "Check-out",
+      Checkin: "Check-in",
+      Checkout: "Check-out",
     };
     return typeMap[type] || type;
   };

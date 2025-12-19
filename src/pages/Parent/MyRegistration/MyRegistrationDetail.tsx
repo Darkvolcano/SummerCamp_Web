@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button, Spin, Modal, Form, Input } from "antd";
-import { ArrowLeftOutlined, EditOutlined } from "@ant-design/icons";
+import { ArrowLeftOutlined, EditOutlined, StarOutlined } from "@ant-design/icons";
 import { useNavigate, useParams } from "react-router-dom";
 import dayjs from "dayjs";
 import { useNotification } from "../../../contexts/NotificationContext";
@@ -10,6 +10,7 @@ import registrationService, {
 import campService, { type CampResponseDto } from "../../../services/campService";
 import CompleteRegistrationModal from "./CompleteRegistrationModal";
 import EditRegistrationModal from "./EditRegistrationModal";
+import FeedbackModal from "./FeedbackModal";
 
 const CANCELABLE_STATUSES = [
   "PendingApproval",
@@ -32,6 +33,7 @@ const RegistrationDetail: React.FC = () => {
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [cancelConfirmModal, setCancelConfirmModal] = useState(false);
   const [cancelForm] = Form.useForm();
+  const [feedbackModalVisible, setFeedbackModalVisible] = useState(false);
 
   // Fetch registration and camp details
   useEffect(() => {
@@ -100,6 +102,20 @@ const RegistrationDetail: React.FC = () => {
     }
   };
 
+  // Handle feedback
+  const handleOpenFeedbackModal = () => {
+    setFeedbackModalVisible(true);
+  };
+
+  const handleCloseFeedbackModal = () => {
+    setFeedbackModalVisible(false);
+  };
+
+  const handleFeedbackSuccess = () => {
+    toastSuccess("Thành công", "Đánh giá của bạn đã được gửi!");
+    handleCloseFeedbackModal();
+  };
+
   // Get status info
   const getStatusInfo = (status: string) => {
     const statusMap: { [key: string]: { bg: string; text: string; label: string } } = {
@@ -110,7 +126,6 @@ const RegistrationDetail: React.FC = () => {
       Confirmed: { bg: "bg-green-100", text: "text-green-700", label: "Đã xác nhận" },
       PendingRefund: { bg: "bg-yellow-100", text: "text-yellow-700", label: "Chờ hoàn tiền" },
       OnGoing: { bg: "bg-purple-100", text: "text-purple-700", label: "Đang diễn ra" },
-      Completed: { bg: "bg-green-100", text: "text-green-700", label: "Hoàn thành" },
       Canceled: { bg: "bg-gray-100", text: "text-gray-700", label: "Đã hủy" },
     };
     return (
@@ -327,6 +342,16 @@ const RegistrationDetail: React.FC = () => {
               Hủy đơn đăng ký
             </button>
           )}
+
+          {registration.status === "Confirmed" && camp?.status === "Completed" && (
+            <button
+              onClick={handleOpenFeedbackModal}
+              className="flex items-center justify-center gap-1 bg-yellow-500 text-white font-medium py-1.5 px-4 rounded-full text-sm hover:bg-yellow-600 transition-colors"
+            >
+              <StarOutlined />
+              Đánh giá
+            </button>
+          )}
         </div>
       </div>
 
@@ -349,6 +374,17 @@ const RegistrationDetail: React.FC = () => {
         onClose={() => setEditModalVisible(false)}
         onSuccess={handleEditSuccess}
       />
+
+      {/* Feedback Modal */}
+      {registration && (
+        <FeedbackModal
+          visible={feedbackModalVisible}
+          registrationId={registration.registrationId}
+          campName={registration.camp?.name || "Trại hè"}
+          onClose={handleCloseFeedbackModal}
+          onSuccess={handleFeedbackSuccess}
+        />
+      )}
 
       {/* Cancel Confirmation Modal */}
       <Modal

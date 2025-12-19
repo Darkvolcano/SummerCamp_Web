@@ -342,7 +342,7 @@ const PromotionPage: React.FC = () => {
                                 <button
                                   onClick={() => handleEditClick(promotion)}
                                   className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#F3F4F6] text-[#6B7280] rounded-lg hover:bg-[#E5E7EB] transition-all font-medium text-sm"
-                                  title="Edit Promotion"
+                                  title="Sửa Khuyến Mãi"
                                 >
                                   <Edit2 size={16} />
                                   Sửa
@@ -372,7 +372,7 @@ const PromotionPage: React.FC = () => {
       )}
 
       <Modal
-        title={editingPromotion ? "Edit Promotion" : "Create Promotion"}
+        title={editingPromotion ? "Sửa Khuyến Mãi" : "Tạo Khuyến Mãi"}
         open={isModalVisible}
         onOk={handleSubmit}
         onCancel={() => {
@@ -382,49 +382,49 @@ const PromotionPage: React.FC = () => {
         }}
         confirmLoading={submitting}
         width={700}
-        okText={editingPromotion ? "Update" : "Create"}
+        okText={editingPromotion ? "Cập Nhật" : "Tạo"}
       >
         <Form form={form} layout="vertical" className="mt-4">
           <Form.Item
-            label="Promotion Name"
+            label="Tên Khuyến Mãi"
             name="name"
             rules={[
-              { required: true, message: "Please input promotion name!" },
-              { min: 3, message: "Name must be at least 3 characters!" },
+              { required: true, message: "Vui lòng nhập tên khuyến mãi!" },
+              { min: 3, message: "Tên phải có ít nhất 3 ký tự!" },
             ]}
           >
-            <Input placeholder="e.g., Summer Special Discount" />
+            <Input placeholder="ví dụ: Khuyến mãi hè đặc biệt" />
           </Form.Item>
 
           <Form.Item
-            label="Description"
+            label="Mô Tả"
             name="description"
-            rules={[{ required: true, message: "Please input description!" }]}
+            rules={[{ required: true, message: "Vui lòng nhập mô tả!" }]}
           >
             <TextArea
-              placeholder="Describe the promotion..."
+              placeholder="Mô tả về khuyến mãi..."
               rows={3}
             />
           </Form.Item>
 
           <div className="grid grid-cols-2 gap-4">
             <Form.Item
-              label="Promotion Code"
+              label="Mã Khuyến Mãi"
               name="code"
               rules={[
-                { required: true, message: "Please input code!" },
-                { pattern: /^[A-Z0-9_]+$/, message: "Code must be uppercase letters, numbers, or underscores!" },
+                { required: true, message: "Vui lòng nhập mã!" },
+                { pattern: /^[A-Z0-9_]+$/, message: "Mã phải là chữ in hoa, số hoặc gạch dưới!" },
               ]}
             >
               <Input placeholder="e.g., SUMMER2024" />
             </Form.Item>
 
             <Form.Item
-              label="Promotion Type"
+              label="Loại Khuyến Mãi"
               name="promotionTypeId"
-              rules={[{ required: true, message: "Please select type!" }]}
+              rules={[{ required: true, message: "Vui lòng chọn loại!" }]}
             >
-              <Select placeholder="Select type">
+              <Select placeholder="Chọn loại">
                 {promotionTypes.map((type) => (
                   <Option key={type.id} value={type.id}>
                     {type.name}
@@ -436,11 +436,11 @@ const PromotionPage: React.FC = () => {
 
           <div className="grid grid-cols-2 gap-4">
             <Form.Item
-              label="Discount Percentage"
+              label="Phần Trăm Giảm Giá"
               name="percent"
               rules={[
-                { required: true, message: "Please input discount!" },
-                { type: "number", min: 0, max: 100, message: "Must be between 0-100!" },
+                { required: true, message: "Vui lòng nhập phần trăm giảm!" },
+                { type: "number", min: 0, max: 100, message: "Phải từ 0-100!" },
               ]}
             >
               <InputNumber
@@ -453,11 +453,11 @@ const PromotionPage: React.FC = () => {
             </Form.Item>
 
             <Form.Item
-              label="Max Discount Amount"
+              label="Số Tiền Giảm Tối Đa"
               name="maxDiscountAmount"
               rules={[
-                { required: true, message: "Please input max amount!" },
-                { type: "number", min: 0, message: "Must be positive!" },
+                { required: true, message: "Vui lòng nhập số tiền tối đa!" },
+                { type: "number", min: 0, message: "Phải là số dương!" },
               ]}
             >
               <InputNumber
@@ -471,9 +471,9 @@ const PromotionPage: React.FC = () => {
 
           <div className="grid grid-cols-2 gap-4">
             <Form.Item
-              label="Start Date"
+              label="Ngày Bắt Đầu"
               name="startDate"
-              rules={[{ required: true, message: "Please select start date!" }]}
+              rules={[{ required: true, message: "Vui lòng chọn ngày bắt đầu!" }]}
             >
               <DatePicker
                 showTime
@@ -483,16 +483,16 @@ const PromotionPage: React.FC = () => {
             </Form.Item>
 
             <Form.Item
-              label="End Date"
+              label="Ngày Kết Thúc"
               name="endDate"
               rules={[
-                { required: true, message: "Please select end date!" },
+                { required: true, message: "Vui lòng chọn ngày kết thúc!" },
                 ({ getFieldValue }) => ({
                   validator(_, value) {
                     if (!value || !getFieldValue('startDate') || value.isAfter(getFieldValue('startDate'))) {
                       return Promise.resolve();
                     }
-                    return Promise.reject(new Error('End date must be after start date!'));
+                    return Promise.reject(new Error('Ngày kết thúc phải sau ngày bắt đầu!'));
                   },
                 }),
               ]}

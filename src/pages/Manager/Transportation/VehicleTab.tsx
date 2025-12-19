@@ -226,11 +226,11 @@ const VehicleTab: React.FC = () => {
           {/* Left Sidebar - Filters */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-xl shadow-sm border border-[#E5E7EB] p-6 sticky top-6">
-              <h3 className="text-lg font-bold text-[#111827] mb-4">Filters</h3>
+              <h3 className="text-lg font-bold text-[#111827] mb-4">Bộ Lọc</h3>
 
               {/* Search */}
               <div className="mb-6">
-                <label className="text-xs font-medium text-[#6B7280] mb-1 block">Search</label>
+                <label className="text-xs font-medium text-[#6B7280] mb-1 block">Tìm Kiếm</label>
                 <div className="relative">
                   <Search
                     className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9CA3AF]"
@@ -238,7 +238,7 @@ const VehicleTab: React.FC = () => {
                   />
                   <input
                     type="text"
-                    placeholder="By name or number..."
+                    placeholder="Theo tên hoặc biển số..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full pl-9 pr-4 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:border-transparent text-sm text-[#6B7280] placeholder:text-[#9CA3AF]"
@@ -248,7 +248,7 @@ const VehicleTab: React.FC = () => {
 
               {/* Stats */}
               <div className="mb-6">
-                <p className="text-xs font-medium text-[#6B7280] mb-1">Total Vehicles</p>
+                <p className="text-xs font-medium text-[#6B7280] mb-1">Tổng Số Xe</p>
                 <span className="text-2xl font-bold text-[#111827]">{vehicles.length}</span>
               </div>
 
@@ -258,7 +258,7 @@ const VehicleTab: React.FC = () => {
                 className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-all font-medium text-sm"
               >
                 <Plus size={16} />
-                Add Vehicle
+                Thêm Phương Tiện
               </button>
             </div>
           </div>
@@ -269,7 +269,7 @@ const VehicleTab: React.FC = () => {
               {/* Table Header */}
               <div className="px-6 py-4 border-b border-[#E5E7EB]">
                 <h2 className="text-lg font-bold text-[#111827]">
-                  Found: {filteredVehicles.length}
+                  Tìm Thấy: {filteredVehicles.length}
                 </h2>
               </div>
 
@@ -279,25 +279,25 @@ const VehicleTab: React.FC = () => {
                   <thead className="bg-[#F9FAFB] border-b border-[#E5E7EB]">
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                        ID
+                        STT
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                        Vehicle Name
+                        Tên Xe
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                        Vehicle Number
+                        Biển Số
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                        Type
+                        Loại Xe
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                        Capacity
+                        Sức Chứa
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                        Status
+                        Trạng Thái
                       </th>
                       <th className="px-6 py-3 text-right text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                        Actions
+                        Thao Tác
                       </th>
                     </tr>
                   </thead>
@@ -308,7 +308,7 @@ const VehicleTab: React.FC = () => {
                           colSpan={7}
                           className="px-6 py-12 text-center text-[#6B7280]"
                         >
-                          No vehicles found matching your filters
+                          Không tìm thấy phương tiện nào phù hợp
                         </td>
                       </tr>
                     ) : (
@@ -328,11 +328,11 @@ const VehicleTab: React.FC = () => {
                           </td>
                           <td className="px-6 py-4 text-sm text-[#374151]">
                             {vehicle.vehicleType?.name || (
-                              <span className="text-[#9CA3AF]">Unspecified</span>
+                              <span className="text-[#9CA3AF]">N/A</span>
                             )}
                           </td>
                           <td className="px-6 py-4 text-sm text-[#6B7280]">
-                            {vehicle.capacity} seats
+                            {vehicle.capacity} chỗ
                           </td>
                           <td className="px-6 py-4 text-sm">
                             {getStatusBadge(vehicle.status)}
@@ -345,13 +345,13 @@ const VehicleTab: React.FC = () => {
                                 title="Xem Chi Tiết"
                               >
                                 <Edit2 size={16} />
-                                Detail
+                                Chi Tiết
                               </button>
                               <DeletePopover
                                 onConfirm={() => handleDelete(vehicle.vehicleId)}
-                                title="Delete Vehicle"
-                                message={`Are you sure you want to delete "${vehicle.vehicleName}"?`}
-                                buttonText="Delete"
+                                title="Xóa Phương Tiện"
+                                message={`Bạn có chắc muốn xóa "${vehicle.vehicleName}"?`}
+                                buttonText="Xóa"
                                 isOpen={deletePopoverOpen === vehicle.vehicleId}
                                 onOpenChange={(open) =>
                                   setDeletePopoverOpen(open ? vehicle.vehicleId : null)
@@ -372,7 +372,7 @@ const VehicleTab: React.FC = () => {
 
       {/* Vehicle Detail/Edit Modal */}
       <Modal
-        title={editingVehicle ? (isEditMode ? 'Edit Vehicle' : 'Vehicle Details') : 'Add New Vehicle'}
+        title={editingVehicle ? (isEditMode ? 'Sửa Phương Tiện' : 'Chi Tiết Phương Tiện') : 'Thêm Phương Tiện Mới'}
         open={isModalVisible}
         onOk={isEditMode ? handleSubmit : undefined}
         onCancel={() => {
@@ -392,10 +392,10 @@ const VehicleTab: React.FC = () => {
                 setEditingVehicle(null);
                 setIsEditMode(false);
               }}>
-                Close
+                Đóng
               </Button>
               <Button type="primary" onClick={handleEnableEdit}>
-                Edit
+                Sửa
               </Button>
             </div>
           ) : (
@@ -409,30 +409,30 @@ const VehicleTab: React.FC = () => {
           <div className="space-y-4 mt-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-xs font-medium text-gray-500">Vehicle Name</label>
+                <label className="text-xs font-medium text-gray-500">Tên Xe</label>
                 <p className="text-sm font-medium text-gray-900 mt-1">{editingVehicle.vehicleName}</p>
               </div>
               <div>
-                <label className="text-xs font-medium text-gray-500">Vehicle Number</label>
+                <label className="text-xs font-medium text-gray-500">Biển Số</label>
                 <p className="text-sm font-mono text-gray-900 mt-1">{editingVehicle.vehicleNumber}</p>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-xs font-medium text-gray-500">Vehicle Type</label>
+                <label className="text-xs font-medium text-gray-500">Loại Xe</label>
                 <p className="text-sm text-gray-900 mt-1">
-                  {editingVehicle.vehicleType?.name || <span className="text-gray-400">Unspecified</span>}
+                  {editingVehicle.vehicleType?.name || <span className="text-gray-400">N/A</span>}
                 </p>
               </div>
               <div>
-                <label className="text-xs font-medium text-gray-500">Capacity</label>
-                <p className="text-sm text-gray-900 mt-1">{editingVehicle.capacity} seats</p>
+                <label className="text-xs font-medium text-gray-500">Sức Chứa</label>
+                <p className="text-sm text-gray-900 mt-1">{editingVehicle.capacity} chỗ</p>
               </div>
             </div>
 
             <div>
-              <label className="text-xs font-medium text-gray-500">Status</label>
+              <label className="text-xs font-medium text-gray-500">Trạng Thái</label>
               <div className="mt-1">{getStatusBadge(editingVehicle.status)}</div>
             </div>
           </div>
@@ -440,29 +440,29 @@ const VehicleTab: React.FC = () => {
           // Edit Form
           <Form form={form} layout="vertical" className="mt-4">
             <Form.Item
-              label="Vehicle Name"
+              label="Tên Xe"
               name="vehicleName"
-              rules={[{ required: true, message: 'Please input vehicle name!' }]}
+              rules={[{ required: true, message: 'Vui lòng nhập tên xe!' }]}
             >
-              <Input placeholder="e.g., Bus A1" />
+              <Input placeholder="ví dụ: Bus A1" />
             </Form.Item>
 
             <Form.Item
-              label="Vehicle Number"
+              label="Biển Số"
               name="vehicleNumber"
-              rules={[{ required: true, message: 'Please input vehicle number!' }]}
+              rules={[{ required: true, message: 'Vui lòng nhập biển số!' }]}
             >
-              <Input placeholder="e.g., 50A-12345" />
+              <Input placeholder="ví dụ: 50A-12345" />
             </Form.Item>
 
             <div className="flex gap-2">
               <Form.Item
-                label="Vehicle Type"
+                label="Loại Xe"
                 name="vehicleType"
                 className="flex-1 mb-0"
               >
                 <Select
-                  placeholder="Select vehicle type (optional)"
+                  placeholder="Chọn loại xe (tùy chọn)"
                   allowClear
                   options={vehicleTypes.map((type) => ({
                     label: type.name,
@@ -473,22 +473,22 @@ const VehicleTab: React.FC = () => {
               <Button
                 icon={<Plus size={16} />}
                 onClick={() => setIsTypeModalVisible(true)}
-                title="Add New Vehicle Type"
+                title="Thêm Loại Xe Mới"
                 style={{ marginTop: '30px' }}
               >
-                Add Type
+                Thêm Loại
               </Button>
             </div>
 
             <Form.Item
-              label="Capacity"
+              label="Sức Chứa"
               name="capacity"
               rules={[
-                { required: true, message: 'Please input capacity!' },
-                { type: 'number', min: 1, message: 'Capacity must be at least 1!' },
+                { required: true, message: 'Vui lòng nhập sức chứa!' },
+                { type: 'number', min: 1, message: 'Sức chứa phải ít nhất là 1!' },
               ]}
             >
-              <InputNumber min={1} placeholder="e.g., 45" className="w-full" />
+              <InputNumber min={1} placeholder="ví dụ: 45" className="w-full" />
             </Form.Item>
 
             <Form.Item
@@ -504,7 +504,7 @@ const VehicleTab: React.FC = () => {
 
       {/* Add Vehicle Type Modal */}
       <Modal
-        title="Add New Vehicle Type"
+        title="Thêm Loại Xe Mới"
         open={isTypeModalVisible}
         onOk={handleAddVehicleType}
         onCancel={() => {
@@ -516,18 +516,18 @@ const VehicleTab: React.FC = () => {
       >
         <Form form={typeForm} layout="vertical" className="mt-4">
           <Form.Item
-            label="Type Name"
+            label="Tên Loại"
             name="name"
-            rules={[{ required: true, message: 'Please input type name!' }]}
+            rules={[{ required: true, message: 'Vui lòng nhập tên loại xe!' }]}
           >
-            <Input placeholder="e.g., Bus, Van, Minibus" />
+            <Input placeholder="ví dụ: Bus, Van, Minibus" />
           </Form.Item>
 
           <Form.Item
-            label="Description"
+            label="Mô Tả"
             name="description"
           >
-            <Input.TextArea placeholder="Optional description" rows={3} />
+            <Input.TextArea placeholder="Mô tả tùy chọn" rows={3} />
           </Form.Item>
         </Form>
       </Modal>

@@ -118,7 +118,7 @@ const Home: React.FC = () => {
         "https://res.cloudinary.com/da9zmbssb/image/upload/v1760070573/act_painting_cxlhpw.jpg",
       title: "Vẽ tranh và tô màu",
       description:
-        'Theo chủ đề tự do hoặc chủ đề của trại hè như "Mùa hè của em", "Bảo vệ môi trường".',
+        'Theo chủ đề tự do hoặc chủ đề của trại như "Hành trình của em", "Bảo vệ môi trường".',
     },
     {
       image:
@@ -161,14 +161,14 @@ const Home: React.FC = () => {
       role: "Phụ huynh",
       rating: 5,
       content:
-        "Con tôi đã có những trải nghiệm tuyệt vời tại trại hè. Các hoạt động rất bổ ích và an toàn. Đội ngũ huấn luyện viên rất tận tâm.",
+        "Con tôi đã có những trải nghiệm tuyệt vời tại hội trại. Các hoạt động rất bổ ích và an toàn. Đội ngũ huấn luyện viên rất tận tâm.",
     },
     {
       name: "Trần Văn Hùng",
       role: "Phụ huynh",
       rating: 5,
       content:
-        "Trại hè đã giúp con tôi trở nên tự tin và độc lập hơn. Các kỹ năng sống mà con học được rất hữu ích.",
+        "Chương trình đã giúp con tôi trở nên tự tin và độc lập hơn. Các kỹ năng sống mà con học được rất hữu ích.",
     },
     {
       name: "Lê Thị Hương",
@@ -199,11 +199,11 @@ const Home: React.FC = () => {
                 Khám phá, học hỏi và kết bạn
               </span>
               <span className="text-white block mt-2">
-                trong môi trường trại hè an toàn
+                trong môi trường giáo dục an toàn
               </span>
             </h1>
             <p className="text-xl text-white/90 mb-8 leading-relaxed">
-              Tham gia trại hè để con bạn có cơ hội phát triển toàn diện về kỹ
+              Tham gia hội trại để con bạn có cơ hội phát triển toàn diện về kỹ
               năng, kiến thức và trải nghiệm những kỷ niệm đáng nhớ cùng bạn bè
               mới.
             </p>
@@ -491,7 +491,7 @@ const Home: React.FC = () => {
               Các hoạt động nổi bật
             </h2>
             <p className="text-gray-600 text-lg">
-              Khám phá những trải nghiệm thú vị và bổ ích tại trại hè
+              Khám phá những trải nghiệm thú vị và bổ ích tại CampEase
             </p>
           </div>
 
@@ -624,12 +624,12 @@ const Home: React.FC = () => {
               <div className="space-y-8">
                 <div className="space-y-6">
                   <h2 className="text-4xl md:text-4xl font-bold text-gray-900 leading-tight">
-                    Hãy để Trại hè CampEase 2025 trở thành dấu ấn rực rỡ trên
+                    Hãy để Hội trại CampEase 2025 trở thành dấu ấn rực rỡ trên
                     hành trình trưởng thành của con!
                   </h2>
 
                   <p className="text-xl text-gray-800 leading-relaxed">
-                    Một mùa hè tràn đầy cảm hứng, năng lượng và khám phá, nơi
+                    Một hành trình tràn đầy cảm hứng, năng lượng và khám phá, nơi
                     mỗi ngày con được học hỏi điều mới, tự do thể hiện bản thân
                     và phát triển toàn diện về trí tuệ, thể chất, nghệ thuật và
                     kỹ năng sống.
@@ -638,7 +638,7 @@ const Home: React.FC = () => {
 
                 <div className="space-y-6 bg-white/40 backdrop-blur-sm rounded-2xl p-8 border border-white/50">
                   <h3 className="text-3xl font-bold text-gray-900 mb-6">
-                    TẠI SAO NÊN CHỌN TRẠI HÈ CampEase?
+                    TẠI SAO NÊN CHỌN HỘI TRẠI CampEase?
                   </h3>
 
                   <div className="space-y-5">
@@ -684,7 +684,7 @@ const Home: React.FC = () => {
                         </h4>
                         <p className="text-gray-700">
                           Dù con yêu sân khấu, đam mê thể thao hay say mê công
-                          nghệ – trại hè có nhiều lựa chọn đa dạng để con tự do
+                          nghệ – hội trại có nhiều lựa chọn đa dạng để con tự do
                           khám phá bản thân và phát triển thế mạnh riêng.
                         </p>
                       </div>
@@ -726,7 +726,7 @@ const Home: React.FC = () => {
 
                 <div className="space-y-4 bg-white/40 backdrop-blur-sm rounded-2xl p-8 border border-white/50">
                   <h3 className="text-2xl font-bold text-gray-900">
-                    CÁC CHƯƠNG TRÌNH HÈ ĐẶC SẮC – ĐA DẠNG LỰA CHỌN
+                    CÁC CHƯƠNG TRÌNH TRẠI ĐẶC SẮC – ĐA DẠNG LỰA CHỌN
                   </h3>
                   <p className="text-gray-700 text-lg">
                     Dành cho học sinh chuẩn bị vào lớp 1 đến lớp 5.

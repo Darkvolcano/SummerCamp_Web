@@ -122,7 +122,7 @@ const Footer = () => {
                 to="/faqs"
                 className="text-gray-300 hover:text-orange-400 transition-colors text-sm"
               >
-                Câu hỏi thường gặp
+                FAQs
               </Link>
             </li>
           </ul>

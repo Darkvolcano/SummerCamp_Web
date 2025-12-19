@@ -89,8 +89,8 @@ const AccommodationManagement: React.FC = () => {
     return (
       <div className="p-6 flex items-center justify-center min-h-[500px]">
         <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-indigo-200 p-12 rounded-2xl text-center shadow-lg hover:shadow-xl transition-shadow duration-300 max-w-md">
-          <h3 className="text-xl font-bold text-indigo-900 mb-2">Select Camp</h3>
-          <p className="text-indigo-700 text-base leading-relaxed">Please select a camp from the left sidebar to view accommodations</p>
+          <h3 className="text-xl font-bold text-indigo-900 mb-2">Chọn Trại</h3>
+          <p className="text-indigo-700 text-base leading-relaxed">Vui lòng chọn một trại từ thanh bên trái để xem nơi ở</p>
         </div>
       </div>
     );
@@ -204,7 +204,7 @@ const AccommodationManagement: React.FC = () => {
     try {
       const newStatus = !isActive;
       await accommodationService.updateAccommodationStatus(accommodationId, newStatus);
-      toastSuccess('Success', `Accommodation ${newStatus ? 'activated' : 'deactivated'} successfully`);
+      toastSuccess('Thành công', `Nơi ở đã được ${newStatus ? 'kích hoạt' : 'hủy kích hoạt'} thành công`);
       // Refresh accommodations
       if (selectedCampId) {
         const accommodationsData = await accommodationService.getAccommodationsByCampId(selectedCampId);
@@ -228,9 +228,9 @@ const AccommodationManagement: React.FC = () => {
         description: values.description || '',
       });
 
-      toastSuccess('Success', 'Accommodation type created successfully');
+      toastSuccess('Thành công', 'Tạo loại nơi ở thành công');
 
-      // Refresh accommodation types
+      // Làm mới loại nơi ở
       const typesData = await accommodationTypeService.getAllAccommodationTypes();
       setAccommodationTypes(typesData);
 
@@ -241,7 +241,7 @@ const AccommodationManagement: React.FC = () => {
       typeForm.resetFields();
     } catch (error) {
       console.error('Error creating accommodation type:', error);
-      toastError('Error', 'Failed to create accommodation type');
+      toastError('Lỗi', 'Không thể tạo loại nơi ở');
     } finally {
       setTypeSubmitting(false);
     }
@@ -251,9 +251,9 @@ const AccommodationManagement: React.FC = () => {
     <div className="min-h-screen bg-[#F9FAFB] p-6">
       {/* Header */}
       <div className="mb-4">
-        <h1 className="text-2xl font-bold text-[#111827]">Accommodations</h1>
+        <h1 className="text-2xl font-bold text-[#111827]">Quản Lý Nơi Ở</h1>
         <p className="text-xs text-[#6B7280] mt-0.5">
-          Manage and organize camp accommodations
+          Quản lý và sắp xếp nơi ở cho trại
         </p>
       </div>
 
@@ -268,7 +268,7 @@ const AccommodationManagement: React.FC = () => {
             {/* Left Sidebar - Filters */}
             <div className="lg:col-span-1">
               <div className="bg-white rounded-xl shadow-sm border border-[#E5E7EB] p-6 sticky top-6">
-                <h3 className="text-lg font-bold text-[#111827] mb-4">Search</h3>
+                <h3 className="text-lg font-bold text-[#111827] mb-4">Tìm Kiếm</h3>
 
                 {/* Search */}
                 <div className="mb-6">
@@ -280,7 +280,7 @@ const AccommodationManagement: React.FC = () => {
                     />
                     <input
                       type="text"
-                      placeholder="By name..."
+                      placeholder="Theo tên..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="w-full pl-9 pr-4 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:border-transparent text-sm text-[#6B7280] placeholder:text-[#9CA3AF]"
@@ -291,10 +291,10 @@ const AccommodationManagement: React.FC = () => {
                 {/* Capacity Info */}
                 {campData && (
                   <div className="mb-6">
-                    <p className="text-xs font-medium text-[#6B7280] mb-1">Capacity</p>
+                    <p className="text-xs font-medium text-[#6B7280] mb-1">Sức Chứa</p>
                     <div className="flex items-center gap-1">
                       <span className="text-2xl font-bold text-[#111827]">{getTotalCapacity()}</span>
-                      <span className="text-xs text-[#6B7280]">/ {campData.maxParticipants} max capacity</span>
+                      <span className="text-xs text-[#6B7280]">/ {campData.maxParticipants} tối đa</span>
                     </div>
                   </div>
                 )}
@@ -305,7 +305,7 @@ const AccommodationManagement: React.FC = () => {
                   className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-all font-medium text-sm"
                 >
                   <Plus size={16} />
-                  Add Accommodation
+                  Thêm Nơi Ở
                 </button>
 
 
@@ -318,7 +318,7 @@ const AccommodationManagement: React.FC = () => {
                 {/* Table Header */}
                 <div className="px-6 py-4 border-b border-[#E5E7EB]">
                   <h2 className="text-lg font-bold text-[#111827]">
-                    Found: {filteredAccommodations.length}
+                    Tìm Thấy: {filteredAccommodations.length}
                   </h2>
                 </div>
 
@@ -328,25 +328,25 @@ const AccommodationManagement: React.FC = () => {
                     <thead className="bg-[#F9FAFB] border-b border-[#E5E7EB]">
                       <tr>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          ID
+                          STT
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Name
+                          Tên Nơi Ở
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Type
+                          Loại
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Capacity
+                          Sức Chứa
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Supervisor
+                          Người Giám Sát
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Status
+                          Trạng Thái
                         </th>
                         <th className="px-6 py-3 text-right text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Actions
+                          Thao Tác
                         </th>
                       </tr>
                     </thead>
@@ -357,7 +357,7 @@ const AccommodationManagement: React.FC = () => {
                             colSpan={7}
                             className="px-6 py-12 text-center text-[#6B7280]"
                           >
-                            No accommodations found matching your filters
+                            Không tìm thấy nơi ở nào phù hợp
                           </td>
                         </tr>
                       ) : (
@@ -387,31 +387,31 @@ const AccommodationManagement: React.FC = () => {
                                 accommodation.supervisor.fullName
                               ) : (
                                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">
-                                  Unassigned
-                                </span>
+                              Unassigned
+                            </span>
                               )}
                             </td>
                             <td className="px-6 py-4 text-sm">
                               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${accommodation.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                                {accommodation.isActive ? 'Active' : 'Inactive'}
-                              </span>
+                            {accommodation.isActive ? 'Active' : 'Inactive'}
+                          </span>
                             </td>
                             <td className="px-6 py-4 text-right">
                               <div className="flex items-center justify-end gap-2">
                                 <button
                                   onClick={() => handleEditClick(accommodation)}
                                   className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#F3F4F6] text-[#6B7280] rounded-lg hover:bg-[#E5E7EB] transition-all font-medium text-sm"
-                                  title="Edit Accommodation"
+                                  title="Sửa Nơi Ở"
                                 >
                                   <Edit2 size={16} />
-                                  Edit
+                                  Sửa
                                 </button>
                                 {accommodation.isActive ? (
                                   <DeletePopover
                                     onConfirm={() => handleToggleStatus(accommodation.accommodationId, accommodation.isActive)}
-                                    title="Deactivate Accommodation"
-                                    message={`Are you sure you want to deactivate "${accommodation.name}"?`}
-                                    buttonText="Deactivate"
+                                    title="Hủy Kích Hoạt Nơi Ở"
+                                    message={`Bạn có chắc muốn hủy kích hoạt "${accommodation.name}"?`}
+                                    buttonText="Hủy Kích Hoạt"
                                     isOpen={deletePopoverOpen === accommodation.accommodationId}
                                     onOpenChange={(open) =>
                                       setDeletePopoverOpen(open ? accommodation.accommodationId : null)
@@ -421,10 +421,10 @@ const AccommodationManagement: React.FC = () => {
                                   <button
                                     onClick={() => handleToggleStatus(accommodation.accommodationId, accommodation.isActive)}
                                     className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-all font-medium text-sm"
-                                    title="Activate Accommodation"
+                                    title="Kích Hoạt Nơi Ở"
                                   >
                                     <Check size={16} />
-                                    Activate
+                                    Kích Hoạt
                                   </button>
                                 )}
                               </div>
@@ -443,7 +443,7 @@ const AccommodationManagement: React.FC = () => {
 
       {/* Add/Edit Modal */}
       <Modal
-        title={editingAccommodation ? 'Edit Accommodation' : 'Add New Accommodation'}
+        title={editingAccommodation ? 'Sửa Nơi Ở' : 'Thêm Nơi Ở Mới'}
         open={isModalVisible}
         onOk={handleSubmit}
         onCancel={() => {
@@ -479,30 +479,30 @@ const AccommodationManagement: React.FC = () => {
           className="mt-4"
         >
           <Form.Item
-            label="Accommodation Name"
+            label="Tên Nơi Ở"
             name="name"
             rules={[
-              { required: true, message: 'Please input accommodation name!' },
-              { min: 1, message: 'Name cannot be empty!' },
+              { required: true, message: 'Vui lòng nhập tên nơi ở!' },
+              { min: 1, message: 'Tên không được để trống!' },
             ]}
           >
-            <Input placeholder="e.g., Dorm A, Cabin 1" />
+            <Input placeholder="ví dụ: Ký túc xá A, Căn hộ 1" />
           </Form.Item>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Accommodation Type *
+              Loại Nơi Ở *
             </label>
             <div className="flex gap-2">
               <Form.Item
                 name="accommodationTypeId"
                 rules={[
-                  { required: true, message: 'Please select accommodation type!' },
+                  { required: true, message: 'Vui lòng chọn loại nơi ở!' },
                 ]}
                 className="flex-1 mb-0"
               >
                 <Select
-                  placeholder="Select accommodation type"
+                  placeholder="Chọn loại nơi ở"
                   options={accommodationTypes.map((type) => ({
                     label: type.name,
                     value: type.id,
@@ -513,7 +513,7 @@ const AccommodationManagement: React.FC = () => {
                 type="button"
                 onClick={() => setIsTypeModalVisible(true)}
                 className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-medium flex items-center justify-center"
-                title="Create new accommodation type"
+                title="Tạo loại nơi ở mới"
               >
                 <Plus size={18} />
               </button>
@@ -521,26 +521,26 @@ const AccommodationManagement: React.FC = () => {
           </div>
 
           <Form.Item
-            label="Capacity"
+            label="Sức Chứa"
             name="capacity"
             rules={[
-              { required: true, message: 'Please input capacity!' },
-              { type: 'number', min: 1, message: 'Capacity must be at least 1!' },
+              { required: true, message: 'Vui lòng nhập sức chứa!' },
+              { type: 'number', min: 1, message: 'Sức chứa phải ít nhất là 1!' },
             ]}
           >
-            <InputNumber min={1} placeholder="e.g., 50" className="w-full" />
+            <InputNumber min={1} placeholder="ví dụ: 50" className="w-full" />
           </Form.Item>
 
           <Form.Item
-            label="Supervisor"
+            label="Người Giám Sát"
             name="supervisorId"
             rules={[
-              { required: true, message: 'Please select a supervisor!' },
+              { required: true, message: 'Vui lòng chọn người giám sát!' },
             ]}
-            help={!editingAccommodation?.supervisor ? '⚠️ No supervisor assigned' : ''}
+            help={!editingAccommodation?.supervisor ? '⚠️ Chưa phân công người giám sát' : ''}
           >
             <Select
-              placeholder="Select a supervisor"
+              placeholder="Chọn người giám sát"
               optionLabelProp="label"
               options={staffList.map((staff) => ({
                 label: staff.fullName,
@@ -559,7 +559,7 @@ const AccommodationManagement: React.FC = () => {
 
       {/* Create Accommodation Type Modal */}
       <Modal
-        title="Create New Accommodation Type"
+        title="Têm Loại Nơi Ở Mới"
         open={isTypeModalVisible}
         onOk={handleCreateType}
         onCancel={() => {
@@ -594,25 +594,25 @@ const AccommodationManagement: React.FC = () => {
           className="mt-4"
         >
           <Form.Item
-            label="Type Name"
+            label="Tên Loại"
             name="name"
             rules={[
-              { required: true, message: 'Please input accommodation type name!' },
-              { min: 1, message: 'Name cannot be empty!' },
+              { required: true, message: 'Vui lòng nhập tên loại nơi ở!' },
+              { min: 1, message: 'Tên không được để trống!' },
             ]}
           >
-            <Input placeholder="e.g., Dormitory, Cabin, Tent" />
+            <Input placeholder="ví dụ: Ký túc xá, Lều, Cabin" />
           </Form.Item>
 
           <Form.Item
-            label="Description"
+            label="Mô Tả"
             name="description"
             rules={[
               { required: false },
             ]}
           >
             <Input.TextArea
-              placeholder="Enter type description (optional)"
+              placeholder="Nhập mô tả (tùy chọn)"
               rows={3}
             />
           </Form.Item>
