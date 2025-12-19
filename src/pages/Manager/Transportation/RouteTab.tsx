@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Spin, Modal, Form, Input, InputNumber, Select } from 'antd';
+import { Spin, Modal, Form, Input, InputNumber, Select, Checkbox } from 'antd';
 import { Search, Plus, Edit2, Clock, Eye, MapPin, Trash2 } from 'lucide-react';
 import { useManagerContext } from '../../../hooks/useManagerContext';
 import { useNotification } from '../../../contexts/NotificationContext';
@@ -36,6 +36,8 @@ const RouteTab: React.FC = () => {
     routeName: string;
     routeType: string;
     estimateDuration: number;
+    createReturnRoute?: boolean;
+    returnRouteName?: string;
   } | null>(null);
 
   // Detail modal states
@@ -224,7 +226,7 @@ const RouteTab: React.FC = () => {
       }
     } catch (error) {
       console.error('Failed to save route:', error);
-      toastError('Error', 'Failed to save route');
+      toastError('Lỗi', 'Không thể lưu tuyến đường');
       setSubmitting(false);
     }
   };
@@ -233,38 +235,35 @@ const RouteTab: React.FC = () => {
     try {
       setSubmitting(true);
 
-      // Use saved form values
       if (!routeFormValues) {
         toastError('Lỗi', 'Thiếu thông tin tuyến đường');
         return;
       }
 
-      // Step 1: Create the route
-      const routeData: RouteRequestDto = {
+      const compositeData = {
         campId: selectedCampId!,
         routeName: routeFormValues.routeName,
         routeType: routeFormValues.routeType,
         estimateDuration: routeFormValues.estimateDuration,
+        routeStops: newRouteStops.map((stop) => ({
+          routeId: 0,
+          locationId: stop.locationId!,
+          stopOrder: stop.stopOrder,
+          estimatedTime: stop.estimatedTime,
+        })),
+        createReturnRoute: routeFormValues.createReturnRoute || false,
+        returnRouteName: routeFormValues.returnRouteName || null,
       };
 
-      console.log('[RouteTab] Creating route with data:', routeData);
-      const createdRoute = await routeService.createRoute(routeData);
+      console.log('[RouteTab] Creating composite route with data:', compositeData);
+      const createdRoutes = await routeService.createCompositeRoute(compositeData);
 
-      // Step 2: Create route stops
-      if (newRouteStops.length > 0) {
-        await Promise.all(
-          newRouteStops.map((stop) =>
-            routeService.createRouteStop({
-              routeId: createdRoute.routeId,
-              locationId: stop.locationId!,
-              stopOrder: stop.stopOrder,
-              estimatedTime: stop.estimatedTime,
-            })
-          )
-        );
-      }
+      const routeCount = createdRoutes.length;
+      const message = routeFormValues.createReturnRoute
+        ? `Tạo ${routeCount} tuyến đường (đi và về) với ${newRouteStops.length} điểm dừng`
+        : `Tạo tuyến đường với ${newRouteStops.length} điểm dừng`;
 
-      toastSuccess('Thành công', `Tạo tuyến đường với ${newRouteStops.length} điểm dừng`);
+      toastSuccess('Thành công', message);
       setIsModalVisible(false);
       form.resetFields();
       setCreationStep('info');
@@ -272,9 +271,9 @@ const RouteTab: React.FC = () => {
       setRouteFormValues(null);
       fetchRoutes();
     } catch (error: any) {
-      console.error('Failed to create route with stops:', error);
-      const errorMessage = error.response?.data?.message || 'Failed to create route';
-      toastError('Error', errorMessage);
+      console.error('Failed to create composite route:', error);
+      const errorMessage = error.response?.data?.message || 'Không thể tạo tuyến đường';
+      toastError('Lỗi', errorMessage);
     } finally {
       setSubmitting(false);
     }
@@ -304,7 +303,7 @@ const RouteTab: React.FC = () => {
     <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
       <div className="lg:col-span-1">
         <div className="bg-white rounded-xl shadow-sm border border-[#E5E7EB] p-6 sticky top-6">
-          <h3 className="text-lg font-bold text-[#111827] mb-4">Search</h3>
+          <h3 className="text-lg font-bold text-[#111827] mb-4">Tìm Kiếm</h3>
 
           <div className="mb-6">
             <div className="relative">
@@ -314,7 +313,7 @@ const RouteTab: React.FC = () => {
               />
               <input
                 type="text"
-                placeholder="By name..."
+                placeholder="Theo tên..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-9 pr-4 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:border-transparent text-sm text-[#6B7280] placeholder:text-[#9CA3AF]"
@@ -323,7 +322,7 @@ const RouteTab: React.FC = () => {
           </div>
 
           <div className="mb-6">
-            <p className="text-xs font-medium text-[#6B7280] mb-3">Route Type</p>
+            <p className="text-xs font-medium text-[#6B7280] mb-3">Loại Tuyến Đường</p>
             <div className="space-y-2">
               <label className="flex items-center gap-2 cursor-pointer group">
                 <input
@@ -333,7 +332,7 @@ const RouteTab: React.FC = () => {
                   className="w-4 h-4 rounded border-[#D1D5DB] text-[#6366F1] focus:ring-[#6366F1] focus:ring-2 bg-white"
                 />
                 <span className="text-sm text-[#374151] group-hover:text-[#111827] font-medium">
-                  All
+                  Tất Cả
                 </span>
                 <span className="text-xs font-semibold text-[#6366F1] bg-[#EFF6FF] px-2 py-0.5 rounded-full ml-auto">
                   {routes.length}
@@ -365,7 +364,7 @@ const RouteTab: React.FC = () => {
             className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-all font-medium text-sm"
           >
             <Plus size={16} />
-            Add Route
+            Thêm Tuyến Đường
           </button>
 
         </div>
@@ -376,7 +375,7 @@ const RouteTab: React.FC = () => {
           {/* Table Header */}
           <div className="px-6 py-4 border-b border-[#E5E7EB]">
             <h2 className="text-lg font-bold text-[#111827]">
-              Found: {filteredRoutes.length}
+              Tìm Thấy: {filteredRoutes.length}
             </h2>
           </div>
 
@@ -385,22 +384,22 @@ const RouteTab: React.FC = () => {
               <thead className="bg-[#F9FAFB] border-b border-[#E5E7EB]">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                    No.
+                    STT
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                    Route Name
+                    Tên Tuyến
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                    Type
+                    Loại
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                    Duration
+                    Thời Gian
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                    Status
+                    Trạng Thái
                   </th>
                   <th className="px-6 py-3 text-right text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                    Actions
+                    Thao Tác
                   </th>
                 </tr>
               </thead>
@@ -411,7 +410,7 @@ const RouteTab: React.FC = () => {
                       colSpan={6}
                       className="px-6 py-12 text-center text-[#6B7280]"
                     >
-                      No routes found
+                      Không tìm thấy tuyến đường
                     </td>
                   </tr>
                 ) : (
@@ -434,7 +433,7 @@ const RouteTab: React.FC = () => {
                       <td className="px-6 py-4 text-sm text-[#6B7280]">
                         <div className="flex items-center gap-1">
                           <Clock size={14} className="text-[#9CA3AF]" />
-                          {route.estimateDuration} min
+                          {route.estimateDuration} phút
                         </div>
                       </td>
                       <td className="px-6 py-4">
@@ -453,12 +452,13 @@ const RouteTab: React.FC = () => {
                             title="Xem Chi Tiết"
                           >
                             <Eye size={16} />
-                            Detail
+                            Chi Tiết
                           </button>
                           <DeletePopover
                             onConfirm={() => handleDeleteRoute(route.routeId)}
-                            title="Delete Route"
-                            message={`Are you sure you want to delete "${route.routeName}"?`}
+                            message={`Bạn có chắc muốn xóa tuyến đường "${route.routeName}"?`}
+                            buttonText="Xóa"
+                            title="Xóa Tuyến Đường"
                             disabled={submitting}
                             isOpen={deletePopoverOpen === route.routeId}
                             onOpenChange={(open) =>
@@ -479,7 +479,7 @@ const RouteTab: React.FC = () => {
       <Modal
         title={
           <div className="text-lg font-bold text-[#111827]">
-            {editingRoute ? 'Edit Route' : `Add New Route${creationStep === 'stops' ? ' - Configure Stops' : ''}`}
+            {editingRoute ? 'Sửa Tuyến Đường' : `Thêm Tuyến Đường Mới${creationStep === 'stops' ? ' - Cấu Hình Điểm Dừng' : ''}`}
           </div>
         }
         open={isModalVisible}
@@ -495,22 +495,22 @@ const RouteTab: React.FC = () => {
             onFinish={handleSubmit}
           >
             <Form.Item
-              label={<span className="text-sm font-semibold text-[#374151]">Route Name</span>}
+              label={<span className="text-sm font-semibold text-[#374151]">Tên Tuyến Đường</span>}
               name="routeName"
-              rules={[{ required: true, message: 'Please enter route name' }]}
+              rules={[{ required: true, message: 'Vui lòng nhập tên tuyến đường' }]}
             >
               <Input
-                placeholder="Enter route name"
+                placeholder="Nhập tên tuyến đường"
                 className="rounded-lg"
               />
             </Form.Item>
 
             <Form.Item
-              label={<span className="text-sm font-semibold text-[#374151]">Route Type</span>}
+              label={<span className="text-sm font-semibold text-[#374151]">Loại Tuyến Đường</span>}
               name="routeType"
-              rules={[{ required: true, message: 'Please select route type' }]}
+              rules={[{ required: true, message: 'Vui lòng chọn loại tuyến đường' }]}
             >
-              <Select placeholder="Select route type" className="rounded-lg">
+              <Select placeholder="Chọn loại tuyến đường" className="rounded-lg">
                 {ROUTE_TYPES.map((type) => (
                   <Option key={type} value={type}>
                     {type}
@@ -520,18 +520,49 @@ const RouteTab: React.FC = () => {
             </Form.Item>
 
             <Form.Item
-              label={<span className="text-sm font-semibold text-[#374151]">Estimated Duration (minutes)</span>}
+              label={<span className="text-sm font-semibold text-[#374151]">Thời Gian Ước Tính (phút)</span>}
               name="estimateDuration"
               rules={[
-                { required: true, message: 'Please enter estimated duration' },
-                { type: 'number', min: 1, message: 'Duration must be at least 1 minute' },
+                { required: true, message: 'Vui lòng nhập thời gian ước tính' },
+                { type: 'number', min: 1, message: 'Thời gian phải ít nhất 1 phút' },
               ]}
             >
               <InputNumber
-                placeholder="Enter duration in minutes"
+                placeholder="Nhập thời gian (phút)"
                 className="w-full rounded-lg"
                 min={1}
               />
+            </Form.Item>
+
+            <Form.Item
+              name="createReturnRoute"
+              valuePropName="checked"
+            >
+              <Checkbox>
+                <span className="text-sm font-semibold text-[#374151]">Tạo tuyến đường về</span>
+              </Checkbox>
+            </Form.Item>
+
+            <Form.Item
+              noStyle
+              shouldUpdate={(prevValues, currentValues) => prevValues.createReturnRoute !== currentValues.createReturnRoute}
+            >
+              {({ getFieldValue }) =>
+                getFieldValue('createReturnRoute') ? (
+                  <Form.Item
+                    label={<span className="text-sm font-semibold text-[#374151]">Tên Tuyến Đường Về</span>}
+                    name="returnRouteName"
+                    rules={[
+                      { required: true, message: 'Vui lòng nhập tên tuyến đường về' },
+                    ]}
+                  >
+                    <Input
+                      placeholder="Nhập tên tuyến đường về"
+                      className="rounded-lg"
+                    />
+                  </Form.Item>
+                ) : null
+              }
             </Form.Item>
 
             <div className="flex gap-2 justify-end mt-6">
@@ -540,14 +571,14 @@ const RouteTab: React.FC = () => {
                 onClick={handleModalCancel}
                 className="px-4 py-2 bg-[#F3F4F6] text-[#6B7280] rounded-lg hover:bg-[#E5E7EB] transition-colors font-medium text-sm"
               >
-                Cancel
+                Hủy
               </button>
               <button
                 type="submit"
                 disabled={submitting}
                 className="px-4 py-2 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-colors font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {submitting ? 'Saving...' : editingRoute ? 'Update' : 'Next: Configure Stops'}
+                {submitting ? 'Đang lưu...' : editingRoute ? 'Cập Nhật' : 'Tiếp: Cấu Hình Điểm Dừng'}
               </button>
             </div>
           </Form>
@@ -558,11 +589,11 @@ const RouteTab: React.FC = () => {
             {/* Route Stops List */}
             <div className="border border-[#E5E7EB] rounded-lg p-4">
               <h4 className="text-base font-bold text-[#111827] mb-3">
-                Route Stops ({newRouteStops.length})
+                Điểm Dừng ({newRouteStops.length})
               </h4>
               {newRouteStops.length === 0 ? (
                 <p className="text-sm text-gray-500 text-center py-4">
-                  Click on the map below to add pickup points
+                  Nhấp vào bản đồ bên dưới để thêm điểm đón
                 </p>
               ) : (
                 <div className="space-y-2 max-h-48 overflow-y-auto">
@@ -594,7 +625,7 @@ const RouteTab: React.FC = () => {
                             size="small"
                             className="w-16 mr-1"
                           />
-                          <span className="text-sm text-gray-500">min</span>
+                          <span className="text-sm text-gray-500">phút</span>
                         </div>
                         <button
                           onClick={() => {
@@ -632,21 +663,21 @@ const RouteTab: React.FC = () => {
                 onClick={() => setCreationStep('info')}
                 className="px-4 py-2 bg-[#F3F4F6] text-[#6B7280] rounded-lg hover:bg-[#E5E7EB] transition-colors font-medium text-sm"
               >
-                Back to Route Info
+                Trở Về Thông Tin Tuyến
               </button>
               <div className="flex gap-2">
                 <button
                   onClick={handleModalCancel}
                   className="px-4 py-2 bg-[#F3F4F6] text-[#6B7280] rounded-lg hover:bg-[#E5E7EB] transition-colors font-medium text-sm"
                 >
-                  Cancel
+                  Hủy
                 </button>
                 <button
                   onClick={handleCreateRouteWithStops}
                   disabled={submitting || newRouteStops.length === 0}
                   className="px-4 py-2 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-colors font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {submitting ? 'Creating...' : `Create Route (${newRouteStops.length} stops)`}
+                  {submitting ? 'Đang Tạo...' : `Tạo Tuyến Đường (${newRouteStops.length} điểm dừng)`}
                 </button>
               </div>
             </div>
@@ -658,7 +689,7 @@ const RouteTab: React.FC = () => {
       <Modal
         title={
           <div className="text-lg font-bold text-[#111827]">
-            Route Details
+            Chi Tiết Tuyến Đường
           </div>
         }
         open={isDetailModalVisible}
@@ -677,19 +708,19 @@ const RouteTab: React.FC = () => {
               {isEditingInDetail ? (
                 <Form form={detailForm} layout="vertical">
                   <Form.Item
-                    label={<span className="text-sm font-semibold text-[#374151]">Route Name</span>}
+                    label={<span className="text-sm font-semibold text-[#374151]">Tên Tuyến Đường</span>}
                     name="routeName"
-                    rules={[{ required: true, message: 'Please enter route name' }]}
+                    rules={[{ required: true, message: 'Vui lòng nhập tên tuyến đường' }]}
                   >
-                    <Input placeholder="Enter route name" className="rounded-lg" />
+                    <Input placeholder="Nhập tên tuyến đường" className="rounded-lg" />
                   </Form.Item>
 
                   <Form.Item
-                    label={<span className="text-sm font-semibold text-[#374151]">Route Type</span>}
+                    label={<span className="text-sm font-semibold text-[#374151]">Loại Tuyến Đường</span>}
                     name="routeType"
-                    rules={[{ required: true, message: 'Please select route type' }]}
+                    rules={[{ required: true, message: 'Vui lòng chọn loại tuyến đường' }]}
                   >
-                    <Select placeholder="Select route type" className="rounded-lg">
+                    <Select placeholder="Chọn loại tuyến đường" className="rounded-lg">
                       {ROUTE_TYPES.map((type) => (
                         <Option key={type} value={type}>
                           {type}
@@ -699,37 +730,37 @@ const RouteTab: React.FC = () => {
                   </Form.Item>
 
                   <Form.Item
-                    label={<span className="text-sm font-semibold text-[#374151]">Estimated Duration (minutes)</span>}
+                    label={<span className="text-sm font-semibold text-[#374151]">Thời Gian Ước Tính (phút)</span>}
                     name="estimateDuration"
                     rules={[
-                      { required: true, message: 'Please enter estimated duration' },
-                      { type: 'number', min: 1, message: 'Duration must be at least 1 minute' },
+                      { required: true, message: 'Vui lòng nhập thời gian' },
+                      { type: 'number', min: 1, message: 'Phải ít nhất 1 phút' },
                     ]}
                   >
-                    <InputNumber placeholder="Enter duration in minutes" className="w-full rounded-lg" min={1} />
+                    <InputNumber placeholder="Nhập thời gian" className="w-full rounded-lg" min={1} />
                   </Form.Item>
                 </Form>
               ) : (
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-xs font-medium text-[#6B7280] mb-1">Route Name</p>
+                    <p className="text-xs font-medium text-[#6B7280] mb-1">Tên Tuyến Đường</p>
                     <p className="text-sm font-semibold text-[#111827]">{detailRoute.routeName}</p>
                   </div>
                   <div>
-                    <p className="text-xs font-medium text-[#6B7280] mb-1">Type</p>
+                    <p className="text-xs font-medium text-[#6B7280] mb-1">Loại</p>
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
                       {detailRoute.routeType}
                     </span>
                   </div>
                   <div>
-                    <p className="text-xs font-medium text-[#6B7280] mb-1">Duration</p>
+                    <p className="text-xs font-medium text-[#6B7280] mb-1">Thời Gian</p>
                     <div className="flex items-center gap-1 text-sm text-[#374151]">
                       <Clock size={14} className="text-[#9CA3AF]" />
-                      {detailRoute.estimateDuration} min
+                      {detailRoute.estimateDuration} phút
                     </div>
                   </div>
                   <div>
-                    <p className="text-xs font-medium text-[#6B7280] mb-1">Status</p>
+                    <p className="text-xs font-medium text-[#6B7280] mb-1">Trạng Thái</p>
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${detailRoute.status === 'Active'
                         ? 'bg-green-100 text-green-700'
                         : 'bg-gray-100 text-gray-700'
@@ -756,14 +787,14 @@ const RouteTab: React.FC = () => {
                       className="inline-flex items-center gap-2 px-4 py-2 bg-[#F3F4F6] text-[#6B7280] rounded-lg hover:bg-[#E5E7EB] transition-colors font-medium text-sm"
                       disabled={submitting}
                     >
-                      Cancel
+                      Hủy
                     </button>
                     <button
                       onClick={handleSaveEdit}
                       className="inline-flex items-center gap-2 px-4 py-2 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-colors font-medium text-sm disabled:opacity-50"
                       disabled={submitting}
                     >
-                      {submitting ? 'Saving...' : 'Save Changes'}
+                      {submitting ? 'Đang Lưu...' : 'Lưu Thay Đổi'}
                     </button>
                   </>
                 ) : (
@@ -772,7 +803,7 @@ const RouteTab: React.FC = () => {
                     className="inline-flex items-center gap-2 px-4 py-2 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-colors font-medium text-sm"
                   >
                     <Edit2 size={16} />
-                    Edit Route
+                    Sửa Tuyến Đường
                   </button>
                 )}
               </div>
@@ -781,7 +812,7 @@ const RouteTab: React.FC = () => {
             {/* Route Stops */}
             <div>
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-base font-bold text-[#111827]">Route Stops</h3>
+                <h3 className="text-base font-bold text-[#111827]">Điểm Dừng</h3>
               </div>
 
               {loadingStops ? (
@@ -791,7 +822,7 @@ const RouteTab: React.FC = () => {
               ) : routeStops.length === 0 ? (
                 <div className="text-center py-8 text-[#6B7280] bg-[#F9FAFB] rounded-lg">
                   <MapPin size={32} className="mx-auto mb-2 text-[#9CA3AF]" />
-                  <p>No stops configured for this route</p>
+                  <p>Chưa có điểm dừng nào được cấu hình cho tuyến đường này</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

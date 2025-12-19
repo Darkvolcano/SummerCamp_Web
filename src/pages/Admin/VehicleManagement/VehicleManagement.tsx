@@ -147,7 +147,7 @@ export default function VehicleManagement() {
         <div className="header-left">
           <h1 className="page-title">Quản Lý Xe</h1>
           <p className="page-subtitle">
-            Quản lý đội xe cho việc vận chuyển trại
+            Quản lý đội xe cho việc đưa đón trại
           </p>
         </div>
         <button className="btn-create" onClick={handleCreate}>

@@ -242,7 +242,7 @@ const Register = () => {
                         }}
                         placeholder="Tên"
                         disabled={registerMutation.isPending}
-                        className="form-input"
+                        className="flex-1 px-3 py-3 pl-2 border-none outline-none text-sm text-slate-800 font-semibold bg-transparent font-['Quicksand'] placeholder:font-normal placeholder:text-slate-300"
                       />
                     </div>
                     {errors.firstName && (
@@ -274,7 +274,7 @@ const Register = () => {
                         }}
                         placeholder="Họ"
                         disabled={registerMutation.isPending}
-                        className="form-input"
+                        className="flex-1 px-3 py-3 pl-2 border-none outline-none text-sm text-slate-800 font-semibold bg-transparent font-['Quicksand'] placeholder:font-normal placeholder:text-slate-300"
                       />
                     </div>
                     {errors.lastName && (
@@ -306,7 +306,7 @@ const Register = () => {
                       }}
                       placeholder="your.email@example.com"
                       disabled={registerMutation.isPending}
-                      className="form-input"
+                      className="flex-1 px-3 py-3 pl-2 !border-0 !outline-none text-sm text-slate-800 font-semibold !bg-transparent font-['Quicksand'] placeholder:font-normal placeholder:text-slate-300 autofill:!bg-transparent autofill:!shadow-[inset_0_0_0_1000px_transparent]"
                     />
                   </div>
                   {errors.email && (
@@ -340,7 +340,7 @@ const Register = () => {
                         }}
                         placeholder="0123456789"
                         disabled={registerMutation.isPending}
-                        className="form-input"
+                        className="flex-1 px-3 py-3 pl-2 border-none outline-none text-sm text-slate-800 font-semibold bg-transparent font-['Quicksand'] placeholder:font-normal placeholder:text-slate-300"
                       />
                     </div>
                     {errors.phoneNumber && (
@@ -371,7 +371,7 @@ const Register = () => {
                           validateField("dateOfBirth", dateOfBirth);
                         }}
                         disabled={registerMutation.isPending}
-                        className="form-input"
+                        className="flex-1 px-3 py-3 pl-2 border-none outline-none text-sm text-slate-800 font-semibold bg-transparent font-['Quicksand'] placeholder:font-normal placeholder:text-slate-300"
                       />
                     </div>
                     {errors.dateOfBirth && (
@@ -404,7 +404,7 @@ const Register = () => {
                       }}
                       placeholder="••••••••"
                       disabled={registerMutation.isPending}
-                      className="form-input"
+                      className="flex-1 px-3 py-3 pl-2 !border-0 !outline-none text-sm text-slate-800 font-semibold !bg-transparent font-['Quicksand'] placeholder:font-normal placeholder:text-slate-300 autofill:!bg-transparent autofill:!shadow-[inset_0_0_0_1000px_transparent]"
                     />
                     <button
                       type="button"
@@ -449,7 +449,7 @@ const Register = () => {
                       }}
                       placeholder="••••••••"
                       disabled={registerMutation.isPending}
-                      className="form-input"
+                      className="flex-1 px-3 py-3 pl-2 !border-0 !outline-none text-sm text-slate-800 font-semibold !bg-transparent font-['Quicksand'] placeholder:font-normal placeholder:text-slate-300 autofill:!bg-transparent autofill:!shadow-[inset_0_0_0_1000px_transparent]"
                     />
                     <button
                       type="button"

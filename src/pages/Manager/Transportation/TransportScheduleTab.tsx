@@ -64,7 +64,7 @@ const TransportScheduleTab: React.FC = () => {
       setSchedules(data);
     } catch (error) {
       console.error('Failed to load schedules:', error);
-      toastError('Lỗi', 'Không thể tải lịch trình vận chuyển');
+      toastError('Lỗi', 'Không thể tải lịch trình đưa đón');
     } finally {
       setLoading(false);
     }
@@ -155,7 +155,7 @@ const TransportScheduleTab: React.FC = () => {
         };
 
         await transportScheduleService.createTransportSchedule(payload);
-        toastSuccess('Thành công', 'Tạo lịch trình vận chuyển thành công');
+        toastSuccess('Thành công', 'Tạo lịch trình đưa đón thành công');
       }
 
       setIsModalVisible(false);
@@ -164,8 +164,8 @@ const TransportScheduleTab: React.FC = () => {
       fetchSchedules();
     } catch (error: any) {
       console.error('Error creating schedule:', error);
-      const errorMessage = error.response?.data?.message || 'Failed to create schedule';
-      toastError('Error', errorMessage);
+      const errorMessage = error.response?.data?.message || 'Không thể tạo lịch trình';
+      toastError('Lỗi', errorMessage);
     } finally {
       setSubmitting(false);
     }
@@ -230,10 +230,10 @@ const TransportScheduleTab: React.FC = () => {
                 <h3 className="text-lg font-bold text-indigo-900">{camp.name}</h3>
                 <div className="flex items-center gap-4 mt-1">
                   <span className="text-sm text-indigo-700">
-                    <strong>Start:</strong> {formatDate(camp.startDate)}
+                    <strong>Bắt đầu:</strong> {formatDate(camp.startDate)}
                   </span>
                   <span className="text-sm text-indigo-700">
-                    <strong>End:</strong> {formatDate(camp.endDate)}
+                    <strong>Kết thúc:</strong> {formatDate(camp.endDate)}
                   </span>
                 </div>
               </div>
@@ -243,7 +243,7 @@ const TransportScheduleTab: React.FC = () => {
               className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-all font-medium text-sm"
             >
               <Plus size={16} />
-              Add Schedule
+              Thêm Lịch Trình
             </button>
           </div>
         </div>
@@ -257,7 +257,7 @@ const TransportScheduleTab: React.FC = () => {
             <div className="flex items-center gap-2">
               <ArrowUpCircle size={20} className="text-green-600" />
               <h2 className="text-lg font-bold text-[#111827]">
-                Pickup Schedules ({pickupSchedules.length})
+                Lịch Trình Đón ({pickupSchedules.length})
               </h2>
             </div>
           </div>
@@ -266,7 +266,7 @@ const TransportScheduleTab: React.FC = () => {
             {pickupSchedules.length === 0 ? (
               <div className="px-6 py-12 text-center text-[#6B7280]">
                 <ArrowUpCircle size={48} className="mx-auto mb-4 text-[#9CA3AF]" />
-                <p>No pickup schedules yet</p>
+                <p>Chưa có lịch trình đón nào</p>
               </div>
             ) : (
               pickupSchedules.map((schedule) => (
@@ -305,9 +305,9 @@ const TransportScheduleTab: React.FC = () => {
                       {getStatusBadge(schedule.status)}
                       <DeletePopover
                         onConfirm={() => handleDelete(schedule.transportScheduleId)}
-                        title="Delete Schedule"
-                        message="Are you sure you want to delete this schedule?"
-                        buttonText="Delete"
+                        title="Xóa Lịch Trình"
+                        message="Bạn có chắc muốn xóa lịch trình này?"
+                        buttonText="Xóa"
                         isOpen={deletePopoverOpen === schedule.transportScheduleId}
                         onOpenChange={(open) =>
                           setDeletePopoverOpen(open ? schedule.transportScheduleId : null)
@@ -327,7 +327,7 @@ const TransportScheduleTab: React.FC = () => {
             <div className="flex items-center gap-2">
               <ArrowDownCircle size={20} className="text-orange-600" />
               <h2 className="text-lg font-bold text-[#111827]">
-                Drop-off Schedules ({dropoffSchedules.length})
+                Lịch Trình Trả ({dropoffSchedules.length})
               </h2>
             </div>
           </div>
@@ -336,7 +336,7 @@ const TransportScheduleTab: React.FC = () => {
             {dropoffSchedules.length === 0 ? (
               <div className="px-6 py-12 text-center text-[#6B7280]">
                 <ArrowDownCircle size={48} className="mx-auto mb-4 text-[#9CA3AF]" />
-                <p>No drop-off schedules yet</p>
+                <p>Chưa có lịch trình trả nào</p>
               </div>
             ) : (
               dropoffSchedules.map((schedule) => (
@@ -375,9 +375,9 @@ const TransportScheduleTab: React.FC = () => {
                       {getStatusBadge(schedule.status)}
                       <DeletePopover
                         onConfirm={() => handleDelete(schedule.transportScheduleId)}
-                        title="Delete Schedule"
-                        message="Are you sure you want to delete this schedule?"
-                        buttonText="Delete"
+                        title="Xóa Lịch Trình"
+                        message="Bạn có chắc muốn xóa lịch trình này?"
+                        buttonText="Xóa"
                         isOpen={deletePopoverOpen === schedule.transportScheduleId}
                         onOpenChange={(open) =>
                           setDeletePopoverOpen(open ? schedule.transportScheduleId : null)
@@ -396,7 +396,7 @@ const TransportScheduleTab: React.FC = () => {
       <Modal
         title={
           <div className="text-lg font-bold text-[#111827]">
-            Create Transport Schedule
+            Tạo Lịch Trình Đưa Đón
           </div>
         }
         open={isModalVisible}
@@ -407,7 +407,7 @@ const TransportScheduleTab: React.FC = () => {
         }}
         confirmLoading={submitting}
         width={600}
-        okText="Create Schedule"
+        okText="Tạo Lịch Trình"
       >
         <Spin spinning={loadingDropdowns}>
           {/* Camp Info Display */}
@@ -421,10 +421,10 @@ const TransportScheduleTab: React.FC = () => {
                   <h4 className="text-sm font-bold text-indigo-900">{camp.name}</h4>
                   <div className="flex items-center gap-4 mt-1 text-xs text-indigo-700">
                     <span>
-                      <strong>Start:</strong> {formatDate(camp.startDate)} {new Date(camp.startDate).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+                      <strong>Bắt đầu:</strong> {formatDate(camp.startDate)} {new Date(camp.startDate).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
                     </span>
                     <span>
-                      <strong>End:</strong> {formatDate(camp.endDate)} {new Date(camp.endDate).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+                      <strong>Kết thúc:</strong> {formatDate(camp.endDate)} {new Date(camp.endDate).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
                     </span>
                   </div>
                 </div>
@@ -439,8 +439,8 @@ const TransportScheduleTab: React.FC = () => {
                 <div className="flex items-center gap-3">
                   <Repeat size={20} className="text-purple-600" />
                   <div>
-                    <h4 className="text-sm font-bold text-purple-900">Round Trip</h4>
-                    <p className="text-xs text-purple-700">Create both pickup and drop-off schedules</p>
+                    <h4 className="text-sm font-bold text-purple-900">Khứ Hồi</h4>
+                    <p className="text-xs text-purple-700">Tạo cả lịch trình đón và trả</p>
                   </div>
                 </div>
                 <Switch
@@ -459,12 +459,12 @@ const TransportScheduleTab: React.FC = () => {
               // Single Schedule Form
               <>
                 <Form.Item
-                  label="Transport Type"
+                  label="Loại Đưa Đón"
                   name="transportType"
-                  rules={[{ required: true, message: 'Please select transport type!' }]}
+                  rules={[{ required: true, message: 'Vui lòng chọn loại đưa đón!' }]}
                 >
                   <Select
-                    placeholder="Select transport type"
+                    placeholder="Chọn loại đưa đón"
                     onChange={(value) => {
                       // Reset route selection when transport type changes
                       form.setFieldsValue({ routeId: undefined });
@@ -474,25 +474,25 @@ const TransportScheduleTab: React.FC = () => {
                     <Option value="PickUp">
                       <div className="flex items-center gap-2">
                         <ArrowUpCircle size={16} className="text-green-600" />
-                        Pickup
+                        Đón
                       </div>
                     </Option>
                     <Option value="DropOff">
                       <div className="flex items-center gap-2">
                         <ArrowDownCircle size={16} className="text-orange-600" />
-                        Drop-off
+                        Trả
                       </div>
                     </Option>
                   </Select>
                 </Form.Item>
 
                 <Form.Item
-                  label="Route"
+                  label="Tuyến Đường"
                   name="routeId"
-                  rules={[{ required: true, message: 'Please select a route!' }]}
+                  rules={[{ required: true, message: 'Vui lòng chọn tuyến đường!' }]}
                 >
                   <Select
-                    placeholder={!selectedTransportType ? "Select transport type first" : "Select route"}
+                    placeholder={!selectedTransportType ? "Vui lòng chọn loại đưa đón trước" : "Chọn tuyến đường"}
                     showSearch
                     optionFilterProp="children"
                     disabled={!selectedTransportType}
@@ -509,9 +509,9 @@ const TransportScheduleTab: React.FC = () => {
                 </Form.Item>
 
                 <Form.Item
-                  label="Date"
+                  label="Ngày"
                   name="date"
-                  rules={[{ required: true, message: 'Please select date!' }]}
+                  rules={[{ required: true, message: 'Vui lòng chọn ngày!' }]}
                 >
                   <DatePicker
                     className="w-full"
@@ -521,29 +521,29 @@ const TransportScheduleTab: React.FC = () => {
 
                 <div className="grid grid-cols-2 gap-4">
                   <Form.Item
-                    label="Start Time"
+                    label="Giờ Bắt Đầu"
                     name="startTime"
-                    rules={[{ required: true, message: 'Please select start time!' }]}
+                    rules={[{ required: true, message: 'Vui lòng chọn giờ bắt đầu!' }]}
                   >
                     <TimePicker className="w-full" format="HH:mm" />
                   </Form.Item>
 
                   <Form.Item
-                    label="End Time"
+                    label="Giờ Kết Thúc"
                     name="endTime"
-                    rules={[{ required: true, message: 'Please select end time!' }]}
+                    rules={[{ required: true, message: 'Vui lòng chọn giờ kết thúc!' }]}
                   >
                     <TimePicker className="w-full" format="HH:mm" />
                   </Form.Item>
                 </div>
 
                 <Form.Item
-                  label="Vehicle"
+                  label="Phương Tiện"
                   name="vehicleId"
-                  rules={[{ required: true, message: 'Please select a vehicle!' }]}
+                  rules={[{ required: true, message: 'Vui lòng chọn phương tiện!' }]}
                 >
                   <Select
-                    placeholder="Select vehicle"
+                    placeholder="Chọn phương tiện"
                     showSearch
                     optionFilterProp="children"
                     loading={loadingVehicles}
@@ -583,19 +583,19 @@ const TransportScheduleTab: React.FC = () => {
                   >
                     {vehicles.map((vehicle) => (
                       <Option key={vehicle.vehicleId} value={vehicle.vehicleId}>
-                        {vehicle.vehicleName} - {vehicle.vehicleNumber} (Capacity: {vehicle.capacity})
+                        {vehicle.vehicleName} - {vehicle.vehicleNumber} (Sức chứa: {vehicle.capacity})
                       </Option>
                     ))}
                   </Select>
                 </Form.Item>
 
                 <Form.Item
-                  label="Driver"
+                  label="Tài Xế"
                   name="driverId"
-                  rules={[{ required: true, message: 'Please select a driver!' }]}
+                  rules={[{ required: true, message: 'Vui lòng chọn tài xế!' }]}
                 >
                   <Select
-                    placeholder="Select driver"
+                    placeholder="Chọn tài xế"
                     showSearch
                     optionFilterProp="children"
                     loading={loadingDrivers}
@@ -648,16 +648,16 @@ const TransportScheduleTab: React.FC = () => {
                 <div className="mb-6 p-4 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg">
                   <div className="flex items-center gap-2 mb-4">
                     <ArrowUpCircle size={20} className="text-green-600" />
-                    <h3 className="text-base font-bold text-green-900">Pickup Schedule</h3>
+                    <h3 className="text-base font-bold text-green-900">Lịch Trình Đón</h3>
                   </div>
 
                   <Form.Item
-                    label="Pickup Route"
+                    label="Tuyến Đón"
                     name="pickupRouteId"
-                    rules={[{ required: true, message: 'Please select pickup route!' }]}
+                    rules={[{ required: true, message: 'Vui lòng chọn tuyến đón!' }]}
                   >
                     <Select
-                      placeholder="Select pickup route"
+                      placeholder="Chọn tuyến đón"
                       showSearch
                       optionFilterProp="children"
                     >
@@ -672,9 +672,9 @@ const TransportScheduleTab: React.FC = () => {
                   </Form.Item>
 
                   <Form.Item
-                    label="Pickup Date"
+                    label="Ngày Đón"
                     name="pickupDate"
-                    rules={[{ required: true, message: 'Please select pickup date!' }]}
+                    rules={[{ required: true, message: 'Vui lòng chọn ngày đón!' }]}
                   >
                     <DatePicker
                       className="w-full"
@@ -684,17 +684,17 @@ const TransportScheduleTab: React.FC = () => {
 
                   <div className="grid grid-cols-2 gap-4">
                     <Form.Item
-                      label="Start Time"
+                      label="Giờ Bắt Đầu"
                       name="pickupStartTime"
-                      rules={[{ required: true, message: 'Please select start time!' }]}
+                      rules={[{ required: true, message: 'Vui lòng chọn giờ bắt đầu!' }]}
                     >
                       <TimePicker className="w-full" format="HH:mm" />
                     </Form.Item>
 
                     <Form.Item
-                      label="End Time"
+                      label="Giờ Kết Thúc"
                       name="pickupEndTime"
-                      rules={[{ required: true, message: 'Please select end time!' }]}
+                      rules={[{ required: true, message: 'Vui lòng chọn giờ kết thúc!' }]}
                     >
                       <TimePicker className="w-full" format="HH:mm" />
                     </Form.Item>
@@ -705,16 +705,16 @@ const TransportScheduleTab: React.FC = () => {
                 <div className="mb-6 p-4 bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200 rounded-lg">
                   <div className="flex items-center gap-2 mb-4">
                     <ArrowDownCircle size={20} className="text-orange-600" />
-                    <h3 className="text-base font-bold text-orange-900">Drop-off Schedule</h3>
+                    <h3 className="text-base font-bold text-orange-900">Lịch Trình Trả</h3>
                   </div>
 
                   <Form.Item
-                    label="Drop-off Route"
+                    label="Tuyến Trả"
                     name="dropoffRouteId"
-                    rules={[{ required: true, message: 'Please select drop-off route!' }]}
+                    rules={[{ required: true, message: 'Vui lòng chọn tuyến trả!' }]}
                   >
                     <Select
-                      placeholder="Select drop-off route"
+                      placeholder="Chọn tuyến trả"
                       showSearch
                       optionFilterProp="children"
                     >
@@ -729,9 +729,9 @@ const TransportScheduleTab: React.FC = () => {
                   </Form.Item>
 
                   <Form.Item
-                    label="Drop-off Date"
+                    label="Ngày Trả"
                     name="dropoffDate"
-                    rules={[{ required: true, message: 'Please select drop-off date!' }]}
+                    rules={[{ required: true, message: 'Vui lòng chọn ngày trả!' }]}
                   >
                     <DatePicker
                       className="w-full"
@@ -741,17 +741,17 @@ const TransportScheduleTab: React.FC = () => {
 
                   <div className="grid grid-cols-2 gap-4">
                     <Form.Item
-                      label="Start Time"
+                      label="Giờ Bắt Đầu"
                       name="dropoffStartTime"
-                      rules={[{ required: true, message: 'Please select start time!' }]}
+                      rules={[{ required: true, message: 'Vui lòng chọn giờ bắt đầu!' }]}
                     >
                       <TimePicker className="w-full" format="HH:mm" />
                     </Form.Item>
 
                     <Form.Item
-                      label="End Time"
+                      label="Giờ Kết Thúc"
                       name="dropoffEndTime"
-                      rules={[{ required: true, message: 'Please select end time!' }]}
+                      rules={[{ required: true, message: 'Vui lòng chọn giờ kết thúc!' }]}
                     >
                       <TimePicker className="w-full" format="HH:mm" />
                     </Form.Item>
@@ -762,16 +762,16 @@ const TransportScheduleTab: React.FC = () => {
                 <div className="mb-4 p-4 bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-200 rounded-lg">
                   <div className="flex items-center gap-2 mb-4">
                     <Truck size={20} className="text-indigo-600" />
-                    <h3 className="text-base font-bold text-indigo-900">Shared Resources</h3>
+                    <h3 className="text-base font-bold text-indigo-900">Tài Nguyên Chia Sẻ</h3>
                   </div>
 
                   <Form.Item
-                    label="Vehicle"
+                    label="Phương Tiện"
                     name="vehicleId"
-                    rules={[{ required: true, message: 'Please select a vehicle!' }]}
+                    rules={[{ required: true, message: 'Vui lòng chọn phương tiện!' }]}
                   >
                     <Select
-                      placeholder="Select vehicle"
+                      placeholder="Chọn phương tiện"
                       showSearch
                       optionFilterProp="children"
                       loading={loadingVehicles}
@@ -818,12 +818,12 @@ const TransportScheduleTab: React.FC = () => {
                   </Form.Item>
 
                   <Form.Item
-                    label="Driver"
+                    label="Tài Xế"
                     name="driverId"
-                    rules={[{ required: true, message: 'Please select a driver!' }]}
+                    rules={[{ required: true, message: 'Vui lòng chọn tài xế!' }]}
                   >
                     <Select
-                      placeholder="Select driver"
+                      placeholder="Chọn tài xế"
                       showSearch
                       optionFilterProp="children"
                       loading={loadingDrivers}

@@ -229,6 +229,19 @@ const camperService = {
     );
     return response.data as CamperActivityResponseDto[];
   },
+
+  // Get campers by activity schedule ID
+  getCampersByActivityScheduleId: async (
+    activityScheduleId: number
+  ): Promise<CamperActivityResponseDto[]> => {
+    console.log(
+      `[camperService] GET /Camper/activitiySchedules/${activityScheduleId}/campers`
+    );
+    const response = await axiosInstance.get(
+      `/Camper/activitiySchedules/${activityScheduleId}/campers`
+    );
+    return response.data as CamperActivityResponseDto[];
+  },
 };
 
 export default camperService;

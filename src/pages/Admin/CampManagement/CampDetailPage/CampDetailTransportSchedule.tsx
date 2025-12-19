@@ -43,7 +43,7 @@ const CampDetailTransportSchedule: React.FC<CampDetailTransportScheduleProps> = 
       setSchedules(data);
     } catch (error) {
       console.error('Failed to load schedules:', error);
-      toastError('Lỗi', 'Không thể tải lịch trình vận chuyển');
+      toastError('Lỗi', 'Không thể tải lịch trình đưa đón');
     } finally {
       setLoading(false);
     }
@@ -118,10 +118,10 @@ const CampDetailTransportSchedule: React.FC<CampDetailTransportScheduleProps> = 
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-[#111827]">
-          Lịch trình vận chuyển
+          Lịch trình Đưa Đón
         </h1>
         <p className="text-[#6B7280] text-sm mt-1">
-          Xem lịch trình vận chuyển cho trại này (Chỉ xem)
+          Xem lịch trình đưa đón cho trại này (Chỉ xem)
         </p>
       </div>
 

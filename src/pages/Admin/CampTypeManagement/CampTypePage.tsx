@@ -30,7 +30,7 @@ const CampTypePage: React.FC = () => {
       setCampTypes(data);
     } catch (error) {
       console.error("Error fetching camp types:", error);
-      toastError("Lỗi", "Không thể tải loại trại hè");
+      toastError("Lỗi", "Không thể tải phân loại hội trại");
     } finally {
       setLoading(false);
     }
@@ -78,10 +78,10 @@ const CampTypePage: React.FC = () => {
 
       if (editingCampType) {
         await campTypeService.updateCampType(editingCampType.campTypeId, payload);
-        toastSuccess("Thành công", "Cập nhật loại trại hè thành công");
+        toastSuccess("Thành công", "Cập nhật phân loại hội trại thành công");
       } else {
         await campTypeService.createCampType(payload);
-        toastSuccess("Thành công", "Tạo loại trại hè thành công");
+        toastSuccess("Thành công", "Tạo phân loại hội trại thành công");
       }
 
       await fetchCampTypes();
@@ -89,7 +89,7 @@ const CampTypePage: React.FC = () => {
       form.resetFields();
     } catch (error) {
       console.error("Error submitting camp type:", error);
-      toastError("Lỗi", "Không thể lưu loại trại hè");
+      toastError("Lỗi", "Không thể lưu phân loại hội trại");
     } finally {
       setSubmitting(false);
     }
@@ -98,12 +98,12 @@ const CampTypePage: React.FC = () => {
   const handleDelete = async (campTypeId: number) => {
     try {
       await campTypeService.deleteCampType(campTypeId);
-      toastSuccess("Thành công", "Xóa loại trại hè thành công");
+      toastSuccess("Thành công", "Xóa phân loại hội trại thành công");
       await fetchCampTypes();
       setDeletePopoverOpen(null);
     } catch (error) {
       console.error("Failed to delete camp type:", error);
-      toastError("Lỗi", "Không thể xóa loại trại hè");
+      toastError("Lỗi", "Không thể xóa phân loại hội trại");
     }
   };
 
@@ -111,9 +111,9 @@ const CampTypePage: React.FC = () => {
     <div className="min-h-screen bg-[#F9FAFB] p-6">
       {/* Header */}
       <div className="mb-4">
-        <h1 className="text-2xl font-bold text-[#111827]">Loại Trại</h1>
+        <h1 className="text-2xl font-bold text-[#111827]">Phân Loại Hội Trại</h1>
         <p className="text-xs text-[#6B7280] mt-0.5">
-          Quản lý và tổ chức các loại trại cho chương trình
+          Quản lý và tổ chức các phân loại hội trại cho chương trình
         </p>
       </div>
 
@@ -123,13 +123,13 @@ const CampTypePage: React.FC = () => {
         </div>
       ) : campTypes.length === 0 ? (
         <div className="bg-white rounded-xl shadow-sm border border-[#E5E7EB] p-12 text-center">
-          <p className="text-[#6B7280] text-lg mb-4">Không tìm thấy loại trại</p>
+          <p className="text-[#6B7280] text-lg mb-4">Không tìm thấy phân loại hội trại</p>
           <button
             onClick={handleAddClick}
             className="inline-flex items-center gap-2 px-4 py-2 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-all font-medium text-sm"
           >
             <Plus size={16} />
-            Tạo Loại Trại
+            Tạo Phân Loại Hội Trại
           </button>
         </div>
       ) : (
@@ -167,7 +167,7 @@ const CampTypePage: React.FC = () => {
                   className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-all font-medium text-sm"
                 >
                   <Plus size={16} />
-                  Tạo Loại Trại
+                  Tạo Phân Loại Hội Trại
                 </button>
 
                 {/* Summary Stats */}
@@ -235,7 +235,7 @@ const CampTypePage: React.FC = () => {
                             colSpan={5}
                             className="px-6 py-12 text-center text-[#6B7280]"
                           >
-                            Không tìm thấy loại trại phù hợp
+                            Không tìm thấy phân loại hội trại phù hợp
                           </td>
                         </tr>
                       ) : (
@@ -270,7 +270,7 @@ const CampTypePage: React.FC = () => {
                                 <button
                                   onClick={() => handleEditClick(campType)}
                                   className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#F3F4F6] text-[#6B7280] rounded-lg hover:bg-[#E5E7EB] transition-all font-medium text-sm"
-                                  title="Edit Camp Type"
+                                  title="Sửa Phân Loại Hội Trại"
                                 >
                                   <Edit2 size={16} />
                                   Sửa
@@ -279,7 +279,7 @@ const CampTypePage: React.FC = () => {
                                   onConfirm={() =>
                                     handleDelete(campType.campTypeId)
                                   }
-                                  title="Xóa Loại Trại"
+                                  title="Xóa Phân Loại Hội Trại"
                                   message={`Bạn có chắc muốn xóa "${campType.name}"?`}
                                   buttonText="Xóa"
                                   isOpen={deletePopoverOpen === campType.campTypeId}
@@ -305,7 +305,7 @@ const CampTypePage: React.FC = () => {
 
       {/* Add/Edit Modal */}
       <Modal
-        title={editingCampType ? "Edit Camp Type" : "Create Camp Type"}
+        title={editingCampType ? "Sửa Phân Loại Hội Trại" : "Tạo Phân Loại Hội Trại"}
         open={isModalVisible}
         onOk={handleSubmit}
         onCancel={() => {
@@ -318,28 +318,28 @@ const CampTypePage: React.FC = () => {
       >
         <Form form={form} layout="vertical" className="mt-4">
           <Form.Item
-            label="Camp Type Name"
+            label="Tên Phân Loại Hội Trại"
             name="name"
             rules={[
-              { required: true, message: "Please input camp type name!" },
-              { min: 2, message: "Name must be at least 2 characters!" },
-              { max: 100, message: "Name cannot exceed 100 characters!" },
+              { required: true, message: "Vui lòng nhập tên phân loại hội trại!" },
+              { min: 2, message: "Tên phải có ít nhất 2 ký tự!" },
+              { max: 100, message: "Tên không được vượt quá 100 ký tự!" },
             ]}
           >
-            <Input placeholder="e.g., Adventure Camp, Sports Camp" />
+            <Input placeholder="ví dụ: Trại Phiêu Lưu, Trại Thể Thao" />
           </Form.Item>
 
           <Form.Item
-            label="Description"
+            label="Mô Tả"
             name="description"
             rules={[
-              { required: true, message: "Please input description!" },
-              { min: 10, message: "Description must be at least 10 characters!" },
-              { max: 500, message: "Description cannot exceed 500 characters!" },
+              { required: true, message: "Vui lòng nhập mô tả!" },
+              { min: 10, message: "Mô tả phải có ít nhất 10 ký tự!" },
+              { max: 500, message: "Mô tả không được vượt quá 500 ký tự!" },
             ]}
           >
             <Input.TextArea
-              placeholder="Describe this camp type..."
+              placeholder="Mô tả về phân loại hội trại này..."
               rows={4}
               showCount
               maxLength={500}

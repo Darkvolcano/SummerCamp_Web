@@ -153,7 +153,7 @@ Học sinh từ nhiều nền tảng khác nhau được khuyến khích kết b
               </p>
 
               <p className="text-lg text-white/90 mb-8 leading-relaxed">
-                CampEase không chỉ là một trại hè - đây là nơi ươm mầm những ước
+                CampEase không chỉ là một hội trại - đây là nơi ươm mầm những ước
                 mơ, xây dựng tính cách và tạo ra những kỷ niệm đáng nhớ nhất
                 trong tuổi thơ của các bé.
               </p>
@@ -172,7 +172,7 @@ Học sinh từ nhiều nền tảng khác nhau được khuyến khích kết b
                   onClick={() => navigate("/camp")}
                   className="bg-white/10 backdrop-blur-sm text-white border-2 border-white rounded-full px-8 py-4 font-bold hover:bg-white hover:text-[#FF8F50] transition-all duration-300 hover:scale-105"
                 >
-                  Khám phá trại hè
+                  Khám phá hội trại
                 </button>
               </div>
             </div>
@@ -223,7 +223,7 @@ Học sinh từ nhiều nền tảng khác nhau được khuyến khích kết b
             <div className="mission-right">
               <div className="mission-card bg-white p-8 rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-500 border-2 border-orange-100">
                 <p className="text-lg text-gray-700 leading-relaxed mb-6">
-                  Tạo ra những trải nghiệm mùa hè{" "}
+                  Tạo ra những trải nghiệm đáng nhớ{" "}
                   <span className="font-bold text-[#FF8F50]">an toàn</span>,{" "}
                   <span className="font-bold text-green-500">vui vẻ</span> và{" "}
                   <span className="font-bold text-blue-500">bổ ích</span>, giúp
@@ -411,7 +411,7 @@ Học sinh từ nhiều nền tảng khác nhau được khuyến khích kết b
                 <p className="text-lg text-gray-700 leading-relaxed mb-6">
                   Trở thành{" "}
                   <span className="font-bold text-blue-600">
-                    hệ thống trại hè hàng đầu Đông Nam Á
+                    hệ thống giáo dục ngoại khóa hàng đầu Đông Nam Á
                   </span>
                   , tiên phong trong việc ứng dụng công nghệ vào giáo dục ngoại
                   khóa, mang đến trải nghiệm học tập thế hệ mới cho trẻ em.
