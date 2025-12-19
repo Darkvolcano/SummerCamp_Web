@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { Descriptions, Badge, Button } from "antd";
-import { Edit, Trash2, Check, X, Video } from "lucide-react";
+import { Edit, Check, X, Video } from "lucide-react";
 import { useAuthStore } from "../../services/userService";
 import type { ActivityScheduleResponseDto } from "../../services/activityScheduleService";
+import DeletePopover from "../DeletePopover";
 import "./ScheduleDetail.css";
 
 interface ScheduleDetailProps {
@@ -27,9 +28,10 @@ const ScheduleDetail: React.FC<ScheduleDetailProps> = ({
   onStartLiveStream,
 }) => {
   const { user } = useAuthStore();
+  const [deletePopoverOpen, setDeletePopoverOpen] = useState(false);
   
   const canManage = userRole === 'manager';
-  const canApprove = userRole === 'admin';
+  const canApprove = false; // Admin cannot approve/reject schedules - read-only access
   
   const canStartLiveStream = 
     schedule.isLivestream === true && 
@@ -219,9 +221,21 @@ const ScheduleDetail: React.FC<ScheduleDetailProps> = ({
             >
               Sửa
             </Button>
-            <Button danger icon={<Trash2 size={16} />} onClick={onDelete}>
-              Xóa
-            </Button>
+            <DeletePopover
+              onConfirm={() => {
+                onDelete?.();
+                setDeletePopoverOpen(false);
+              }}
+              onCancel={() => setDeletePopoverOpen(false)}
+              title="Huỷ Lịch Trình"
+              message="Bạn có chắc chắn muốn huỷ lịch trình hoạt động này không?"
+              confirmText="Huỷ"
+              cancelText="Không"
+              buttonText="Huỷ"
+              buttonSize="middle"
+              isOpen={deletePopoverOpen}
+              onOpenChange={setDeletePopoverOpen}
+            />
           </>
         )}
         {canApprove && (

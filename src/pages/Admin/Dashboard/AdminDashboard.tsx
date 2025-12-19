@@ -154,7 +154,7 @@ const AdminDashboard: React.FC = () => {
             {summary?.totalRevenue.growth !== null && (
               <div className="flex items-center gap-1 text-xs bg-white/20 px-2 py-1 rounded-full">
                 <TrendingUp size={14} />
-                <span>+{summary?.totalRevenue.growth.toFixed(1)}%</span>
+                <span>{summary?.totalRevenue.growth.toFixed(1)}%</span>
               </div>
             )}
           </div>

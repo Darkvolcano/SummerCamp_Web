@@ -17,7 +17,7 @@ import ScheduleDetail from "../../../components/schedule/ScheduleDetail";
 
 const ActivityScheduleManagement: React.FC = () => {
   const { selectedCampId } = useManagerContext();
-  const { toastError } = useNotification();
+  const { toastError, toastSuccess } = useNotification();
 
   const [activities, setActivities] = useState<ActivityResponseDto[]>([]);
   const [schedules, setSchedules] = useState<ActivityScheduleResponseDto[]>([]);
@@ -133,17 +133,26 @@ const ActivityScheduleManagement: React.FC = () => {
   };
 
   // Handle delete schedule
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleDeleteSchedule = async (_scheduleId: number) => {
+  const handleDeleteSchedule = async (scheduleId: number) => {
     try {
       setLoading(true);
-      // await activityScheduleService.deleteActivitySchedule(scheduleId);
-      // TODO: Implement delete method in activityScheduleService
-      toastError("Not Implemented", "Delete schedule functionality is not yet available. Please contact the administrator.");
+      
+      // Call API to delete schedule
+      await activityScheduleService.deleteActivitySchedule(scheduleId);
+      
+      toastSuccess("Thành công", "Đã huỷ lịch trình hoạt động");
+      
+      // Refresh schedules list
+      if (selectedCampId) {
+        const updatedSchedules = await activityScheduleService.getActivitySchedulesByCamp(selectedCampId);
+        setSchedules(updatedSchedules);
+      }
+      
       setShowScheduleDetail(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to delete schedule:", error);
-      toastError("Lỗi", "Không thể xóa lịch trình");
+      const errorMessage = error.response?.data?.message || error.response?.data?.title || "Không thể huỷ lịch trình";
+      toastError("Lỗi", errorMessage);
     } finally {
       setLoading(false);
     }
@@ -199,6 +208,33 @@ const ActivityScheduleManagement: React.FC = () => {
         <p className="text-[#6B7280] text-sm mt-1">
           Tạo và quản lý lịch trình hoạt động cho trại của bạn
         </p>
+        
+        {/* Camp Date Info */}
+        {campData && (
+          <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 border border-blue-200 rounded-lg">
+            <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span className="text-xs font-semibold text-blue-700">Camp Period:</span>
+            <span className="text-xs font-medium text-blue-900">
+              {new Date(campData.startDate).toLocaleDateString('vi-VN', { 
+                day: '2-digit', 
+                month: '2-digit', 
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+              })}
+              {' → '}
+              {new Date(campData.endDate).toLocaleDateString('vi-VN', { 
+                day: '2-digit', 
+                month: '2-digit', 
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+              })}
+            </span>
+          </div>
+        )}
       </div>
 
       <div className="activity-schedule-calendar">

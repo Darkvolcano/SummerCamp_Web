@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Spin, Tabs, Form, Input, Upload, Button, Popover } from 'antd';
-import { User, Calendar, Heart, Users, Tent, MapPin, Mail, Phone, UserCircle, LogOut, Upload as UploadIcon } from 'lucide-react';
+import { Modal, Spin, Tabs, Form, Input, Upload, Button, Popover, Select } from 'antd';
+import { User, Calendar, Heart, Users, Tent, MapPin, Mail, Phone, UserCircle, LogOut, Upload as UploadIcon, AlertTriangle } from 'lucide-react';
+import { WarningOutlined } from '@ant-design/icons';
 import camperService, {
   type CamperResponseDto,
   type Guardian,
@@ -9,6 +10,7 @@ import registrationCamperService, {
   type RegistrationCamperResponseDto,
 } from '../services/registrationCamperService';
 import reportService from '../services/reportService';
+import activityScheduleService, { type ActivityScheduleResponseDto } from '../services/activityScheduleService';
 import { uploadGenericImage } from '../services/uploadService';
 import { useAuthStore } from '../services/userService';
 import { useNotification } from '../contexts/NotificationContext';
@@ -39,6 +41,14 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
   const [submittingCheckout, setSubmittingCheckout] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [showPopover, setShowPopover] = useState(false);
+  
+  // Incident Ticket states
+  const [showIncidentModal, setShowIncidentModal] = useState(false);
+  const [incidentForm] = Form.useForm();
+  const [submittingIncident, setSubmittingIncident] = useState(false);
+  const [incidentImageFile, setIncidentImageFile] = useState<File | null>(null);
+  const [activitySchedules, setActivitySchedules] = useState<ActivityScheduleResponseDto[]>([]);
+  const [loadingActivities, setLoadingActivities] = useState(false);
 
   useEffect(() => {
     if (isOpen && camperId) {
@@ -113,8 +123,12 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
     setCampRegistration(null);
     setShowPopover(false);
     setShowEarlyCheckoutModal(false);
+    setShowIncidentModal(false);
     earlyCheckoutForm.resetFields();
+    incidentForm.resetFields();
     setImageFile(null);
+    setIncidentImageFile(null);
+    setActivitySchedules([]);
     onClose();
   };
 
@@ -126,6 +140,13 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
   const handleEarlyCheckoutSubmit = async () => {
     try {
       const values = await earlyCheckoutForm.validateFields();
+      
+      // Validate campId exists
+      if (!campId) {
+        toastError('Lỗi', 'Không tìm thấy thông tin trại');
+        return;
+      }
+      
       setSubmittingCheckout(true);
 
       let imageUrl: string | null = null;
@@ -135,6 +156,7 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
       }
 
       await reportService.reportEarlyCheckout({
+        campId: campId,
         camperId: camperId,
         note: values.note || null,
         imageUrl: imageUrl,
@@ -149,6 +171,67 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
       toastError('Lỗi', 'Không thể ghi nhận check out sớm');
     } finally {
       setSubmittingCheckout(false);
+    }
+  };
+
+  const handleOpenIncidentModal = async () => {
+    if (!campId) {
+      toastError('Lỗi', 'Không tìm thấy thông tin trại');
+      return;
+    }
+
+    setShowIncidentModal(true);
+    
+    // Fetch activity schedules for this camper
+    try {
+      setLoadingActivities(true);
+      const schedules = await activityScheduleService.getActivitySchedulesByCamperAndCamp(campId, camperId);
+      setActivitySchedules(schedules);
+    } catch (error) {
+      console.error('Error fetching activity schedules:', error);
+      toastError('Lỗi', 'Không thể tải danh sách hoạt động');
+    } finally {
+      setLoadingActivities(false);
+    }
+  };
+
+  const handleIncidentSubmit = async () => {
+    try {
+      const values = await incidentForm.validateFields();
+      
+      if (!campId) {
+        toastError('Lỗi', 'Không tìm thấy thông tin trại');
+        return;
+      }
+      
+      setSubmittingIncident(true);
+
+      let imageUrl: string | null = null;
+      if (incidentImageFile) {
+        const uploadResult = await uploadGenericImage(incidentImageFile);
+        imageUrl = uploadResult.url;
+      }
+
+      await reportService.createIncidentTicket({
+        campId: campId,
+        camperId: camperId,
+        activityScheduleId: values.activityScheduleId || null,
+        level: values.level,
+        note: values.note || null,
+        imageUrl: imageUrl,
+      });
+
+      toastSuccess('Thành công', 'Đã tạo incident ticket');
+      
+      // Close modal and reset
+      setShowIncidentModal(false);
+      incidentForm.resetFields();
+      setIncidentImageFile(null);
+    } catch (error) {
+      console.error('Error creating incident ticket:', error);
+      toastError('Lỗi', 'Không thể tạo incident ticket');
+    } finally {
+      setSubmittingIncident(false);
     }
   };
 
@@ -427,6 +510,19 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
                       </div>
                     </div>
                   )}
+
+                  {/* Incident Ticket Button - Only for Staff */}
+                  {isStaff && campId && (
+                    <div className="mt-6 pt-6 border-t border-[#E5E7EB]">
+                      <button
+                        onClick={handleOpenIncidentModal}
+                        className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white border-2 border-red-500 text-red-600 rounded-lg hover:bg-red-50 transition-all font-medium shadow-sm"
+                      >
+                        <WarningOutlined className="text-lg" />
+                        Tạo Incident Ticket
+                      </button>
+                    </div>
+                  )}
                 </div>
               ),
             },
@@ -544,6 +640,110 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
               }
             >
               {!imageFile && (
+                <div>
+                  <UploadIcon size={20} />
+                  <div style={{ marginTop: 8 }}>Tải Ảnh Lên</div>
+                </div>
+              )}
+            </Upload>
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* Incident Ticket Modal */}
+      <Modal
+        title={
+          <div className="flex items-center gap-2">
+            <AlertTriangle size={20} className="text-orange-500" />
+            <span>Tạo Incident Ticket</span>
+          </div>
+        }
+        open={showIncidentModal}
+        onCancel={() => {
+          setShowIncidentModal(false);
+          incidentForm.resetFields();
+          setIncidentImageFile(null);
+        }}
+        onOk={handleIncidentSubmit}
+        okText="Tạo Ticket"
+        cancelText="Hủy"
+        confirmLoading={submittingIncident}
+        okButtonProps={{ danger: true }}
+        width={600}
+      >
+        <Form form={incidentForm} layout="vertical" className="mt-4">
+          <Form.Item
+            label="Hoạt Động (Tùy chọn)"
+            name="activityScheduleId"
+          >
+            <Select
+              placeholder="Chọn hoạt động liên quan (nếu có)"
+              allowClear
+              loading={loadingActivities}
+              showSearch
+              optionFilterProp="children"
+            >
+              {activitySchedules.map((schedule) => (
+                <Select.Option key={schedule.activityScheduleId} value={schedule.activityScheduleId}>
+                  {schedule.activity?.name || 'N/A'} - {new Date(schedule.startTime).toLocaleString('vi-VN')}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+
+          <Form.Item
+            label="Mức Độ Nghiêm Trọng"
+            name="level"
+            rules={[{ required: true, message: 'Vui lòng chọn mức độ' }]}
+          >
+            <Select placeholder="Chọn mức độ nghiêm trọng">
+              <Select.Option value={1}>
+                <span className="text-green-600">🟢 Cấp 1 - Nhẹ</span>
+              </Select.Option>
+              <Select.Option value={2}>
+                <span className="text-yellow-600">🟡 Cấp 2 - Trung bình</span>
+              </Select.Option>
+              <Select.Option value={3}>
+                <span className="text-red-600">🔴 Cấp 3 - Nghiêm trọng</span>
+              </Select.Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item
+            label="Mô Tả Sự Cố"
+            name="note"
+            rules={[{ required: true, message: 'Vui lòng mô tả sự cố' }]}
+          >
+            <Input.TextArea 
+              rows={4} 
+              placeholder="Mô tả chi tiết sự cố xảy ra..."
+            />
+          </Form.Item>
+
+          <Form.Item label="Hình Ảnh (Tùy chọn)">
+            <Upload
+              maxCount={1}
+              listType="picture-card"
+              beforeUpload={(file) => {
+                setIncidentImageFile(file);
+                return false;
+              }}
+              onRemove={() => setIncidentImageFile(null)}
+              accept="image/*"
+              fileList={
+                incidentImageFile
+                  ? [
+                      {
+                        uid: '-1',
+                        name: incidentImageFile.name,
+                        status: 'done',
+                        url: URL.createObjectURL(incidentImageFile),
+                      },
+                    ]
+                  : []
+              }
+            >
+              {!incidentImageFile && (
                 <div>
                   <UploadIcon size={20} />
                   <div style={{ marginTop: 8 }}>Tải Ảnh Lên</div>

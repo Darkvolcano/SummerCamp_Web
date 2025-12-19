@@ -61,13 +61,25 @@ const MyCalendar: React.FC = () => {
       try {
         setLoading(true);
 
-        const [campActivitiesData, groupActivitiesData] = await Promise.all([
-          staffService.getCampActivities(selectedCampId),
-          staffService.getGroupStaffActivities(selectedCampId),
-        ]);
+        // Use new getAllSchedules API that returns all schedules (assigned + group + accommodation)
+        const allSchedulesData = await staffService.getAllSchedules(selectedCampId);
 
-        setCampActivities(campActivitiesData.activities || []);
-        setGroupStaffActivities(groupActivitiesData || []);
+        // Transform AllSchedulesResponseDto[] to match the old format for backward compatibility
+        // Split into campActivities and groupStaffActivities to maintain existing logic
+        const transformedActivities = allSchedulesData.map((schedule) => ({
+          activityScheduleId: schedule.activityScheduleId,
+          activityName: schedule.activity.name,
+          activityType: schedule.activity.activityType,
+          startTime: schedule.startTime,
+          endTime: schedule.endTime,
+          status: schedule.status,
+          isLivestream: schedule.isLivestream || false,
+          location: schedule.location?.name || null,
+        }));
+
+        // For now, put all in campActivities since getAllSchedules returns everything
+        setCampActivities(transformedActivities);
+        setGroupStaffActivities([]); // Empty since all schedules are in campActivities now
       } catch (error: any) {
         console.error("Failed to load activities:", error);
         const errorMessage = error.response?.data?.message || error.response?.data?.title || "Không thể tải hoạt động lịch";

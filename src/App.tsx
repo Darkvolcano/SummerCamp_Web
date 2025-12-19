@@ -64,6 +64,7 @@ import CheckIn from "./pages/Staff/CheckIn/CheckIn";
 import UserManagement from "./pages/Admin/UserManagement/UserManagement";
 import CampLocationPage from "./pages/Admin/CampLocationManagement/CampLocationPage";
 import StaffCampDetail from "./pages/Staff/CampDetail/StaffCampDetail";
+import StaffPhotos from "./pages/Staff/Photos/StaffPhotos";
 
 function App() {
   return (
@@ -181,6 +182,7 @@ function App() {
               <Route path={PagePath.STAFF_ATTENDANCE_CHECKING} element={<AttendanceChecking />} />
               <Route path={PagePath.STAFF_ATTENDANCE_CAMPERS} element={<AttendanceCamperList />} />
               <Route path={PagePath.STAFF_CHECKIN} element={<CheckIn />} />
+              <Route path={PagePath.STAFF_PHOTOS} element={<StaffPhotos />} />
               <Route path={PagePath.STAFF_LIVESTREAM_HOST} element={<HostLiveStream />} />
             </Route>
             <Route path={PagePath.STAFF_CAMPS} element={<MyCamps />} />

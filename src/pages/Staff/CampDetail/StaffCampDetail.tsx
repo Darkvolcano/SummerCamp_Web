@@ -18,6 +18,7 @@ import staffService, {
   type CampAccommodationResponseDto,
 } from '../../../services/staffService';
 import camperService, { type CamperCampResponseDto } from '../../../services/camperService';
+import camperGroupService from '../../../services/camperGroupService';
 import CamperDetailModal from '../../../components/CamperDetailModal';
 
 const StaffCampDetail: React.FC = () => {
@@ -102,10 +103,19 @@ const StaffCampDetail: React.FC = () => {
 
     try {
       setLoadingCampers(true);
-      const allCampers = await camperService.getCampersByCampId(selectedCampId);
-      // Filter campers by group - assuming campers have groupId field
-      // If API doesn't provide this, you may need a different endpoint
-      setGroupCampers(allCampers);
+      // Call camperGroupService with groupId to get campers in this specific group
+      const camperGroups = await camperGroupService.getCamperGroups({ groupId: group.groupId });
+      
+      // Transform CamperGroupResponseDto[] to CamperCampResponseDto[] for UI compatibility
+      const transformedCampers: CamperCampResponseDto[] = camperGroups.map((cg) => ({
+        camperId: cg.camperName.camperId,
+        camperName: cg.camperName.camperName,
+        gender: '', // Not provided by API, will be empty
+        dob: '', // Not provided by API, will be empty
+        camperRegistrationStatus: cg.status,
+      }));
+      
+      setGroupCampers(transformedCampers);
       setShowGroupCampersModal(true);
     } catch (error: any) {
       console.error('Failed to load group campers:', error);

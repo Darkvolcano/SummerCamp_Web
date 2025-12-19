@@ -61,7 +61,7 @@ const STATUS_COLORS: { [key: string]: string } = {
 const ManagerDashboard: React.FC = () => {
   const navigate = useNavigate();
   const { selectedCampId } = useManagerContext();
-  const { toastError } = useNotification();
+  const { toastError, toastSuccess } = useNotification();
   const [camp, setCamp] = useState<CampResponseDto | null>(null);
   const [summary, setSummary] = useState<ManagerSummaryResponseDto | null>(null);
   const [analytics, setAnalytics] = useState<ManagerAnalyticsResponseDto | null>(null);
@@ -69,6 +69,7 @@ const ManagerDashboard: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [dashboardLoading, setDashboardLoading] = useState(false);
   const [exportLoading, setExportLoading] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
   useEffect(() => {
     if (!selectedCampId) {
@@ -117,9 +118,23 @@ const ManagerDashboard: React.FC = () => {
 
     try {
       setLoading(true);
+      setValidationErrors([]); // Clear previous errors
+      
+      // Step 1: Validate camp first
+      const validationResult = await campService.validateCamp(camp.campId);
+      
+      // Step 2: Check if validation passed
+      if (!validationResult.data.isValid || validationResult.data.errors.length > 0) {
+        // Validation failed - show errors
+        setValidationErrors(validationResult.data.errors);
+        toastError("Lỗi xác thực", "Trại chưa đủ điều kiện để gửi duyệt. Vui lòng kiểm tra các lỗi bên dưới.");
+        return; // Don't submit
+      }
+      
+      // Step 3: Validation passed - proceed with submission
       const updatedCamp = await campService.submitCampForApproval(camp.campId);
       setCamp(updatedCamp);
-      toastError("Thành công", "Gửi trại hè để phê duyệt");
+      toastSuccess("Thành công", "Gửi trại hè để phê duyệt");
     } catch (error: any) {
       console.error("Failed to submit camp:", error);
       const errorMessage = error.response?.data?.message || "Không thể gửi duyệt";
@@ -259,6 +274,26 @@ const ManagerDashboard: React.FC = () => {
                 Gửi Duyệt
               </Button>
             </div>
+            
+            {/* Validation Errors Display */}
+            {validationErrors.length > 0 && (
+              <div className="mt-4 bg-red-50 border-2 border-red-200 rounded-lg p-4">
+                <h4 className="text-sm font-bold text-red-900 mb-2 flex items-center gap-2">
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                  Các lỗi cần khắc phục:
+                </h4>
+                <ul className="space-y-1">
+                  {validationErrors.map((error, index) => (
+                    <li key={index} className="text-sm text-red-700 flex items-start gap-2">
+                      <span className="text-red-500 font-bold flex-shrink-0">•</span>
+                      <span>{error}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         </div>
 

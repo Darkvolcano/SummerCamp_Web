@@ -555,12 +555,12 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
                 <Form.Item
                   label={<span className="text-sm font-semibold text-[#374151]">Nhóm</span>}
                   name="groupIds"
-                  rules={[{ required: true, message: "Vui lòng chọn ít nhất một nhóm" }]}
                 >
                   <Select
                     mode="multiple"
-                    placeholder="Select groups"
+                    placeholder="All (Tất cả nhóm)"
                     showSearch
+                    allowClear
                     loading={loadingGroups}
                     notFoundContent={
                       !form.getFieldValue("startTime") || !form.getFieldValue("endTime")

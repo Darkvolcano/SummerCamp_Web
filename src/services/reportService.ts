@@ -23,6 +23,7 @@ export interface ReportUpdateDto {
 }
 
 export interface TransportIncidentRequestDto {
+  campId: number;
   camperId: number;
   transportScheduleId: number;
   note?: string | null;
@@ -30,12 +31,14 @@ export interface TransportIncidentRequestDto {
 }
 
 export interface EarlyCheckoutRequestDto {
+  campId: number;
   camperId: number;
   note?: string | null;
   imageUrl?: string | null;
 }
 
 export interface IncidentTicketRequestDto {
+  campId: number;
   camperId: number;
   activityScheduleId?: number | null;
   level: number;
@@ -77,34 +80,11 @@ const reportService = {
   /**
    * POST /api/report
    * Create a new report
-   * Content-Type: multipart/form-data
+   * Content-Type: application/json
    */
   createReport: async (data: ReportRequestDto): Promise<ReportResponseDto> => {
     console.log("[reportService] POST /report");
-    const formData = new FormData();
-    
-    formData.append("campId", data.campId.toString());
-    formData.append("camperId", data.camperId.toString());
-    formData.append("activityId", data.activityId.toString());
-    
-    if (data.note) {
-      formData.append("note", data.note);
-    }
-    if (data.image) {
-      formData.append("image", data.image);
-    }
-    if (data.status) {
-      formData.append("status", data.status);
-    }
-    if (data.level) {
-      formData.append("level", data.level);
-    }
-
-    const response = await axiosInstance.post("/report", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    const response = await axiosInstance.post("/report", data);
     return response.data;
   },
 
@@ -178,6 +158,16 @@ const reportService = {
       params.campId = campId;
     }
     const response = await axiosInstance.get(`/report/camper/${camperId}`, { params });
+    return response.data;
+  },
+
+  /**
+   * GET /api/report/type/{reportType}
+   * Get reports by type
+   */
+  getReportsByType: async (reportType: string): Promise<ReportResponseDto[]> => {
+    console.log(`[reportService] GET /report/type/${reportType}`);
+    const response = await axiosInstance.get(`/report/type/${reportType}`);
     return response.data;
   },
 

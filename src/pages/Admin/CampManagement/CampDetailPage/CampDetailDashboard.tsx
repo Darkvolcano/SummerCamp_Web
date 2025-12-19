@@ -6,7 +6,8 @@ import {
   AlertCircle, 
   DollarSign, 
   UserCheck,
-  Calendar
+  Calendar,
+  FileDown
 } from "lucide-react";
 import {
   LineChart,
@@ -29,6 +30,7 @@ import dashboardService, {
   type ManagerAnalyticsResponseDto,
   type ManagerOperationsResponseDto,
 } from "../../../../services/dashboardService";
+import campReportService from "../../../../services/campReportService";
 import { useNotification } from "../../../../contexts/NotificationContext";
 import dayjs from "dayjs";
 
@@ -59,13 +61,14 @@ interface CampDetailDashboardProps {
 }
 
 const CampDetailDashboard: React.FC<CampDetailDashboardProps> = ({ campId }) => {
-  const { toastError } = useNotification();
+  const { toastError, toastSuccess } = useNotification();
   const [camp, setCamp] = useState<CampResponseDto | null>(null);
   const [summary, setSummary] = useState<ManagerSummaryResponseDto | null>(null);
   const [analytics, setAnalytics] = useState<ManagerAnalyticsResponseDto | null>(null);
   const [operations, setOperations] = useState<ManagerOperationsResponseDto | null>(null);
   const [loading, setLoading] = useState(false);
   const [dashboardLoading, setDashboardLoading] = useState(false);
+  const [exportLoading, setExportLoading] = useState(false);
 
   useEffect(() => {
     if (!campId) {
@@ -108,6 +111,30 @@ const CampDetailDashboard: React.FC<CampDetailDashboardProps> = ({ campId }) => 
 
     fetchData();
   }, [campId, toastError]);
+
+  const handleExportReport = async () => {
+    if (!campId || !camp) return;
+
+    try {
+      setExportLoading(true);
+      const result = await campReportService.exportToExcel(campId);
+
+      if (result instanceof Blob) {
+        const fileName = `Bao_Cao_${camp.name}_${dayjs().format("YYYYMMDD_HHmmss")}.xlsx`;
+        campReportService.downloadFile(result, fileName);
+        toastSuccess("Thành công", "Đã tải xuống báo cáo thành công");
+      } else {
+        await campReportService.downloadFromUrl(result.downloadUrl, result.fileName);
+        toastSuccess("Thành công", "Đã tải xuống báo cáo thành công");
+      }
+    } catch (error: any) {
+      console.error("Failed to export report:", error);
+      const errorMessage = error.response?.data?.message || "Không thể xuất báo cáo";
+      toastError("Lỗi", errorMessage);
+    } finally {
+      setExportLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -190,6 +217,27 @@ const CampDetailDashboard: React.FC<CampDetailDashboardProps> = ({ campId }) => 
 
   return (
     <div className="pb-12 space-y-6">
+      {/* Export Button */}
+      <div className="flex justify-end">
+        <button
+          onClick={handleExportReport}
+          disabled={exportLoading}
+          className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {exportLoading ? (
+            <>
+              <Spin size="small" className="text-white" />
+              <span>Đang xuất báo cáo...</span>
+            </>
+          ) : (
+            <>
+              <FileDown size={18} />
+              <span>Xuất Báo Cáo Excel</span>
+            </>
+          )}
+        </button>
+      </div>
+
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-5 text-white hover:shadow-xl transition-shadow">
