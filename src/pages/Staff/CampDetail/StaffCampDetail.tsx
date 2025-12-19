@@ -409,6 +409,7 @@ const StaffCampDetail: React.FC = () => {
         onCancel={() => setShowCampersModal(false)}
         footer={null}
         width={800}
+        centered
       >
         <Spin spinning={loadingCampers}>
           <div className="max-h-[500px] overflow-y-auto">
@@ -459,6 +460,7 @@ const StaffCampDetail: React.FC = () => {
         onCancel={() => setShowGroupCampersModal(false)}
         footer={null}
         width={800}
+        centered
       >
         <Spin spinning={loadingCampers}>
           <div className="max-h-[500px] overflow-y-auto">
@@ -486,9 +488,6 @@ const StaffCampDetail: React.FC = () => {
                         {camper.gender} • Born: {formatDate(camper.dob)}
                       </p>
                     </div>
-                    {camper.camperRegistrationStatus && (
-                      <Tag color="green">{camper.camperRegistrationStatus}</Tag>
-                    )}
                   </div>
                 ))}
               </div>
@@ -509,6 +508,7 @@ const StaffCampDetail: React.FC = () => {
         onCancel={() => setShowAccommodationCampersModal(false)}
         footer={null}
         width={800}
+        centered
       >
         <Spin spinning={loadingCampers}>
           <div className="max-h-[500px] overflow-y-auto">

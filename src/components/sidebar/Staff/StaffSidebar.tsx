@@ -11,6 +11,7 @@ import {
   UserCircle,
   Briefcase,
   Info,
+  AlertTriangle,
 } from "lucide-react";
 import { useAuthStore } from "../../../services/userService";
 import { StaffContext } from "../../../contexts/StaffContext";
@@ -77,6 +78,14 @@ const StaffSidebar: React.FC<StaffSidebarProps> = ({ onCollapsedChange }) => {
       path: PagePath.STAFF_CHECKIN,
       label: "Check In/Out",
       icon: <LogIn size={20} />,
+    },
+  ];
+
+  const bottomMenuItems: MenuItem[] = [
+    {
+      path: PagePath.STAFF_INCIDENTS,
+      label: "Báo Cáo Sự Cố",
+      icon: <AlertTriangle size={20} />,
     },
   ];
 
@@ -198,6 +207,29 @@ const StaffSidebar: React.FC<StaffSidebarProps> = ({ onCollapsedChange }) => {
       <nav className="sidebar-nav">
         <ul className="menu-list">
           {mainMenuItems.map((item) => (
+            <li key={item.path}>
+              <Link
+                to={item.path}
+                className={`menu-item ${
+                  location.pathname === item.path ? "active" : ""
+                }`}
+                title={isCollapsed ? item.label : ""}
+              >
+                <span className="menu-icon">{item.icon}</span>
+                {!isCollapsed && (
+                  <span className="menu-label">{item.label}</span>
+                )}
+              </Link>
+            </li>
+          ))}
+        </ul>
+
+        {/* Divider */}
+        <div className="sidebar-divider"></div>
+
+        {/* Bottom Navigation */}
+        <ul className="menu-list">
+          {bottomMenuItems.map((item) => (
             <li key={item.path}>
               <Link
                 to={item.path}

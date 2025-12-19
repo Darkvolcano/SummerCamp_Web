@@ -7,7 +7,6 @@ import {
   FileText,
   HelpCircle,
   CreditCard,
-  Calendar,
   AlertTriangle,
   ChevronDown,
   LogOut,
@@ -89,12 +88,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ onCollapsedChange }) => {
 
   const bottomMenuItems: MenuItem[] = [
     {
-      path: PagePath.ADMIN_CALENDAR,
-      label: "Lịch",
-      icon: <Calendar size={20} />,
-    },
-    {
-      path: PagePath.ADMIN_REPORTS,
+      path: PagePath.ADMIN_INCIDENTS,
       label: "Báo Cáo Sự Cố",
       icon: <AlertTriangle size={20} />,
     },

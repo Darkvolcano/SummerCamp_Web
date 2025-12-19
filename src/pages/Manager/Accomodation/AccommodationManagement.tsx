@@ -294,7 +294,7 @@ const AccommodationManagement: React.FC = () => {
                     <p className="text-xs font-medium text-[#6B7280] mb-1">Sức Chứa</p>
                     <div className="flex items-center gap-1">
                       <span className="text-2xl font-bold text-[#111827]">{getTotalCapacity()}</span>
-                      <span className="text-xs text-[#6B7280]">/ {campData.maxParticipants} tối đa</span>
+                      <span className="text-xs text-[#6B7280]">/ {campData.maxParticipants} sức chứa trại</span>
                     </div>
                   </div>
                 )}
