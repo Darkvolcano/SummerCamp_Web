@@ -35,6 +35,7 @@ export enum PagePath {
   USER_CAMPER_DETAIL = "/user/my-campers/:camperId",
   USER_CAMPER_SCHEDULE = "/user/my-campers/:camperId/schedule/:campId",
   USER_CAMPER_TRANSPORTSCHEDULE = "/user/my-campers/:camperId/transport-schedule/:campId",
+  USER_CAMPER_PHOTOGALLERY = "/user/my-campers/:camperId/photo-gallery/:campId",
   USER_CAMPER_EDIT = "/user/my-campers/edit/:camperId",
   USER_STAFF_DETAIL = "/user/staff/:staffId",
   REGISTRATION_FORM = "/register-camp/:campId",

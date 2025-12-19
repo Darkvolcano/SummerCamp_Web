@@ -65,6 +65,7 @@ import UserManagement from "./pages/Admin/UserManagement/UserManagement";
 import CampLocationPage from "./pages/Admin/CampLocationManagement/CampLocationPage";
 import StaffCampDetail from "./pages/Staff/CampDetail/StaffCampDetail";
 import StaffPhotos from "./pages/Staff/Photos/StaffPhotos";
+import PhotoGallery from "./pages/Parent/MyCampers/PhotoGallery";
 
 function App() {
   return (
@@ -334,6 +335,14 @@ function App() {
               element={
                 <MainLayout>
                   <CamperTransportSchedule />
+                </MainLayout>
+              }
+            />
+            <Route
+              path={PagePath.USER_CAMPER_PHOTOGALLERY}
+              element={
+                <MainLayout>
+                  <PhotoGallery />
                 </MainLayout>
               }
             />

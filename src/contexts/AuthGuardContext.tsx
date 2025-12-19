@@ -252,6 +252,7 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
           PagePath.USER_CAMPER_TRANSPORTSCHEDULE,
           PagePath.USER_PAYMENT_CALLBACK,
           PagePath.USER_STAFF_DETAIL,
+          PagePath.USER_CAMPER_PHOTOGALLERY,  
         ],
       };
 
