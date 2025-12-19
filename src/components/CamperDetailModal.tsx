@@ -300,7 +300,7 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
               key: 'info',
               label: 'Thông Tin',
               children: (
-                <div className="space-y-6 min-h-[500px] max-h-[500px] overflow-y-auto pr-2">
+                <div className="space-y-6 min-h-[500px] max-h-[500px] overflow-y-auto pr-2 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:bg-white [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:border [&::-webkit-scrollbar-thumb]:border-gray-200">
                   {/* Avatar and Basic Info */}
                   <div className="flex items-start gap-6 pb-6 border-b border-[#E5E7EB]">
                     {/* Avatar */}
@@ -530,7 +530,7 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
               key: 'guardians',
               label: `Người Giám Hộ (${guardians.length})`,
               children: (
-                <div className="space-y-4 min-h-[500px] max-h-[500px] overflow-y-auto pr-2">
+                <div className="space-y-4 min-h-[500px] max-h-[500px] overflow-y-auto pr-2 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:bg-white [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:border [&::-webkit-scrollbar-thumb]:border-gray-200">
                   {guardians.length === 0 ? (
                     <div className="text-center py-12 text-[#6B7280]">
                       <UserCircle size={48} className="mx-auto mb-4 text-gray-400" />

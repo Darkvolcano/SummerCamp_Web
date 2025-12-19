@@ -65,6 +65,9 @@ import UserManagement from "./pages/Admin/UserManagement/UserManagement";
 import CampLocationPage from "./pages/Admin/CampLocationManagement/CampLocationPage";
 import StaffCampDetail from "./pages/Staff/CampDetail/StaffCampDetail";
 import StaffPhotos from "./pages/Staff/Photos/StaffPhotos";
+import StaffIncidents from "./pages/Staff/Incidents/StaffIncidents";
+import ManagerIncidents from "./pages/Manager/Incidents/ManagerIncidents";
+import AdminIncidents from "./pages/Admin/Incidents/AdminIncidents";
 import PhotoGallery from "./pages/Parent/MyCampers/PhotoGallery";
 
 function App() {
@@ -173,6 +176,10 @@ function App() {
                 path={PagePath.ADMIN_USERS}
                 element={<UserManagement />}
               />
+              <Route
+                path={PagePath.ADMIN_INCIDENTS}
+                element={<AdminIncidents />}
+              />
             </Route>
 
             {/* Staff Routes - Protected */}
@@ -184,6 +191,7 @@ function App() {
               <Route path={PagePath.STAFF_ATTENDANCE_CAMPERS} element={<AttendanceCamperList />} />
               <Route path={PagePath.STAFF_CHECKIN} element={<CheckIn />} />
               <Route path={PagePath.STAFF_PHOTOS} element={<StaffPhotos />} />
+              <Route path={PagePath.STAFF_INCIDENTS} element={<StaffIncidents />} />
               <Route path={PagePath.STAFF_LIVESTREAM_HOST} element={<HostLiveStream />} />
             </Route>
             <Route path={PagePath.STAFF_CAMPS} element={<MyCamps />} />
@@ -237,7 +245,7 @@ function App() {
               />
               <Route
                 path={PagePath.MANAGER_INCIDENTS}
-                element={<div>Manager Incidents</div>}
+                element={<ManagerIncidents />}
               />
             </Route>
 

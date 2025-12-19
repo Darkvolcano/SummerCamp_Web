@@ -60,6 +60,7 @@ export enum PagePath {
   ADMIN_TRANSACTIONS = "/admin/transactions",
   ADMIN_CALENDAR = "/admin/calendar",
   ADMIN_REPORTS = "/admin/reports",
+  ADMIN_INCIDENTS = "/admin/incidents",
 
   // Staff Routes
   STAFF_SCHEDULE = "/staff/schedule",
@@ -72,6 +73,7 @@ export enum PagePath {
   STAFF_PHOTOS = "/staff/photos",
   STAFF_CHECKIN = "/staff/check-in",
   STAFF_LIVESTREAM_HOST = "/staff/livestream/host/:roomId",
+  STAFF_INCIDENTS = "/staff/incidents",
 
   //Manager Routes
   MANAGER_DASHBOARD = "/manager/dashboard",
