@@ -371,6 +371,34 @@ const CamperDetail: React.FC = () => {
         <div className="space-y-6">
           {isEditing ? (
             <Form form={editForm} layout="vertical" className="space-y-4">
+              {/* Avatar Section in Edit Mode */}
+              <div className="flex flex-col items-center gap-3 mb-6">
+                <div className="w-40 h-40 rounded-lg overflow-hidden border-2 border-gray-200 bg-gray-50 flex items-center justify-center">
+                  {camper.avatar ? (
+                    <img
+                      src={camper.avatar}
+                      alt={camper.camperName}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="text-center">
+                      <div className="text-5xl mb-2">👤</div>
+                      <p className="text-xs text-gray-500">Chưa có ảnh</p>
+                    </div>
+                  )}
+                </div>
+                <Button
+                  type="default"
+                  onClick={() => {
+                    setCamperAvatarPreview(camper.avatar || null);
+                    setIsAvatarModalVisible(true);
+                  }}
+                  className="w-40"
+                >
+                  Thay đổi ảnh
+                </Button>
+              </div>
+
               {/* Basic Info */}
               <Form.Item
                 label="Tên trại viên"
@@ -455,16 +483,6 @@ const CamperDetail: React.FC = () => {
                         </div>
                       )}
                     </div>
-                    <Button
-                      type="default"
-                      onClick={() => {
-                        setCamperAvatarPreview(camper.avatar || null);
-                        setIsAvatarModalVisible(true);
-                      }}
-                      className="w-full"
-                    >
-                      Thay đổi ảnh
-                    </Button>
                   </div>
 
                   {/* Info Grid */}
@@ -788,7 +806,7 @@ const CamperDetail: React.FC = () => {
 
               {/* Action Buttons Grid */}
               {camps[selectedCampIndex] && (
-                <div className="grid grid-cols-2 gap-4 mt-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
                   {/* View Activity Schedule Button */}
                   <button
                     onClick={() => {
@@ -813,6 +831,19 @@ const CamperDetail: React.FC = () => {
                   >
                     <div className="text-4xl">🚌</div>
                     <span className="font-semibold text-base text-center">Xem lịch đưa đón</span>
+                  </button>
+
+                  {/* View Photo Gallery Button */}
+                  <button
+                    onClick={() => {
+                      navigate(
+                        `/user/my-campers/${camper.camperId}/photo-gallery/${camps[selectedCampIndex].camp.campId}`
+                      );
+                    }}
+                    className="flex flex-col items-center justify-center gap-3 bg-[#FF8F50] text-white rounded-2xl p-6 hover:bg-[#ff7e3d] transition-all hover:shadow-lg group"
+                  >
+                    <div className="text-4xl">📸</div>
+                    <span className="font-semibold text-base text-center">Kho ảnh hội trại</span>
                   </button>
                 </div>
               )}

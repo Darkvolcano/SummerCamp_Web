@@ -10,7 +10,6 @@ import {
   Bus,
   Bed,
   CreditCard,
-  Calendar,
   AlertTriangle,
   ChevronDown,
   ChevronUp,
@@ -116,11 +115,6 @@ const ManagerSidebar: React.FC<ManagerSidebarProps> = ({
   ];
 
   const bottomMenuItems: MenuItem[] = [
-    {
-      path: PagePath.MANAGER_CALENDAR,
-      label: "Lịch",
-      icon: <Calendar size={20} />,
-    },
     {
       path: PagePath.MANAGER_INCIDENTS,
       label: "Báo Cáo Sự Cố",

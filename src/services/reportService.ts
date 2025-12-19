@@ -52,16 +52,19 @@ export interface ReportResponseDto {
   reportId: number;
   camperId: number;
   camperName?: string | null;
+  transportScheduleId?: number | null;
+  reportType?: string | null;
   note?: string | null;
-  imageUrl?: string | null;
+  image?: string | null;
+  createAt?: string;
   status?: string | null;
-  activityId: number;
-  activityName?: string | null;
+  reportedBy?: number;
+  reportedByName?: string | null;
+  activityScheduleId?: number | null;
+  activityScheduleName?: string | null;
+  campId?: number | null;
+  campName?: string | null;
   level?: string | null;
-  createdDate?: string;
-  updatedDate?: string;
-  staffId?: number | null;
-  staffName?: string | null;
 }
 
 // ==================== SERVICE ====================

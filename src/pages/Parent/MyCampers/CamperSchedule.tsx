@@ -68,19 +68,31 @@ const CamperSchedule: React.FC = () => {
         );
 
         // Transform schedules to calendar events
-        const calendarEvents: CalendarEvent[] = schedulesData.map((schedule) => ({
-          id: schedule.activityScheduleId,
-          title: schedule.activity?.name || "Hoạt động",
-          start: new Date(schedule.startTime),
-          end: new Date(schedule.endTime),
-          resource: {
-            activityName: schedule.activity?.name || "Không có",
-            locationName: schedule.location?.name || "Không có",
-            attendanceStatus: schedule.status || null,
-            activityType: schedule.activity?.activityType || "Core",
-            isLivestream: schedule.isLivestream || false,
-          },
-        }));
+        const calendarEvents: CalendarEvent[] = schedulesData.map((schedule) => {
+          // Get participantStatus from attendanceLogs
+          let attendanceStatus: string | null = null;
+          if (schedule.attendanceLogs && schedule.attendanceLogs.length > 0) {
+            // Get the first attendance log's participantStatus
+            attendanceStatus = schedule.attendanceLogs[0].participantStatus;
+          } else {
+            // If no attendance logs, set to "NotYet"
+            attendanceStatus = "NotYet";
+          }
+
+          return {
+            id: schedule.activityScheduleId,
+            title: schedule.activity?.name || "Hoạt động",
+            start: new Date(schedule.startTime),
+            end: new Date(schedule.endTime),
+            resource: {
+              activityName: schedule.activity?.name || "Không có",
+              locationName: schedule.location?.name || "Không có",
+              attendanceStatus: attendanceStatus,
+              activityType: schedule.activity?.activityType || "Core",
+              isLivestream: schedule.isLivestream || false,
+            },
+          };
+        });
 
         setEvents(calendarEvents);
       } catch (error: any) {
@@ -204,13 +216,7 @@ const CamperSchedule: React.FC = () => {
 
   // Get attendance status display
   const getAttendanceStatusDisplay = (status: string) => {
-    const statusMap: { [key: string]: string } = {
-      Present: "Có mặt",
-      Absent: "Vắng mặt",
-      Late: "Đi muộn",
-      Pending: "Chờ điểm danh",
-    };
-    return statusMap[status] || status;
+    return status;
   };
 
   if (loading) {
@@ -388,14 +394,14 @@ const CamperSchedule: React.FC = () => {
             )}
 
             {/* Attendance Status */}
-            {selectedSchedule.status && (
-              <div>
-                <p className="text-sm text-gray-600 font-medium mb-1">Trạng thái điểm danh</p>
-                <span className="inline-block text-sm font-medium px-3 py-1 rounded-full bg-gray-100 text-gray-700">
-                  {getAttendanceStatusDisplay(selectedSchedule.status)}
-                </span>
-              </div>
-            )}
+            <div>
+              <p className="text-sm text-gray-600 font-medium mb-1">Trạng thái điểm danh</p>
+              <span className="inline-block text-sm font-medium px-3 py-1 rounded-full bg-gray-100 text-gray-700">
+                {selectedSchedule.attendanceLogs && selectedSchedule.attendanceLogs.length > 0
+                  ? getAttendanceStatusDisplay(selectedSchedule.attendanceLogs[0].participantStatus)
+                  : getAttendanceStatusDisplay("NotYet")}
+              </span>
+            </div>
 
             {/* Livestream Button */}
             {selectedSchedule.isLivestream && selectedSchedule.liveStream && (

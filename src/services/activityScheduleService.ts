@@ -25,6 +25,19 @@ export interface LiveStreamInfo {
   hostId: number;
 }
 
+export interface AttendanceLogDto {
+  attendanceLogId: number;
+  camperId: number;
+  camperName: string;
+  timestamp: string;
+  eventType: string;
+  checkInMethod: string;
+  staffId: number;
+  activityScheduleId: number;
+  note: string;
+  participantStatus: string;
+}
+
 export interface ActivitySchedule {
   activityScheduleId: number;
   activity: ActivityInfo | null;
@@ -100,6 +113,7 @@ export interface CreateCheckInCheckOutRequestDto {
 }
 
 export interface ActivityScheduleResponseDto {
+  attendanceLogs?: AttendanceLogDto[];
   activityScheduleId: number;
   activity: ActivityInfo | null;
   staff: StaffInfo | null;
