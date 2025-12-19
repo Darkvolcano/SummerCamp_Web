@@ -192,7 +192,7 @@ const CampStaffManagement: React.FC = () => {
       if (error.response?.data?.message) {
         errorMsg = error.response.data.message;
       }
-      toastError('Error', errorMsg);
+      toastError('Lỗi', errorMsg);
     } finally {
       setAssigning(false);
     }

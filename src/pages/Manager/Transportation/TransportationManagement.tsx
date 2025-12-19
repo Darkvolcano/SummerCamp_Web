@@ -12,9 +12,9 @@ const TransportationManagement: React.FC = () => {
     return (
       <div className="p-6 flex items-center justify-center min-h-[500px]">
         <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-indigo-200 p-12 rounded-2xl text-center shadow-lg hover:shadow-xl transition-shadow duration-300 max-w-md">
-          <h3 className="text-xl font-bold text-indigo-900 mb-2">Select Camp</h3>
+          <h3 className="text-xl font-bold text-indigo-900 mb-2">Chọn Trại</h3>
           <p className="text-indigo-700 text-base leading-relaxed">
-            Please select a camp from the left sidebar to manage transportation
+            Vui lòng chọn một trại từ thanh bên trái để quản lý vận chuyển
           </p>
         </div>
       </div>
@@ -24,17 +24,17 @@ const TransportationManagement: React.FC = () => {
   const tabItems = [
     {
       key: 'routes',
-      label: 'Routes',
+      label: 'Tuyến Đường',
       children: <RouteTab />,
     },
     {
       key: 'vehicles',
-      label: 'Vehicles',
+      label: 'Xe Cộ',
       children: <VehicleTab />,
     },
     {
       key: 'schedules',
-      label: 'Transport Schedule',
+      label: 'Lịch Vận Chuyển',
       children: <TransportScheduleTab />,
     },
   ];
@@ -42,9 +42,9 @@ const TransportationManagement: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#F9FAFB] p-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-[#111827]">Transportation Management</h1>
+        <h1 className="text-2xl font-bold text-[#111827]">Quản Lý Vận Chuyển</h1>
         <p className="text-xs text-[#6B7280] mt-0.5">
-          Manage routes, vehicles and transport schedules for the camp
+          Quản lý tuyến đường, xe cộ và lịch vận chuyển cho trại hè
         </p>
       </div>
 

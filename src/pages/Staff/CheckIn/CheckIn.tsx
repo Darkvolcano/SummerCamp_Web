@@ -27,8 +27,8 @@ const CheckIn: React.FC = () => {
         setSchedules(data);
       } catch (error: any) {
         console.error("Failed to load check-in/check-out schedules:", error);
-        const errorMessage = error.response?.data?.message || error.response?.data?.title || "Unable to load check-in/check-out schedules";
-        toastError("Error", errorMessage);
+        const errorMessage = error.response?.data?.message || error.response?.data?.title || "Không thể tải lịch trình check-in/check-out";
+        toastError("Lỗi", errorMessage);
         setSchedules([]);
       } finally {
         setLoading(false);
@@ -96,10 +96,10 @@ const CheckIn: React.FC = () => {
       <div className="p-6 flex items-center justify-center min-h-[500px]">
         <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-indigo-200 p-12 rounded-2xl text-center shadow-lg max-w-md">
           <h3 className="text-xl font-bold text-indigo-900 mb-2">
-            Select Camp
+            Chọn một trại để xem lịch điểm danh
           </h3>
           <p className="text-indigo-700 text-base leading-relaxed">
-            Please select a camp from the left sidebar to view check-in/check-out schedules
+            Vui lòng chọn một trại từ thanh bên trái để xem lịch trình check-in/check-out
           </p>
         </div>
       </div>
@@ -122,7 +122,7 @@ const CheckIn: React.FC = () => {
           Check In / Check Out
         </h1>
         <p className="text-[#6B7280] text-sm mt-1">
-          Manage camper check-in and check-out activities
+          Quản lý hoạt động check-in và check-out của trại viên
         </p>
       </div>
 
@@ -173,12 +173,12 @@ const CheckIn: React.FC = () => {
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="font-medium">Status:</span>
+                        <span className="font-medium">Trạng thái:</span>
                         <span className={statusInfo.color}>{schedule.status}</span>
                       </div>
                       {schedule.location && (
                         <div className="col-span-full flex items-center gap-2">
-                          <span className="font-medium">Location:</span>
+                          <span className="font-medium">Địa điểm:</span>
                           <span>{schedule.location.name}</span>
                         </div>
                       )}

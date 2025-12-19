@@ -35,7 +35,7 @@ const CamperManagement: React.FC = () => {
         calculateGenderCounts(data);
       } catch (error) {
         console.error('Failed to load campers:', error);
-        message.error('Unable to load campers');
+        message.error('Không thể tải trại viên');
       } finally {
         setLoading(false);
       }
@@ -324,7 +324,7 @@ const CamperManagement: React.FC = () => {
                             </td>
                             <td className="px-6 py-4">
                               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
-                                {camper.camperRegistrationStatus || 'Registered'}
+                                {camper.camperRegistrationStatus || 'Đã Đăng Ký'}
                               </span>
                             </td>
                             <td className="px-6 py-4 text-right">

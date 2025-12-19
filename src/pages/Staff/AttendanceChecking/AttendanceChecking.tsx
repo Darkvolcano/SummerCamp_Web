@@ -92,10 +92,10 @@ const AttendanceChecking: React.FC = () => {
       <div className="p-6 flex items-center justify-center min-h-[500px]">
         <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-indigo-200 p-12 rounded-2xl text-center shadow-lg max-w-md">
           <h3 className="text-xl font-bold text-indigo-900 mb-2">
-            Select Camp
+            Chọn một trại để xem lịch điểm danh
           </h3>
           <p className="text-indigo-700 text-base leading-relaxed">
-            Please select a camp from the left sidebar to view attendance schedules
+            Vui lòng chọn một trại từ thanh bên trái để xem lịch điểm danh
           </p>
         </div>
       </div>
@@ -115,10 +115,10 @@ const AttendanceChecking: React.FC = () => {
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-[#111827]">
-          Attendance Checking
+          Kiểm tra điểm danh
         </h1>
         <p className="text-[#6B7280] text-sm mt-1">
-          Check and manage your assigned activity schedules requiring attendance
+          Kiểm tra và quản lý lịch hoạt động được giao yêu cầu điểm danh
         </p>
       </div>
 
@@ -166,13 +166,13 @@ const AttendanceChecking: React.FC = () => {
                     {/* Time Info */}
                     <div className="grid grid-cols-2 gap-4 mb-3 text-sm">
                       <div>
-                        <p className="text-gray-600 font-medium">Start Time</p>
+                        <p className="text-gray-600 font-medium">Thời gian bắt đầu</p>
                         <p className="text-gray-900 font-mono">
                           {formatDateTime(schedule.startTime)}
                         </p>
                       </div>
                       <div>
-                        <p className="text-gray-600 font-medium">End Time</p>
+                        <p className="text-gray-600 font-medium">Thời gian kết thúc</p>
                         <p className="text-gray-900 font-mono">
                           {formatDateTime(schedule.endTime)}
                         </p>
@@ -182,13 +182,13 @@ const AttendanceChecking: React.FC = () => {
                     {/* Location and Staff */}
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
-                        <p className="text-gray-600 font-medium">Location</p>
+                        <p className="text-gray-600 font-medium">Địa điểm</p>
                         <p className="text-gray-900">
                           {schedule.location?.name || "Không có"}
                         </p>
                       </div>
                       <div>
-                        <p className="text-gray-600 font-medium">Assigned Staff</p>
+                        <p className="text-gray-600 font-medium">Nhân viên được giao</p>
                         <p className="text-gray-900">
                           {schedule.staff?.fullName || "Không có"}
                         </p>
@@ -205,7 +205,7 @@ const AttendanceChecking: React.FC = () => {
                         size="small"
                         onClick={() => handleCheckAttendance(schedule)}
                       >
-                        Check Attendance
+                        Kiểm tra điểm danh
                       </Button>
                     )}
                   </div>

@@ -181,7 +181,7 @@ const RouteTab: React.FC = () => {
       fetchRoutes();
     } catch (error) {
       console.error('Failed to save route:', error);
-      toastError('Error', 'Failed to save route');
+      toastError('Lỗi', 'Không thể lưu tuyến đường');
     } finally {
       setSubmitting(false);
     }
@@ -224,7 +224,7 @@ const RouteTab: React.FC = () => {
       }
     } catch (error) {
       console.error('Failed to save route:', error);
-      toastError('Error', 'Failed to save route');
+      toastError('Lỗi', 'Không thể lưu tuyến đường');
       setSubmitting(false);
     }
   };
@@ -273,8 +273,8 @@ const RouteTab: React.FC = () => {
       fetchRoutes();
     } catch (error: any) {
       console.error('Failed to create route with stops:', error);
-      const errorMessage = error.response?.data?.message || 'Failed to create route';
-      toastError('Error', errorMessage);
+      const errorMessage = error.response?.data?.message || 'Không thể tạo tuyến đường';
+      toastError('Lỗi', errorMessage);
     } finally {
       setSubmitting(false);
     }
@@ -314,7 +314,7 @@ const RouteTab: React.FC = () => {
               />
               <input
                 type="text"
-                placeholder="By name..."
+                placeholder="Theo tên..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-9 pr-4 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:border-transparent text-sm text-[#6B7280] placeholder:text-[#9CA3AF]"
@@ -439,8 +439,8 @@ const RouteTab: React.FC = () => {
                       </td>
                       <td className="px-6 py-4">
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${route.status === 'Active'
-                            ? 'bg-green-100 text-green-700'
-                            : 'bg-gray-100 text-gray-700'
+                          ? 'bg-green-100 text-green-700'
+                          : 'bg-gray-100 text-gray-700'
                           }`}>
                           {route.status}
                         </span>
@@ -457,7 +457,7 @@ const RouteTab: React.FC = () => {
                           </button>
                           <DeletePopover
                             onConfirm={() => handleDeleteRoute(route.routeId)}
-                            title="Delete Route"
+                            title="Xóa Tuyến Đường"
                             message={`Are you sure you want to delete "${route.routeName}"?`}
                             disabled={submitting}
                             isOpen={deletePopoverOpen === route.routeId}
@@ -479,7 +479,7 @@ const RouteTab: React.FC = () => {
       <Modal
         title={
           <div className="text-lg font-bold text-[#111827]">
-            {editingRoute ? 'Edit Route' : `Add New Route${creationStep === 'stops' ? ' - Configure Stops' : ''}`}
+            {editingRoute ? 'Sửa Tuyến Đường' : `Thêm Tuyến Đường Mới${creationStep === 'stops' ? ' - Cấu Hình Điểm Dừng' : ''}`}
           </div>
         }
         open={isModalVisible}
@@ -500,7 +500,7 @@ const RouteTab: React.FC = () => {
               rules={[{ required: true, message: 'Please enter route name' }]}
             >
               <Input
-                placeholder="Enter route name"
+                placeholder="Nhập tên tuyến đường"
                 className="rounded-lg"
               />
             </Form.Item>
@@ -508,9 +508,9 @@ const RouteTab: React.FC = () => {
             <Form.Item
               label={<span className="text-sm font-semibold text-[#374151]">Route Type</span>}
               name="routeType"
-              rules={[{ required: true, message: 'Please select route type' }]}
+              rules={[{ required: true, message: 'Vui lòng chọn loại tuyến' }]}
             >
-              <Select placeholder="Select route type" className="rounded-lg">
+              <Select placeholder="Chọn loại tuyến" className="rounded-lg">
                 {ROUTE_TYPES.map((type) => (
                   <Option key={type} value={type}>
                     {type}
@@ -523,12 +523,12 @@ const RouteTab: React.FC = () => {
               label={<span className="text-sm font-semibold text-[#374151]">Estimated Duration (minutes)</span>}
               name="estimateDuration"
               rules={[
-                { required: true, message: 'Please enter estimated duration' },
-                { type: 'number', min: 1, message: 'Duration must be at least 1 minute' },
+                { required: true, message: 'Vui lòng nhập thời gian ước tính' },
+                { type: 'number', min: 1, message: 'Thời gian phải ít nhất 1 phút' },
               ]}
             >
               <InputNumber
-                placeholder="Enter duration in minutes"
+                placeholder="Nhập thời gian (phút)"
                 className="w-full rounded-lg"
                 min={1}
               />
@@ -547,7 +547,7 @@ const RouteTab: React.FC = () => {
                 disabled={submitting}
                 className="px-4 py-2 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-colors font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {submitting ? 'Saving...' : editingRoute ? 'Update' : 'Next: Configure Stops'}
+                {submitting ? 'Đang Lưu...' : editingRoute ? 'Cập Nhật' : 'Tiếp: Cấu Hình Điểm Dừng'}
               </button>
             </div>
           </Form>
@@ -646,7 +646,7 @@ const RouteTab: React.FC = () => {
                   disabled={submitting || newRouteStops.length === 0}
                   className="px-4 py-2 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-colors font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {submitting ? 'Creating...' : `Create Route (${newRouteStops.length} stops)`}
+                  {submitting ? 'Đang Tạo...' : `Tạo Tuyến Đường (${newRouteStops.length} điểm dừng)`}
                 </button>
               </div>
             </div>
@@ -679,17 +679,17 @@ const RouteTab: React.FC = () => {
                   <Form.Item
                     label={<span className="text-sm font-semibold text-[#374151]">Route Name</span>}
                     name="routeName"
-                    rules={[{ required: true, message: 'Please enter route name' }]}
+                    rules={[{ required: true, message: 'Vui lòng nhập tên tuyến đường' }]}
                   >
-                    <Input placeholder="Enter route name" className="rounded-lg" />
+                    <Input placeholder="Nhập tên tuyến đường" className="rounded-lg" />
                   </Form.Item>
 
                   <Form.Item
                     label={<span className="text-sm font-semibold text-[#374151]">Route Type</span>}
                     name="routeType"
-                    rules={[{ required: true, message: 'Please select route type' }]}
+                    rules={[{ required: true, message: 'Vui lòng chọn loại tuyến' }]}
                   >
-                    <Select placeholder="Select route type" className="rounded-lg">
+                    <Select placeholder="Chọn loại tuyến" className="rounded-lg">
                       {ROUTE_TYPES.map((type) => (
                         <Option key={type} value={type}>
                           {type}
@@ -702,11 +702,11 @@ const RouteTab: React.FC = () => {
                     label={<span className="text-sm font-semibold text-[#374151]">Estimated Duration (minutes)</span>}
                     name="estimateDuration"
                     rules={[
-                      { required: true, message: 'Please enter estimated duration' },
-                      { type: 'number', min: 1, message: 'Duration must be at least 1 minute' },
+                      { required: true, message: 'Vui lòng nhập thời gian ước tính' },
+                      { type: 'number', min: 1, message: 'Thời gian phải ít nhất 1 phút' },
                     ]}
                   >
-                    <InputNumber placeholder="Enter duration in minutes" className="w-full rounded-lg" min={1} />
+                    <InputNumber placeholder="Nhập thời gian (phút)" className="w-full rounded-lg" min={1} />
                   </Form.Item>
                 </Form>
               ) : (
@@ -731,8 +731,8 @@ const RouteTab: React.FC = () => {
                   <div>
                     <p className="text-xs font-medium text-[#6B7280] mb-1">Status</p>
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${detailRoute.status === 'Active'
-                        ? 'bg-green-100 text-green-700'
-                        : 'bg-gray-100 text-gray-700'
+                      ? 'bg-green-100 text-green-700'
+                      : 'bg-gray-100 text-gray-700'
                       }`}>
                       {detailRoute.status}
                     </span>
@@ -756,14 +756,14 @@ const RouteTab: React.FC = () => {
                       className="inline-flex items-center gap-2 px-4 py-2 bg-[#F3F4F6] text-[#6B7280] rounded-lg hover:bg-[#E5E7EB] transition-colors font-medium text-sm"
                       disabled={submitting}
                     >
-                      Cancel
+                      Hủy
                     </button>
                     <button
                       onClick={handleSaveEdit}
                       className="inline-flex items-center gap-2 px-4 py-2 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-colors font-medium text-sm disabled:opacity-50"
                       disabled={submitting}
                     >
-                      {submitting ? 'Saving...' : 'Save Changes'}
+                      {submitting ? 'Đang Lưu...' : 'Lưu Thay Đổi'}
                     </button>
                   </>
                 ) : (

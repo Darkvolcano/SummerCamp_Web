@@ -232,7 +232,7 @@ const InCampLocationManagement: React.FC = () => {
                   />
                   <input
                     type="text"
-                    placeholder="By location name..."
+                    placeholder="Theo tên địa điểm..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full pl-9 pr-4 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:border-transparent text-sm text-[#6B7280] placeholder:text-[#9CA3AF]"
@@ -312,8 +312,8 @@ const InCampLocationManagement: React.FC = () => {
                           <td className="px-6 py-4">
                             <span
                               className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${location.isActive
-                                  ? "bg-green-100 text-green-700"
-                                  : "bg-gray-100 text-gray-700"
+                                ? "bg-green-100 text-green-700"
+                                : "bg-gray-100 text-gray-700"
                                 }`}
                             >
                               {location.isActive ? "Active" : "Inactive"}
@@ -325,7 +325,7 @@ const InCampLocationManagement: React.FC = () => {
                                 onClick={() => handleEditClick(location)}
                                 disabled={submitting}
                                 className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#F3F4F6] text-[#6B7280] rounded-lg hover:bg-[#E5E7EB] transition-all font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                                title="Edit Location"
+                                title="Sửa Địa Điểm"
                               >
                                 <Edit2 size={16} />
                                 Edit
@@ -334,7 +334,7 @@ const InCampLocationManagement: React.FC = () => {
                                 onConfirm={() =>
                                   handleDelete(location.locationId)
                                 }
-                                message="Delete this location?"
+                                message="Xóa địa điểm này?"
                                 disabled={submitting}
                                 isOpen={
                                   openDeletePopover === location.locationId
@@ -361,7 +361,7 @@ const InCampLocationManagement: React.FC = () => {
       {/* Add/Edit Modal */}
       <Modal
         title={
-          editingLocation ? "Edit In-Camp Location" : "Add In-Camp Location"
+          editingLocation ? "Sửa Địa Điểm Trong Trại" : "Thêm Địa Điểm Trong Trại"
         }
         open={isModalVisible}
         onOk={handleSubmit}
@@ -371,7 +371,7 @@ const InCampLocationManagement: React.FC = () => {
           setEditingLocation(null);
         }}
         okText={editingLocation ? "Update" : "Add"}
-        cancelText="Cancel"
+        cancelText="Hủy"
         confirmLoading={submitting}
         centered
         styles={{
@@ -395,20 +395,20 @@ const InCampLocationManagement: React.FC = () => {
         `}</style>
         <Form form={form} layout="vertical" className="mt-4">
           <Form.Item
-            label="Location Name"
+            label="Tên Địa Điểm"
             name="name"
             rules={[{ required: true, message: "Vui lòng nhập tên địa điểm" }]}
           >
-            <Input placeholder="e.g., Dining Area, Sports Field, etc." />
+            <Input placeholder="ví dụ: Khu Vực Ăn Uống, Sân Thể Thao, v.v." />
           </Form.Item>
 
           <Form.Item
-            label="Description"
+            label="Mô Tả"
             name="description"
             rules={[{ required: false }]}
           >
             <Input.TextArea
-              placeholder="Enter description (optional)"
+              placeholder="Nhập mô tả (tùy chọn)"
               rows={3}
             />
           </Form.Item>

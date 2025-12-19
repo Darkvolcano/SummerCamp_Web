@@ -207,23 +207,6 @@ const Login = () => {
               kỳ nghỉ hè tuyệt vời của con em họ
             </p>
 
-            <div className="hero-stats">
-              <div className="stat-item">
-                <div className="stat-number">500+</div>
-                <div className="stat-label">Trại hè</div>
-              </div>
-              <div className="stat-divider"></div>
-              <div className="stat-item">
-                <div className="stat-number">10k+</div>
-                <div className="stat-label">Học viên</div>
-              </div>
-              <div className="stat-divider"></div>
-              <div className="stat-item">
-                <div className="stat-number">4.9/5</div>
-                <div className="stat-label">Đánh giá</div>
-              </div>
-            </div>
-
             <div className="hero-features">
               <div className="feature-chip">🎨 Nghệ thuật</div>
               <div className="feature-chip">⚽ Thể thao</div>

@@ -165,7 +165,7 @@ const TransportScheduleTab: React.FC = () => {
     } catch (error: any) {
       console.error('Error creating schedule:', error);
       const errorMessage = error.response?.data?.message || 'Failed to create schedule';
-      toastError('Error', errorMessage);
+      toastError('Lỗi', errorMessage);
     } finally {
       setSubmitting(false);
     }
@@ -243,7 +243,7 @@ const TransportScheduleTab: React.FC = () => {
               className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-all font-medium text-sm"
             >
               <Plus size={16} />
-              Add Schedule
+              Thêm Lịch Trình
             </button>
           </div>
         </div>
@@ -266,7 +266,7 @@ const TransportScheduleTab: React.FC = () => {
             {pickupSchedules.length === 0 ? (
               <div className="px-6 py-12 text-center text-[#6B7280]">
                 <ArrowUpCircle size={48} className="mx-auto mb-4 text-[#9CA3AF]" />
-                <p>No pickup schedules yet</p>
+                <p>Chưa có lịch trình đón</p>
               </div>
             ) : (
               pickupSchedules.map((schedule) => (
@@ -336,7 +336,7 @@ const TransportScheduleTab: React.FC = () => {
             {dropoffSchedules.length === 0 ? (
               <div className="px-6 py-12 text-center text-[#6B7280]">
                 <ArrowDownCircle size={48} className="mx-auto mb-4 text-[#9CA3AF]" />
-                <p>No drop-off schedules yet</p>
+                <p>Chưa có lịch trình trả</p>
               </div>
             ) : (
               dropoffSchedules.map((schedule) => (
@@ -396,7 +396,7 @@ const TransportScheduleTab: React.FC = () => {
       <Modal
         title={
           <div className="text-lg font-bold text-[#111827]">
-            Create Transport Schedule
+            Tạo Lịch Trình Vận Chuyển
           </div>
         }
         open={isModalVisible}
@@ -407,7 +407,7 @@ const TransportScheduleTab: React.FC = () => {
         }}
         confirmLoading={submitting}
         width={600}
-        okText="Create Schedule"
+        okText="Tạo Lịch Trình"
       >
         <Spin spinning={loadingDropdowns}>
           {/* Camp Info Display */}
@@ -440,7 +440,7 @@ const TransportScheduleTab: React.FC = () => {
                   <Repeat size={20} className="text-purple-600" />
                   <div>
                     <h4 className="text-sm font-bold text-purple-900">Round Trip</h4>
-                    <p className="text-xs text-purple-700">Create both pickup and drop-off schedules</p>
+                    <p className="text-xs text-purple-700">Tạo cả lịch trình đón và trả</p>
                   </div>
                 </div>
                 <Switch
@@ -459,12 +459,12 @@ const TransportScheduleTab: React.FC = () => {
               // Single Schedule Form
               <>
                 <Form.Item
-                  label="Transport Type"
+                  label="Loại Vận Chuyển"
                   name="transportType"
                   rules={[{ required: true, message: 'Please select transport type!' }]}
                 >
                   <Select
-                    placeholder="Select transport type"
+                    placeholder="Chọn loại vận chuyển"
                     onChange={(value) => {
                       // Reset route selection when transport type changes
                       form.setFieldsValue({ routeId: undefined });
@@ -492,7 +492,7 @@ const TransportScheduleTab: React.FC = () => {
                   rules={[{ required: true, message: 'Please select a route!' }]}
                 >
                   <Select
-                    placeholder={!selectedTransportType ? "Select transport type first" : "Select route"}
+                    placeholder={!selectedTransportType ? "Chọn loại vận chuyển trước" : "Chọn tuyến đường"}
                     showSearch
                     optionFilterProp="children"
                     disabled={!selectedTransportType}
@@ -543,7 +543,7 @@ const TransportScheduleTab: React.FC = () => {
                   rules={[{ required: true, message: 'Please select a vehicle!' }]}
                 >
                   <Select
-                    placeholder="Select vehicle"
+                    placeholder="Chọn xe"
                     showSearch
                     optionFilterProp="children"
                     loading={loadingVehicles}
@@ -595,7 +595,7 @@ const TransportScheduleTab: React.FC = () => {
                   rules={[{ required: true, message: 'Please select a driver!' }]}
                 >
                   <Select
-                    placeholder="Select driver"
+                    placeholder="Chọn tài xế"
                     showSearch
                     optionFilterProp="children"
                     loading={loadingDrivers}
@@ -657,7 +657,7 @@ const TransportScheduleTab: React.FC = () => {
                     rules={[{ required: true, message: 'Please select pickup route!' }]}
                   >
                     <Select
-                      placeholder="Select pickup route"
+                      placeholder="Chọn tuyến đón"
                       showSearch
                       optionFilterProp="children"
                     >
@@ -714,7 +714,7 @@ const TransportScheduleTab: React.FC = () => {
                     rules={[{ required: true, message: 'Please select drop-off route!' }]}
                   >
                     <Select
-                      placeholder="Select drop-off route"
+                      placeholder="Chọn tuyến trả"
                       showSearch
                       optionFilterProp="children"
                     >
@@ -771,7 +771,7 @@ const TransportScheduleTab: React.FC = () => {
                     rules={[{ required: true, message: 'Please select a vehicle!' }]}
                   >
                     <Select
-                      placeholder="Select vehicle"
+                      placeholder="Chọn xe"
                       showSearch
                       optionFilterProp="children"
                       loading={loadingVehicles}
@@ -823,7 +823,7 @@ const TransportScheduleTab: React.FC = () => {
                     rules={[{ required: true, message: 'Please select a driver!' }]}
                   >
                     <Select
-                      placeholder="Select driver"
+                      placeholder="Chọn tài xế"
                       showSearch
                       optionFilterProp="children"
                       loading={loadingDrivers}
