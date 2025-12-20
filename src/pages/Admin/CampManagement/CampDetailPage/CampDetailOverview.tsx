@@ -27,6 +27,7 @@ import promotionService, {
 } from "../../../../services/promotionService";
 import attendanceLogService from "../../../../services/attendanceLogService";
 import attendanceFolderService from "../../../../services/attendanceFolderService";
+import activityScheduleService from "../../../../services/activityScheduleService";
 import {
   uploadGenericImage,
   validateImageFile,
@@ -273,6 +274,19 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
       );
     } catch (error: any) {
       let errorMsg = 'Không thể lấy thống kê trại đã tải';
+      if (error.response?.data?.message) {
+        errorMsg = error.response.data.message;
+      }
+      toastError('Lỗi', errorMsg);
+    }
+  };
+
+  const handleChangeStatusToPendingAttendance = async () => {
+    try {
+      await activityScheduleService.changeStatusToPendingAttendance();
+      toastSuccess('Thành công', 'Đã chuyển trạng thái sang Pending Attendance!');
+    } catch (error: any) {
+      let errorMsg = 'Không thể chuyển trạng thái';
       if (error.response?.data?.message) {
         errorMsg = error.response.data.message;
       }
@@ -816,7 +830,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
         {/* Registration Control Buttons */}
         <div className="mt-8 pt-6 border-t border-[#E5E7EB]">
           <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4">
-            KIỂM THỎ
+            Demo buttons
           </h3>
           <div className="flex gap-3">
             <button
@@ -839,6 +853,13 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
             >
               <CheckCircle size={16} />
               Tạo nhật ký điểm danh
+            </button>
+            <button
+              onClick={handleChangeStatusToPendingAttendance}
+              className="flex items-center gap-1.5 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-all font-medium text-sm"
+            >
+              <CheckCircle size={16} />
+              Cho phép điểm danh
             </button>
             <button
               onClick={handleCreateFolders}

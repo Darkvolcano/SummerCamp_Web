@@ -42,6 +42,7 @@ const CamperSchedule: React.FC = () => {
   // Modal states
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedSchedule, setSelectedSchedule] = useState<ActivityScheduleResponseDto | null>(null);
+  const [selectedAttendanceStatus, setSelectedAttendanceStatus] = useState<string | null>(null);
   const [scheduleLoading, setScheduleLoading] = useState(false);
 
   // Fetch camp details and activity schedules
@@ -112,6 +113,7 @@ const CamperSchedule: React.FC = () => {
     try {
       setScheduleLoading(true);
       setIsModalVisible(true);
+      setSelectedAttendanceStatus(event.resource.attendanceStatus);
 
       const scheduleDetail = await activityScheduleService.getActivityScheduleById(event.id);
       setSelectedSchedule(scheduleDetail);
@@ -129,6 +131,7 @@ const CamperSchedule: React.FC = () => {
   const handleCloseModal = () => {
     setIsModalVisible(false);
     setSelectedSchedule(null);
+    setSelectedAttendanceStatus(null);
   };
 
   // Handle join livestream
@@ -184,7 +187,7 @@ const CamperSchedule: React.FC = () => {
         className="cursor-pointer relative"
       >
         {event.resource.isLivestream && (
-          <div className="absolute -top-1 -right-1">
+          <div className="absolute -top-1 -right-5">
             <span className="flex h-3 w-3">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
@@ -397,9 +400,7 @@ const CamperSchedule: React.FC = () => {
             <div>
               <p className="text-sm text-gray-600 font-medium mb-1">Trạng thái điểm danh</p>
               <span className="inline-block text-sm font-medium px-3 py-1 rounded-full bg-gray-100 text-gray-700">
-                {selectedSchedule.attendanceLogs && selectedSchedule.attendanceLogs.length > 0
-                  ? getAttendanceStatusDisplay(selectedSchedule.attendanceLogs[0].participantStatus)
-                  : getAttendanceStatusDisplay("NotYet")}
+                {getAttendanceStatusDisplay(selectedAttendanceStatus || "NotYet")}
               </span>
             </div>
 
