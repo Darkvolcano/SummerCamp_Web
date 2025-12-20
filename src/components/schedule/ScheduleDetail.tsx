@@ -190,8 +190,8 @@ const ScheduleDetail: React.FC<ScheduleDetailProps> = ({
           </Descriptions.Item>
         )}
 
-        {schedule.currentCapacity !== null && (
-          <Descriptions.Item label="Sức Chứa Hiện Tại">
+        {schedule.currentCapacity !== null && schedule.activity?.activityType === "Optional" && (
+          <Descriptions.Item label="Số Trại Viên Tham Gia">
             <span className="font-medium">
               {schedule.currentCapacity} / {schedule.maxCapacity || "Unlimited"}
             </span>
@@ -221,21 +221,23 @@ const ScheduleDetail: React.FC<ScheduleDetailProps> = ({
             >
               Sửa
             </Button>
-            <DeletePopover
-              onConfirm={() => {
-                onDelete?.();
-                setDeletePopoverOpen(false);
-              }}
-              onCancel={() => setDeletePopoverOpen(false)}
-              title="Huỷ Lịch Trình"
-              message="Bạn có chắc chắn muốn huỷ lịch trình hoạt động này không?"
-              confirmText="Huỷ"
-              cancelText="Không"
-              buttonText="Huỷ"
-              buttonSize="middle"
-              isOpen={deletePopoverOpen}
-              onOpenChange={setDeletePopoverOpen}
-            />
+            {!['PendingAttendance', 'AttendanceChecked', 'Completed'].includes(schedule.status) && (
+              <DeletePopover
+                onConfirm={() => {
+                  onDelete?.();
+                  setDeletePopoverOpen(false);
+                }}
+                onCancel={() => setDeletePopoverOpen(false)}
+                title="Huỷ Lịch Trình"
+                message="Bạn có chắc chắn muốn huỷ lịch trình hoạt động này không?"
+                confirmText="Huỷ"
+                cancelText="Không"
+                buttonText="Huỷ"
+                buttonSize="middle"
+                isOpen={deletePopoverOpen}
+                onOpenChange={setDeletePopoverOpen}
+              />
+            )}
           </>
         )}
         {canApprove && (

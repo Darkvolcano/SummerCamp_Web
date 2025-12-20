@@ -48,6 +48,14 @@ export interface CampExtensionRequestDto {
   newRegistrationEndDate: string;
 }
 
+export interface CampRejectRequestDto {
+  note: string; // minimum 10 characters
+}
+
+export interface CampCancelRequestDto {
+  note: string; // minimum 10 characters
+}
+
 export interface CampValidationResponseDto {
   success: boolean;
   message: string;
@@ -76,6 +84,8 @@ export interface CampResponseDto {
   createBy: number;
   registrationStartDate: string;
   registrationEndDate: string;
+  currentCapacity: number;
+  note: string | null;
   // Nested objects
   campType: {
     id: number;
@@ -107,6 +117,8 @@ interface BackendCampResponse {
   createBy: number;
   registrationStartDate: string;
   registrationEndDate: string;
+  currentCapacity: number;
+  note: string | null;
   campType?: {
     id: number;
     name: string;
@@ -138,6 +150,8 @@ const mapBackendToFrontend = (data: BackendCampResponse): CampResponseDto => {
     createBy: data.createBy,
     registrationStartDate: data.registrationStartDate,
     registrationEndDate: data.registrationEndDate,
+    currentCapacity: data.currentCapacity,
+    note: data.note,
     campType: data.campType || null,
     location: data.location || null,
     promotion: data.promotion || null,
@@ -306,9 +320,9 @@ const campService = {
   },
 
   // Reject camp
-  rejectCamp: async (campId: number): Promise<CampResponseDto> => {
+  rejectCamp: async (campId: number, note: string): Promise<CampResponseDto> => {
     console.log(`[campService] PUT /camp/${campId}/reject`);
-    const response = await axiosInstance.put(`/camp/${campId}/reject`);
+    const response = await axiosInstance.put(`/camp/${campId}/reject`, { note });
     const mapped = mapBackendToFrontend(response.data as BackendCampResponse);
     return mapped;
   },
@@ -371,9 +385,9 @@ const campService = {
   },
 
   // Cancel camp
-  cancelCamp: async (campId: number, reason: string): Promise<CampResponseDto> => {
+  cancelCamp: async (campId: number, note: string): Promise<CampResponseDto> => {
     console.log(`[campService] POST /camp/${campId}/cancel`);
-    const response = await axiosInstance.post(`/camp/${campId}/cancel`, { reason });
+    const response = await axiosInstance.post(`/camp/${campId}/cancel`, { note });
     const mapped = mapBackendToFrontend(response.data as BackendCampResponse);
     return mapped;
   },

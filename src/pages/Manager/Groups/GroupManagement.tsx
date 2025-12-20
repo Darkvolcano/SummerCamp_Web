@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Spin, message, Modal, Form, Input, InputNumber, Select } from 'antd';
-import { Search, Plus, Edit2, CheckCircle2 } from 'lucide-react';
+import { Search, Plus, Eye, Edit2, CheckCircle2 } from 'lucide-react';
 import { useManagerContext } from '../../../hooks/useManagerContext';
 import { useNotification } from '../../../contexts/NotificationContext';
 import groupService, { type GroupResponseDto, type GroupRequestDto } from '../../../services/groupService';
@@ -8,6 +8,7 @@ import staffService, { type StaffInfo } from '../../../services/staffService';
 import campService, { type CampResponseDto } from '../../../services/campService';
 import camperGroupService from '../../../services/camperGroupService';
 import DeletePopover from '../../../components/DeletePopover';
+import CamperDetailModal from '../../../components/CamperDetailModal';
 
 const GroupManagement: React.FC = () => {
   const { selectedCampId } = useManagerContext();
@@ -24,6 +25,7 @@ const GroupManagement: React.FC = () => {
   // Modal state
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingGroup, setEditingGroup] = useState<GroupResponseDto | null>(null);
+  const [isEditMode, setIsEditMode] = useState(false);
   const [form] = Form.useForm();
   const [submitting, setSubmitting] = useState(false);
 
@@ -39,6 +41,13 @@ const GroupManagement: React.FC = () => {
 
   // Selected groups for pending campers (camperId -> groupId)
   const [selectedGroups, setSelectedGroups] = useState<Record<number, number>>({});
+
+  // Selected new groups for existing members (camperId -> groupId)
+  const [selectedNewGroups, setSelectedNewGroups] = useState<Record<number, number>>({});
+
+  // Camper detail modal state
+  const [selectedCamperId, setSelectedCamperId] = useState<number | null>(null);
+  const [isCamperModalOpen, setIsCamperModalOpen] = useState(false);
 
   useEffect(() => {
     if (!selectedCampId) {
@@ -124,8 +133,8 @@ const GroupManagement: React.FC = () => {
     setIsModalVisible(true);
   };
 
-  // Handle edit group
-  const handleEditClick = async (group: GroupResponseDto) => {
+  // Handle view group details
+  const handleViewDetails = async (group: GroupResponseDto) => {
     try {
       // Fetch complete group data
       const fullGroupData = await groupService.getGroupById(group.groupId);
@@ -153,6 +162,7 @@ const GroupManagement: React.FC = () => {
         setLoadingMembers(false);
       }
 
+      setIsEditMode(false); // Start in view mode
       setIsModalVisible(true);
     } catch (error) {
       console.error('Failed to load group details:', error);
@@ -280,7 +290,19 @@ const GroupManagement: React.FC = () => {
                     className="hover:bg-[#F9FAFB] transition-colors"
                   >
                     <td className="px-6 py-4 text-sm font-medium text-[#111827]">
-                      {registration?.camper?.camperName || 'Unknown'}
+                      <a
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (registration?.camper?.camperId) {
+                            setSelectedCamperId(registration.camper.camperId);
+                            setIsCamperModalOpen(true);
+                          }
+                        }}
+                        href="#"
+                        className="text-[#6366F1] hover:text-[#4F46E5] hover:underline transition-colors cursor-pointer font-medium"
+                      >
+                        {registration?.camper?.camperName || 'Unknown'}
+                      </a>
                     </td>
                     <td className="px-6 py-4 text-sm font-mono text-[#6B7280]">
                       #{registration?.camper?.camperId || 'N/A'}
@@ -484,12 +506,12 @@ const GroupManagement: React.FC = () => {
                             <td className="px-6 py-4 text-right">
                               <div className="flex items-center justify-end gap-2">
                                 <button
-                                  onClick={() => handleEditClick(group)}
+                                  onClick={() => handleViewDetails(group)}
                                   className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#F3F4F6] text-[#6B7280] rounded-lg hover:bg-[#E5E7EB] transition-all font-medium text-sm"
-                                  title="Chỉnh Sửa Nhóm"
+                                  title="Xem Chi Tiết"
                                 >
-                                  <Edit2 size={16} />
-                                  Sửa
+                                  <Eye size={16} />
+                                  Chi tiết
                                 </button>
                                 <DeletePopover
                                   onConfirm={() => handleDelete(group.groupId)}
@@ -515,18 +537,48 @@ const GroupManagement: React.FC = () => {
         </>
       )}
 
-      {/* Add/Edit Modal */}
+      {/* Add/Edit/Detail Modal */}
       <Modal
-        title={editingGroup ? 'Chỉnh Sửa Nhóm' : 'Thêm Nhóm Mới'}
+        title={
+          !editingGroup ? 'Thêm Nhóm Mới' :
+          isEditMode ? 'Chỉnh Sửa Nhóm' :
+          'Chi Tiết Nhóm'
+        }
         open={isModalVisible}
         onOk={handleSubmit}
         onCancel={() => {
           setIsModalVisible(false);
           setEditingGroup(null);
+          setIsEditMode(false);
           form.resetFields();
         }}
         confirmLoading={submitting}
         width={600}
+        footer={
+          editingGroup && !isEditMode ? (
+            // Detail mode footer
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => {
+                  setIsModalVisible(false);
+                  setEditingGroup(null);
+                  setIsEditMode(false);
+                  form.resetFields();
+                }}
+                className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+              >
+                Đóng
+              </button>
+              <button
+                onClick={() => setIsEditMode(true)}
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 flex items-center gap-2"
+              >
+                <Edit2 size={16} />
+                Sửa
+              </button>
+            </div>
+          ) : undefined
+        }
       >
         <Form
           form={form}
@@ -541,7 +593,7 @@ const GroupManagement: React.FC = () => {
               { min: 1, message: 'Tên nhóm không được để trống!' },
             ]}
           >
-            <Input placeholder="Ví dụ: Nhóm A1, Nhóm B2" />
+            <Input placeholder="Ví dụ: Nhóm A1, Nhóm B2" disabled={!!(editingGroup && !isEditMode)} />
           </Form.Item>
 
           <Form.Item
@@ -551,7 +603,7 @@ const GroupManagement: React.FC = () => {
               { required: true, message: 'Vui lòng nhập mô tả!' },
             ]}
           >
-            <Input.TextArea placeholder="Ví dụ: Nhóm dành cho học sinh tiểu học" rows={3} />
+            <Input.TextArea placeholder="Ví dụ: Nhóm dành cho học sinh tiểu học" rows={3} disabled={!!(editingGroup && !isEditMode)} />
           </Form.Item>
 
           <Form.Item
@@ -562,7 +614,7 @@ const GroupManagement: React.FC = () => {
               { type: 'number', min: 1, message: 'Số lượng tối đa phải ít nhất là 1!' },
             ]}
           >
-            <InputNumber min={1} placeholder="Ví dụ: 30" className="w-full" />
+            <InputNumber min={1} placeholder="Ví dụ: 30" className="w-full" disabled={!!(editingGroup && !isEditMode)} />
           </Form.Item>
 
           <Form.Item
@@ -576,6 +628,7 @@ const GroupManagement: React.FC = () => {
             <Select
               placeholder="Chọn giám sát viên (tùy chọn)"
               allowClear
+              disabled={!!(editingGroup && !isEditMode)}
               optionLabelProp="label"
               options={staffList.map((staff) => ({
                 label: staff.fullName,
@@ -626,39 +679,72 @@ const GroupManagement: React.FC = () => {
               {groupMembers.length > 0 ? (
                 <div className="max-h-60 overflow-y-auto space-y-2">
                   {groupMembers.map((member: any, index: number) => (
-                    <div
-                      key={member.camperGroupId || index}
-                      className="flex items-center justify-between p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                    >
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">
-                          {member.camperName?.camperName || 'Không rõ'}
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          ID: {member.camperName?.camperId || 'N/A'}
-                        </p>
-                      </div>
-                      <button
-                        onClick={async () => {
-                          if (window.confirm(`Loại bỏ ${member.camperName?.camperName} khỏi nhóm này?`)) {
-                            try {
-                              await camperGroupService.deleteCamperGroup(member.camperGroupId);
-                              toastSuccess('Thành công', 'Trại viên đã được loại khỏi nhóm');
-                              // Refresh group members
-                              const members = await camperGroupService.getCamperGroups({ groupId: editingGroup?.groupId });
-                              setGroupMembers(Array.isArray(members) ? members : []);
-                            } catch (error: any) {
-                              console.error('Failed to remove camper:', error);
-                              const errorMsg = error.response?.data?.message || error.message || 'Không thể loại trại viên khỏi nhóm';
-                              toastError('Lỗi', errorMsg);
-                            }
-                          }
-                        }}
-                        className="text-red-600 hover:text-red-800 text-xs font-medium px-2 py-1 rounded bg-white border border-red-300 hover:bg-red-50 transition-colors"
+                      <div
+                        key={member.camperGroupId || index}
+                        className="flex items-center justify-between p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors gap-2"
                       >
-                        Loại bỏ
-                      </button>
-                    </div>
+                        <div className="flex-shrink-0">
+                          <p className="text-sm font-medium text-gray-900">
+                            {member.camperName?.camperName || 'Không rõ'}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            ID: {member.camperName?.camperId || 'N/A'}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Select
+                            placeholder="Chọn nhóm mới"
+                            value={selectedNewGroups[member.camperName?.camperId]}
+                            onChange={(value) => {
+                              setSelectedNewGroups(prev => ({
+                                ...prev,
+                                [member.camperName?.camperId]: value
+                              }));
+                            }}
+                            className="w-40"
+                            size="small"
+                            options={groups
+                              .filter(g => g.groupId !== editingGroup?.groupId)
+                              .map(g => ({
+                                label: g.groupName,
+                                value: g.groupId
+                              }))}
+                          />
+                          <button
+                            onClick={async () => {
+                              const newGroupId = selectedNewGroups[member.camperName?.camperId];
+                              if (!newGroupId) {
+                                toastError('Lỗi', 'Vui lòng chọn nhóm mới');
+                                return;
+                              }
+                              try {
+                                await camperGroupService.updateCamperGroup(member.camperGroupId, {
+                                  camperId: member.camperName?.camperId,
+                                  groupId: newGroupId
+                                });
+                                toastSuccess('Thành công', 'Đã chuyển trại viên sang nhóm mới');
+                                // Clear selection
+                                setSelectedNewGroups(prev => {
+                                  const newState = { ...prev };
+                                  delete newState[member.camperName?.camperId];
+                                  return newState;
+                                });
+                                // Refresh group members
+                                const members = await camperGroupService.getCamperGroups({ groupId: editingGroup?.groupId });
+                                setGroupMembers(Array.isArray(members) ? members : []);
+                              } catch (error: any) {
+                                console.error('Failed to change group:', error);
+                                const errorMsg = error.response?.data?.message || error.message || 'Không thể chuyển nhóm';
+                                toastError('Lỗi', errorMsg);
+                              }
+                            }}
+                            disabled={!selectedNewGroups[member.camperName?.camperId]}
+                            className="text-blue-600 hover:text-blue-800 text-xs font-medium px-3 py-1 rounded bg-white border border-blue-300 hover:bg-blue-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                          >
+                            Thay đổi
+                          </button>
+                        </div>
+                      </div>
                   ))}
                 </div>
               ) : (
@@ -668,6 +754,19 @@ const GroupManagement: React.FC = () => {
           )}
         </Form>
       </Modal>
+
+      {/* Camper Detail Modal */}
+      {selectedCamperId && (
+        <CamperDetailModal
+          isOpen={isCamperModalOpen}
+          onClose={() => {
+            setIsCamperModalOpen(false);
+            setSelectedCamperId(null);
+          }}
+          camperId={selectedCamperId}
+          campId={selectedCampId}
+        />
+      )}
     </div>
   );
 };

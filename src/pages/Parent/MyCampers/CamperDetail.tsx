@@ -17,6 +17,9 @@ import registrationCamperService, {
 import guardianService, {
   type GuardianResponseDto,
 } from "../../../services/guardianService";
+import reportService, {
+  type ReportResponseDto,
+} from "../../../services/reportService";
 
 const CamperDetail: React.FC = () => {
   const navigate = useNavigate();
@@ -47,6 +50,10 @@ const CamperDetail: React.FC = () => {
   const [selectedCampIndex, setSelectedCampIndex] = useState(0);
   const [campsLoading, setCampsLoading] = useState(false);
   const [campsFetched, setCampsFetched] = useState(false);
+
+  // Reports states
+  const [reports, setReports] = useState<ReportResponseDto[]>([]);
+  const [reportsLoading, setReportsLoading] = useState(false);
 
   // Fetch camper details
   useEffect(() => {
@@ -145,6 +152,33 @@ const CamperDetail: React.FC = () => {
       fetchCamps();
     }
   };
+
+  // Fetch reports when selected camp changes
+  useEffect(() => {
+    const fetchReports = async () => {
+      if (!camper || camps.length === 0) return;
+      
+      const selectedCamp = camps[selectedCampIndex];
+      if (!selectedCamp) return;
+
+      try {
+        setReportsLoading(true);
+        const fetchedReports = await reportService.getReportsByCamper(
+          camper.camperId,
+          selectedCamp.camp.campId
+        );
+        setReports(fetchedReports);
+      } catch (error: any) {
+        console.error('Failed to fetch reports:', error);
+        setReports([]);
+      } finally {
+        setReportsLoading(false);
+      }
+    };
+
+    fetchReports();
+  }, [selectedCampIndex, camps, camper]);
+
 
 
   // Handle delete camper
@@ -338,6 +372,22 @@ const CamperDetail: React.FC = () => {
   // Calculate age from DOB
   const calculateAge = (dob: string) => {
     return dayjs().diff(dayjs(dob), "year");
+  };
+
+  // Get incident level display
+  const getLevelInfo = (level: string | number) => {
+    const levelNum = typeof level === 'string' ? parseInt(level) : level;
+    
+    switch (levelNum) {
+      case 1:
+        return { bg: 'bg-blue-100', text: 'text-blue-700', label: 'Nhẹ' };
+      case 2:
+        return { bg: 'bg-yellow-100', text: 'text-yellow-700', label: 'Trung bình' };
+      case 3:
+        return { bg: 'bg-red-100', text: 'text-red-700', label: 'Nghiêm trọng' };
+      default:
+        return { bg: 'bg-gray-100', text: 'text-gray-700', label: level?.toString() || 'N/A' };
+    }
   };
 
   if (loading) {
@@ -845,6 +895,67 @@ const CamperDetail: React.FC = () => {
                     <div className="text-4xl">📸</div>
                     <span className="font-semibold text-base text-center">Kho ảnh hội trại</span>
                   </button>
+                </div>
+              )}
+
+              {/* Incident Reports Section */}
+              {camps[selectedCampIndex] && (
+                <div className="mt-8">
+                  <h3 className="text-xl font-bold text-gray-900 mb-4">Thông Báo Sự Cố</h3>
+                  {reportsLoading ? (
+                    <div className="flex justify-center items-center py-8">
+                      <Spin tip="Đang tải thông báo sự cố..." />
+                    </div>
+                  ) : reports.length === 0 ? (
+                    <div className="bg-gray-50 rounded-lg p-6 text-center border border-gray-200">
+                      <p className="text-gray-600">Không có thông báo sự cố nào</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {reports.map((report) => (
+                        <div
+                          key={report.reportId}
+                          className="bg-white p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow"
+                        >
+                          <div className="flex justify-between items-start mb-3">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-2">
+                                <span className="text-sm font-semibold text-gray-900">
+                                  Loại: {report.reportType || 'N/A'}
+                                </span>
+                                {report.level && (
+                                  <span className={`text-xs font-medium px-2 py-1 rounded-full ${getLevelInfo(report.level).bg} ${getLevelInfo(report.level).text}`}>
+                                    {getLevelInfo(report.level).label}
+                                  </span>
+                                )}
+                              </div>
+                              {report.note && (
+                                <p className="text-sm text-gray-700 mb-2">{report.note}</p>
+                              )}
+                              <div className="flex flex-wrap gap-3 text-xs text-gray-500">
+                                {report.reportedByName && (
+                                  <span>Báo cáo bởi: {report.reportedByName}</span>
+                                )}
+                                {report.createAt && (
+                                  <span>Thời gian: {dayjs(report.createAt).format('DD/MM/YYYY HH:mm')}</span>
+                                )}
+                                {report.activityScheduleName && (
+                                  <span>Hoạt động: {report.activityScheduleName}</span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                          {report.image && (
+                            <img
+                              src={report.image}
+                              alt="Incident"
+                              className="w-full max-h-48 object-cover rounded-lg mt-3"
+                            />
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             </>

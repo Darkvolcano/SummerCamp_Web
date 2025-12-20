@@ -86,6 +86,7 @@ export interface OptionalScheduleCreateDto {
   startTime: string;
   endTime: string;
   isLiveStream?: boolean | null;
+  maxCapacity?: number | null;
   isRepeat?: boolean;
 }
 

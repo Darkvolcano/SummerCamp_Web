@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Spin, Modal, Form, Select, DatePicker, TimePicker, Tag, Switch } from 'antd';
-import { Plus, Calendar, Clock, User, Truck, MapPin, ArrowUpCircle, ArrowDownCircle, Repeat } from 'lucide-react';
+import { Plus, Calendar, Clock, User, Users, Truck, MapPin, ArrowUpCircle, ArrowDownCircle, Repeat, Eye } from 'lucide-react';
 import { useManagerContext } from '../../../hooks/useManagerContext';
 import { useNotification } from '../../../contexts/NotificationContext';
 import transportScheduleService, {
@@ -12,6 +12,8 @@ import vehicleService, { type VehicleResponseDto } from '../../../services/vehic
 import driverService, { type DriverResponseDto } from '../../../services/driverService';
 import campService, { type CampResponseDto } from '../../../services/campService';
 import DeletePopover from '../../../components/DeletePopover';
+import transportStaffAssignmentService from '../../../services/transportStaffAssignmentService';
+import dayjs from 'dayjs';
 
 const { Option } = Select;
 
@@ -42,6 +44,25 @@ const TransportScheduleTab: React.FC = () => {
 
   // Delete popover state
   const [deletePopoverOpen, setDeletePopoverOpen] = useState<number | null>(null);
+
+  // Detail modal state
+  const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
+  const [scheduleDetail, setScheduleDetail] = useState<any>(null);
+  const [loadingDetail, setLoadingDetail] = useState(false);
+
+  // Staff assignments state
+  const [staffAssignments, setStaffAssignments] = useState<any[]>([]);
+  const [loadingStaff, setLoadingStaff] = useState(false);
+  
+  // Available staff state
+  const [availableStaff, setAvailableStaff] = useState<any[]>([]);
+  const [loadingAvailableStaff, setLoadingAvailableStaff] = useState(false);
+  const [selectedStaffId, setSelectedStaffId] = useState<number | undefined>(undefined);
+  const [addingStaff, setAddingStaff] = useState(false);
+
+  // Campers state
+  const [scheduleCampers, setScheduleCampers] = useState<any[]>([]);
+  const [loadingCampers, setLoadingCampers] = useState(false);
 
   // Fetch camp details and schedules
   const fetchCampDetails = useCallback(async () => {
@@ -183,6 +204,110 @@ const TransportScheduleTab: React.FC = () => {
     }
   };
 
+  const handleViewDetails = async (scheduleId: number) => {
+    try {
+      setLoadingDetail(true);
+      setIsDetailModalVisible(true);
+      setSelectedStaffId(undefined); // Reset selection
+      const detail = await transportScheduleService.getScheduleByIdWithStaff(scheduleId);
+      setScheduleDetail(detail);
+      
+      // Load staff assignments, available staff, and campers
+      console.log('Loading staff and campers for schedule:', scheduleId);
+      loadStaffAssignments(scheduleId);
+      loadAvailableStaff(scheduleId);
+      loadScheduleCampers(scheduleId);
+    } catch (error) {
+      console.error('Failed to load schedule details:', error);
+      toastError('Lỗi', 'Không thể tải chi tiết lịch trình');
+      setIsDetailModalVisible(false);
+    } finally {
+      setLoadingDetail(false);
+    }
+  };
+
+  const loadStaffAssignments = async (scheduleId: number) => {
+    try {
+      setLoadingStaff(true);
+      const assignments = await transportStaffAssignmentService.getTransportStaffAssignments({
+        transportScheduleId: scheduleId,
+        status: 'Active',
+      });
+      setStaffAssignments(assignments);
+    } catch (error) {
+      console.error('Failed to load staff assignments:', error);
+      setStaffAssignments([]);
+    } finally {
+      setLoadingStaff(false);
+    }
+  };
+
+  const loadAvailableStaff = async (scheduleId: number) => {
+    try {
+      setLoadingAvailableStaff(true);
+      const staff = await transportStaffAssignmentService.getAvailableStaff(scheduleId);
+      console.log('Available staff response:', staff);
+      
+      // Debug: Check for null userId
+      const nullStaff = staff.filter((s: any) => s.userId == null);
+      if (nullStaff.length > 0) {
+        console.warn('Found staff with null userId:', nullStaff);
+      }
+      
+      setAvailableStaff(staff);
+    } catch (error) {
+      console.error('Failed to load available staff:', error);
+      setAvailableStaff([]);
+    } finally {
+      setLoadingAvailableStaff(false);
+    }
+  };
+
+  const loadScheduleCampers = async (scheduleId: number) => {
+    try {
+      setLoadingCampers(true);
+      const campers = await transportScheduleService.getCampersByScheduleId(scheduleId);
+      setScheduleCampers(campers);
+    } catch (error) {
+      console.error('Failed to load schedule campers:', error);
+      setScheduleCampers([]);
+    } finally {
+      setLoadingCampers(false);
+    }
+  };
+
+  const handleAddStaff = async () => {
+    if (selectedStaffId === undefined || !scheduleDetail?.transportScheduleId) {
+      toastError('Lỗi', 'Vui lòng chọn nhân viên');
+      return;
+    }
+
+    try {
+      setAddingStaff(true);
+      // Note: API expects staffId, but we're passing userId from available staff
+      await transportStaffAssignmentService.createTransportStaffAssignment({
+        transportScheduleId: scheduleDetail.transportScheduleId,
+        staffId: selectedStaffId, // This is actually userId from AvailableStaffDto
+      });
+      toastSuccess('Thành công', 'Đã thêm nhân viên vào chuyến xe');
+      
+      // Refresh both lists
+      await Promise.all([
+        loadStaffAssignments(scheduleDetail.transportScheduleId),
+        loadAvailableStaff(scheduleDetail.transportScheduleId),
+      ]);
+      
+      // Reset selection
+      setSelectedStaffId(undefined);
+    } catch (error: any) {
+      console.error('Failed to add staff:', error);
+      const errorMsg = error.response?.data?.message || 'Không thể thêm nhân viên';
+      toastError('Lỗi', errorMsg);
+    } finally {
+      setAddingStaff(false);
+    }
+  };
+
   const getStatusBadge = (status: string) => {
     const statusConfig: Record<string, { color: string }> = {
       NotYet: { color: 'orange' },
@@ -303,16 +428,27 @@ const TransportScheduleTab: React.FC = () => {
                     </div>
                     <div className="flex flex-col items-end gap-2">
                       {getStatusBadge(schedule.status)}
-                      <DeletePopover
-                        onConfirm={() => handleDelete(schedule.transportScheduleId)}
-                        title="Xóa Lịch Trình"
-                        message="Bạn có chắc muốn xóa lịch trình này?"
-                        buttonText="Xóa"
-                        isOpen={deletePopoverOpen === schedule.transportScheduleId}
-                        onOpenChange={(open) =>
-                          setDeletePopoverOpen(open ? schedule.transportScheduleId : null)
-                        }
-                      />
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleViewDetails(schedule.transportScheduleId)}
+                          className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-all font-medium text-sm"
+                        >
+                          <Eye size={16} />
+                          Chi tiết
+                        </button>
+                        {!['Canceled', 'InProgress', 'Completed'].includes(schedule.status) && (
+                          <DeletePopover
+                            onConfirm={() => handleDelete(schedule.transportScheduleId)}
+                            title="Hủy Lịch Trình"
+                            message="Bạn có chắc muốn hủy lịch trình này?"
+                            buttonText="Hủy"
+                            isOpen={deletePopoverOpen === schedule.transportScheduleId}
+                            onOpenChange={(open) =>
+                              setDeletePopoverOpen(open ? schedule.transportScheduleId : null)
+                            }
+                          />
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -373,16 +509,27 @@ const TransportScheduleTab: React.FC = () => {
                     </div>
                     <div className="flex flex-col items-end gap-2">
                       {getStatusBadge(schedule.status)}
-                      <DeletePopover
-                        onConfirm={() => handleDelete(schedule.transportScheduleId)}
-                        title="Xóa Lịch Trình"
-                        message="Bạn có chắc muốn xóa lịch trình này?"
-                        buttonText="Xóa"
-                        isOpen={deletePopoverOpen === schedule.transportScheduleId}
-                        onOpenChange={(open) =>
-                          setDeletePopoverOpen(open ? schedule.transportScheduleId : null)
-                        }
-                      />
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleViewDetails(schedule.transportScheduleId)}
+                          className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-all font-medium text-sm"
+                        >
+                          <Eye size={16} />
+                          Chi tiết
+                        </button>
+                        {!['Canceled', 'InProgress', 'Completed'].includes(schedule.status) && (
+                          <DeletePopover
+                            onConfirm={() => handleDelete(schedule.transportScheduleId)}
+                            title="Hủy Lịch Trình"
+                            message="Bạn có chắc muốn hủy lịch trình này?"
+                            buttonText="Hủy"
+                            isOpen={deletePopoverOpen === schedule.transportScheduleId}
+                            onOpenChange={(open) =>
+                              setDeletePopoverOpen(open ? schedule.transportScheduleId : null)
+                            }
+                          />
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -873,6 +1020,284 @@ const TransportScheduleTab: React.FC = () => {
             )}
           </Form>
         </Spin>
+      </Modal>
+
+      {/* Detail Modal */}
+      <Modal
+        title={
+          <div className="flex items-center gap-2">
+            <Truck size={20} className="text-[#6366F1]" />
+            <span className="text-lg font-bold text-[#111827]">Chi Tiết Lịch Trình Đưa Đón</span>
+          </div>
+        }
+        open={isDetailModalVisible}
+        onCancel={() => {
+          setIsDetailModalVisible(false);
+          setScheduleDetail(null);
+          setSelectedStaffId(undefined);
+        }}
+        footer={null}
+        width={700}
+        centered
+      >
+        {loadingDetail ? (
+          <div className="flex justify-center items-center py-12">
+            <Spin size="large" tip="Đang tải chi tiết..." />
+          </div>
+        ) : scheduleDetail ? (
+          <div className="space-y-6">
+            {/* Basic Info - Single Card with 2 Columns */}
+            <div className="bg-[#F9FAFB] rounded-lg p-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex items-start gap-3">
+                  <MapPin size={18} className="text-[#6366F1] mt-0.5" />
+                  <div className="flex-1">
+                    <span className="text-xs font-semibold text-[#6B7280] uppercase block mb-1">Tuyến Đường</span>
+                    <p className="text-sm font-bold text-[#111827]">
+                      {scheduleDetail.routeName?.routeName || 'N/A'}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <ArrowUpCircle size={18} className={scheduleDetail.transportType === 'PickUp' ? 'text-green-600' : 'text-orange-600'} />
+                  <div className="flex-1">
+                    <span className="text-xs font-semibold text-[#6B7280] uppercase block mb-1">Type</span>
+                    <p className="text-sm font-bold text-[#111827]">
+                      {scheduleDetail.transportType || 'N/A'}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <Truck size={18} className="text-[#6366F1] mt-0.5" />
+                  <div className="flex-1">
+                    <span className="text-xs font-semibold text-[#6B7280] uppercase block mb-1">Phương Tiện</span>
+                    <p className="text-sm font-bold text-[#111827]">
+                      {scheduleDetail.vehicleName?.vehicleName || 'N/A'}
+                    </p>
+                    {scheduleDetail.vehicleName?.vehicleNumber && (
+                      <p className="text-xs text-[#6B7280] mt-0.5">
+                        Biển số: {scheduleDetail.vehicleName.vehicleNumber}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <User size={18} className="text-[#6366F1] mt-0.5" />
+                  <div className="flex-1">
+                    <span className="text-xs font-semibold text-[#6B7280] uppercase block mb-1">Tài Xế</span>
+                    <p className="text-sm font-bold text-[#111827]">
+                      {scheduleDetail.driverFullName?.fullName || 'N/A'}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <Calendar size={18} className="text-[#6366F1] mt-0.5" />
+                  <div className="flex-1">
+                    <span className="text-xs font-semibold text-[#6B7280] uppercase block mb-1">Ngày</span>
+                    <p className="text-sm font-bold text-[#111827]">
+                      {formatDate(scheduleDetail.date)}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 col-span-2">
+                  <Clock size={18} className="text-[#6366F1] mt-0.5" />
+                  <div className="flex-1">
+                    <span className="text-xs font-semibold text-[#6B7280] uppercase block mb-1">Giờ Dự Kiến</span>
+                    <p className="text-sm font-bold text-[#111827]">
+                      {formatTime(scheduleDetail.startTime)} - {formatTime(scheduleDetail.endTime)}
+                    </p>
+                  </div>
+                </div>
+
+                {(scheduleDetail.actualStartTime || scheduleDetail.actualEndTime) && (
+                  <div className="flex items-start gap-3 col-span-2">
+                    <Clock size={18} className="text-green-600 mt-0.5" />
+                    <div className="flex-1">
+                      <span className="text-xs font-semibold text-[#6B7280] uppercase block mb-1">Giờ Thực Tế</span>
+                      <p className="text-sm font-bold text-green-700">
+                        {scheduleDetail.actualStartTime ? formatTime(scheduleDetail.actualStartTime) : '--:--'} - {scheduleDetail.actualEndTime ? formatTime(scheduleDetail.actualEndTime) : '--:--'}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Status */}
+            <div className="flex items-center justify-between p-4 bg-[#F9FAFB] rounded-lg">
+              <span className="text-sm font-semibold text-[#6B7280]">Trạng Thái:</span>
+              {getStatusBadge(scheduleDetail.status)}
+            </div>
+
+            {/* Staff List */}
+            <div>
+              <h3 className="text-sm font-bold text-[#111827] mb-3 pb-2 border-b-2 border-blue-600 inline-block">
+                Nhân Viên Chuyến Xe ({staffAssignments.length})
+              </h3>
+              
+              {/* Add Staff Section */}
+              <div className="mt-4 mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-xs font-semibold text-blue-700 uppercase mb-3">Thêm Nhân Viên Hỗ Trợ</p>
+                <div className="flex gap-2">
+                  <Select
+                    placeholder="Chọn nhân viên"
+                    style={{ flex: 1 }}
+                    value={selectedStaffId}
+                    onChange={(value) => {
+                      console.log('Selected value:', value);
+                      setSelectedStaffId(value);
+                    }}
+                    loading={loadingAvailableStaff}
+                    disabled={loadingAvailableStaff || addingStaff}
+                    showSearch
+                    optionFilterProp="children"
+                    getPopupContainer={(triggerNode) => triggerNode.parentNode as HTMLElement}
+                    dropdownMatchSelectWidth={false}
+                    virtual={false}
+                  >
+                    {(() => {
+                      console.log('Rendering options - availableStaff:', availableStaff);
+                      const filtered = availableStaff.filter((staff: any) => staff.userId != null);
+                      console.log('Filtered staff:', filtered);
+                      return filtered.map((staff: any) => (
+                        <Option key={staff.userId} value={staff.userId}>
+                          {staff.fullName}
+                        </Option>
+                      ));
+                    })()}
+                  </Select>
+                  <button
+                    onClick={handleAddStaff}
+                    disabled={selectedStaffId === undefined || addingStaff}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all font-medium text-sm whitespace-nowrap"
+                  >
+                    {addingStaff ? 'Đang thêm...' : 'Thêm'}
+                  </button>
+                </div>
+                {availableStaff.length === 0 && !loadingAvailableStaff && (
+                  <p className="text-xs text-gray-500 mt-2 italic">Không có nhân viên khả dụng</p>
+                )}
+              </div>
+              
+              {loadingStaff ? (
+                <div className="flex justify-center py-8">
+                  <Spin tip="Đang tải nhân viên..." />
+                </div>
+              ) : staffAssignments.length > 0 ? (
+                <div className="space-y-2 mt-4">
+                  {staffAssignments.map((assignment: any, index: number) => (
+                    <div
+                      key={assignment.transportStaffAssignmentId || assignment.id || index}
+                      className="flex items-center gap-3 p-3 bg-[#F9FAFB] rounded-lg hover:bg-gray-100 transition-colors"
+                    >
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#6366F1] to-[#4F46E5] flex items-center justify-center">
+                        <User size={20} className="text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-semibold text-[#111827]">
+                          ID: {assignment.staffId}
+                        </p>
+                        <p className="text-xs text-[#6B7280]">
+                          {assignment.staffName || 'N/A'}
+                        </p>
+                      </div>
+                      <DeletePopover
+                        onConfirm={async () => {
+                          try {
+                            await transportStaffAssignmentService.deleteTransportStaffAssignment(
+                              assignment.id || assignment.transportStaffAssignmentId
+                            );
+                            toastSuccess('Thành công', 'Đã xóa nhân viên khỏi chuyến xe');
+                            // Refresh both lists
+                            if (scheduleDetail?.transportScheduleId) {
+                              await Promise.all([
+                                loadStaffAssignments(scheduleDetail.transportScheduleId),
+                                loadAvailableStaff(scheduleDetail.transportScheduleId),
+                              ]);
+                            }
+                          } catch (error: any) {
+                            console.error('Failed to delete staff assignment:', error);
+                            const errorMsg = error.response?.data?.message || 'Không thể xóa nhân viên';
+                            toastError('Lỗi', errorMsg);
+                          }
+                        }}
+                        title="Xóa nhân viên"
+                        message={`Bạn có chắc muốn xóa nhân viên "${assignment.staffName || 'này'}" khỏi chuyến xe?`}
+                        buttonText=""
+                        showIcon={true}
+                        buttonSize="small"
+                      />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-[#6B7280] italic mt-4">Chưa có nhân viên được phân công</p>
+              )}
+            </div>
+
+            {/* Campers Section */}
+            <div className="mt-6 pt-6 border-t border-[#E5E7EB]">
+              <h4 className="text-sm font-bold text-[#111827] mb-4 flex items-center gap-2">
+                <Users size={18} className="text-blue-500" />
+                Trại Viên Đăng Ký ({scheduleCampers.length})
+              </h4>
+              {loadingCampers ? (
+                <div className="flex justify-center py-4">
+                  <Spin size="small" />
+                </div>
+              ) : scheduleCampers.length > 0 ? (
+                <div className="space-y-2 max-h-60 overflow-y-auto">
+                  {scheduleCampers.map((camper: any) => (
+                    <div
+                      key={camper.camperTransportId}
+                      className="flex items-center justify-between p-3 bg-[#F9FAFB] rounded-lg hover:bg-gray-100 transition-colors"
+                    >
+                      <div className="flex-1">
+                        <p className="text-sm font-semibold text-[#111827]">
+                          {camper.camper?.camperName || 'N/A'}
+                        </p>
+                        <p className="text-xs text-[#6B7280]">
+                          📍 {camper.location?.name || 'N/A'}
+                        </p>
+                        {camper.checkInTime && (
+                          <p className="text-xs text-green-600 mt-1">
+                            ✓ Check-in: {dayjs(camper.checkInTime).format('HH:mm DD/MM/YYYY')}
+                          </p>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {camper.isAbsent ? (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">
+                            Vắng mặt
+                          </span>
+                        ) : camper.checkInTime ? (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                            Đã check-in
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">
+                            Chờ check-in
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-[#6B7280] italic">Chưa có trại viên đăng ký</p>
+              )}
+            </div>
+          </div>
+        ) : (
+          <div className="text-center py-12 text-[#6B7280]">
+            Không có dữ liệu
+          </div>
+        )}
       </Modal>
     </div>
   );

@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Spin, Modal, Form, Input, InputNumber, Select } from 'antd';
-import { Search, Plus, Edit2, Check, } from 'lucide-react';
+import { Search, Plus, Eye, Edit2, Check, } from 'lucide-react';
 import { useManagerContext } from '../../../hooks/useManagerContext';
 import { useNotification } from '../../../contexts/NotificationContext';
 import accommodationService, { type AccommodationResponseDto, type AccommodationRequestDto } from '../../../services/accommodationService';
 import accommodationTypeService, { type AccommodationTypeResponseDto } from '../../../services/accommodationTypeService';
 import staffService, { type StaffInfo } from '../../../services/staffService';
 import campService, { type CampResponseDto } from '../../../services/campService';
+import camperAccommodationService, { type CamperAccommodationResponseDto } from '../../../services/camperAccommodationService';
 import DeletePopover from '../../../components/DeletePopover';
 
 const AccommodationManagement: React.FC = () => {
@@ -25,6 +26,7 @@ const AccommodationManagement: React.FC = () => {
   // Modal state
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingAccommodation, setEditingAccommodation] = useState<AccommodationResponseDto | null>(null);
+  const [isEditMode, setIsEditMode] = useState(false);
   const [form] = Form.useForm();
   const [submitting, setSubmitting] = useState(false);
 
@@ -35,6 +37,13 @@ const AccommodationManagement: React.FC = () => {
 
   // Delete popover state
   const [deletePopoverOpen, setDeletePopoverOpen] = useState<number | null>(null);
+
+  // Accommodation members (for detail view)
+  const [accommodationMembers, setAccommodationMembers] = useState<CamperAccommodationResponseDto[]>([]);
+  const [loadingMembers, setLoadingMembers] = useState(false);
+
+  // Selected new accommodations for existing members (camperId -> accommodationId)
+  const [selectedNewAccommodations, setSelectedNewAccommodations] = useState<Record<number, number>>({});
 
   // Fetch accommodations and types on mount/camp change
   useEffect(() => {
@@ -114,8 +123,8 @@ const AccommodationManagement: React.FC = () => {
     setIsModalVisible(true);
   };
 
-  // Handle edit accommodation
-  const handleEditClick = async (accommodation: AccommodationResponseDto) => {
+  // Handle view accommodation details
+  const handleViewDetails = async (accommodation: AccommodationResponseDto) => {
     try {
       // Fetch complete accommodation data including supervisor details
       const fullAccommodationData = await accommodationService.getAccommodationById(
@@ -128,6 +137,22 @@ const AccommodationManagement: React.FC = () => {
         capacity: fullAccommodationData.capacity,
         supervisorId: fullAccommodationData.supervisor?.userId,
       });
+
+      // Fetch accommodation members
+      setLoadingMembers(true);
+      try {
+        const members = await camperAccommodationService.getCamperAccommodations({ 
+          accommodationId: accommodation.accommodationId 
+        });
+        setAccommodationMembers(Array.isArray(members) ? members : []);
+      } catch (error) {
+        console.error('Failed to load accommodation members:', error);
+        setAccommodationMembers([]);
+      } finally {
+        setLoadingMembers(false);
+      }
+
+      setIsEditMode(false); // Start in view mode
       setIsModalVisible(true);
     } catch (error) {
       console.error('Failed to load accommodation details:', error);
@@ -399,12 +424,12 @@ const AccommodationManagement: React.FC = () => {
                             <td className="px-6 py-4 text-right">
                               <div className="flex items-center justify-end gap-2">
                                 <button
-                                  onClick={() => handleEditClick(accommodation)}
+                                  onClick={() => handleViewDetails(accommodation)}
                                   className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#F3F4F6] text-[#6B7280] rounded-lg hover:bg-[#E5E7EB] transition-all font-medium text-sm"
-                                  title="Sửa Nơi Ở"
+                                  title="Xem Chi Tiết"
                                 >
-                                  <Edit2 size={16} />
-                                  Sửa
+                                  <Eye size={16} />
+                                  Chi tiết
                                 </button>
                                 {accommodation.isActive ? (
                                   <DeletePopover
@@ -441,19 +466,49 @@ const AccommodationManagement: React.FC = () => {
         </>
       )}
 
-      {/* Add/Edit Modal */}
+      {/* Add/Edit/Detail Modal */}
       <Modal
-        title={editingAccommodation ? 'Sửa Nơi Ở' : 'Thêm Nơi Ở Mới'}
+        title={
+          !editingAccommodation ? 'Thêm Nơi Ở Mới' :
+          isEditMode ? 'Sửa Nơi Ở' :
+          'Chi Tiết Nơi Ở'
+        }
         open={isModalVisible}
         onOk={handleSubmit}
         onCancel={() => {
           setIsModalVisible(false);
           setEditingAccommodation(null);
+          setIsEditMode(false);
           form.resetFields();
         }}
         confirmLoading={submitting}
         width={600}
         centered
+        footer={
+          editingAccommodation && !isEditMode ? (
+            // Detail mode footer
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => {
+                  setIsModalVisible(false);
+                  setEditingAccommodation(null);
+                  setIsEditMode(false);
+                  form.resetFields();
+                }}
+                className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+              >
+                Đóng
+              </button>
+              <button
+                onClick={() => setIsEditMode(true)}
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 flex items-center gap-2"
+              >
+                <Edit2 size={16} />
+                Sửa
+              </button>
+            </div>
+          ) : undefined
+        }
         styles={{
           body: {
             padding: "16px 16px",
@@ -486,7 +541,7 @@ const AccommodationManagement: React.FC = () => {
               { min: 1, message: 'Tên không được để trống!' },
             ]}
           >
-            <Input placeholder="ví dụ: Ký túc xá A, Căn hộ 1" />
+            <Input placeholder="ví dụ: Ký túc xá A, Căn hộ 1" disabled={!!(editingAccommodation && !isEditMode)} />
           </Form.Item>
 
           <div>
@@ -503,6 +558,7 @@ const AccommodationManagement: React.FC = () => {
               >
                 <Select
                   placeholder="Chọn loại nơi ở"
+                  disabled={!!(editingAccommodation && !isEditMode)}
                   options={accommodationTypes.map((type) => ({
                     label: type.name,
                     value: type.id,
@@ -528,7 +584,7 @@ const AccommodationManagement: React.FC = () => {
               { type: 'number', min: 1, message: 'Sức chứa phải ít nhất là 1!' },
             ]}
           >
-            <InputNumber min={1} placeholder="ví dụ: 50" className="w-full" />
+            <InputNumber min={1} placeholder="ví dụ: 50" className="w-full" disabled={!!(editingAccommodation && !isEditMode)} />
           </Form.Item>
 
           <Form.Item
@@ -541,6 +597,7 @@ const AccommodationManagement: React.FC = () => {
           >
             <Select
               placeholder="Chọn người giám sát"
+              disabled={!!(editingAccommodation && !isEditMode)}
               optionLabelProp="label"
               options={staffList.map((staff) => ({
                 label: staff.fullName,
@@ -554,6 +611,94 @@ const AccommodationManagement: React.FC = () => {
               }}
             />
           </Form.Item>
+
+          {/* Accommodation Members Section */}
+          {editingAccommodation && accommodationMembers && (
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-semibold text-gray-700">
+                  Trại Viên ({accommodationMembers.length || 0})
+                </h3>
+                {loadingMembers && <Spin size="small" />}
+              </div>
+              {accommodationMembers.length > 0 ? (
+                <div className="max-h-60 overflow-y-auto space-y-2">
+                  {accommodationMembers.map((member, index) => (
+                      <div
+                        key={member.camperAccommodationId || index}
+                        className="flex items-center justify-between p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors gap-2"
+                      >
+                        <div className="flex-shrink-0">
+                          <p className="text-sm font-medium text-gray-900">
+                            {member.camperName || 'Không rõ'}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            ID: {member.camperId || 'N/A'}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Select
+                            placeholder="Chọn nơi ở mới"
+                            value={selectedNewAccommodations[member.camperId]}
+                            onChange={(value) => {
+                              setSelectedNewAccommodations(prev => ({
+                                ...prev,
+                                [member.camperId]: value
+                              }));
+                            }}
+                            className="w-40"
+                            size="small"
+                            options={accommodations
+                              .filter(a => a.accommodationId !== editingAccommodation?.accommodationId && a.isActive)
+                              .map(a => ({
+                                label: a.name,
+                                value: a.accommodationId
+                              }))}
+                          />
+                          <button
+                            onClick={async () => {
+                              const newAccommodationId = selectedNewAccommodations[member.camperId];
+                              if (!newAccommodationId) {
+                                toastError('Lỗi', 'Vui lòng chọn nơi ở mới');
+                                return;
+                              }
+                              try {
+                                await camperAccommodationService.updateCamperAccommodation(member.camperAccommodationId, {
+                                  camperId: member.camperId,
+                                  accommodationId: newAccommodationId
+                                });
+                                toastSuccess('Thành công', 'Đã chuyển trại viên sang nơi ở mới');
+                                // Clear selection
+                                setSelectedNewAccommodations(prev => {
+                                  const newState = { ...prev };
+                                  delete newState[member.camperId];
+                                  return newState;
+                                });
+                                // Refresh accommodation members
+                                const members = await camperAccommodationService.getCamperAccommodations({ 
+                                  accommodationId: editingAccommodation?.accommodationId 
+                                });
+                                setAccommodationMembers(Array.isArray(members) ? members : []);
+                              } catch (error: any) {
+                                console.error('Failed to change accommodation:', error);
+                                const errorMsg = error.response?.data?.message || error.message || 'Không thể chuyển nơi ở';
+                                toastError('Lỗi', errorMsg);
+                              }
+                            }}
+                            disabled={!selectedNewAccommodations[member.camperId]}
+                            className="text-blue-600 hover:text-blue-800 text-xs font-medium px-3 py-1 rounded bg-white border border-blue-300 hover:bg-blue-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                          >
+                            Thay đổi
+                          </button>
+                        </div>
+                      </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500 italic">Chưa có trại viên nào được phân chỗ ở</p>
+              )}
+            </div>
+          )}
         </Form>
       </Modal>
 
