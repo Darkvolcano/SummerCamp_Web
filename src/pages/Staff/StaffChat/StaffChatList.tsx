@@ -36,7 +36,7 @@ const StaffChatList: React.FC = () => {
         try {
             setLoading(true);
             const [usersResponse, roomsResponse] = await Promise.all([
-                axios.get('/user-account'),
+                axios.get('/user'),
                 chatRoomService.getMyRooms()
             ]);
 

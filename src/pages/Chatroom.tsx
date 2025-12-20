@@ -232,55 +232,18 @@ const Chatroom: React.FC = () => {
             {!loading && (
                 <div className="flex-1 flex bg-gray-100 mt-12">
                     {/* Left Sidebar - Server/Community */}
-                    <div className="w-20 bg-gray-900 flex flex-col items-center py-4 shadow-xl">
-                        {/* Community Server Icon */}
-                        <button
-                            onClick={() => setActiveChat({ type: 'community' })}
-                            className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl transition-all mb-3 hover:rounded-xl ${activeChat.type === 'community'
-                                ? 'bg-blue-600 rounded-xl'
-                                : 'bg-gray-700 hover:bg-blue-600'
-                                }`}
-                            title="Community Camp"
-                        >
-                            🏕️
-                        </button>
 
-                        {/* Divider */}
-                        <div className="w-8 h-0.5 bg-gray-700 mb-3" />
-
-                        {/* Help/Info */}
-                        <button
-                            className="w-14 h-14 rounded-2xl flex items-center justify-center text-xl bg-gray-700 hover:bg-gray-600 hover:rounded-xl transition-all"
-                            title="Help & Information"
-                        >
-                            ❓
-                        </button>
-                    </div>
 
                     {/* Channel/Chat Type Panel */}
                     <div className="w-64 bg-gray-800 flex flex-col shadow-xl">
                         {/* Server Header */}
                         <div className="h-16 px-4 flex items-center border-b border-gray-700 shadow-sm">
-                            <h2 className="text-white font-semibold text-sm">Summer Camp Chat</h2>
+                            <h2 className="text-white font-semibold text-sm">CampEase Chat</h2>
                         </div>
 
                         {/* Channels Section */}
                         <div className="flex-1 overflow-y-auto">
-                            {/* Community Chat */}
-                            <div className="px-2 py-4">
-                                <div className="px-2 mb-2 text-gray-400 text-xs font-semibold uppercase tracking-wide">
-                                    Text Channels
-                                </div>
-                                <button
-                                    onClick={() => setActiveChat({ type: 'community' })}
-                                    className={`w-full px-2 py-2 rounded flex items-center gap-2 text-gray-300 hover:bg-gray-700/50 transition-colors ${activeChat.type === 'community' ? 'bg-gray-700 text-white' : ''
-                                        }`}
-                                >
-                                    <span className="text-gray-400">#</span>
-                                    <span className="text-sm font-medium">community-chat</span>
-                                    <span className="ml-auto text-xs text-yellow-500">Soon</span>
-                                </button>
-                            </div>
+
 
                             {/* Private Chats */}
                             <div className="px-2 py-4 border-t border-gray-700">

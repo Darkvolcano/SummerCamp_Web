@@ -21,27 +21,27 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
     const isOwnMessage = message.senderId === user?.id;
     const formatTimestamp = (date: Date) => {
         const now = new Date();
-        const diff = now.getTime() - new Date(date).getTime();
+        const diff = now.getTime() - date.getTime();
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
         if (days === 0) {
-            return new Date(date).toLocaleTimeString('en-US', {
+            return date.toLocaleTimeString('en-US', {
                 hour: '2-digit',
                 minute: '2-digit'
             });
         } else if (days === 1) {
-            return 'Yesterday ' + new Date(date).toLocaleTimeString('en-US', {
+            return 'Yesterday ' + date.toLocaleTimeString('en-US', {
                 hour: '2-digit',
                 minute: '2-digit'
             });
         } else if (days < 7) {
-            return new Date(date).toLocaleDateString('en-US', {
+            return date.toLocaleDateString('en-US', {
                 weekday: 'short',
                 hour: '2-digit',
                 minute: '2-digit'
             });
         } else {
-            return new Date(date).toLocaleDateString('en-US', {
+            return date.toLocaleDateString('en-US', {
                 month: 'short',
                 day: 'numeric',
                 hour: '2-digit',

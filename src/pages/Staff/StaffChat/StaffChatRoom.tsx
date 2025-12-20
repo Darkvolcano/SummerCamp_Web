@@ -71,7 +71,17 @@ const StaffChatRoom: React.FC = () => {
     const { isConnected, joinRoom, leaveRoom } = useSignalRChat({
         onMessageReceived: (message: ChatRoomMessageDto) => {
             const uiMessage = transformMessage(message);
-            setMessages(prev => [...prev, uiMessage]);
+
+            // Avoid duplicates - check if message already exists
+            setMessages(prev => {
+                const exists = prev.some(msg =>
+                    msg.id === uiMessage.id ||
+                    (msg.content === uiMessage.content &&
+                        msg.senderId === uiMessage.senderId &&
+                        Math.abs(msg.timestamp.getTime() - uiMessage.timestamp.getTime()) < 2000)
+                );
+                return exists ? prev : [...prev, uiMessage];
+            });
         }
     });
 
@@ -123,14 +133,36 @@ const StaffChatRoom: React.FC = () => {
     };
 
     const handleSendMessage = async () => {
-        if (!messageInput.trim() || !roomId) return;
+        if (!messageInput.trim() || !roomId || !user) return;
 
         try {
             setSendingMessage(true);
-            await chatRoomService.sendMessage({
+
+            // Optimistic UI update - show message immediately
+            const optimisticMessage: UIMessage = {
+                id: -Date.now(), // Temporary negative ID
+                senderId: user.id,
+                senderName: `${user.lastName} ${user.firstName}`,
+                senderAvatar: user.avatar,
+                content: messageInput.trim(),
+                timestamp: new Date()
+            };
+            setMessages(prev => [...prev, optimisticMessage]);
+
+            // Send to backend
+            const response = await chatRoomService.sendMessage({
                 chatRoomId: parseInt(roomId),
                 content: messageInput.trim()
             });
+
+            // Replace optimistic message with real one from server
+            setMessages(prev =>
+                prev.map(msg =>
+                    msg.id === optimisticMessage.id
+                        ? transformMessage(response)
+                        : msg
+                )
+            );
 
             setMessageInput('');
             if (textareaRef.current) {
@@ -138,6 +170,8 @@ const StaffChatRoom: React.FC = () => {
             }
         } catch (error) {
             console.error('Failed to send message:', error);
+            // Remove optimistic message on error
+            setMessages(prev => prev.filter(msg => msg.id >= 0));
         } finally {
             setSendingMessage(false);
         }
@@ -223,8 +257,8 @@ const StaffChatRoom: React.FC = () => {
                                         </div>
                                         <div
                                             className={`px-4 py-2 rounded-2xl ${isOwnMessage
-                                                    ? 'bg-blue-600 text-white'
-                                                    : 'bg-white text-gray-900 border border-gray-200'
+                                                ? 'bg-blue-600 text-white'
+                                                : 'bg-white text-gray-900 border border-gray-200'
                                                 }`}
                                         >
                                             <p className="text-sm whitespace-pre-wrap break-words">
