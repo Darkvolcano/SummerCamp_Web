@@ -90,8 +90,9 @@ const ManagerDashboard: React.FC = () => {
 
         const isDraft = campData.status === "DRAFT" || campData.status === "Draft";
         const isRejected = campData.status === "REJECTED" || campData.status === "Rejected";
+        const isCanceled = campData.status === "CANCELED" || campData.status === "Canceled";
 
-        if (!isDraft && !isRejected) {
+        if (!isDraft && !isRejected && !isCanceled) {
           setDashboardLoading(true);
           const [summaryData, analyticsData, operationsData, pendingData] = await Promise.all([
             dashboardService.getManagerSummary(selectedCampId),
@@ -195,8 +196,9 @@ const ManagerDashboard: React.FC = () => {
 
   const isDraft = camp && (camp.status === "DRAFT" || camp.status === "Draft");
   const isRejected = camp && (camp.status === "REJECTED" || camp.status === "Rejected");
+  const isCanceled = camp && (camp.status === "CANCELED" || camp.status === "Canceled");
 
-  if (isDraft || isRejected) {
+  if (isDraft || isRejected || isCanceled) {
     return (
       <div className="p-6 space-y-6">
         <div className="flex justify-center">
@@ -204,6 +206,8 @@ const ManagerDashboard: React.FC = () => {
             className={`rounded-lg p-4 w-full max-w-2xl ${
               isRejected
                 ? "bg-red-50 border-2 border-red-200"
+                : isCanceled
+                ? "bg-gray-50 border-2 border-gray-200"
                 : "bg-blue-50 border-2 border-blue-200"
             }`}
           >
@@ -211,20 +215,44 @@ const ManagerDashboard: React.FC = () => {
               <div className="flex-1">
                 <h3
                   className={`text-base font-bold mb-1 ${
-                    isRejected ? "text-red-900" : "text-blue-900"
+                    isRejected 
+                      ? "text-red-900" 
+                      : isCanceled 
+                      ? "text-gray-900" 
+                      : "text-blue-900"
                   }`}
                 >
-                  {isRejected ? "⚠️ Approval Required" : "📋 Camp Not Published"}
+                  {isCanceled 
+                    ? "🚫 Camp Canceled" 
+                    : isRejected 
+                    ? "⚠️ Approval Required" 
+                    : "📋 Camp Not Published"}
                 </h3>
                 <p
                   className={`text-md mb-3 ${
-                    isRejected ? "text-red-700" : "text-blue-700"
+                    isRejected 
+                      ? "text-red-700" 
+                      : isCanceled 
+                      ? "text-gray-700" 
+                      : "text-blue-700"
                   }`}
                 >
-                  {isRejected
+                  {isCanceled
+                    ? "Trại đã bị hủy. Vui lòng liên hệ Admin nếu có thắc mắc."
+                    : isRejected
                     ? "Bị từ chối - kiểm tra và hoàn thành tất cả thiết lập để gửi duyệt"
                     : "Hoàn thành tất cả thiết lập để gửi duyệt"}
                 </p>
+
+                {(isRejected || isCanceled) && camp?.note && (
+                  <div className={`mb-3 p-3 rounded text-sm ${
+                    isRejected 
+                      ? "bg-red-100 border border-red-200 text-red-800" 
+                      : "bg-gray-100 border border-gray-200 text-gray-800"
+                  }`}>
+                    <strong>{isRejected ? "Lý do từ chối: " : "Lý do hủy: "}</strong> {camp.note}
+                  </div>
+                )}
 
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-3">
                   {[
@@ -241,12 +269,18 @@ const ManagerDashboard: React.FC = () => {
                       className={`${
                         isRejected
                           ? "bg-red-100 hover:bg-red-200 border-red-300"
+                          : isCanceled
+                          ? "bg-gray-100 hover:bg-gray-200 border-gray-300"
                           : "bg-blue-100 hover:bg-blue-200 border-blue-300"
                       } border rounded-lg p-2 text-left transition-all group flex items-center gap-2`}
                     >
                       <span
                         className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
-                          isRejected ? "bg-red-600 text-white" : "bg-blue-600 text-white"
+                          isRejected 
+                            ? "bg-red-600 text-white" 
+                            : isCanceled 
+                            ? "bg-gray-600 text-white" 
+                            : "bg-blue-600 text-white"
                         }`}
                       >
                         {index + 1}
@@ -255,6 +289,8 @@ const ManagerDashboard: React.FC = () => {
                         className={`text-xs font-semibold ${
                           isRejected
                             ? "text-red-900 group-hover:text-red-700"
+                            : isCanceled
+                            ? "text-gray-900 group-hover:text-gray-700"
                             : "text-blue-900 group-hover:text-blue-700"
                         }`}
                       >

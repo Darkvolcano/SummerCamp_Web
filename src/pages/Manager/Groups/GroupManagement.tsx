@@ -456,6 +456,9 @@ const GroupManagement: React.FC = () => {
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
                           Giám Sát Viên
                         </th>
+                        <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                          Trạng Thái
+                        </th>
                         <th className="px-6 py-3 text-right text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
                           Hành Động
                         </th>
@@ -503,6 +506,11 @@ const GroupManagement: React.FC = () => {
                                 </span>
                               )}
                             </td>
+                            <td className="px-6 py-4 text-sm">
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                                Active
+                              </span>
+                            </td>
                             <td className="px-6 py-4 text-right">
                               <div className="flex items-center justify-end gap-2">
                                 <button
@@ -515,9 +523,9 @@ const GroupManagement: React.FC = () => {
                                 </button>
                                 <DeletePopover
                                   onConfirm={() => handleDelete(group.groupId)}
-                                  title="Xóa Nhóm"
-                                  message={`Bạn có chắc chắn muốn xóa "${group.groupName}"?`}
-                                  buttonText="Xóa"
+                                  title="Hủy Kích Hoạt Nhóm"
+                                  message={`Bạn có chắc chắn muốn hủy kích hoạt "${group.groupName}"?`}
+                                  buttonText="Hủy Kích Hoạt"
                                   isOpen={deletePopoverOpen === group.groupId}
                                   onOpenChange={(open) =>
                                     setDeletePopoverOpen(open ? group.groupId : null)
