@@ -23,7 +23,9 @@ const CampDetailPage: React.FC = () => {
   const [campStatus, setCampStatus] = useState('DRAFT');
   const [isLoading, setIsLoading] = useState(true);
   const [openApprovePopover, setOpenApprovePopover] = useState(false);
-  const [openRejectPopover, setOpenRejectPopover] = useState(false);
+  const [openRejectModal, setOpenRejectModal] = useState(false);
+  const [rejectReason, setRejectReason] = useState('');
+  const [rejectLoading, setRejectLoading] = useState(false);
   const [openCancelModal, setOpenCancelModal] = useState(false);
   const [cancelReason, setCancelReason] = useState('');
   const [cancelLoading, setCancelLoading] = useState(false);
@@ -55,7 +57,7 @@ const CampDetailPage: React.FC = () => {
   const handleApprove = async () => {
     try {
       await campService.approveCamp(numericCampId);
-      toastSuccess('Thành công', 'Đã duyệt và công bố trại thành công!');
+      toastSuccess('Thành công', 'Đã duyệt và publish trại thành công!');
       fetchCampName();
       setOpenApprovePopover(false);
     } catch (error: any) {
@@ -68,17 +70,26 @@ const CampDetailPage: React.FC = () => {
   };
 
   const handleReject = async () => {
+    if (!rejectReason.trim()) {
+      toastError('Lỗi', 'Vui lòng cung cấp lý do từ chối');
+      return;
+    }
+
     try {
-      await campService.rejectCamp(numericCampId);
+      setRejectLoading(true);
+      await campService.rejectCamp(numericCampId, rejectReason);
       toastSuccess('Thành công', 'Đã từ chối trại thành công!');
       fetchCampName();
-      setOpenRejectPopover(false);
+      setOpenRejectModal(false);
+      setRejectReason('');
     } catch (error: any) {
       let errorMsg = 'Không thể từ chối trại';
       if (error.response?.data?.message) {
         errorMsg = error.response.data.message;
       }
       toastError('Lỗi', errorMsg);
+    } finally {
+      setRejectLoading(false);
     }
   };
 
@@ -193,41 +204,17 @@ const CampDetailPage: React.FC = () => {
                 >
                   <button className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-medium">
                     <CheckCircle size={18} />
-                    Duyệt và công bố
+                    Duyệt và publish
                   </button>
                 </Popover>
 
-                <Popover
-                  content={
-                    <div className="space-y-2">
-                      <p className="text-sm font-medium">Từ chối trại này?</p>
-                      <div className="flex gap-2">
-                        <Button
-                          size="small"
-                          danger
-                          onClick={handleReject}
-                        >
-                          Có
-                        </Button>
-                        <Button
-                          size="small"
-                          onClick={() => setOpenRejectPopover(false)}
-                        >
-                          Không
-                        </Button>
-                      </div>
-                    </div>
-                  }
-                  title="Xác nhận từ chối"
-                  trigger="click"
-                  open={openRejectPopover}
-                  onOpenChange={setOpenRejectPopover}
+                <button 
+                  onClick={() => setOpenRejectModal(true)}
+                  className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all font-medium"
                 >
-                  <button className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all font-medium">
-                    <XCircle size={18} />
-                    Từ chối
-                  </button>
-                </Popover>
+                  <XCircle size={18} />
+                  Từ chối setup
+                </button>
               </>
             )}
 
@@ -258,6 +245,51 @@ const CampDetailPage: React.FC = () => {
 
         {/* Tab Content */}
         {renderTab()}
+
+        {/* Reject Camp Modal */}
+        <Modal
+          title="Từ chối setup trại"
+          open={openRejectModal}
+          onCancel={() => {
+            setOpenRejectModal(false);
+            setRejectReason('');
+          }}
+          footer={[
+            <Button
+              key="back"
+              onClick={() => {
+                setOpenRejectModal(false);
+                setRejectReason('');
+              }}
+            >
+              Hủy
+            </Button>,
+            <Button
+              key="submit"
+              type="primary"
+              danger
+              loading={rejectLoading}
+              onClick={handleReject}
+            >
+              Từ chối
+            </Button>,
+          ]}
+        >
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Lý do từ chối <span className="text-red-500">*</span>
+              </label>
+              <Input.TextArea
+                value={rejectReason}
+                onChange={(e) => setRejectReason(e.target.value)}
+                placeholder="Nhập lý do từ chối..."
+                rows={4}
+                maxLength={500}
+              />
+            </div>
+          </div>
+        </Modal>
 
         {/* Cancel Camp Modal */}
         <Modal

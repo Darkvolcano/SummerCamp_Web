@@ -34,6 +34,7 @@ import dashboardService, {
   type ManagerOperationsResponseDto,
 } from "../../../services/dashboardService";
 import campReportService from "../../../services/campReportService";
+import camperGroupService from "../../../services/camperGroupService";
 import { useNotification } from "../../../contexts/NotificationContext";
 import dayjs from "dayjs";
 
@@ -70,6 +71,7 @@ const ManagerDashboard: React.FC = () => {
   const [dashboardLoading, setDashboardLoading] = useState(false);
   const [exportLoading, setExportLoading] = useState(false);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  const [pendingCampers, setPendingCampers] = useState<any[]>([]);
 
   useEffect(() => {
     if (!selectedCampId) {
@@ -88,17 +90,20 @@ const ManagerDashboard: React.FC = () => {
 
         const isDraft = campData.status === "DRAFT" || campData.status === "Draft";
         const isRejected = campData.status === "REJECTED" || campData.status === "Rejected";
+        const isCanceled = campData.status === "CANCELED" || campData.status === "Canceled";
 
-        if (!isDraft && !isRejected) {
+        if (!isDraft && !isRejected && !isCanceled) {
           setDashboardLoading(true);
-          const [summaryData, analyticsData, operationsData] = await Promise.all([
+          const [summaryData, analyticsData, operationsData, pendingData] = await Promise.all([
             dashboardService.getManagerSummary(selectedCampId),
             dashboardService.getManagerAnalytics(selectedCampId),
             dashboardService.getManagerOperations(selectedCampId),
+            camperGroupService.getPendingAssignCampers(selectedCampId),
           ]);
           setSummary(summaryData);
           setAnalytics(analyticsData);
           setOperations(operationsData);
+          setPendingCampers(pendingData || []);
         }
       } catch (error: any) {
         console.error("Failed to load dashboard:", error);
@@ -191,8 +196,9 @@ const ManagerDashboard: React.FC = () => {
 
   const isDraft = camp && (camp.status === "DRAFT" || camp.status === "Draft");
   const isRejected = camp && (camp.status === "REJECTED" || camp.status === "Rejected");
+  const isCanceled = camp && (camp.status === "CANCELED" || camp.status === "Canceled");
 
-  if (isDraft || isRejected) {
+  if (isDraft || isRejected || isCanceled) {
     return (
       <div className="p-6 space-y-6">
         <div className="flex justify-center">
@@ -200,6 +206,8 @@ const ManagerDashboard: React.FC = () => {
             className={`rounded-lg p-4 w-full max-w-2xl ${
               isRejected
                 ? "bg-red-50 border-2 border-red-200"
+                : isCanceled
+                ? "bg-gray-50 border-2 border-gray-200"
                 : "bg-blue-50 border-2 border-blue-200"
             }`}
           >
@@ -207,20 +215,44 @@ const ManagerDashboard: React.FC = () => {
               <div className="flex-1">
                 <h3
                   className={`text-base font-bold mb-1 ${
-                    isRejected ? "text-red-900" : "text-blue-900"
+                    isRejected 
+                      ? "text-red-900" 
+                      : isCanceled 
+                      ? "text-gray-900" 
+                      : "text-blue-900"
                   }`}
                 >
-                  {isRejected ? "⚠️ Approval Required" : "📋 Camp Not Published"}
+                  {isCanceled 
+                    ? "🚫 Camp Canceled" 
+                    : isRejected 
+                    ? "⚠️ Approval Required" 
+                    : "📋 Camp Not Published"}
                 </h3>
                 <p
                   className={`text-md mb-3 ${
-                    isRejected ? "text-red-700" : "text-blue-700"
+                    isRejected 
+                      ? "text-red-700" 
+                      : isCanceled 
+                      ? "text-gray-700" 
+                      : "text-blue-700"
                   }`}
                 >
-                  {isRejected
+                  {isCanceled
+                    ? "Trại đã bị hủy. Vui lòng liên hệ Admin nếu có thắc mắc."
+                    : isRejected
                     ? "Bị từ chối - kiểm tra và hoàn thành tất cả thiết lập để gửi duyệt"
                     : "Hoàn thành tất cả thiết lập để gửi duyệt"}
                 </p>
+
+                {(isRejected || isCanceled) && camp?.note && (
+                  <div className={`mb-3 p-3 rounded text-sm ${
+                    isRejected 
+                      ? "bg-red-100 border border-red-200 text-red-800" 
+                      : "bg-gray-100 border border-gray-200 text-gray-800"
+                  }`}>
+                    <strong>{isRejected ? "Lý do từ chối: " : "Lý do hủy: "}</strong> {camp.note}
+                  </div>
+                )}
 
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-3">
                   {[
@@ -237,12 +269,18 @@ const ManagerDashboard: React.FC = () => {
                       className={`${
                         isRejected
                           ? "bg-red-100 hover:bg-red-200 border-red-300"
+                          : isCanceled
+                          ? "bg-gray-100 hover:bg-gray-200 border-gray-300"
                           : "bg-blue-100 hover:bg-blue-200 border-blue-300"
                       } border rounded-lg p-2 text-left transition-all group flex items-center gap-2`}
                     >
                       <span
                         className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
-                          isRejected ? "bg-red-600 text-white" : "bg-blue-600 text-white"
+                          isRejected 
+                            ? "bg-red-600 text-white" 
+                            : isCanceled 
+                            ? "bg-gray-600 text-white" 
+                            : "bg-blue-600 text-white"
                         }`}
                       >
                         {index + 1}
@@ -251,6 +289,8 @@ const ManagerDashboard: React.FC = () => {
                         className={`text-xs font-semibold ${
                           isRejected
                             ? "text-red-900 group-hover:text-red-700"
+                            : isCanceled
+                            ? "text-gray-900 group-hover:text-gray-700"
                             : "text-blue-900 group-hover:text-blue-700"
                         }`}
                       >
@@ -787,6 +827,86 @@ const ManagerDashboard: React.FC = () => {
           </table>
         </div>
       </div>
+
+      {/* Pending Group Assignment Campers */}
+      {pendingCampers && pendingCampers.length > 0 && (
+        <div className="bg-white rounded-xl shadow-sm border border-[#E5E7EB] overflow-hidden">
+          <div className="px-6 py-4 border-b border-[#E5E7EB] flex items-center justify-between">
+            <h3 className="text-lg font-bold text-[#111827] flex items-center gap-2">
+              <Users size={20} className="text-amber-500" />
+              Trại Viên Chờ Phân Nhóm ({pendingCampers.length})
+            </h3>
+            <button
+              onClick={() => navigate("/manager/groups")}
+              className="text-sm bg-white border border-amber-600 text-amber-600 hover:bg-amber-50 font-medium flex items-center gap-1 px-3 py-1.5 rounded-lg transition-colors"
+            >
+              Phân nhóm ngay
+              <Eye size={16} />
+            </button>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-[#F9FAFB] border-b border-[#E5E7EB]">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                    Trại Viên
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                    Độ Tuổi
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                    Giới Tính
+                  </th>
+                  <th className="px-6 py-3 text-right text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                    Thao Tác
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#E5E7EB]">
+                {pendingCampers.slice(0, 5).map((camper: any) => (
+                  <tr key={camper.camper?.camperId} className="hover:bg-[#F9FAFB] transition-colors">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        {camper.camper?.avatar ? (
+                          <img
+                            src={camper.camper.avatar}
+                            alt={camper.camper.fullName}
+                            className="w-10 h-10 rounded-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white font-bold">
+                            {camper.camper?.fullName?.charAt(0).toUpperCase() || '?'}
+                          </div>
+                        )}
+                        <div>
+                          <p className="text-sm font-semibold text-[#111827]">{camper.camper?.fullName || 'N/A'}</p>
+                          <p className="text-xs text-[#6B7280]">ID: #{camper.camper?.camperId}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-[#374151]">
+                      {camper.camper?.age || 'N/A'} tuổi
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+                        {camper.camper?.gender === 'Male' ? 'Nam' : camper.camper?.gender === 'Female' ? 'Nữ' : 'Khác'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <button
+                        onClick={() => navigate("/manager/groups")}
+                        className="bg-white border border-amber-600 text-amber-600 hover:bg-amber-50 text-sm font-medium px-3 py-1 rounded-lg transition-colors"
+                      >
+                        Phân nhóm
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {/* Capacity Alerts */}
       {operations?.capacityAlerts && operations.capacityAlerts.length > 0 && (
