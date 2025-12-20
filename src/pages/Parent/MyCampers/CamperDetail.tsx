@@ -356,13 +356,14 @@ const CamperDetail: React.FC = () => {
   const getStatusInfo = (status: string) => {
     const statusMap: { [key: string]: { bg: string; text: string; label: string } } = {
       PendingApproval: { bg: "bg-yellow-100", text: "text-yellow-700", label: "Chờ duyệt" },
-      Rejected: { bg: "bg-red-100", text: "text-red-700", label: "Bị từ chối" },
-      Approved: { bg: "bg-green-100", text: "text-green-700", label: "Được duyệt" },
-      PendingPayment: { bg: "bg-blue-100", text: "text-blue-700", label: "Chờ thanh toán" },
-      Confirmed: { bg: "bg-green-100", text: "text-green-700", label: "Xác nhận" },
-      PendingRefund: { bg: "bg-yellow-100", text: "text-yellow-700", label: "Chờ hoàn tiền" },
-      OnGoing: { bg: "bg-purple-100", text: "text-purple-700", label: "Đang diễn ra" },
+      Registered: { bg: "bg-blue-100", text: "text-blue-700", label: "Đã đăng ký" },
       Canceled: { bg: "bg-gray-100", text: "text-gray-700", label: "Đã hủy" },
+      PendingAssignGroup: { bg: "bg-orange-100", text: "text-orange-700", label: "Chờ phân nhóm" },
+      Confirmed: { bg: "bg-green-100", text: "text-green-700", label: "Đã xác nhận" },
+      Transporting: { bg: "bg-purple-100", text: "text-purple-700", label: "Đang trung chuyển" },
+      Transported: { bg: "bg-indigo-100", text: "text-indigo-700", label: "Đã đến nơi" },
+      CheckedIn: { bg: "bg-teal-100", text: "text-teal-700", label: "Đã check-in" },
+      CheckedOut: { bg: "bg-cyan-100", text: "text-cyan-700", label: "Đã check-out" },
     };
     return (
       statusMap[status] || { bg: "bg-gray-100", text: "text-gray-700", label: status }
