@@ -64,6 +64,7 @@ import CheckIn from "./pages/Staff/CheckIn/CheckIn";
 import UserManagement from "./pages/Admin/UserManagement/UserManagement";
 import CampLocationPage from "./pages/Admin/CampLocationManagement/CampLocationPage";
 import StaffCampDetail from "./pages/Staff/CampDetail/StaffCampDetail";
+import Chatroom from "./pages/Chatroom";
 
 function App() {
   return (
@@ -139,6 +140,14 @@ function App() {
               element={
                 <MainLayout>
                   <RegistrationSuccess />
+                </MainLayout>
+              }
+            />
+            <Route
+              path={PagePath.CHAT}
+              element={
+                <MainLayout>
+                  <Chatroom />
                 </MainLayout>
               }
             />
