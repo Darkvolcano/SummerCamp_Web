@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from "react";
 import {
   X,
   Edit2,
-  Trash2,
   CheckCircle,
   XCircle,
 
@@ -10,7 +9,7 @@ import {
   Plus,
   Loader,
 } from "lucide-react";
-import { DatePicker, Popover, Button, Spin } from "antd";
+import { DatePicker, Spin } from "antd";
 import dayjs from "dayjs";
 import { useNotification } from "../../../../contexts/NotificationContext";
 import campService, {
@@ -43,7 +42,6 @@ interface CampDetailOverviewProps {
 
 const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
   campId,
-  onBack,
   onUpdate,
 }) => {
   const { toastSuccess, toastError } = useNotification();
@@ -55,7 +53,6 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
   const [campTypes, setCampTypes] = useState<CampTypeResponseDto[]>([]);
   const [locations, setLocations] = useState<LocationResponseDto[]>([]);
   const [promotions, setPromotions] = useState<PromotionResponseDto[]>([]);
-  const [openDeletePopover, setOpenDeletePopover] = useState(false);
 
   const [showAddLocation, setShowAddLocation] = useState(false);
 
@@ -184,21 +181,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
     }
   };
 
-  const handleDelete = async () => {
-    if (!window.confirm("Bạn có chắc chắn muốn xóa trại này?")) return;
 
-    try {
-      await campService.deleteCamp(campId);
-      toastSuccess("Thành công", "Xóa trại thành công!");
-      onBack();
-    } catch (error: any) {
-      let errorMsg = "Không thể xóa trại";
-      if (error.response?.data?.message) {
-        errorMsg = error.response.data.message;
-      }
-      toastError("Lỗi", errorMsg);
-    }
-  };
 
 
 
@@ -369,53 +352,15 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
           {!isEditing &&
             [
               CampStatus.DRAFT,
-              CampStatus.PENDING_APPOVAL,
               CampStatus.REJECTED,
-              CampStatus.CANCELED,
             ].includes(camp.status as CampStatus) && (
-              <>
                 <button
                   onClick={() => setIsEditing(true)}
                   className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-medium"
                 >
                   <Edit2 size={18} />
-                  Cập nhật
+                  Cập nhật thông tin trại
                 </button>
-                <Popover
-                  content={
-                    <div className="space-y-2">
-                      <p className="text-sm font-medium">Hủy trại này?</p>
-                      <div className="flex gap-2">
-                        <Button
-                          size="small"
-                          danger
-                          onClick={() => {
-                            handleDelete();
-                            setOpenDeletePopover(false);
-                          }}
-                        >
-                          Có
-                        </Button>
-                        <Button
-                          size="small"
-                          onClick={() => setOpenDeletePopover(false)}
-                        >
-                          Không
-                        </Button>
-                      </div>
-                    </div>
-                  }
-                  title="Xác nhận hủy trại"
-                  trigger="click"
-                  open={openDeletePopover}
-                  onOpenChange={setOpenDeletePopover}
-                >
-                  <button className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all font-medium">
-                    <Trash2 size={18} />
-                    Hủy
-                  </button>
-                </Popover>
-              </>
             )}
           {isEditing && (
             <>

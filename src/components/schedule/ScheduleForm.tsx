@@ -227,6 +227,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
           startTime: values.startTime.toISOString(),
           endTime: values.endTime.toISOString(),
           isLiveStream: !!values.isLiveStream,
+          maxCapacity: values.maxCapacity ? parseInt(values.maxCapacity, 10) : null,
           isRepeat: !!values.isRepeat,
         };
 
@@ -796,7 +797,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
                 <Form.Item
                   label={<span className="text-sm font-semibold text-[#374151]">Địa Điểm</span>}
                   name="locationId"
-                  rules={[{ required: false, message: "Vui lòng chọn địa điểm" }]}
+                  rules={[{ required: true, message: "Vui lòng chọn địa điểm" }]}
                 >
                   <Select
                     placeholder="Select location (optional)"
@@ -844,6 +845,18 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
                       label: location.name,
                       value: location.locationId,
                     }))}
+                  />
+                </Form.Item>
+
+                <Form.Item 
+                  label={<span className="text-sm font-semibold text-[#374151]">Sức Chứa Tối Đa</span>} 
+                  name="maxCapacity"
+                  rules={[{ required: true, message: "Vui lòng nhập sức chứa tối đa" }]}
+                >
+                  <Input 
+                    type="number" 
+                    placeholder="Nhập sức chứa tối đa (tùy chọn)" 
+                    min={1}
                   />
                 </Form.Item>
 
