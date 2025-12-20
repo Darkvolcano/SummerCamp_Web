@@ -4,8 +4,8 @@ import ChatArea from '../components/chat/ChatArea';
 import StaffSelectionModal from '../components/chat/StaffSelectionModal';
 import Navbar from '../components/navbar/Navbar';
 import { useSignalRChat } from '../hooks/useSignalRChat';
-import { chatRoomService, type ChatRoomDetailDto, type ChatRoomMessageDto } from '../services/chatRoomService';
-import { useAuthStore } from '../contexts/useAuthStore';
+import chatRoomService, { type ChatRoomDetailDto, type ChatRoomMessageDto } from '../services/chatRoomService';
+import { useAuthStore } from '../services/userService';
 
 type ChatType = 'community' | 'private';
 
@@ -29,9 +29,9 @@ const transformMessage = (msg: ChatRoomMessageDto): UIMessage => ({
     id: msg.messageId,
     senderId: msg.senderId,
     senderName: msg.senderName,
-    senderRole: msg.senderRole || 'User',
-    senderAvatar: msg.senderAvatar,
-    content: msg.messageContent,
+    senderRole: 'User',
+    senderAvatar: msg.avatar,
+    content: msg.content,
     timestamp: new Date(msg.sentAt)
 });
 
@@ -45,10 +45,12 @@ const Chatroom: React.FC = () => {
     const [sendingMessage, setSendingMessage] = useState(false);
 
     // SignalR integration
-    const { isConnected, joinRoom, leaveRoom } = useSignalRChat((message) => {
-        // Handle incoming real-time message
-        const uiMessage = transformMessage(message);
-        setCurrentMessages(prev => [...prev, uiMessage]);
+    const { isConnected, joinRoom, leaveRoom } = useSignalRChat({
+        onMessageReceived: (message: ChatRoomMessageDto) => {
+            // Handle incoming real-time message
+            const uiMessage = transformMessage(message);
+            setCurrentMessages(prev => [...prev, uiMessage]);
+        }
     });
 
     // Load user's chat rooms on mount
@@ -99,7 +101,7 @@ const Chatroom: React.FC = () => {
             return '#community-chat';
         } else if (activeChat.type === 'private' && activeChat.roomId) {
             const room = myRooms.find(r => r.chatRoomId === activeChat.roomId);
-            return room?.otherParticipantName || 'Private Chat';
+            return room?.name || 'Private Chat';
         }
         return 'Chat';
     };
@@ -125,7 +127,7 @@ const Chatroom: React.FC = () => {
             setSendingMessage(true);
             await chatRoomService.sendMessage({
                 chatRoomId: activeChat.roomId,
-                messageContent: content
+                content: content
             });
             // Message will be received via SignalR
         } catch (error) {
@@ -144,7 +146,7 @@ const Chatroom: React.FC = () => {
 
             // Create or get existing private room
             const response = await chatRoomService.createOrGetPrivateRoom({
-                otherUserId: staffId
+                recipientUserId: staffId
             });
 
             // Reload rooms to get the new/existing room
@@ -275,17 +277,17 @@ const Chatroom: React.FC = () => {
                                                     }`}
                                             >
                                                 <img
-                                                    src={room.otherParticipantAvatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${room.otherParticipantId}`}
-                                                    alt={room.otherParticipantName}
+                                                    src={room.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${room.chatRoomId}`}
+                                                    alt={room.name}
                                                     className="w-8 h-8 rounded-full"
                                                 />
                                                 <div className="flex-1 text-left min-w-0">
                                                     <div className="text-sm font-medium text-gray-300 truncate">
-                                                        {room.otherParticipantName}
+                                                        {room.name}
                                                     </div>
-                                                    {room.lastMessageContent && (
+                                                    {room.lastMessage && (
                                                         <div className="text-xs text-gray-500 truncate">
-                                                            {room.lastMessageContent}
+                                                            {room.lastMessage}
                                                         </div>
                                                     )}
                                                 </div>
@@ -310,7 +312,7 @@ const Chatroom: React.FC = () => {
                         {/* User Panel */}
                         <div className="h-16 bg-gray-900 px-2 flex items-center gap-3 border-t border-gray-700">
                             <img
-                                src={user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.userId}`}
+                                src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.id}`}
                                 alt={user?.fullName || 'User'}
                                 className="w-9 h-9 rounded-full"
                             />
@@ -369,7 +371,6 @@ const Chatroom: React.FC = () => {
                     <StaffSelectionModal
                         isOpen={isStaffModalOpen}
                         onClose={() => setIsStaffModalOpen(false)}
-                        eligibleStaff={eligibleStaff}
                         onSelectStaff={handleSelectStaff}
                     />
                 </div>

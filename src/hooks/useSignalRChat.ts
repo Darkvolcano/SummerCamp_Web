@@ -59,7 +59,7 @@ export const useSignalRChat = (options: UseSignalRChatOptions) => {
             setIsConnected(true);
             // Rejoin current room if we were in one
             if (currentRoomId !== null) {
-                connection.invoke('JoinRoom', currentRoomId.toString()).catch(err => {
+                connection.invoke('JoinRoom', currentRoomId.toString()).catch((err: Error) => {
                     console.error('Failed to rejoin room after reconnection:', err);
                 });
             }
@@ -72,7 +72,7 @@ export const useSignalRChat = (options: UseSignalRChatOptions) => {
                 setIsConnected(true);
                 onConnected?.();
             })
-            .catch((err) => {
+            .catch((err: Error) => {
                 console.error('SignalR connection error:', err);
                 onError?.(err);
             });

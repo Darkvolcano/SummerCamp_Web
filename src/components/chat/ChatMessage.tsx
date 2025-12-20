@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAuthStore } from '../../contexts/useAuthStore';
+import { useAuthStore } from '../../services/userService';
 
 // Updated Message interface to match API structure
 interface Message {
@@ -18,7 +18,7 @@ interface ChatMessageProps {
 
 const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
     const { user } = useAuthStore();
-    const isOwnMessage = message.senderId === user?.userId;
+    const isOwnMessage = message.senderId === user?.id;
     const formatTimestamp = (date: Date) => {
         const now = new Date();
         const diff = now.getTime() - new Date(date).getTime();
@@ -50,7 +50,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
         }
     };
 
-    const getRoleBadgeColor = (role: 'User' | 'Staff') => {
+    const getRoleBadgeColor = (role: string) => {
         return role === 'Staff'
             ? 'bg-blue-100 text-blue-700 border-blue-200'
             : 'bg-green-100 text-green-700 border-green-200';
