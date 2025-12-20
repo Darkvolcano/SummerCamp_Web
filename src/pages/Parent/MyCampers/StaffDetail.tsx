@@ -154,7 +154,7 @@ const StaffDetail: React.FC = () => {
             {/* Chat Button */}
             <div className="mt-8 pt-6 border-t border-gray-200">
               <button
-                onClick={() => navigate(PagePath.CHAT)}
+                onClick={() => navigate(PagePath.CHAT, { state: { staffId: parseInt(staffId!) } })}
                 className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl hover:scale-[1.02]"
               >
                 <MessageSquare size={24} />

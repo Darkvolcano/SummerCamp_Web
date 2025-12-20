@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Spin } from 'antd';
 import ChatArea from '../components/chat/ChatArea';
 import StaffSelectionModal from '../components/chat/StaffSelectionModal';
@@ -36,6 +37,7 @@ const transformMessage = (msg: ChatRoomMessageDto): UIMessage => ({
 });
 
 const Chatroom: React.FC = () => {
+    const location = useLocation();
     const { user } = useAuthStore();
     const [activeChat, setActiveChat] = useState<ActiveChat>({ type: 'community' });
     const [isStaffModalOpen, setIsStaffModalOpen] = useState(false);
@@ -43,6 +45,7 @@ const Chatroom: React.FC = () => {
     const [currentMessages, setCurrentMessages] = useState<UIMessage[]>([]);
     const [loading, setLoading] = useState(true);
     const [sendingMessage, setSendingMessage] = useState(false);
+    const [initializing, setInitializing] = useState(false);
 
     // SignalR integration
     const { isConnected, joinRoom, leaveRoom } = useSignalRChat({
@@ -57,6 +60,16 @@ const Chatroom: React.FC = () => {
     useEffect(() => {
         loadMyRooms();
     }, []);
+
+    // Handle navigation from staff detail page - auto-create/open private chat
+    useEffect(() => {
+        const navigationState = location.state as { staffId?: number } | null;
+        if (navigationState?.staffId && !initializing) {
+            handleSelectStaff(navigationState.staffId);
+            // Clear the navigation state to prevent re-triggering
+            window.history.replaceState({}, document.title);
+        }
+    }, [location.state]);
 
     // Join/leave SignalR room when active chat changes
     useEffect(() => {
@@ -142,6 +155,7 @@ const Chatroom: React.FC = () => {
     const handleSelectStaff = async (staffId: number) => {
         try {
             setIsStaffModalOpen(false);
+            setInitializing(true);
             setLoading(true);
 
             // Create or get existing private room
@@ -159,6 +173,7 @@ const Chatroom: React.FC = () => {
             console.error('Failed to create/open private chat:', error);
         } finally {
             setLoading(false);
+            setInitializing(false);
         }
     };
 
@@ -240,24 +255,6 @@ const Chatroom: React.FC = () => {
                                     <div className="text-gray-400 text-xs font-semibold uppercase tracking-wide">
                                         Private Messages
                                     </div>
-                                    <button
-                                        onClick={() => setIsStaffModalOpen(true)}
-                                        className="text-gray-400 hover:text-white transition-colors"
-                                        title="Start new private chat"
-                                    >
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            className="h-4 w-4"
-                                            viewBox="0 0 20 20"
-                                            fill="currentColor"
-                                        >
-                                            <path
-                                                fillRule="evenodd"
-                                                d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-                                                clipRule="evenodd"
-                                            />
-                                        </svg>
-                                    </button>
                                 </div>
 
                                 {/* Private Chat List */}
@@ -297,16 +294,6 @@ const Chatroom: React.FC = () => {
                                 )}
                             </div>
 
-                            {/* Chat with Staff Button */}
-                            <div className="px-2 pb-4">
-                                <button
-                                    onClick={() => setIsStaffModalOpen(true)}
-                                    className="w-full px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
-                                >
-                                    <span>💬</span>
-                                    <span>Chat with Staff</span>
-                                </button>
-                            </div>
                         </div>
 
                         {/* User Panel */}
@@ -353,15 +340,12 @@ const Chatroom: React.FC = () => {
                                 <div className="text-center p-8">
                                     <div className="text-6xl mb-4">💬</div>
                                     <h3 className="text-2xl font-semibold text-gray-700 mb-2">Welcome to Chat</h3>
-                                    <p className="text-gray-500 mb-4">
-                                        Select a conversation or start a new chat with staff
+                                    <p className="text-gray-500">
+                                        Select a conversation from the sidebar to start chatting
                                     </p>
-                                    <button
-                                        onClick={() => setIsStaffModalOpen(true)}
-                                        className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
-                                    >
-                                        Start New Chat
-                                    </button>
+                                    <p className="text-sm text-gray-400 mt-2">
+                                        To chat with staff, visit their profile page and click "Nhắn tin với nhân viên"
+                                    </p>
                                 </div>
                             </div>
                         )}
