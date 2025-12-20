@@ -1,20 +1,31 @@
 import React, { useState, useRef, useEffect } from 'react';
-import type { Message } from '../../data/mockChatData';
-import { currentUser } from '../../data/mockChatData';
 import ChatMessage from './ChatMessage';
+
+// Updated Message interface to match API structure
+interface Message {
+    id: number;
+    senderId: number;
+    senderName: string;
+    senderRole: string;
+    senderAvatar?: string;
+    content: string;
+    timestamp: Date;
+}
 
 interface ChatAreaProps {
     messages: Message[];
     chatTitle: string;
     chatSubtitle?: string;
     onSendMessage?: (content: string) => void;
+    disabled?: boolean;
 }
 
 const ChatArea: React.FC<ChatAreaProps> = ({
     messages,
     chatTitle,
     chatSubtitle,
-    onSendMessage
+    onSendMessage,
+    disabled = false
 }) => {
     const [messageInput, setMessageInput] = useState('');
     const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -87,7 +98,6 @@ const ChatArea: React.FC<ChatAreaProps> = ({
                             <ChatMessage
                                 key={message.id}
                                 message={message}
-                                isOwnMessage={message.senderId === currentUser.id}
                             />
                         ))}
                         <div ref={messagesEndRef} />
@@ -108,6 +118,7 @@ const ChatArea: React.FC<ChatAreaProps> = ({
                             className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                             rows={1}
                             style={{ maxHeight: '120px', minHeight: '48px' }}
+                            disabled={disabled}
                         />
                         {/* Character count (optional) */}
                         {messageInput.length > 0 && (
@@ -118,7 +129,7 @@ const ChatArea: React.FC<ChatAreaProps> = ({
                     </div>
                     <button
                         onClick={handleSendMessage}
-                        disabled={!messageInput.trim()}
+                        disabled={!messageInput.trim() || disabled}
                         className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all"
                     >
                         <svg

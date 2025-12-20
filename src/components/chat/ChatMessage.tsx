@@ -1,12 +1,24 @@
 import React from 'react';
-import type { Message } from '../../data/mockChatData';
+import { useAuthStore } from '../../contexts/useAuthStore';
+
+// Updated Message interface to match API structure
+interface Message {
+    id: number;
+    senderId: number;
+    senderName: string;
+    senderRole: string;
+    senderAvatar?: string;
+    content: string;
+    timestamp: Date;
+}
 
 interface ChatMessageProps {
     message: Message;
-    isOwnMessage?: boolean;
 }
 
-const ChatMessage: React.FC<ChatMessageProps> = ({ message, isOwnMessage = false }) => {
+const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
+    const { user } = useAuthStore();
+    const isOwnMessage = message.senderId === user?.userId;
     const formatTimestamp = (date: Date) => {
         const now = new Date();
         const diff = now.getTime() - new Date(date).getTime();

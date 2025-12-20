@@ -145,11 +145,7 @@ function App() {
             />
             <Route
               path={PagePath.CHAT}
-              element={
-                <MainLayout>
-                  <Chatroom />
-                </MainLayout>
-              }
+              element={<Chatroom />}
             />
 
             {/* Admin Routes - Protected */}

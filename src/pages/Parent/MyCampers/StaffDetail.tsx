@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Spin } from 'antd';
-import { ArrowLeft, User, Mail, Phone, Calendar } from 'lucide-react';
+import { ArrowLeft, User, Mail, Phone, Calendar, MessageSquare } from 'lucide-react';
 import userAccountService, { type UserAccountResponseDto } from '../../../services/userAccountService';
 import { useNotification } from '../../../contexts/NotificationContext';
+import { PagePath } from '../../../enums/page-path.enum';
 
 const StaffDetail: React.FC = () => {
   const { staffId } = useParams<{ staffId: string }>();
   const navigate = useNavigate();
   const { toastError } = useNotification();
-  
+
   const [staff, setStaff] = useState<UserAccountResponseDto | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -148,6 +149,20 @@ const StaffDetail: React.FC = () => {
                   </div>
                 </div>
               )}
+            </div>
+
+            {/* Chat Button */}
+            <div className="mt-8 pt-6 border-t border-gray-200">
+              <button
+                onClick={() => navigate(PagePath.CHAT)}
+                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl hover:scale-[1.02]"
+              >
+                <MessageSquare size={24} />
+                <span className="text-lg">Nhắn tin với nhân viên</span>
+              </button>
+              <p className="text-center text-sm text-gray-500 mt-3">
+                Bắt đầu cuộc trò chuyện trực tiếp với nhân viên
+              </p>
             </div>
           </div>
         </div>
