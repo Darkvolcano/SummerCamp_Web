@@ -34,7 +34,7 @@ const StaffSelectionModal: React.FC<StaffSelectionModalProps> = ({
     const loadUsers = async () => {
         try {
             setLoading(true);
-            const response = await axios.get('/api/user-account');
+            const response = await axios.get('/user-account');
             setUsers(response.data || []);
         } catch (error) {
             console.error('Failed to load users:', error);

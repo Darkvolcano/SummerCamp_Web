@@ -17,8 +17,10 @@ export const useSignalRChat = (options: UseSignalRChatOptions) => {
 
     // Get API base URL from axios config or environment
     const getHubUrl = () => {
-        const baseURL = import.meta.env.VITE_API_BASE_URL || 'https://localhost:7179';
-        return `${baseURL}/hubs/chatroom`;
+        // Remove /api suffix from base URL since hub is at root level
+        const apiBaseURL = import.meta.env.VITE_API_BASE_URL || 'https://summercampapi-339197681269.asia-southeast1.run.app/api';
+        const baseURL = apiBaseURL.replace(/\/api$/, '');
+        return `${baseURL}/hubs/chat`;  // Match backend hub path
     };
 
     // Initialize SignalR connection
@@ -32,7 +34,8 @@ export const useSignalRChat = (options: UseSignalRChatOptions) => {
 
         const connection = new signalR.HubConnectionBuilder()
             .withUrl(getHubUrl(), {
-                accessTokenFactory: () => token
+                accessTokenFactory: () => token,
+                withCredentials: false  // Disable credentials to work with CORS wildcard
             })
             .withAutomaticReconnect()
             .configureLogging(signalR.LogLevel.Information)

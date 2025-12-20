@@ -38,19 +38,19 @@ export interface CreateOrGetPrivateRoomResponseDto {
 const chatRoomService = {
     // Send a message to a chat room
     sendMessage: async (request: SendMessageDto): Promise<ChatRoomMessageDto> => {
-        const response = await axios.post('/api/chat-rooms/send', request);
+        const response = await axios.post('/chat-rooms/send', request);
         return response.data;
     },
 
     // Get all chat rooms for current user
     getMyRooms: async (): Promise<ChatRoomDetailDto[]> => {
-        const response = await axios.get('/api/chat-rooms/my-rooms');
+        const response = await axios.get('/chat-rooms/my-rooms');
         return response.data;
     },
 
     // Get message history for a room
     getMessagesByRoomId: async (roomId: number): Promise<ChatRoomMessageDto[]> => {
-        const response = await axios.get(`/api/chat-rooms/${roomId}/messages`);
+        const response = await axios.get(`/chat-rooms/${roomId}/messages`);
         return response.data;
     },
 
@@ -58,13 +58,13 @@ const chatRoomService = {
     createOrGetPrivateRoom: async (
         request: CreateOrGetPrivateRoomRequestDto
     ): Promise<CreateOrGetPrivateRoomResponseDto> => {
-        const response = await axios.post('/api/chat-rooms/create-or-get-private', request);
+        const response = await axios.post('/chat-rooms/create-or-get-private', request);
         return response.data;
     },
 
     // Get room details
     getRoomDetails: async (roomId: number): Promise<ChatRoomDetailDto> => {
-        const response = await axios.get(`/api/chat-rooms/${roomId}/details`);
+        const response = await axios.get(`/chat-rooms/${roomId}/details`);
         return response.data;
     }
 };
