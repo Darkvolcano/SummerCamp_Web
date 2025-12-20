@@ -71,6 +71,8 @@ export enum PagePath {
   STAFF_PHOTOS = "/staff/photos",
   STAFF_CHECKIN = "/staff/check-in",
   STAFF_LIVESTREAM_HOST = "/staff/livestream/host/:roomId",
+  STAFF_CHAT = "/staff/chat",
+  STAFF_CHAT_ROOM = "/staff/chat/:roomId",
 
   //Manager Routes
   MANAGER_DASHBOARD = "/manager/dashboard",

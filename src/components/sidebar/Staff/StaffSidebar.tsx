@@ -11,6 +11,7 @@ import {
   UserCircle,
   Briefcase,
   Info,
+  MessageSquare,
 } from "lucide-react";
 import { useAuthStore } from "../../../services/userService";
 import { StaffContext } from "../../../contexts/StaffContext";
@@ -32,7 +33,7 @@ const StaffSidebar: React.FC<StaffSidebarProps> = ({ onCollapsedChange }) => {
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
   const context = useContext(StaffContext);
-  
+
   const [selectedCamp, setSelectedCamp] = useState("Chọn chương trình trại");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -78,6 +79,11 @@ const StaffSidebar: React.FC<StaffSidebarProps> = ({ onCollapsedChange }) => {
       label: "Check In/Out",
       icon: <LogIn size={20} />,
     },
+    {
+      path: PagePath.STAFF_CHAT,
+      label: "Trò Chuyện",
+      icon: <MessageSquare size={20} />,
+    },
   ];
 
   // Close dropdown when clicking outside
@@ -105,7 +111,7 @@ const StaffSidebar: React.FC<StaffSidebarProps> = ({ onCollapsedChange }) => {
   // Camp selection handler
   const handleCampSelect = (campId: number, campName: string) => {
     console.log("[StaffSidebar] handleCampSelect called with:", { campId, campName });
-    
+
     if (context?.setSelectedCampId) {
       context.setSelectedCampId(campId);
       console.log("[StaffSidebar] Camp ID set in context");
@@ -201,9 +207,8 @@ const StaffSidebar: React.FC<StaffSidebarProps> = ({ onCollapsedChange }) => {
             <li key={item.path}>
               <Link
                 to={item.path}
-                className={`menu-item ${
-                  location.pathname === item.path ? "active" : ""
-                }`}
+                className={`menu-item ${location.pathname === item.path ? "active" : ""
+                  }`}
                 title={isCollapsed ? item.label : ""}
               >
                 <span className="menu-icon">{item.icon}</span>
@@ -234,9 +239,8 @@ const StaffSidebar: React.FC<StaffSidebarProps> = ({ onCollapsedChange }) => {
               <button className="user-menu-toggle">
                 <ChevronDown
                   size={16}
-                  className={`transition-transform duration-200 ${
-                    showUserDropdown ? "rotate-180" : ""
-                  }`}
+                  className={`transition-transform duration-200 ${showUserDropdown ? "rotate-180" : ""
+                    }`}
                 />
               </button>
             </>

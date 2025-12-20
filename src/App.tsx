@@ -14,6 +14,8 @@ import VehicleTypeManagement from "./pages/Admin/VehicleTypeManagement/VehicleTy
 import StaffSchedule from "./pages/Staff/MySchedule/MySchedule";
 import MyCamps from "./pages/Staff/MyCamps/MyCamps";
 import MyBlogs from "./pages/Staff/MyBlogs/MyBlogs";
+import StaffChatList from "./pages/Staff/StaffChat/StaffChatList";
+import StaffChatRoom from "./pages/Staff/StaffChat/StaffChatRoom";
 import BlogList from "./pages/Blog/BlogList";
 import BlogDetail from "./pages/Blog/BlogDetail";
 import { AuthGuardProvider } from "./contexts/AuthGuardContext";
@@ -187,6 +189,8 @@ function App() {
               <Route path={PagePath.STAFF_ATTENDANCE_CAMPERS} element={<AttendanceCamperList />} />
               <Route path={PagePath.STAFF_CHECKIN} element={<CheckIn />} />
               <Route path={PagePath.STAFF_LIVESTREAM_HOST} element={<HostLiveStream />} />
+              <Route path={PagePath.STAFF_CHAT} element={<StaffChatList />} />
+              <Route path={PagePath.STAFF_CHAT_ROOM} element={<StaffChatRoom />} />
             </Route>
             <Route path={PagePath.STAFF_CAMPS} element={<MyCamps />} />
             <Route path={PagePath.STAFF_BLOGS} element={<MyBlogs />} />
