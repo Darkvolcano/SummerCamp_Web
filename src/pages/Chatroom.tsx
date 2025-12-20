@@ -52,7 +52,17 @@ const Chatroom: React.FC = () => {
         onMessageReceived: (message: ChatRoomMessageDto) => {
             // Handle incoming real-time message
             const uiMessage = transformMessage(message);
-            setCurrentMessages(prev => [...prev, uiMessage]);
+
+            // Avoid duplicates - check if message already exists
+            setCurrentMessages(prev => {
+                const exists = prev.some(msg =>
+                    msg.id === uiMessage.id ||
+                    (msg.content === uiMessage.content &&
+                        msg.senderId === uiMessage.senderId &&
+                        Math.abs(msg.timestamp.getTime() - uiMessage.timestamp.getTime()) < 2000)
+                );
+                return exists ? prev : [...prev, uiMessage];
+            });
         }
     });
 
@@ -131,21 +141,44 @@ const Chatroom: React.FC = () => {
 
     // Handle sending messages
     const handleSendMessage = async (content: string) => {
-        if (!activeChat.roomId) {
+        if (!activeChat.roomId || !user) {
             console.error('No active room to send message');
             return;
         }
 
         try {
             setSendingMessage(true);
-            await chatRoomService.sendMessage({
+
+            // Optimistic UI update - show message immediately
+            const optimisticMessage: UIMessage = {
+                id: -Date.now(), // Temporary negative ID
+                senderId: user.id,
+                senderName: user.fullName,
+                senderRole: 'User',
+                senderAvatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}`,
+                content: content,
+                timestamp: new Date()
+            };
+            setCurrentMessages(prev => [...prev, optimisticMessage]);
+
+            // Send to backend
+            const response = await chatRoomService.sendMessage({
                 chatRoomId: activeChat.roomId,
                 content: content
             });
-            // Message will be received via SignalR
+
+            // Replace optimistic message with real one from server
+            setCurrentMessages(prev =>
+                prev.map(msg =>
+                    msg.id === optimisticMessage.id
+                        ? transformMessage(response)
+                        : msg
+                )
+            );
         } catch (error) {
             console.error('Failed to send message:', error);
-            // You might want to show a toast notification here
+            // Remove optimistic message on error
+            setCurrentMessages(prev => prev.filter(msg => msg.id !== -Date.now()));
         } finally {
             setSendingMessage(false);
         }
