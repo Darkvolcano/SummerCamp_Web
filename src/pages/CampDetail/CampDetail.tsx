@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Spin, message } from "antd";
+import { Spin, message, Modal, List } from "antd";
 import {
   CalendarOutlined,
   EnvironmentOutlined,
@@ -11,8 +11,10 @@ import {
   CheckCircleFilled,
   TagOutlined,
   GiftOutlined,
+  UnorderedListOutlined,
 } from "@ant-design/icons";
 import campService, { type CampResponseDto } from "../../services/campService";
+import activityScheduleService, { type ActivityScheduleResponseDto } from "../../services/activityScheduleService";
 import { useAuthStore } from "../../services/userService";
 import "./CampDetail.css";
 
@@ -22,6 +24,9 @@ const CampDetail: React.FC = () => {
   const { user } = useAuthStore();
   const [camp, setCamp] = useState<CampResponseDto | null>(null);
   const [loading, setLoading] = useState(true);
+  const [scheduleModalVisible, setScheduleModalVisible] = useState(false);
+  const [schedules, setSchedules] = useState<ActivityScheduleResponseDto[]>([]);
+  const [schedulesLoading, setSchedulesLoading] = useState(false);
 
   useEffect(() => {
     console.log("🔍 [CampDetail] Component mounted, id:", campId);
@@ -118,6 +123,21 @@ const CampDetail: React.FC = () => {
     }
     // Navigate to registration page
     navigate(`/register-camp/${camp?.campId}`);
+  };
+
+  const handleViewSchedules = async () => {
+    if (!camp) return;
+    try {
+      setSchedulesLoading(true);
+      setScheduleModalVisible(true);
+      const data = await activityScheduleService.getActivitySchedulesByCamp(camp.campId);
+      setSchedules(data);
+    } catch (error) {
+      console.error("Error fetching schedules:", error);
+      message.error("Không thể tải lịch trình hoạt động");
+    } finally {
+      setSchedulesLoading(false);
+    }
   };
 
   if (loading) {
@@ -469,18 +489,18 @@ const CampDetail: React.FC = () => {
                 </p>
               ) : null}
 
-              {/* Contact Info */}
-              <div className="pt-6 border-t-2 border-gray-100 text-center">
-                <p className="text-sm text-gray-600 mb-3 font-medium">
-                  💬 Cần hỗ trợ thêm thông tin?
-                </p>
-                <a
-                  href="/contact"
-                  className="text-[#FF8F50] font-bold hover:underline hover:text-[#ff7e3d] transition-colors"
-                >
-                  Liên hệ với chúng tôi →
-                </a>
-              </div>
+              {/* View Schedule Button (only when logged in) */}
+              {user && (
+                <div className="pt-6 border-t-2 border-gray-100">
+                  <button
+                    onClick={handleViewSchedules}
+                    className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 rounded-full transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+                  >
+                    <UnorderedListOutlined />
+                    Xem lịch trình hoạt động
+                  </button>
+                </div>
+              )}
 
               {/* Additional Info */}
               <div className="p-4">
@@ -502,6 +522,53 @@ const CampDetail: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Activity Schedule Modal */}
+      <Modal
+        title="Lịch trình hoạt động"
+        open={scheduleModalVisible}
+        onCancel={() => setScheduleModalVisible(false)}
+        footer={null}
+        width={700}
+      >
+        {schedulesLoading ? (
+          <div className="flex justify-center py-8">
+            <Spin size="large" />
+          </div>
+        ) : (
+          <List
+            dataSource={schedules}
+            locale={{ emptyText: "Chưa có lịch trình hoạt động nào" }}
+            renderItem={(schedule) => (
+              <List.Item className="hover:bg-gray-50 transition-colors px-4 rounded-lg">
+                <div className="w-full">
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-gray-900 text-base mb-1">
+                        {schedule.activity?.name || "Hoạt động"}
+                      </h4>
+                      <p className="text-sm text-gray-600">
+                        📅 {new Date(schedule.startTime).toLocaleString("vi-VN", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                        {" - "}
+                        {new Date(schedule.endTime).toLocaleString("vi-VN", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </List.Item>
+            )}
+          />
+        )}
+      </Modal>
     </div>
   );
 };
