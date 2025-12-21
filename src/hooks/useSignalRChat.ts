@@ -79,9 +79,14 @@ export const useSignalRChat = (options: UseSignalRChatOptions) => {
         connection
             .start()
             .then(() => {
-                console.log('[SignalR] Connection started successfully');
-                setIsConnected(true);
-                onConnected?.();
+                console.log('[SignalR] Connection started successfully, state:', connection.state);
+                // Ensure connection is truly established before setting connected
+                if (connection.state === signalR.HubConnectionState.Connected) {
+                    setIsConnected(true);
+                    onConnected?.();
+                } else {
+                    console.warn('[SignalR] Connection started but not in Connected state:', connection.state);
+                }
             })
             .catch((err: Error) => {
                 console.error('[SignalR] Connection error:', err);
@@ -99,10 +104,26 @@ export const useSignalRChat = (options: UseSignalRChatOptions) => {
 
     // Join a chat room
     const joinRoom = useCallback(async (roomId: number) => {
-        if (!connectionRef.current || connectionRef.current.state !== signalR.HubConnectionState.Connected) {
-            console.warn('Cannot join room: SignalR not connected', {
-                hasConnection: !!connectionRef.current,
-                connectionState: connectionRef.current?.state,
+        const connection = connectionRef.current;
+
+        if (!connection) {
+            console.warn('[SignalR] Cannot join room: No connection', { roomId });
+            return;
+        }
+
+        // Wait for connection to be fully established
+        const maxRetries = 10;
+        let retries = 0;
+
+        while (connection.state === signalR.HubConnectionState.Connecting && retries < maxRetries) {
+            console.log(`[SignalR] Waiting for connection to be ready... (${retries + 1}/${maxRetries})`);
+            await new Promise(resolve => setTimeout(resolve, 500));
+            retries++;
+        }
+
+        if (connection.state !== signalR.HubConnectionState.Connected) {
+            console.warn('[SignalR] Cannot join room: Connection not ready', {
+                connectionState: connection.state,
                 roomId
             });
             return;
@@ -112,12 +133,12 @@ export const useSignalRChat = (options: UseSignalRChatOptions) => {
             // Leave current room if we're in one
             if (currentRoomId !== null && currentRoomId !== roomId) {
                 console.log('[SignalR] Leaving room:', currentRoomId);
-                await connectionRef.current.invoke('LeaveRoom', currentRoomId.toString());
+                await connection.invoke('LeaveRoom', currentRoomId.toString());
             }
 
             // Join new room
             console.log('[SignalR] Joining room:', roomId);
-            await connectionRef.current.invoke('JoinRoom', roomId.toString());
+            await connection.invoke('JoinRoom', roomId.toString());
             setCurrentRoomId(roomId);
             console.log('[SignalR] Successfully joined room:', roomId);
         } catch (err) {
