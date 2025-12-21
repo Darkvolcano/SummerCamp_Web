@@ -183,7 +183,7 @@ const RouteTab: React.FC = () => {
       fetchRoutes();
     } catch (error) {
       console.error('Failed to save route:', error);
-      toastError('Error', 'Failed to save route');
+      toastError('Lỗi', 'Không thể lưu tuyến đường');
     } finally {
       setSubmitting(false);
     }

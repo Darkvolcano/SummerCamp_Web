@@ -14,6 +14,8 @@ import VehicleTypeManagement from "./pages/Admin/VehicleTypeManagement/VehicleTy
 import StaffSchedule from "./pages/Staff/MySchedule/MySchedule";
 import MyCamps from "./pages/Staff/MyCamps/MyCamps";
 import MyBlogs from "./pages/Staff/MyBlogs/MyBlogs";
+import StaffChatList from "./pages/Staff/StaffChat/StaffChatList";
+import StaffChatRoom from "./pages/Staff/StaffChat/StaffChatRoom";
 import BlogList from "./pages/Blog/BlogList";
 import BlogDetail from "./pages/Blog/BlogDetail";
 import { AuthGuardProvider } from "./contexts/AuthGuardContext";
@@ -64,11 +66,17 @@ import CheckIn from "./pages/Staff/CheckIn/CheckIn";
 import UserManagement from "./pages/Admin/UserManagement/UserManagement";
 import CampLocationPage from "./pages/Admin/CampLocationManagement/CampLocationPage";
 import StaffCampDetail from "./pages/Staff/CampDetail/StaffCampDetail";
+
+import Chatroom from "./pages/Chatroom";
+
 import StaffPhotos from "./pages/Staff/Photos/StaffPhotos";
 import StaffIncidents from "./pages/Staff/Incidents/StaffIncidents";
 import ManagerIncidents from "./pages/Manager/Incidents/ManagerIncidents";
 import AdminIncidents from "./pages/Admin/Incidents/AdminIncidents";
 import PhotoGallery from "./pages/Parent/MyCampers/PhotoGallery";
+import FAQPage from "./pages/Admin/FAQManagement/FAQPage";
+import CustomerFAQPage from "./pages/FAQ/FAQPage";
+
 
 function App() {
   return (
@@ -132,6 +140,14 @@ function App() {
               }
             />
             <Route
+              path={PagePath.FAQ}
+              element={
+                <MainLayout>
+                  <CustomerFAQPage />
+                </MainLayout>
+              }
+            />
+            <Route
               path={PagePath.REGISTRATION_FORM}
               element={
                 <MainLayout>
@@ -147,6 +163,10 @@ function App() {
                 </MainLayout>
               }
             />
+            <Route
+              path={PagePath.CHAT}
+              element={<Chatroom />}
+            />
 
             {/* Admin Routes - Protected */}
             <Route element={<AdminLayout />}>
@@ -159,6 +179,7 @@ function App() {
               <Route path={PagePath.ADMIN_CAMPTYPES} element={<CampTypePage />} />
               <Route path={PagePath.ADMIN_CAMP_LOCATIONS} element={<CampLocationPage />} />
               <Route path={PagePath.ADMIN_PROMOTIONS} element={<PromotionPage />} />
+              <Route path={PagePath.ADMIN_FAQS} element={<FAQPage />} />
               <Route path={PagePath.ADMIN_TRANSACTIONS} element={<TransactionPage />} />
               <Route
                 path={PagePath.ADMIN_CAMPS_DETAIL}
@@ -193,6 +214,8 @@ function App() {
               <Route path={PagePath.STAFF_PHOTOS} element={<StaffPhotos />} />
               <Route path={PagePath.STAFF_INCIDENTS} element={<StaffIncidents />} />
               <Route path={PagePath.STAFF_LIVESTREAM_HOST} element={<HostLiveStream />} />
+              <Route path={PagePath.STAFF_CHAT} element={<StaffChatList />} />
+              <Route path={PagePath.STAFF_CHAT_ROOM} element={<StaffChatRoom />} />
             </Route>
             <Route path={PagePath.STAFF_CAMPS} element={<MyCamps />} />
             <Route path={PagePath.STAFF_BLOGS} element={<MyBlogs />} />

@@ -349,28 +349,28 @@ const AccommodationManagement: React.FC = () => {
 
                 {/* Table */}
                 <div className="overflow-x-auto">
-                  <table className="w-full">
+                  <table className="w-full" style={{ tableLayout: 'fixed', minWidth: '1200px' }}>
                     <thead className="bg-[#F9FAFB] border-b border-[#E5E7EB]">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider" style={{ width: '60px' }}>
                           STT
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider" style={{ width: '100px' }}>
                           Tên Nơi Ở
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider" style={{ width: '100px' }}>
                           Loại
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider" style={{ width: '70px' }}>
                           Sức Chứa
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider" style={{ width: '100px' }}>
                           Người Giám Sát
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider" style={{ width: '80px' }}>
                           Trạng Thái
                         </th>
-                        <th className="px-6 py-3 text-right text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                        <th className="px-6 py-3 text-right text-xs font-semibold text-[#6B7280] uppercase tracking-wider" style={{ width: '200px' }}>
                           Thao Tác
                         </th>
                       </tr>
@@ -391,42 +391,47 @@ const AccommodationManagement: React.FC = () => {
                             key={accommodation.accommodationId}
                             className="hover:bg-[#F9FAFB] transition-colors"
                           >
-                            <td className="px-6 py-4 text-sm font-mono text-[#6B7280]">
+                            <td className="px-6 py-4 text-sm font-mono text-[#6B7280] whitespace-nowrap">
                               {index + 1}
                             </td>
                             <td className="px-6 py-4 text-sm font-medium text-[#111827]">
-                              {accommodation.name}
+                              <div className="truncate" title={accommodation.name}>
+                                {accommodation.name}
+                              </div>
                             </td>
                             <td className="px-6 py-4 text-sm text-[#6B7280]">
-                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-700">
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-700 whitespace-nowrap">
                                 {getAccommodationTypeName(accommodation.accommodationTypeId)}
                               </span>
                             </td>
-                            <td className="px-6 py-4 text-sm text-[#6B7280]">
+                            <td className="px-6 py-4 text-sm text-[#6B7280] whitespace-nowrap">
                               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
                                 {accommodation.capacity}
                               </span>
                             </td>
                             <td className="px-6 py-4 text-sm text-[#6B7280]">
                               {accommodation.supervisor?.fullName ? (
-                                accommodation.supervisor.fullName
+                                <div className="truncate" title={accommodation.supervisor.fullName}>
+                                  {accommodation.supervisor.fullName}
+                                </div>
                               ) : (
-                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">
-                              Unassigned
-                            </span>
+                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700 whitespace-nowrap">
+                                  Unassigned
+                                </span>
                               )}
                             </td>
-                            <td className="px-6 py-4 text-sm">
+                            <td className="px-6 py-4 text-sm whitespace-nowrap">
                               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${accommodation.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                            {accommodation.isActive ? 'Active' : 'Inactive'}
-                          </span>
+                                {accommodation.isActive ? 'Active' : 'Inactive'}
+                              </span>
                             </td>
                             <td className="px-6 py-4 text-right">
                               <div className="flex items-center justify-end gap-2">
                                 <button
                                   onClick={() => handleViewDetails(accommodation)}
-                                  className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#F3F4F6] text-[#6B7280] rounded-lg hover:bg-[#E5E7EB] transition-all font-medium text-sm"
+                                  className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#F3F4F6] text-[#6B7280] rounded-lg hover:bg-[#E5E7EB] transition-all font-medium text-sm whitespace-nowrap"
                                   title="Xem Chi Tiết"
+                                  style={{ minWidth: '110px' }}
                                 >
                                   <Eye size={16} />
                                   Chi tiết
@@ -445,8 +450,9 @@ const AccommodationManagement: React.FC = () => {
                                 ) : (
                                   <button
                                     onClick={() => handleToggleStatus(accommodation.accommodationId, accommodation.isActive)}
-                                    className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-all font-medium text-sm"
+                                    className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-all font-medium text-sm whitespace-nowrap"
                                     title="Kích Hoạt Nơi Ở"
+                                    style={{ minWidth: '110px' }}
                                   >
                                     <Check size={16} />
                                     Kích Hoạt

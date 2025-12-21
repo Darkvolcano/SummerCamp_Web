@@ -311,7 +311,6 @@ const TransportScheduleTab: React.FC = () => {
   const getStatusBadge = (status: string) => {
     const statusConfig: Record<string, { color: string }> = {
       NotYet: { color: 'orange' },
-      OnGoing: { color: 'blue' },
       Completed: { color: 'green' },
       Canceled: { color: 'red' },
       Rejected: { color: 'red' },
@@ -1266,7 +1265,7 @@ const TransportScheduleTab: React.FC = () => {
                         </p>
                         {camper.checkInTime && (
                           <p className="text-xs text-green-600 mt-1">
-                            ✓ Check-in: {dayjs(camper.checkInTime).format('HH:mm DD/MM/YYYY')}
+                            ✓ Lên xe: {dayjs(camper.checkInTime).format('HH:mm DD/MM/YYYY')}
                           </p>
                         )}
                       </div>
@@ -1277,11 +1276,11 @@ const TransportScheduleTab: React.FC = () => {
                           </span>
                         ) : camper.checkInTime ? (
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
-                            Đã check-in
+                            Đã lên xe
                           </span>
                         ) : (
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">
-                            Chờ check-in
+                            Chờ lên xe
                           </span>
                         )}
                       </div>

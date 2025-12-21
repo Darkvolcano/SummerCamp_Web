@@ -53,10 +53,11 @@ const STATUS_COLORS: { [key: string]: string } = {
   Confirmed: COLORS.success,
   PendingPayment: COLORS.warning,
   PendingApproval: COLORS.info,
+  PendingRefund: COLORS.warning,
+  Refunded: COLORS.success,
   Canceled: COLORS.danger,
   Rejected: COLORS.danger,
   Approved: COLORS.success,
-  OnGoing: COLORS.purple,
 };
 
 const ManagerDashboard: React.FC = () => {
@@ -254,65 +255,63 @@ const ManagerDashboard: React.FC = () => {
                   </div>
                 )}
 
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-3">
-                  {[
-                    { label: "Phân Công NV", path: "/manager/staffs" },
-                    { label: "Địa Điểm", path: "/manager/locations" },
-                    { label: "Nhóm", path: "/manager/groups" },
-                    { label: "Chỗ Ở", path: "/manager/accommodation" },
-                    { label: "Hoạt Động", path: "/manager/activities" },
-                    { label: "Đưa Đón", path: "/manager/transportation" },
-                  ].map((item, index) => (
-                    <button
-                      key={index}
-                      onClick={() => navigate(item.path)}
-                      className={`${
-                        isRejected
-                          ? "bg-red-100 hover:bg-red-200 border-red-300"
-                          : isCanceled
-                          ? "bg-gray-100 hover:bg-gray-200 border-gray-300"
-                          : "bg-blue-100 hover:bg-blue-200 border-blue-300"
-                      } border rounded-lg p-2 text-left transition-all group flex items-center gap-2`}
-                    >
-                      <span
-                        className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
-                          isRejected 
-                            ? "bg-red-600 text-white" 
-                            : isCanceled 
-                            ? "bg-gray-600 text-white" 
-                            : "bg-blue-600 text-white"
-                        }`}
-                      >
-                        {index + 1}
-                      </span>
-                      <span
-                        className={`text-xs font-semibold ${
+                {!isCanceled && (
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-3">
+                    {[
+                      { label: "Phân Công NV", path: "/manager/staffs" },
+                      { label: "Địa Điểm", path: "/manager/locations" },
+                      { label: "Nhóm", path: "/manager/groups" },
+                      { label: "Chỗ Ở", path: "/manager/accommodation" },
+                      { label: "Hoạt Động", path: "/manager/activities" },
+                      { label: "Đưa Đón", path: "/manager/transportation" },
+                    ].map((item, index) => (
+                      <button
+                        key={index}
+                        onClick={() => navigate(item.path)}
+                        className={`${
                           isRejected
-                            ? "text-red-900 group-hover:text-red-700"
-                            : isCanceled
-                            ? "text-gray-900 group-hover:text-gray-700"
-                            : "text-blue-900 group-hover:text-blue-700"
-                        }`}
+                            ? "bg-red-100 hover:bg-red-200 border-red-300"
+                            : "bg-blue-100 hover:bg-blue-200 border-blue-300"
+                        } border rounded-lg p-2 text-left transition-all group flex items-center gap-2`}
                       >
-                        {item.label}
-                      </span>
-                    </button>
-                  ))}
-                </div>
+                        <span
+                          className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
+                            isRejected 
+                              ? "bg-red-600 text-white" 
+                              : "bg-blue-600 text-white"
+                          }`}
+                        >
+                          {index + 1}
+                        </span>
+                        <span
+                          className={`text-xs font-semibold ${
+                            isRejected
+                              ? "text-red-900 group-hover:text-red-700"
+                              : "text-blue-900 group-hover:text-blue-700"
+                          }`}
+                        >
+                          {item.label}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
-              <Button
-                type="primary"
-                onClick={handleSubmitForApproval}
-                loading={loading}
-                size="middle"
-                className={
-                  isRejected
-                    ? "bg-red-600 hover:bg-red-700 text-white flex-shrink-0"
-                    : "bg-blue-600 hover:bg-blue-700 text-white flex-shrink-0"
-                }
-              >
-                Gửi Duyệt
-              </Button>
+              {!isCanceled && (
+                <Button
+                  type="primary"
+                  onClick={handleSubmitForApproval}
+                  loading={loading}
+                  size="middle"
+                  className={
+                    isRejected
+                      ? "bg-red-600 hover:bg-red-700 text-white flex-shrink-0"
+                      : "bg-blue-600 hover:bg-blue-700 text-white flex-shrink-0"
+                  }
+                >
+                  Gửi Duyệt
+                </Button>
+              )}
             </div>
             
             {/* Validation Errors Display */}

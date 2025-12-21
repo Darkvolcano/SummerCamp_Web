@@ -8,6 +8,7 @@ import {
   FileText,
   CreditCard,
   LayoutDashboard,
+  MessageSquare,
 } from "lucide-react";
 import Logoforblack from "../../assets/Logo.png";
 import { useAuthStore } from "../../services/userService";
@@ -96,6 +97,7 @@ export default function Navbar() {
     { to: "/", label: "Trang chủ" },
     { to: "/camp", label: "Chương trình" },
     { to: "/blog-posts", label: "Tin tức" },
+    { to: "/faq", label: "FAQ" },
     { to: "/about", label: "Giới thiệu" },
     { to: "/contact", label: "Liên hệ" },
   ];
@@ -181,6 +183,16 @@ export default function Navbar() {
               className="block w-full text-center bg-gradient-to-r from-orange-400 to-yellow-400 hover:from-orange-500 hover:to-yellow-500 text-white font-bold py-1.5 rounded-md transition-all duration-300 shadow-lg text-xs mb-2"
             >
               Thông tin cá nhân
+            </button>
+            <button
+              onClick={() => {
+                handleMobileLinkClick();
+                navigate(PagePath.CHAT);
+              }}
+              className="block w-full text-center bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 text-white font-bold py-1.5 rounded-md transition-all duration-300 shadow-lg text-xs mb-2 flex items-center justify-center gap-1"
+            >
+              <MessageSquare size={14} />
+              Trò chuyện
             </button>
             <button
               onClick={() => {
@@ -280,6 +292,17 @@ export default function Navbar() {
                   >
                     <UserCircle size={18} className="text-gray-600" />
                     <span>Thông tin cá nhân</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setShowUserDropdown(false);
+                      navigate(PagePath.CHAT);
+                    }}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-800 bg-white hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-3"
+                  >
+                    <MessageSquare size={18} className="text-gray-600" />
+                    <span>Trò chuyện</span>
                   </button>
 
                   {/* User-exclusive items - only show for parent/user roles */}

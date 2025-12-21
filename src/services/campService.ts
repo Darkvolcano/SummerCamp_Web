@@ -386,8 +386,8 @@ const campService = {
 
   // Cancel camp
   cancelCamp: async (campId: number, note: string): Promise<CampResponseDto> => {
-    console.log(`[campService] POST /camp/${campId}/cancel`);
-    const response = await axiosInstance.post(`/camp/${campId}/cancel`, { note });
+    console.log(`[campService] PUT /camp/${campId}/cancel`);
+    const response = await axiosInstance.put(`/camp/${campId}/cancel`, { note });
     const mapped = mapBackendToFrontend(response.data as BackendCampResponse);
     return mapped;
   },

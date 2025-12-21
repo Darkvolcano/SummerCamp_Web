@@ -485,6 +485,18 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
                 />
               </div>
 
+              {/* Cancel Note - Only show when status is Canceled */}
+              {campStatus === CampStatus.CANCELED && camp.note && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                  <label className="block text-sm font-semibold text-red-900 mb-2">
+                    Lý do hủy trại
+                  </label>
+                  <p className="text-sm text-red-800 italic">
+                    "{camp.note}"
+                  </p>
+                </div>
+              )}
+
               {isEditing && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
