@@ -79,6 +79,11 @@ const StaffChatList: React.FC = () => {
         user.email?.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
+    // Get users who don't have existing rooms
+    const usersWithoutRooms = filteredUsers.filter(user =>
+        !existingRooms.some(room => room.name.includes(user.fullName))
+    );
+
     return (
         <div className="flex h-screen bg-gray-50">
             <div className="flex-1 flex flex-col max-w-5xl mx-auto w-full">
@@ -149,6 +154,51 @@ const StaffChatList: React.FC = () => {
                                 </div>
                             )}
 
+                            {/* New Conversations */}
+                            {usersWithoutRooms.length > 0 && (
+                                <div>
+                                    <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                                        Phụ Huynh Khác
+                                    </h2>
+                                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 divide-y divide-gray-100">
+                                        {usersWithoutRooms.map((user) => (
+                                            <button
+                                                key={user.userId}
+                                                onClick={() => handleStartChat(user.userId)}
+                                                disabled={creatingChat === user.userId}
+                                                className="w-full px-6 py-4 hover:bg-blue-50 transition-colors text-left flex items-center gap-4 disabled:opacity-50 disabled:cursor-not-allowed"
+                                            >
+                                                <img
+                                                    src={user.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.userId}`}
+                                                    alt={user.fullName}
+                                                    className="w-12 h-12 rounded-full"
+                                                />
+                                                <div className="flex-1 min-w-0">
+                                                    <h3 className="font-semibold text-gray-900 truncate">
+                                                        {user.fullName}
+                                                    </h3>
+                                                    <p className="text-sm text-gray-500 truncate">
+                                                        {user.email}
+                                                    </p>
+                                                </div>
+                                                {creatingChat === user.userId ? (
+                                                    <Loader2 className="animate-spin text-blue-600" size={20} />
+                                                ) : (
+                                                    <MessageSquare className="text-gray-400" size={20} />
+                                                )}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Empty State */}
+                            {existingRooms.length === 0 && usersWithoutRooms.length === 0 && (
+                                <div className="flex flex-col items-center justify-center py-12">
+                                    <MessageSquare className="text-gray-400 mb-4" size={48} />
+                                    <p className="text-gray-500 text-lg">Không có phụ huynh nào</p>
+                                </div>
+                            )}
 
                         </>
                     )}
