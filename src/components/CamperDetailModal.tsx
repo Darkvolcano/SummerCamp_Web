@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Spin, Tabs, Form, Input, Upload, Button, Popover, Select } from 'antd';
-import { User, Calendar, Heart, Users, Tent, MapPin, Mail, Phone, UserCircle, LogOut, Upload as UploadIcon, AlertTriangle } from 'lucide-react';
+import { User, Calendar, Heart, Users, Tent, MapPin, Mail, Phone, UserCircle, LogOut, Upload as UploadIcon, AlertTriangle, MessageCircle } from 'lucide-react';
 import { WarningOutlined } from '@ant-design/icons';
 import camperService, {
   type CamperResponseDto,
@@ -363,6 +363,20 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
                             </p>
                           </div>
                         </div>
+                        
+                        {/* Chat Button - Only for Staff */}
+                        {isStaff && (
+                          <button
+                            onClick={() => {
+                              // TODO: Implement chat functionality
+                              console.log('Open chat with parent:', campRegistration.userAccount.fullName);
+                            }}
+                            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all font-medium shadow-sm"
+                          >
+                            <MessageCircle size={18} />
+                            Chat với Phụ Huynh
+                          </button>
+                        )}
                       </div>
                     </div>
                   )}

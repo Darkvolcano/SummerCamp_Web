@@ -72,7 +72,8 @@ const CamperTransportSchedule: React.FC = () => {
 
   const getTransportTypeDisplay = (type: string | null) => {
       if (!type) return "Không xác định";
-      return type === "PICKUP" ? "Đón" : type === "DROPOFF" ? "Trả" : type;
+      const upperType = type.toUpperCase();
+      return upperType === "PICKUP" ? "Chuyến Đón" : upperType === "DROPOFF" ? "Chuyến Trả" : type;
   }
 
   if (loading) {
@@ -84,7 +85,7 @@ const CamperTransportSchedule: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 pt-20 pb-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
              <Button 
                 onClick={() => navigate(-1)}
@@ -105,7 +106,7 @@ const CamperTransportSchedule: React.FC = () => {
                     {schedules.map(schedule => (
                         <Card key={schedule.transportScheduleId} className="shadow-sm hover:shadow-md transition-shadow border border-gray-200 rounded-xl overflow-hidden">
                              <div className={`absolute left-0 top-0 bottom-0 w-1 ${
-                                 schedule.transportType === 'PICKUP' ? 'bg-blue-500' : 'bg-green-500'
+                                 schedule.transportType?.toUpperCase() === 'PICKUP' ? 'bg-blue-500' : 'bg-green-500'
                              }`}></div>
                              <Row gutter={[16, 16]} align="middle" className="pl-2">
                                 <Col xs={24} md={6}>
@@ -114,7 +115,7 @@ const CamperTransportSchedule: React.FC = () => {
                                         <Text type="secondary" className="block mt-1">
                                             {schedule.startTime.substring(0, 5)} - {schedule.endTime.substring(0, 5)}
                                         </Text>
-                                        <Tag color={schedule.transportType === 'PICKUP' ? 'blue' : 'green'} className="mt-2 mx-0">
+                                        <Tag color={schedule.transportType?.toUpperCase() === 'PICKUP' ? 'blue' : 'green'} className="mt-2 mx-0">
                                             {getTransportTypeDisplay(schedule.transportType)}
                                         </Tag>
                                     </div>

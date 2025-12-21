@@ -117,8 +117,10 @@ const ManagerRegistrationsPage: React.FC = () => {
         return 'bg-red-100 text-red-700';
       case RegistrationStatus.CONFIRMED:
         return 'bg-blue-100 text-blue-700';
-      case RegistrationStatus.ON_GOING:
-        return 'bg-indigo-100 text-indigo-700';
+      case RegistrationStatus.PENDING_REFUND:
+        return 'bg-yellow-100 text-yellow-700';
+      case RegistrationStatus.REFUNDED:
+        return 'bg-green-100 text-green-700';
       case RegistrationStatus.CANCELED:
         return 'bg-red-100 text-red-700';
       default:
@@ -323,7 +325,10 @@ const ManagerRegistrationsPage: React.FC = () => {
                       RegistrationStatus.PENDING_APPROVAL,
                       RegistrationStatus.APPROVED,
                       RegistrationStatus.REJECTED,
+                      RegistrationStatus.PENDING_PAYMENT,
                       RegistrationStatus.CONFIRMED,
+                      RegistrationStatus.PENDING_REFUND,
+                      RegistrationStatus.REFUNDED,
                       RegistrationStatus.CANCELED,
                     ].map((status) => (
                       <label

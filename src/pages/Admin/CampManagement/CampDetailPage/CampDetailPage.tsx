@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Spin, Button, Popover, Modal, Input } from 'antd';
-import { CheckCircle, XCircle, Ban } from 'lucide-react';
+import { Spin, Button, Popover, Modal, Input, DatePicker } from 'antd';
+import { CheckCircle, XCircle, Ban, Clock } from 'lucide-react';
 import CampDetailNavbar from './CampDetailNavbar';
 import CampDetailOverview from './CampDetailOverview';
 import CampDetailSchedule from './CampDetailSchedule';
@@ -13,6 +13,7 @@ import CampDetailTransportSchedule from './CampDetailTransportSchedule';
 import campService from '../../../../services/campService';
 import { useNotification } from '../../../../contexts/NotificationContext';
 import { CampStatus } from '../../../../enums/camp-status.enum';
+import dayjs, { Dayjs } from 'dayjs';
 
 const CampDetailPage: React.FC = () => {
   const { campId } = useParams<{ campId: string }>();
@@ -29,6 +30,10 @@ const CampDetailPage: React.FC = () => {
   const [openCancelModal, setOpenCancelModal] = useState(false);
   const [cancelReason, setCancelReason] = useState('');
   const [cancelLoading, setCancelLoading] = useState(false);
+  const [openExtendModal, setOpenExtendModal] = useState(false);
+  const [extendLoading, setExtendLoading] = useState(false);
+  const [campStartDate, setCampStartDate] = useState<string>('');
+  const [selectedExtendDate, setSelectedExtendDate] = useState<Dayjs | null>(null);
 
 
   const numericCampId = parseInt(campId || '0', 10);
@@ -39,6 +44,7 @@ const CampDetailPage: React.FC = () => {
       const camp = await campService.getCampById(numericCampId);
       setCampName(camp.name);
       setCampStatus(camp.status);
+      setCampStartDate(camp.startDate);
     } catch (error) {
       console.error('Error fetching camp:', error);
       setCampName('Camp Not Found');
@@ -53,6 +59,15 @@ const CampDetailPage: React.FC = () => {
       fetchCampName();
     }
   }, [numericCampId, fetchCampName]);
+
+  // Set default extend date when modal opens
+  useEffect(() => {
+    if (openExtendModal && campStartDate) {
+      const startDate = dayjs(campStartDate);
+      const defaultEndDate = startDate.subtract(3, 'day');
+      setSelectedExtendDate(defaultEndDate);
+    }
+  }, [openExtendModal, campStartDate]);
 
   const handleApprove = async () => {
     try {
@@ -114,6 +129,35 @@ const CampDetailPage: React.FC = () => {
       toastError('Lỗi', errorMsg);
     } finally {
       setCancelLoading(false);
+    }
+  };
+
+  const handleExtendRegistration = async () => {
+    if (!selectedExtendDate) {
+      toastError('Lỗi', 'Vui lòng chọn ngày đóng đăng ký mới');
+      return;
+    }
+
+    try {
+      setExtendLoading(true);
+      const formattedDate = selectedExtendDate.toISOString();
+      
+      await campService.extendRegistration(numericCampId, {
+        newRegistrationEndDate: formattedDate
+      });
+      
+      toastSuccess('Thành công', `Đã gia hạn mở đăng ký đến ${selectedExtendDate.format('DD/MM/YYYY')}`);
+      fetchCampName();
+      setOpenExtendModal(false);
+      setSelectedExtendDate(null);
+    } catch (error: any) {
+      let errorMsg = 'Không thể gia hạn mở đăng ký';
+      if (error.response?.data?.message) {
+        errorMsg = error.response.data.message;
+      }
+      toastError('Lỗi', errorMsg);
+    } finally {
+      setExtendLoading(false);
     }
   };
 
@@ -216,6 +260,16 @@ const CampDetailPage: React.FC = () => {
                   Từ chối setup
                 </button>
               </>
+              )}
+
+            {campStatus === CampStatus.UNDER_ENROLLED && (
+              <button
+                onClick={() => setOpenExtendModal(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-medium"
+              >
+                <Clock size={18} />
+                Gia hạn mở đăng ký
+              </button>
             )}
 
             {(campStatus === CampStatus.DRAFT ||
@@ -288,6 +342,68 @@ const CampDetailPage: React.FC = () => {
                 maxLength={500}
               />
             </div>
+          </div>
+        </Modal>
+
+        {/* Extend Registration Modal */}
+        <Modal
+          title="Gia hạn mở đăng ký"
+          open={openExtendModal}
+          onCancel={() => setOpenExtendModal(false)}
+          footer={[
+            <Button
+              key="back"
+              onClick={() => setOpenExtendModal(false)}
+            >
+              Hủy
+            </Button>,
+            <Button
+              key="submit"
+              type="primary"
+              loading={extendLoading}
+              onClick={handleExtendRegistration}
+            >
+              Xác nhận gia hạn
+            </Button>,
+          ]}
+        >
+          <div className="space-y-4">
+            <p className="text-gray-700">
+              Chọn ngày đóng đăng ký mới cho trại này. Mặc định được đặt là <strong>3 ngày trước ngày bắt đầu trại</strong>.
+            </p>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Ngày đóng đăng ký mới <span className="text-red-500">*</span>
+              </label>
+              <DatePicker
+                value={selectedExtendDate}
+                onChange={(date) => setSelectedExtendDate(date)}
+                format="DD/MM/YYYY"
+                placeholder="Chọn ngày đóng đăng ký"
+                className="w-full"
+                disabledDate={(current) => {
+                  if (!campStartDate) return false;
+                  return current && current >= dayjs(campStartDate);
+                }}
+              />
+            </div>
+
+            {campStartDate && selectedExtendDate && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <p className="text-sm text-blue-900 font-semibold mb-2">Thông tin gia hạn:</p>
+                <p className="text-sm text-blue-800">
+                  Ngày bắt đầu trại: <strong>{dayjs(campStartDate).format('DD/MM/YYYY')}</strong>
+                </p>
+                <p className="text-sm text-blue-800">
+                  Ngày đóng đăng ký mới: <strong>{selectedExtendDate.format('DD/MM/YYYY')}</strong>
+                </p>
+              </div>
+            )}
+            
+            <p className="text-sm text-gray-600 italic">
+              * Điều này sẽ cho phép phụ huynh tiếp tục đăng ký cho đến ngày đóng mới.
+            </p>
           </div>
         </Modal>
 

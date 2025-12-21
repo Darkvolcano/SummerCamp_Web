@@ -125,7 +125,7 @@ const RegistrationDetail: React.FC = () => {
       PendingPayment: { bg: "bg-blue-100", text: "text-blue-700", label: "Chờ thanh toán" },
       Confirmed: { bg: "bg-green-100", text: "text-green-700", label: "Đã xác nhận" },
       PendingRefund: { bg: "bg-yellow-100", text: "text-yellow-700", label: "Chờ hoàn tiền" },
-      OnGoing: { bg: "bg-purple-100", text: "text-purple-700", label: "Đang diễn ra" },
+      Refunded: { bg: "bg-green-100", text: "text-green-700", label: "Đã hoàn tiền" },
       Canceled: { bg: "bg-gray-100", text: "text-gray-700", label: "Đã hủy" },
     };
     return (

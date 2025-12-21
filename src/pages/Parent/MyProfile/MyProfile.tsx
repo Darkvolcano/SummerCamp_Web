@@ -6,7 +6,12 @@ import {
   EditOutlined,
   LogoutOutlined,
   LockOutlined,
+  BankOutlined,
+  PlusOutlined,
+  StarFilled,
+  StarOutlined,
 } from "@ant-design/icons";
+import { CreditCard } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../../services/userService";
 import { useNotification } from "../../../contexts/NotificationContext";
@@ -18,6 +23,11 @@ import {
   uploadMyAvatar,
   validateImageFile,
 } from "../../../services/uploadService";
+import bankUserService, {
+  type BankUserResponseDto,
+  type BankUserRequestDto,
+} from "../../../services/bankUserService";
+import DeletePopover from "../../../components/DeletePopover";
 
 const MyProfile: React.FC = () => {
   const navigate = useNavigate();
@@ -33,6 +43,14 @@ const MyProfile: React.FC = () => {
   const [changeEmailVisible, setChangeEmailVisible] = useState(false);
   const [changePasswordForm] = Form.useForm();
   const [changeEmailForm] = Form.useForm();
+
+  // Bank account states
+  const [bankAccounts, setBankAccounts] = useState<BankUserResponseDto[]>([]);
+  const [loadingBankAccounts, setLoadingBankAccounts] = useState(false);
+  const [bankModalVisible, setBankModalVisible] = useState(false);
+  const [editingBankAccount, setEditingBankAccount] = useState<BankUserResponseDto | null>(null);
+  const [bankForm] = Form.useForm();
+  const [submittingBank, setSubmittingBank] = useState(false);
 
   // Fetch user data
   useEffect(() => {
@@ -72,6 +90,25 @@ const MyProfile: React.FC = () => {
       });
     }
   }, [userData, form]);
+
+  // Fetch bank accounts
+  useEffect(() => {
+    const fetchBankAccounts = async () => {
+      try {
+        setLoadingBankAccounts(true);
+        const data = await bankUserService.getMyBankAccounts();
+        setBankAccounts(data);
+      } catch (error: any) {
+        console.error("Failed to load bank accounts:", error);
+      } finally {
+        setLoadingBankAccounts(false);
+      }
+    };
+
+    if (user) {
+      fetchBankAccounts();
+    }
+  }, [user]);
 
   // Handle avatar change and upload
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -183,6 +220,87 @@ const MyProfile: React.FC = () => {
       toastError("Lỗi", errorMessage);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Bank account handlers
+  const fetchBankAccounts = async () => {
+    try {
+      setLoadingBankAccounts(true);
+      const data = await bankUserService.getMyBankAccounts();
+      setBankAccounts(data);
+    } catch (error: any) {
+      console.error("Failed to load bank accounts:", error);
+      toastError("Lỗi", "Không thể tải danh sách tài khoản ngân hàng");
+    } finally {
+      setLoadingBankAccounts(false);
+    }
+  };
+
+  const handleOpenBankModal = (account?: BankUserResponseDto) => {
+    if (account) {
+      setEditingBankAccount(account);
+      bankForm.setFieldsValue({
+        bankCode: account.bankCode,
+        bankName: account.bankName,
+        bankNumber: account.bankNumber,
+        isPrimary: account.isPrimary,
+      });
+    } else {
+      setEditingBankAccount(null);
+      bankForm.resetFields();
+    }
+    setBankModalVisible(true);
+  };
+
+  const handleCloseBankModal = () => {
+    setBankModalVisible(false);
+    setEditingBankAccount(null);
+    bankForm.resetFields();
+  };
+
+  const handleSubmitBankAccount = async (values: BankUserRequestDto) => {
+    try {
+      setSubmittingBank(true);
+      if (editingBankAccount) {
+        await bankUserService.updateBankAccount(editingBankAccount.bankUserId, values);
+        toastSuccess("Thành công", "Cập nhật tài khoản ngân hàng thành công");
+      } else {
+        await bankUserService.createBankAccount(values);
+        toastSuccess("Thành công", "Thêm tài khoản ngân hàng thành công");
+      }
+      handleCloseBankModal();
+      await fetchBankAccounts();
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message || "Không thể lưu tài khoản ngân hàng";
+      toastError("Lỗi", errorMessage);
+    } finally {
+      setSubmittingBank(false);
+    }
+  };
+
+  const handleDeleteBankAccount = async (id: number) => {
+    try {
+      await bankUserService.deleteBankAccount(id);
+      toastSuccess("Thành công", "Xóa tài khoản ngân hàng thành công");
+      await fetchBankAccounts();
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message || "Không thể xóa tài khoản ngân hàng";
+      toastError("Lỗi", errorMessage);
+    }
+  };
+
+  const handleSetPrimaryBankAccount = async (id: number) => {
+    try {
+      await bankUserService.setPrimaryBankAccount(id);
+      toastSuccess("Thành công", "Đã đặt làm tài khoản chính");
+      await fetchBankAccounts();
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message || "Không thể đặt tài khoản chính";
+      toastError("Lỗi", errorMessage);
     }
   };
 
@@ -501,9 +619,195 @@ const MyProfile: React.FC = () => {
                 </div>
               </div>
             </div>
+
+            {/* Bank Account Section */}
+            <div className="bg-white rounded-3xl p-8 shadow-lg hover:shadow-xl transition-shadow">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                  <BankOutlined className="text-[#FF8F50]" />
+                  Tài khoản ngân hàng
+                </h2>
+                {bankAccounts.length === 0 && !loadingBankAccounts && (
+                  <button
+                    onClick={() => handleOpenBankModal()}
+                    className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FF8F50] to-[#ffb74d] hover:from-[#ffb74d] hover:to-[#FF8F50] text-white font-bold py-2 px-4 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
+                  >
+                    <PlusOutlined />
+                    Thêm tài khoản
+                  </button>
+                )}
+              </div>
+
+              {loadingBankAccounts ? (
+                <div className="flex justify-center py-8">
+                  <Spin tip="Đang tải..." />
+                </div>
+              ) : bankAccounts.length > 0 ? (
+                <div className="space-y-3">
+                  {bankAccounts.map((account) => (
+                    <div
+                      key={account.bankUserId}
+                      className={`p-5 rounded-2xl border-2 transition-all ${
+                        account.isPrimary
+                          ? "border-[#FF8F50] bg-orange-50"
+                          : "border-gray-200 hover:border-[#FF8F50]"
+                      }`}
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="flex gap-4 flex-1">
+                          <div className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${
+                            account.isPrimary ? "bg-orange-200" : "bg-blue-100"
+                          }`}>
+                            <CreditCard size={24} className={account.isPrimary ? "text-[#FF8F50]" : "text-blue-600"} />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <h3 className="font-bold text-gray-900">{account.bankName}</h3>
+                              {account.isPrimary && (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#FF8F50] text-white text-xs font-semibold rounded-full">
+                                  <StarFilled style={{ fontSize: "10px" }} />
+                                  Chính
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-sm text-gray-600 mb-1">
+                              Mã ngân hàng: <span className="font-semibold">{account.bankCode}</span>
+                            </p>
+                            <p className="text-sm text-gray-600">
+                              Số tài khoản: <span className="font-mono font-semibold">{account.bankNumber}</span>
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 ml-4">
+                          {!account.isPrimary && (
+                            <button
+                              onClick={() => handleSetPrimaryBankAccount(account.bankUserId)}
+                              className="inline-flex items-center gap-1 px-3 py-1.5 bg-white text-gray-600 border-2 border-gray-200 rounded-lg hover:border-[#FF8F50] hover:text-[#FF8F50] transition-all font-medium text-sm"
+                              title="Đặt làm tài khoản chính"
+                            >
+                              <StarOutlined />
+                              Đặt chính
+                            </button>
+                          )}
+                          <button
+                            onClick={() => handleOpenBankModal(account)}
+                            className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-all font-medium text-sm"
+                          >
+                            <EditOutlined />
+                            Sửa
+                          </button>
+                          <DeletePopover
+                            onConfirm={() => handleDeleteBankAccount(account.bankUserId)}
+                            title="Xóa tài khoản ngân hàng"
+                            message={`Bạn có chắc muốn xóa tài khoản ${account.bankName} - ${account.bankNumber}?`}
+                            buttonText=""
+                            showIcon={true}
+                            buttonSize="small"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-300">
+                  <CreditCard size={48} className="mx-auto text-gray-400 mb-3" />
+                  <p className="text-gray-600 font-semibold mb-2">Chưa có tài khoản ngân hàng</p>
+                  <p className="text-sm text-gray-500 mb-4">
+                    Thêm tài khoản ngân hàng để nhận hoàn tiền khi cần thiết
+                  </p>
+                  <button
+                    onClick={() => handleOpenBankModal()}
+                    className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FF8F50] to-[#ffb74d] hover:from-[#ffb74d] hover:to-[#FF8F50] text-white font-bold py-2 px-6 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
+                  >
+                    <PlusOutlined />
+                    Thêm tài khoản đầu tiên
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Bank Account Modal */}
+      <Modal
+        title={
+          <span className="text-lg font-bold">
+            {editingBankAccount ? "Chỉnh sửa tài khoản ngân hàng" : "Thêm tài khoản ngân hàng"}
+          </span>
+        }
+        open={bankModalVisible}
+        onCancel={handleCloseBankModal}
+        footer={null}
+        className="rounded-3xl"
+      >
+        <Form
+          form={bankForm}
+          layout="vertical"
+          onFinish={handleSubmitBankAccount}
+          className="space-y-4 mt-4"
+        >
+          <Form.Item
+            name="bankName"
+            label={<span className="font-semibold text-gray-700">Tên ngân hàng</span>}
+            rules={[{ required: true, message: "Vui lòng nhập tên ngân hàng" }]}
+          >
+            <Input
+              className="rounded-lg"
+              placeholder="Ví dụ: Vietcombank, Techcombank, BIDV..."
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="bankCode"
+            label={<span className="font-semibold text-gray-700">Mã ngân hàng</span>}
+            rules={[{ required: true, message: "Vui lòng nhập mã ngân hàng" }]}
+          >
+            <Input
+              className="rounded-lg"
+              placeholder="Ví dụ: VCB, TCB, BIDV..."
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="bankNumber"
+            label={<span className="font-semibold text-gray-700">Số tài khoản</span>}
+            rules={[
+              { required: true, message: "Vui lòng nhập số tài khoản" },
+              { pattern: /^[0-9]+$/, message: "Số tài khoản chỉ được chứa số" }
+            ]}
+          >
+            <Input
+              className="rounded-lg font-mono"
+              placeholder="Nhập số tài khoản ngân hàng"
+            />
+          </Form.Item>
+
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
+            <p className="text-sm text-blue-800">
+              <strong>Lưu ý:</strong> Thông tin tài khoản ngân hàng sẽ được sử dụng để hoàn tiền trong trường hợp cần thiết. Vui lòng kiểm tra kỹ thông tin trước khi lưu.
+            </p>
+          </div>
+
+          <div className="flex gap-3 pt-4">
+            <button
+              type="submit"
+              disabled={submittingBank}
+              className="flex-1 bg-gradient-to-r from-[#FF8F50] to-[#ffb74d] hover:from-[#ffb74d] hover:to-[#FF8F50] text-white font-bold py-3 px-6 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+            >
+              {submittingBank ? "Đang lưu..." : editingBankAccount ? "Cập nhật" : "Thêm tài khoản"}
+            </button>
+            <button
+              type="button"
+              onClick={handleCloseBankModal}
+              className="flex-1 bg-white text-gray-600 border-2 border-gray-200 font-bold py-3 px-6 rounded-full hover:border-[#FF8F50] hover:text-[#FF8F50] transition-all"
+            >
+              Hủy
+            </button>
+          </div>
+        </Form>
+      </Modal>
 
       {/* Change Password Modal */}
       <Modal
