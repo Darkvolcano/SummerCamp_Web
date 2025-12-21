@@ -208,12 +208,7 @@ const StaffChatRoom: React.FC = () => {
                         <h2 className="font-semibold text-gray-900 truncate">
                             {roomDetails?.name || 'Trò Chuyện'}
                         </h2>
-                        <div className="flex items-center gap-2">
-                            <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-gray-400'}`} />
-                            <span className="text-xs text-gray-500">
-                                {isConnected ? 'Đã kết nối' : 'Đang kết nối...'}
-                            </span>
-                        </div>
+
                     </div>
                 </div>
             </div>

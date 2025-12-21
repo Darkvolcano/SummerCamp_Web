@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Spin } from 'antd';
 import ChatArea from '../components/chat/ChatArea';
@@ -75,8 +75,14 @@ const Chatroom: React.FC = () => {
                 });
             }
 
-            // Also update the room list to show latest message
-            loadMyRooms();
+            // Update room list's last message without full reload
+            setMyRooms(prevRooms =>
+                prevRooms.map(room =>
+                    room.chatRoomId === message.chatRoomId
+                        ? { ...room, lastMessage: message.content, lastMessageTime: message.sentAt }
+                        : room
+                )
+            );
         }
     });
 
@@ -121,7 +127,7 @@ const Chatroom: React.FC = () => {
         };
     }, [activeChat.roomId, isConnected]);
 
-    const loadMyRooms = async () => {
+    const loadMyRooms = useCallback(async () => {
         try {
             setLoading(true);
             const rooms = await chatRoomService.getMyRooms();
@@ -131,7 +137,7 @@ const Chatroom: React.FC = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
     const loadRoomMessages = async (roomId: number) => {
         try {
@@ -170,25 +176,27 @@ const Chatroom: React.FC = () => {
     };
 
     // Handle sending messages
-    const handleSendMessage = async (content: string) => {
+    const handleSendMessage = useCallback(async (content: string) => {
         if (!activeChat.roomId || !user) {
             console.error('No active room to send message');
             return;
         }
 
+        // Create optimistic message outside try block so it's accessible in catch
+        const optimisticMessage: UIMessage = {
+            id: -Date.now(), // Temporary negative ID
+            senderId: user.id,
+            senderName: user.fullName,
+            senderRole: 'User',
+            senderAvatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}`,
+            content: content,
+            timestamp: new Date()
+        };
+
         try {
             setSendingMessage(true);
 
             // Optimistic UI update - show message immediately
-            const optimisticMessage: UIMessage = {
-                id: -Date.now(), // Temporary negative ID
-                senderId: user.id,
-                senderName: user.fullName,
-                senderRole: 'User',
-                senderAvatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}`,
-                content: content,
-                timestamp: new Date()
-            };
             setCurrentMessages(prev => [...prev, optimisticMessage]);
 
             // Send to backend
@@ -208,11 +216,11 @@ const Chatroom: React.FC = () => {
         } catch (error) {
             console.error('Failed to send message:', error);
             // Remove optimistic message on error
-            setCurrentMessages(prev => prev.filter(msg => msg.id !== -Date.now()));
+            setCurrentMessages(prev => prev.filter(msg => msg.id !== optimisticMessage.id));
         } finally {
             setSendingMessage(false);
         }
-    };
+    }, [activeChat.roomId, user]);
 
     // Handle staff selection for private chat
     const handleSelectStaff = async (staffId: number) => {
@@ -247,20 +255,23 @@ const Chatroom: React.FC = () => {
     };
 
     return (
-        <div className="fixed inset-0 flex flex-col overflow-hidden">
-            {/* Navbar */}
+        <div className="h-screen flex flex-col overflow-hidden bg-gray-100">
+            {/* Navbar - Fixed positioning handled by Navbar component */}
             <Navbar />
+
+            {/* Add padding-top to account for fixed navbar */}
+            <div className="flex-shrink-0" style={{ height: '64px' }} />
 
             {/* Loading State */}
             {loading && (
-                <div className="flex-1 flex items-center justify-center bg-gray-100 mt-12">
+                <div className="flex-1 flex items-center justify-center">
                     <Spin size="large" />
                 </div>
             )}
 
-            {/* Chat Container - Account for navbar height */}
+            {/* Chat Container */}
             {!loading && (
-                <div className="flex-1 flex bg-gray-100 mt-12">
+                <div className="flex-1 flex min-h-0">
                     {/* Left Sidebar - Server/Community */}
 
 

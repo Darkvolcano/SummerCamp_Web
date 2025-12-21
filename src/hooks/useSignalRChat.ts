@@ -15,6 +15,20 @@ export const useSignalRChat = (options: UseSignalRChatOptions) => {
     const [isConnected, setIsConnected] = useState(false);
     const [currentRoomId, setCurrentRoomId] = useState<number | null>(null);
 
+    // Use refs for callbacks to prevent connection recreation
+    const onMessageReceivedRef = useRef(onMessageReceived);
+    const onConnectedRef = useRef(onConnected);
+    const onDisconnectedRef = useRef(onDisconnected);
+    const onErrorRef = useRef(onError);
+
+    // Keep refs updated
+    useEffect(() => {
+        onMessageReceivedRef.current = onMessageReceived;
+        onConnectedRef.current = onConnected;
+        onDisconnectedRef.current = onDisconnected;
+        onErrorRef.current = onError;
+    });
+
     // Get API base URL from axios config or environment
     const getHubUrl = () => {
         // Remove /api suffix from base URL since hub is at root level
@@ -48,14 +62,14 @@ export const useSignalRChat = (options: UseSignalRChatOptions) => {
         // Handle incoming messages
         connection.on('ReceiveMessage', (message: ChatRoomMessageDto) => {
             console.log('[SignalR] Received message:', message);
-            onMessageReceived(message);
+            onMessageReceivedRef.current(message);
         });
 
         // Handle connection events
         connection.onclose(() => {
             console.log('[SignalR] Connection closed');
             setIsConnected(false);
-            onDisconnected?.();
+            onDisconnectedRef.current?.();
         });
 
         connection.onreconnecting(() => {
@@ -83,14 +97,14 @@ export const useSignalRChat = (options: UseSignalRChatOptions) => {
                 // Ensure connection is truly established before setting connected
                 if (connection.state === signalR.HubConnectionState.Connected) {
                     setIsConnected(true);
-                    onConnected?.();
+                    onConnectedRef.current?.();
                 } else {
                     console.warn('[SignalR] Connection started but not in Connected state:', connection.state);
                 }
             })
             .catch((err: Error) => {
                 console.error('[SignalR] Connection error:', err);
-                onError?.(err);
+                onErrorRef.current?.(err);
             });
 
         // Cleanup on unmount
@@ -100,7 +114,7 @@ export const useSignalRChat = (options: UseSignalRChatOptions) => {
                 connection.stop();
             }
         };
-    }, [onMessageReceived, onConnected, onDisconnected, onError]);
+    }, []); // Empty deps - connection created once
 
     // Join a chat room
     const joinRoom = useCallback(async (roomId: number) => {
@@ -149,15 +163,25 @@ export const useSignalRChat = (options: UseSignalRChatOptions) => {
 
     // Leave current room
     const leaveRoom = useCallback(async () => {
-        if (!connectionRef.current || currentRoomId === null) {
+        const connection = connectionRef.current;
+
+        if (!connection || currentRoomId === null) {
+            return;
+        }
+
+        // Only try to leave if connection is active
+        if (connection.state !== signalR.HubConnectionState.Connected) {
+            console.log('[SignalR] Skipping leave room - connection not active');
+            setCurrentRoomId(null);
             return;
         }
 
         try {
-            await connectionRef.current.invoke('LeaveRoom', currentRoomId.toString());
+            await connection.invoke('LeaveRoom', currentRoomId.toString());
             setCurrentRoomId(null);
         } catch (err) {
-            console.error('Failed to leave room:', err);
+            console.error('[SignalR] Failed to leave room:', err);
+            setCurrentRoomId(null);
         }
     }, [currentRoomId]);
 
