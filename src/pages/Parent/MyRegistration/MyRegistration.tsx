@@ -21,7 +21,7 @@ const STATUS_OPTIONS = [
   { key: "PendingPayment", label: "Chờ thanh toán" },
   { key: "Confirmed", label: "Đã xác nhận" },
   { key: "PendingRefund", label: "Chờ hoàn tiền" },
-  { key: "OnGoing", label: "Đang diễn ra" },
+  { key: "Refunded", label: "Đã hoàn tiền" },
   { key: "Canceled", label: "Đã hủy" },
 ];
 
@@ -185,7 +185,7 @@ const MyRegistration: React.FC = () => {
       PendingPayment: { bg: "bg-blue-100", text: "text-blue-700" },
       Confirmed: { bg: "bg-green-100", text: "text-green-700" },
       PendingRefund: { bg: "bg-yellow-100", text: "text-yellow-700" },
-      OnGoing: { bg: "bg-purple-100", text: "text-purple-700" },
+      Refunded: { bg: "bg-green-100", text: "text-green-700" },
       Canceled: { bg: "bg-gray-100", text: "text-gray-700" },
     };
     return statusMap[status] || { bg: "bg-gray-100", text: "text-gray-700" };

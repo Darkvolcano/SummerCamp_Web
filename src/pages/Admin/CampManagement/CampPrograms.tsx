@@ -503,7 +503,7 @@ const CampPrograms: React.FC = () => {
                     <td className="px-6 py-4 text-right">
                       <button
                         onClick={() => navigate(`/admin/camps/${camp.campId}`)}
-                        className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-all font-medium text-sm"
+                        className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-all font-medium text-sm whitespace-nowrap"
                         title="Xem Chi Tiết"
                       >
                         <Eye size={16} />

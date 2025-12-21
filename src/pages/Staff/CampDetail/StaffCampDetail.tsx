@@ -19,6 +19,7 @@ import staffService, {
 } from '../../../services/staffService';
 import camperService, { type CamperCampResponseDto } from '../../../services/camperService';
 import camperGroupService from '../../../services/camperGroupService';
+import camperAccommodationService from '../../../services/camperAccommodationService';
 import CamperDetailModal from '../../../components/CamperDetailModal';
 
 const StaffCampDetail: React.FC = () => {
@@ -132,10 +133,21 @@ const StaffCampDetail: React.FC = () => {
 
     try {
       setLoadingCampers(true);
-      const allCampers = await camperService.getCampersByCampId(selectedCampId);
-      // Filter campers by accommodation - assuming campers have accommodationId field
-      // If API doesn't provide this, you may need a different endpoint
-      setAccommodationCampers(allCampers);
+      // Call camperAccommodationService with accommodationId
+      const camperAccommodations = await camperAccommodationService.getCamperAccommodations({
+        accommodationId: accommodation.accommodationId
+      });
+      
+      // Transform CamperAccommodationResponseDto[] to CamperCampResponseDto[] for UI compatibility
+      const transformedCampers: CamperCampResponseDto[] = camperAccommodations.map((ca) => ({
+        camperId: ca.camperId,
+        camperName: ca.camperName || 'N/A',
+        gender: '', // Not provided by accommodation API
+        dob: '', // Not provided by accommodation API
+        camperRegistrationStatus: ca.status || '',
+      }));
+      
+      setAccommodationCampers(transformedCampers);
       setShowAccommodationCampersModal(true);
     } catch (error: any) {
       console.error('Failed to load accommodation campers:', error);
@@ -484,9 +496,6 @@ const StaffCampDetail: React.FC = () => {
                     </div>
                     <div className="flex-1">
                       <p className="font-semibold text-gray-900">{camper.camperName}</p>
-                      <p className="text-sm text-gray-500">
-                        {camper.gender} • Born: {formatDate(camper.dob)}
-                      </p>
                     </div>
                   </div>
                 ))}
@@ -532,9 +541,6 @@ const StaffCampDetail: React.FC = () => {
                     </div>
                     <div className="flex-1">
                       <p className="font-semibold text-gray-900">{camper.camperName}</p>
-                      <p className="text-sm text-gray-500">
-                        {camper.gender} • Born: {formatDate(camper.dob)}
-                      </p>
                     </div>
                     {camper.camperRegistrationStatus && (
                       <Tag color="orange">{camper.camperRegistrationStatus}</Tag>

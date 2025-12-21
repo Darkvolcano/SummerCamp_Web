@@ -5,6 +5,6 @@ export enum RegistrationStatus {
   PENDING_PAYMENT = "PendingPayment",
   CONFIRMED = "Confirmed",
   PENDING_REFUND = "PendingRefund",
-  ON_GOING = "OnGoing",
+  REFUNDED = "Refunded",
   CANCELED = "Canceled",
 }

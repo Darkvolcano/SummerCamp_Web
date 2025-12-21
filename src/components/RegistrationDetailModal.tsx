@@ -154,8 +154,10 @@ const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = ({
         return 'bg-red-100 text-red-700';
       case 'Confirmed':
         return 'bg-blue-100 text-blue-700';
-      case 'OnGoing':
-        return 'bg-indigo-100 text-indigo-700';
+      case 'PendingRefund':
+        return 'bg-yellow-100 text-yellow-700';
+      case 'Refunded':
+        return 'bg-green-100 text-green-700';
       case 'Canceled':
         return 'bg-red-100 text-red-700';
       default:
