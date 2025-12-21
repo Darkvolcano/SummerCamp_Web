@@ -149,62 +149,7 @@ const StaffChatList: React.FC = () => {
                                 </div>
                             )}
 
-                            {/* All Parents */}
-                            <div>
-                                <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                                    Danh Sách Phụ Huynh
-                                </h2>
-                                {filteredUsers.length === 0 ? (
-                                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
-                                        <MessageSquare className="mx-auto text-gray-400 mb-3" size={48} />
-                                        <p className="text-gray-500">
-                                            {searchQuery ? 'Không tìm thấy phụ huynh' : 'Chưa có phụ huynh nào'}
-                                        </p>
-                                    </div>
-                                ) : (
-                                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 divide-y divide-gray-100">
-                                        {filteredUsers.map((user) => (
-                                            <div
-                                                key={user.userId}
-                                                className="px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
-                                            >
-                                                <div className="flex items-center gap-4 flex-1 min-w-0">
-                                                    <img
-                                                        src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.userId}`}
-                                                        alt={user.fullName}
-                                                        className="w-12 h-12 rounded-full"
-                                                    />
-                                                    <div className="flex-1 min-w-0">
-                                                        <h3 className="font-semibold text-gray-900 truncate">
-                                                            {user.fullName}
-                                                        </h3>
-                                                        <p className="text-sm text-gray-500 truncate">
-                                                            {user.email}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                                <button
-                                                    onClick={() => handleStartChat(user.userId)}
-                                                    disabled={creatingChat === user.userId}
-                                                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors flex items-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
-                                                >
-                                                    {creatingChat === user.userId ? (
-                                                        <>
-                                                            <Loader2 className="animate-spin" size={16} />
-                                                            <span>Đang mở...</span>
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            <MessageSquare size={16} />
-                                                            <span>Trò Chuyện</span>
-                                                        </>
-                                                    )}
-                                                </button>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
+
                         </>
                     )}
                 </div>
