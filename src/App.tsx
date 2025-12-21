@@ -74,6 +74,7 @@ import StaffIncidents from "./pages/Staff/Incidents/StaffIncidents";
 import ManagerIncidents from "./pages/Manager/Incidents/ManagerIncidents";
 import AdminIncidents from "./pages/Admin/Incidents/AdminIncidents";
 import PhotoGallery from "./pages/Parent/MyCampers/PhotoGallery";
+import FAQPage from "./pages/Admin/FAQManagement/FAQPage";
 
 
 function App() {
@@ -169,6 +170,7 @@ function App() {
               <Route path={PagePath.ADMIN_CAMPTYPES} element={<CampTypePage />} />
               <Route path={PagePath.ADMIN_CAMP_LOCATIONS} element={<CampLocationPage />} />
               <Route path={PagePath.ADMIN_PROMOTIONS} element={<PromotionPage />} />
+              <Route path={PagePath.ADMIN_FAQS} element={<FAQPage />} />
               <Route path={PagePath.ADMIN_TRANSACTIONS} element={<TransactionPage />} />
               <Route
                 path={PagePath.ADMIN_CAMPS_DETAIL}
