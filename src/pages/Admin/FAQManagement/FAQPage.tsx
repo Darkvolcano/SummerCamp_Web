@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Plus, Edit2 } from "lucide-react";
-import { Modal, Form, Input, Spin } from "antd";
+import { Modal, Form, Spin } from "antd";
 import faqService, { type FAQResponseDto, type FAQRequestDto } from "../../../services/faqService";
 import DeletePopover from "../../../components/DeletePopover";
 import { useNotification } from "../../../contexts/NotificationContext";
