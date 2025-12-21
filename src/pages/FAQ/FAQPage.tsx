@@ -10,7 +10,7 @@ const CustomerFAQPage: React.FC = () => {
         queryKey: ["faqs"],
         queryFn: () => faqService.getAllFaqs(),
     });
-    
+
     const [expandedId, setExpandedId] = useState<number | null>(null);
 
     const toggleFaq = (faqId: number) => {
@@ -70,14 +70,18 @@ const CustomerFAQPage: React.FC = () => {
                         </p>
                     </div>
                 ) : (
-                    <div className="space-y-6">
-                        {faqs.map((faq, index) => (
-                            <div
-                                key={faq.faqId}
-                                className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border-2 border-transparent hover:border-orange-200"
-                            >
-                                <div className="p-8">
-                                    <div className="flex items-start gap-4">
+                    <div className="space-y-4">
+                        {faqs.map((faq, index) => {
+                            const isExpanded = expandedId === faq.faqId;
+                            return (
+                                <div
+                                    key={faq.faqId}
+                                    className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border-2 border-transparent hover:border-orange-200"
+                                >
+                                    <button
+                                        onClick={() => toggleFaq(faq.faqId)}
+                                        className="w-full p-6 flex items-center gap-4 text-left hover:bg-gray-50 transition-colors"
+                                    >
                                         <div className="flex-shrink-0">
                                             <div className="w-12 h-12 bg-gradient-to-br from-orange-400 to-yellow-400 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg">
                                                 {index + 1}
@@ -85,18 +89,35 @@ const CustomerFAQPage: React.FC = () => {
                                         </div>
                                         <div className="flex-1">
                                             <h3
-                                                className="text-2xl font-bold text-gray-900 mb-4 [&_p]:inline [&_strong]:text-orange-500"
+                                                className="text-xl font-bold text-gray-900 [&_p]:inline [&_strong]:text-orange-500"
                                                 dangerouslySetInnerHTML={{ __html: faq.question }}
                                             />
-                                            <div
-                                                className="text-gray-700 leading-relaxed space-y-3 [&_p]:mb-3 [&_p]:leading-7 [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mt-4 [&_h2]:mb-2 [&_h3]:text-lg [&_h3]:font-bold [&_h3]:mt-3 [&_h3]:mb-2 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-3 [&_li]:mb-1.5 [&_strong]:text-gray-900 [&_strong]:font-semibold [&_a]:text-orange-500 [&_a]:hover:text-orange-600 [&_a]:underline"
-                                                dangerouslySetInnerHTML={{ __html: faq.answer }}
+                                        </div>
+                                        <div className="flex-shrink-0">
+                                            <ChevronDown
+                                                size={24}
+                                                className={`text-orange-400 transition-transform duration-300 ${isExpanded ? "rotate-180" : ""
+                                                    }`}
                                             />
+                                        </div>
+                                    </button>
+
+                                    <div
+                                        className={`overflow-hidden transition-all duration-300 ${isExpanded ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"
+                                            }`}
+                                    >
+                                        <div className="px-6 pb-6 pl-[88px]">
+                                            <div className="pt-4 border-t-2 border-gray-100">
+                                                <div
+                                                    className="text-gray-700 leading-relaxed space-y-3 [&_p]:mb-3 [&_p]:leading-7 [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mt-4 [&_h2]:mb-2 [&_h3]:text-lg [&_h3]:font-bold [&_h3]:mt-3 [&_h3]:mb-2 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-3 [&_li]:mb-1.5 [&_strong]:text-gray-900 [&_strong]:font-semibold [&_a]:text-orange-500 [&_a]:hover:text-orange-600 [&_a]:underline"
+                                                    dangerouslySetInnerHTML={{ __html: faq.answer }}
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 )}
             </div>
