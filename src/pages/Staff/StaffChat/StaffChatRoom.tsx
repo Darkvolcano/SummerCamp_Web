@@ -74,13 +74,29 @@ const StaffChatRoom: React.FC = () => {
 
     // Join SignalR room
     useEffect(() => {
-        if (roomId && isConnected) {
-            joinRoom(parseInt(roomId));
-        }
-        return () => {
-            leaveRoom();
+        let retryTimeout: NodeJS.Timeout;
+
+        const attemptJoinRoom = () => {
+            if (roomId && isConnected) {
+                console.log('[StaffChatRoom] Attempting to join room:', roomId, 'isConnected:', isConnected);
+                joinRoom(parseInt(roomId));
+            } else if (roomId && !isConnected) {
+                console.log('[StaffChatRoom] Waiting for connection before joining room:', roomId);
+                // Retry after a short delay
+                retryTimeout = setTimeout(attemptJoinRoom, 1000);
+            }
         };
-    }, [roomId, isConnected, joinRoom, leaveRoom]);
+
+        attemptJoinRoom();
+
+        return () => {
+            clearTimeout(retryTimeout);
+            if (roomId) {
+                console.log('[StaffChatRoom] Leaving room:', roomId);
+                leaveRoom();
+            }
+        };
+    }, [roomId, isConnected]);
 
     // Auto-scroll to bottom when new messages arrive
     useEffect(() => {

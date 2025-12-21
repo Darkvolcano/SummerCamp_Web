@@ -97,13 +97,29 @@ const Chatroom: React.FC = () => {
 
     // Join/leave SignalR room when active chat changes
     useEffect(() => {
-        if (activeChat.roomId && isConnected) {
-            joinRoom(activeChat.roomId);
-        }
-        return () => {
-            leaveRoom();
+        let retryTimeout: NodeJS.Timeout;
+
+        const attemptJoinRoom = () => {
+            if (activeChat.roomId && isConnected) {
+                console.log('[Chatroom] Attempting to join room:', activeChat.roomId, 'isConnected:', isConnected);
+                joinRoom(activeChat.roomId);
+            } else if (activeChat.roomId && !isConnected) {
+                console.log('[Chatroom] Waiting for connection before joining room:', activeChat.roomId);
+                // Retry after a short delay
+                retryTimeout = setTimeout(attemptJoinRoom, 1000);
+            }
         };
-    }, [activeChat.roomId, isConnected, joinRoom, leaveRoom]);
+
+        attemptJoinRoom();
+
+        return () => {
+            clearTimeout(retryTimeout);
+            if (activeChat.roomId) {
+                console.log('[Chatroom] Leaving room:', activeChat.roomId);
+                leaveRoom();
+            }
+        };
+    }, [activeChat.roomId, isConnected]);
 
     const loadMyRooms = async () => {
         try {

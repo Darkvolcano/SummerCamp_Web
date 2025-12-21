@@ -28,16 +28,18 @@ export const useSignalRChat = (options: UseSignalRChatOptions) => {
         const token = localStorage.getItem('token') || sessionStorage.getItem('token');
 
         if (!token) {
-            console.warn('No authentication token found for SignalR connection');
+            console.warn('[SignalR] No authentication token found for SignalR connection');
             return;
         }
+
+        console.log('[SignalR] Initializing connection to:', getHubUrl());
 
         const connection = new signalR.HubConnectionBuilder()
             .withUrl(getHubUrl(), {
                 accessTokenFactory: () => token,
                 withCredentials: false  // Disable credentials to work with CORS wildcard
             })
-            .withAutomaticReconnect()
+            .withAutomaticReconnect([0, 2000, 5000, 10000]) // Custom retry delays
             .configureLogging(signalR.LogLevel.Information)
             .build();
 
@@ -45,25 +47,30 @@ export const useSignalRChat = (options: UseSignalRChatOptions) => {
 
         // Handle incoming messages
         connection.on('ReceiveMessage', (message: ChatRoomMessageDto) => {
+            console.log('[SignalR] Received message:', message);
             onMessageReceived(message);
         });
 
         // Handle connection events
         connection.onclose(() => {
+            console.log('[SignalR] Connection closed');
             setIsConnected(false);
             onDisconnected?.();
         });
 
         connection.onreconnecting(() => {
+            console.log('[SignalR] Reconnecting...');
             setIsConnected(false);
         });
 
         connection.onreconnected(() => {
+            console.log('[SignalR] Reconnected successfully');
             setIsConnected(true);
             // Rejoin current room if we were in one
             if (currentRoomId !== null) {
+                console.log('[SignalR] Rejoining room after reconnection:', currentRoomId);
                 connection.invoke('JoinRoom', currentRoomId.toString()).catch((err: Error) => {
-                    console.error('Failed to rejoin room after reconnection:', err);
+                    console.error('[SignalR] Failed to rejoin room after reconnection:', err);
                 });
             }
         });
@@ -72,16 +79,18 @@ export const useSignalRChat = (options: UseSignalRChatOptions) => {
         connection
             .start()
             .then(() => {
+                console.log('[SignalR] Connection started successfully');
                 setIsConnected(true);
                 onConnected?.();
             })
             .catch((err: Error) => {
-                console.error('SignalR connection error:', err);
+                console.error('[SignalR] Connection error:', err);
                 onError?.(err);
             });
 
         // Cleanup on unmount
         return () => {
+            console.log('[SignalR] Cleaning up connection');
             if (connection.state === signalR.HubConnectionState.Connected) {
                 connection.stop();
             }
@@ -91,21 +100,28 @@ export const useSignalRChat = (options: UseSignalRChatOptions) => {
     // Join a chat room
     const joinRoom = useCallback(async (roomId: number) => {
         if (!connectionRef.current || connectionRef.current.state !== signalR.HubConnectionState.Connected) {
-            console.warn('Cannot join room: SignalR not connected');
+            console.warn('Cannot join room: SignalR not connected', {
+                hasConnection: !!connectionRef.current,
+                connectionState: connectionRef.current?.state,
+                roomId
+            });
             return;
         }
 
         try {
             // Leave current room if we're in one
             if (currentRoomId !== null && currentRoomId !== roomId) {
+                console.log('[SignalR] Leaving room:', currentRoomId);
                 await connectionRef.current.invoke('LeaveRoom', currentRoomId.toString());
             }
 
             // Join new room
+            console.log('[SignalR] Joining room:', roomId);
             await connectionRef.current.invoke('JoinRoom', roomId.toString());
             setCurrentRoomId(roomId);
+            console.log('[SignalR] Successfully joined room:', roomId);
         } catch (err) {
-            console.error('Failed to join room:', err);
+            console.error('[SignalR] Failed to join room:', roomId, err);
             onError?.(err as Error);
         }
     }, [currentRoomId, onError]);
