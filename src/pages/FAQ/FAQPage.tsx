@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { Spin } from "antd";
-import { HelpCircle } from "lucide-react";
+import { HelpCircle, ChevronDown } from "lucide-react";
 import faqService from "../../services/faqService";
 import { useQuery } from "@tanstack/react-query";
 import "./FAQPage.css";
@@ -10,6 +10,12 @@ const CustomerFAQPage: React.FC = () => {
         queryKey: ["faqs"],
         queryFn: () => faqService.getAllFaqs(),
     });
+    
+    const [expandedId, setExpandedId] = useState<number | null>(null);
+
+    const toggleFaq = (faqId: number) => {
+        setExpandedId(expandedId === faqId ? null : faqId);
+    };
 
     if (loading) {
         return (

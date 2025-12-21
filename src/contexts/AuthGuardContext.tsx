@@ -80,6 +80,7 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
       PagePath.ABOUT,
       PagePath.HOME,
       PagePath.CONTACT,
+      PagePath.FAQ,
     ];
 
     const isPublicRoute = publicRoutes.some((route) => {
@@ -260,7 +261,7 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
           PagePath.USER_PAYMENT_CALLBACK,
           PagePath.USER_STAFF_DETAIL,
           PagePath.CHAT,
-          PagePath.USER_CAMPER_PHOTOGALLERY,  
+          PagePath.USER_CAMPER_PHOTOGALLERY,
         ],
       };
 
