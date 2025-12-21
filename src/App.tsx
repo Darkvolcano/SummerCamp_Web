@@ -66,7 +66,15 @@ import CheckIn from "./pages/Staff/CheckIn/CheckIn";
 import UserManagement from "./pages/Admin/UserManagement/UserManagement";
 import CampLocationPage from "./pages/Admin/CampLocationManagement/CampLocationPage";
 import StaffCampDetail from "./pages/Staff/CampDetail/StaffCampDetail";
+
 import Chatroom from "./pages/Chatroom";
+
+import StaffPhotos from "./pages/Staff/Photos/StaffPhotos";
+import StaffIncidents from "./pages/Staff/Incidents/StaffIncidents";
+import ManagerIncidents from "./pages/Manager/Incidents/ManagerIncidents";
+import AdminIncidents from "./pages/Admin/Incidents/AdminIncidents";
+import PhotoGallery from "./pages/Parent/MyCampers/PhotoGallery";
+
 
 function App() {
   return (
@@ -178,6 +186,10 @@ function App() {
                 path={PagePath.ADMIN_USERS}
                 element={<UserManagement />}
               />
+              <Route
+                path={PagePath.ADMIN_INCIDENTS}
+                element={<AdminIncidents />}
+              />
             </Route>
 
             {/* Staff Routes - Protected */}
@@ -188,6 +200,8 @@ function App() {
               <Route path={PagePath.STAFF_ATTENDANCE_CHECKING} element={<AttendanceChecking />} />
               <Route path={PagePath.STAFF_ATTENDANCE_CAMPERS} element={<AttendanceCamperList />} />
               <Route path={PagePath.STAFF_CHECKIN} element={<CheckIn />} />
+              <Route path={PagePath.STAFF_PHOTOS} element={<StaffPhotos />} />
+              <Route path={PagePath.STAFF_INCIDENTS} element={<StaffIncidents />} />
               <Route path={PagePath.STAFF_LIVESTREAM_HOST} element={<HostLiveStream />} />
               <Route path={PagePath.STAFF_CHAT} element={<StaffChatList />} />
               <Route path={PagePath.STAFF_CHAT_ROOM} element={<StaffChatRoom />} />
@@ -243,7 +257,7 @@ function App() {
               />
               <Route
                 path={PagePath.MANAGER_INCIDENTS}
-                element={<div>Manager Incidents</div>}
+                element={<ManagerIncidents />}
               />
             </Route>
 
@@ -341,6 +355,14 @@ function App() {
               element={
                 <MainLayout>
                   <CamperTransportSchedule />
+                </MainLayout>
+              }
+            />
+            <Route
+              path={PagePath.USER_CAMPER_PHOTOGALLERY}
+              element={
+                <MainLayout>
+                  <PhotoGallery />
                 </MainLayout>
               }
             />

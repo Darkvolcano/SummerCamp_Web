@@ -10,7 +10,6 @@ import {
   Bus,
   Bed,
   CreditCard,
-  Calendar,
   AlertTriangle,
   ChevronDown,
   ChevronUp,
@@ -65,7 +64,7 @@ const ManagerSidebar: React.FC<ManagerSidebarProps> = ({
   const mainMenuItems: MenuItem[] = [
     {
       path: PagePath.MANAGER_DASHBOARD,
-      label: "Bảng Điều Khiển",
+      label: "Dashboard",
       icon: <LayoutDashboard size={20} />,
     },
     {
@@ -95,7 +94,7 @@ const ManagerSidebar: React.FC<ManagerSidebarProps> = ({
     },
     {
       path: PagePath.MANAGER_TRANSPORTATION,
-      label: "Vận Chuyển",
+      label: "Đưa Đón",
       icon: <Bus size={20} />,
     },
     {
@@ -116,11 +115,6 @@ const ManagerSidebar: React.FC<ManagerSidebarProps> = ({
   ];
 
   const bottomMenuItems: MenuItem[] = [
-    {
-      path: PagePath.MANAGER_CALENDAR,
-      label: "Lịch",
-      icon: <Calendar size={20} />,
-    },
     {
       path: PagePath.MANAGER_INCIDENTS,
       label: "Báo Cáo Sự Cố",

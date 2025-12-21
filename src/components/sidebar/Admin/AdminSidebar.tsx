@@ -7,7 +7,6 @@ import {
   FileText,
   HelpCircle,
   CreditCard,
-  Calendar,
   AlertTriangle,
   ChevronDown,
   LogOut,
@@ -42,7 +41,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ onCollapsedChange }) => {
   const mainMenuItems: MenuItem[] = [
     {
       path: PagePath.ADMIN_DASHBOARD,
-      label: "Bảng Điều Khiển",
+      label: "Dashboard",
       icon: <LayoutDashboard size={20} />,
     },
     {
@@ -52,7 +51,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ onCollapsedChange }) => {
     },
         {
       path: PagePath.ADMIN_CAMPTYPES,
-      label: "Loại Trại",
+      label: "Phân Loại Hội Trại",
       icon: <Logs size={20} />,
     },
     {
@@ -77,7 +76,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ onCollapsedChange }) => {
     },
     {
       path: PagePath.ADMIN_FAQS,
-      label: "Câu Hỏi Thường Gặp",
+      label: "FAQs",
       icon: <HelpCircle size={20} />,
     },
     {
@@ -89,12 +88,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ onCollapsedChange }) => {
 
   const bottomMenuItems: MenuItem[] = [
     {
-      path: PagePath.ADMIN_CALENDAR,
-      label: "Lịch",
-      icon: <Calendar size={20} />,
-    },
-    {
-      path: PagePath.ADMIN_REPORTS,
+      path: PagePath.ADMIN_INCIDENTS,
       label: "Báo Cáo Sự Cố",
       icon: <AlertTriangle size={20} />,
     },

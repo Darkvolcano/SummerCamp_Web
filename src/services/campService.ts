@@ -44,6 +44,27 @@ export interface CampRequestDto {
   registrationEndDate: string;
 }
 
+export interface CampExtensionRequestDto {
+  newRegistrationEndDate: string;
+}
+
+export interface CampRejectRequestDto {
+  note: string; // minimum 10 characters
+}
+
+export interface CampCancelRequestDto {
+  note: string; // minimum 10 characters
+}
+
+export interface CampValidationResponseDto {
+  success: boolean;
+  message: string;
+  data: {
+    isValid: boolean;
+    errors: string[];
+  };
+}
+
 // Response DTO (from GET)
 export interface CampResponseDto {
   campId: number;
@@ -63,6 +84,8 @@ export interface CampResponseDto {
   createBy: number;
   registrationStartDate: string;
   registrationEndDate: string;
+  currentCapacity: number;
+  note: string | null;
   // Nested objects
   campType: {
     id: number;
@@ -94,6 +117,8 @@ interface BackendCampResponse {
   createBy: number;
   registrationStartDate: string;
   registrationEndDate: string;
+  currentCapacity: number;
+  note: string | null;
   campType?: {
     id: number;
     name: string;
@@ -125,6 +150,8 @@ const mapBackendToFrontend = (data: BackendCampResponse): CampResponseDto => {
     createBy: data.createBy,
     registrationStartDate: data.registrationStartDate,
     registrationEndDate: data.registrationEndDate,
+    currentCapacity: data.currentCapacity,
+    note: data.note,
     campType: data.campType || null,
     location: data.location || null,
     promotion: data.promotion || null,
@@ -293,9 +320,9 @@ const campService = {
   },
 
   // Reject camp
-  rejectCamp: async (campId: number): Promise<CampResponseDto> => {
+  rejectCamp: async (campId: number, note: string): Promise<CampResponseDto> => {
     console.log(`[campService] PUT /camp/${campId}/reject`);
-    const response = await axiosInstance.put(`/camp/${campId}/reject`);
+    const response = await axiosInstance.put(`/camp/${campId}/reject`, { note });
     const mapped = mapBackendToFrontend(response.data as BackendCampResponse);
     return mapped;
   },
@@ -336,12 +363,31 @@ const campService = {
     return mapped;
   },
 
+  // Extend registration period
+  extendRegistration: async (
+    campId: number,
+    data: CampExtensionRequestDto
+  ): Promise<CampResponseDto> => {
+    console.log(`[campService] PATCH /camp/${campId}/extend-registration`);
+    const response = await axiosInstance.patch(
+      `/camp/${campId}/extend-registration`,
+      data
+    );
+    const mapped = mapBackendToFrontend(response.data as BackendCampResponse);
+    return mapped;
+  },
+
+  // Validate camp
+  validateCamp: async (campId: number): Promise<CampValidationResponseDto> => {
+    console.log(`[campService] GET /camp/validate/${campId}`);
+    const response = await axiosInstance.get(`/camp/validate/${campId}`);
+    return response.data as CampValidationResponseDto;
+  },
+
   // Cancel camp
-  cancelCamp: async (campId: number, reason: string): Promise<CampResponseDto> => {
-    console.log(`[campService] PUT /camp/${campId}/cancel`);
-    const response = await axiosInstance.put(`/camp/${campId}/cancel`, {
-      reason,
-    });
+  cancelCamp: async (campId: number, note: string): Promise<CampResponseDto> => {
+    console.log(`[campService] POST /camp/${campId}/cancel`);
+    const response = await axiosInstance.post(`/camp/${campId}/cancel`, { note });
     const mapped = mapBackendToFrontend(response.data as BackendCampResponse);
     return mapped;
   },

@@ -25,6 +25,16 @@ export interface RouteStopRequestDto {
   estimatedTime: number;
 }
 
+export interface CreateRouteCompositeRequestDto {
+  campId: number;
+  routeName: string;
+  routeType?: string | null;
+  estimateDuration: number;
+  routeStops: RouteStopRequestDto[];
+  createReturnRoute?: boolean;
+  returnRouteName?: string | null;
+}
+
 export interface RouteInfoDto {
   routeId: number;
   routeName: string;
@@ -101,6 +111,23 @@ const routeService = {
   getRoutesByCampId: async (campId: number): Promise<RouteResponseDto[]> => {
     console.log(`[routeService] GET /route/camp/${campId}`);
     const response = await axiosInstance.get(`/route/camp/${campId}`);
+    return response.data as RouteResponseDto[];
+  },
+
+  // Create composite routes including optional return route
+  createCompositeRoute: async (data: CreateRouteCompositeRequestDto): Promise<RouteResponseDto[]> => {
+    console.log("[routeService] POST /route/composite");
+    const requestPayload = {
+      campId: data.campId,
+      routeName: data.routeName,
+      routeType: data.routeType ?? null,
+      estimateDuration: data.estimateDuration,
+      routeStops: data.routeStops,
+      createReturnRoute: data.createReturnRoute ?? false,
+      returnRouteName: data.returnRouteName ?? null,
+    };
+
+    const response = await axiosInstance.post("/route/composite", requestPayload);
     return response.data as RouteResponseDto[];
   },
 

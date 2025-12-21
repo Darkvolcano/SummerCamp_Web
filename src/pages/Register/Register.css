@@ -316,14 +316,35 @@
 .form-input:-webkit-autofill:hover,
 .form-input:-webkit-autofill:focus,
 .form-input:-webkit-autofill:active {
-    -webkit-box-shadow: 0 0 0 30px white inset !important;
+    -webkit-box-shadow: 0 0 0 1000px rgb(255, 255, 255) inset !important;
+    box-shadow: 0 0 0 1000px rgb(255, 255, 255) inset !important;
     -webkit-text-fill-color: #1e293b !important;
     color: #1e293b !important;
     font-weight: 600 !important;
+    background-color: rgb(255, 255, 255) !important;
+    background-image: none !important;
+    border: none !important;
+    transition: background-color 5000s ease-in-out 0s !important;
+    caret-color: #1e293b !important;
+}
+
+.input-wrapper input:-webkit-autofill,
+.input-wrapper input:-webkit-autofill:hover,
+.input-wrapper input:-webkit-autofill:focus,
+.input-wrapper input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px rgb(255, 255, 255) inset !important;
+    box-shadow: 0 0 0 1000px rgb(255, 255, 255) inset !important;
+    -webkit-text-fill-color: #1e293b !important;
+    background-color: rgb(255, 255, 255) !important;
+    background-image: none !important;
+    border: none !important;
+    transition: background-color 5000s ease-in-out 0s !important;
+    caret-color: #1e293b !important;
 }
 
 .form-input::placeholder {
     color: #cbd5e1 !important;
+    font-weight: 400 !important;
     -webkit-font-smoothing: antialiased !important;
     -moz-osx-font-smoothing: grayscale !important;
     transform: translateZ(0) !important;
@@ -332,6 +353,7 @@
 
 .form-input::-webkit-input-placeholder {
     color: #cbd5e1 !important;
+    font-weight: 400 !important;
     -webkit-font-smoothing: antialiased !important;
     transform: translateZ(0) !important;
     opacity: 1 !important;
@@ -339,6 +361,7 @@
 
 .form-input::-moz-placeholder {
     color: #cbd5e1 !important;
+    font-weight: 400 !important;
     -moz-osx-font-smoothing: grayscale !important;
     transform: translateZ(0) !important;
     opacity: 1 !important;
@@ -346,6 +369,7 @@
 
 .form-input:-ms-input-placeholder {
     color: #cbd5e1 !important;
+    font-weight: 400 !important;
     transform: translateZ(0) !important;
     opacity: 1 !important;
 }

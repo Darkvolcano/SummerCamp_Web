@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import {
   Calendar as BigCalendar,
   momentLocalizer,
@@ -16,7 +16,7 @@ export interface Activity {
   title: string;
   start: Date;
   end: Date;
-  type: "Core" | "Optional" | "Resting" | "CheckIn" | "CheckOut";
+  type: "Core" | "Optional" | "Resting" | "Checkin" | "Checkout";
   description?: string;
   location?: string;
   participants?: number;
@@ -47,15 +47,15 @@ const Calendar: React.FC<CalendarProps> = ({
   onAddClick,
   onSelectSlot,
 }) => {
-  // Determine permissions based on userRole
   const canManage = userRole === 'manager';
   const [view, setView] = useState<View>("month");
   const [date, setDate] = useState(new Date());
+  const initialDateSetRef = useRef(false);
 
-  // Auto-navigate to camp start date when campInfo is available
   useEffect(() => {
-    if (campInfo && campInfo.startDate) {
+    if (campInfo && campInfo.startDate && !initialDateSetRef.current) {
       setDate(moment(campInfo.startDate).toDate());
+      initialDateSetRef.current = true;
     }
   }, [campInfo]);
 
@@ -83,11 +83,11 @@ const Calendar: React.FC<CalendarProps> = ({
       case "Resting":
         backgroundColor = "#8b5cf6"; // Resting - Purple
         break;
-      case "CheckIn":
-        backgroundColor = "#10b981"; // CheckIn - Green
+      case "Checkin":
+        backgroundColor = "#10b981"; // Checkin - Green
         break;
-      case "CheckOut":
-        backgroundColor = "#ef4444"; // CheckOut - Red
+      case "Checkout":
+        backgroundColor = "#ef4444"; // Checkout - Red
         break;
     }
 

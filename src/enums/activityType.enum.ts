@@ -2,6 +2,6 @@ export enum ActivitiyType {
     CORE = "Core",
     OPTIONAL = "Optional",
     RESTING = "Resting",
-    CHECKIN = "CheckIn",
-    CHECKOUT = "CheckOut",
+    CHECKIN = "Checkin",
+    CHECKOUT = "Checkout",
 }

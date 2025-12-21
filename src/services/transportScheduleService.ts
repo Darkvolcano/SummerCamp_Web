@@ -14,11 +14,13 @@ export interface DriverNameDto {
 export interface VehicleNameDto {
   vehicleId: number;
   vehicleName: string | null;
+  vehicleNumber: string | null;
 }
 
 export interface CampNameDto {
   campId: number;
   name: string | null;
+  status: string | null;
   startDate: string;
   endDate: string;
 }
@@ -62,9 +64,33 @@ export interface TransportScheduleResponseDto {
 }
 
 export interface CamperInScheduleResponseDto {
-  camperId: number;
-  camperName: string | null;
+  camperTransportId: number;
+  transportScheduleId: number;
+  camper: {
+    camperId: number;
+    camperName: string | null;
+  };
+  location: {
+    id: number;
+    name: string | null;
+  };
+  isAbsent: boolean;
+  checkInTime: string | null;
+  checkOutTime: string | null;
+  status: string;
+  note: string | null;
+}
+
+export interface StaffDetailDto {
+  staffId: number;
+  staffName: string | null;
+  role: string | null;
   status: string | null;
+}
+
+export interface TransportScheduleWithStaffDto extends TransportScheduleResponseDto {
+  staff: StaffDetailDto[];
+  staffCount: number;
 }
 
 // Search params interface
@@ -137,6 +163,20 @@ const transportScheduleService = {
     console.log("[transportScheduleService] GET /transport-schedules/driver-schedule");
     const response = await axiosInstance.get("/transport-schedules/driver-schedule");
     return response.data as TransportScheduleResponseDto[];
+  },
+
+  // GET /api/transport-schedules/staff-schedule - Get transport schedules for login staff
+  getStaffSchedule: async (): Promise<TransportScheduleResponseDto[]> => {
+    console.log("[transportScheduleService] GET /transport-schedules/staff-schedule");
+    const response = await axiosInstance.get("/transport-schedules/staff-schedule");
+    return response.data as TransportScheduleResponseDto[];
+  },
+
+  // GET /api/transport-schedules/{id}/staff-details - Get transport schedule by ID with staff details
+  getScheduleByIdWithStaff: async (id: number): Promise<TransportScheduleWithStaffDto> => {
+    console.log(`[transportScheduleService] GET /transport-schedules/${id}/staff-details`);
+    const response = await axiosInstance.get(`/transport-schedules/${id}/staff-details`);
+    return response.data as TransportScheduleWithStaffDto;
   },
 
   // GET /api/transport-schedules/{id}/campers - Get list camper in one transport schedule

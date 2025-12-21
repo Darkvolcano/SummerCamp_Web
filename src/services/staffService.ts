@@ -92,6 +92,19 @@ export interface GroupStaffActivityResponseDto {
   location: LocationInfo | null;
 }
 
+export interface AllSchedulesResponseDto {
+  activityScheduleId: number;
+  activity: ActivityInfo;
+  staff: StaffBasicInfo | null;
+  startTime: string;
+  endTime: string;
+  status: string;
+  isLivestream: boolean | null;
+  liveStream: LiveStreamInfo | null;
+  location: LocationInfo | null;
+  currentCapacity: number | null;
+}
+
 export interface SupervisorInfo {
   userId: number;
   fullName: string;
@@ -120,6 +133,13 @@ const staffService = {
     console.log(`[staffService] GET /Staff/camps/${campId}/activities`);
     const response = await axiosInstance.get(`/Staff/camps/${campId}/activities`);
     return response.data as CampActivitiesResponseDto;
+  },
+
+  // Get all schedules for staff in a camp (assigned schedules + group schedules + accommodation schedules)
+  getAllSchedules: async (campId: number): Promise<AllSchedulesResponseDto[]> => {
+    console.log(`[staffService] GET /Staff/camps/${campId}/all-schedules`);
+    const response = await axiosInstance.get(`/Staff/camps/${campId}/all-schedules`);
+    return response.data as AllSchedulesResponseDto[];
   },
 
   // Get group staff activities with full details

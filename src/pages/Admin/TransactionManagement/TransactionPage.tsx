@@ -102,6 +102,25 @@ const TransactionPage: React.FC = () => {
         }
     };
 
+    const getTranslatedStatus = (status: string) => {
+        switch (status.toLowerCase()) {
+            case "success": return "Success";
+            case "completed": return "Completed";
+            case "pending": return "Pending";
+            case "failed": return "Failed";
+            case "cancelled": return "Cancelled";
+            default: return status;
+        }
+    };
+
+    const getTranslatedType = (type: string) => {
+        switch (type.toLowerCase()) {
+            case "payment": return "Payment";
+            case "refund": return "Refund";
+            default: return type;
+        }
+    };
+
     return (
         <div className="min-h-screen bg-[#F9FAFB] p-6">
             {/* Header */}
@@ -285,7 +304,7 @@ const TransactionPage: React.FC = () => {
                                                                     transaction.type
                                                                 )}`}
                                                             >
-                                                                {transaction.type}
+                                                                {getTranslatedType(transaction.type)}
                                                             </span>
                                                         </td>
                                                         <td className="px-6 py-4 text-sm text-[#6B7280]">
@@ -297,7 +316,7 @@ const TransactionPage: React.FC = () => {
                                                                     transaction.status
                                                                 )}`}
                                                             >
-                                                                {transaction.status}
+                                                                {getTranslatedStatus(transaction.status)}
                                                             </span>
                                                         </td>
                                                         <td className="px-6 py-4 text-sm text-[#6B7280] whitespace-nowrap">

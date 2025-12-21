@@ -12,7 +12,7 @@ import {
   DatePicker,
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import camperService, {
   type CamperResponseDto,
   type CamperRequestDto,
@@ -30,6 +30,7 @@ import "./RegistrationPage.css";
 
 const RegistrationPage: React.FC = () => {
   const { campId } = useParams<{ campId: string }>();
+  const navigate = useNavigate();
   const { toastSuccess, toastError } = useNotification();
   const [form] = Form.useForm();
 
@@ -592,8 +593,8 @@ const RegistrationPage: React.FC = () => {
       form.resetFields();
       console.log("Registration submitted for approval:", result);
 
-      // TODO: Redirect to my registrations page or show confirmation modal
-      // navigate(PagePath.MY_REGISTRATIONS);
+      // Navigate to my registrations page
+      navigate("/user/my-registrations");
     } catch (error: any) {
       console.error("Error creating registration:", error);
       const errorMessage = error.response?.data?.message || error.response?.data?.title || "Không thể tạo đăng ký";
@@ -1184,9 +1185,8 @@ const RegistrationPage: React.FC = () => {
               rules={[{ required: true, message: "Vui lòng chọn giới tính" }]}
             >
               <Select placeholder="Chọn giới tính">
-                <Select.Option value="Nam">Nam</Select.Option>
-                <Select.Option value="Nữ">Nữ</Select.Option>
-                <Select.Option value="Khác">Khác</Select.Option>
+                <Select.Option value="Male">Nam</Select.Option>
+                <Select.Option value="Female">Nữ</Select.Option>
               </Select>
             </Form.Item>
 

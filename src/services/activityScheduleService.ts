@@ -5,7 +5,7 @@ export interface ActivityInfo {
   activityId?: number;
   name: string;
   description?: string | null;
-  activityType: "Core" | "Optional" | "Resting" | "CheckIn" | "CheckOut";
+  activityType: "Core" | "Optional" | "Resting" | "Checkin" | "Checkout";
 }
 
 export interface StaffInfo {
@@ -23,6 +23,19 @@ export interface LiveStreamInfo {
   roomId: string;
   title: string;
   hostId: number;
+}
+
+export interface AttendanceLogDto {
+  attendanceLogId: number;
+  camperId: number;
+  camperName: string;
+  timestamp: string;
+  eventType: string;
+  checkInMethod: string;
+  staffId: number;
+  activityScheduleId: number;
+  note: string;
+  participantStatus: string;
 }
 
 export interface ActivitySchedule {
@@ -73,6 +86,7 @@ export interface OptionalScheduleCreateDto {
   startTime: string;
   endTime: string;
   isLiveStream?: boolean | null;
+  maxCapacity?: number | null;
   isRepeat?: boolean;
 }
 
@@ -83,7 +97,24 @@ export interface RestingScheduleCreateDto {
   isRepeat?: boolean;
 }
 
+export interface ActivityScheduleUpdateDto {
+  activityScheduleId: number;
+  startTime: string;
+  endTime: string;
+  locationId?: number | null;
+  staffId?: number | null;
+  isLiveStream?: boolean | null;
+}
+
+export interface CreateCheckInCheckOutRequestDto {
+  activityId: number;
+  startTime: string; // format: date-time
+  endTime: string;   // format: date-time
+  locationId: number;
+}
+
 export interface ActivityScheduleResponseDto {
+  attendanceLogs?: AttendanceLogDto[];
   activityScheduleId: number;
   activity: ActivityInfo | null;
   staff: StaffInfo | null;
@@ -119,6 +150,22 @@ const activityScheduleService = {
     console.log(`[activityScheduleService] GET /ActivitySchedule/${id}`);
     const response = await axiosInstance.get(`/ActivitySchedule/${id}`);
     return response.data as ActivityScheduleResponseDto;
+  },
+
+  // Update activity schedule (generic update)
+  updateActivitySchedule: async (id: number, data: ActivityScheduleUpdateDto): Promise<ActivityScheduleResponseDto> => {
+    console.log(`[activityScheduleService] PUT /ActivitySchedule/${id}`);
+    const response = await axiosInstance.put(`/ActivitySchedule/${id}`, data);
+    return response.data as ActivityScheduleResponseDto;
+  },
+
+  // Get available groups for core activity schedule
+  getAvailableGroups: async (campId: number, startTime: string, endTime: string): Promise<any[]> => {
+    console.log(`[activityScheduleService] GET /ActivitySchedule/core/available-groups`);
+    const response = await axiosInstance.get("/ActivitySchedule/core/available-groups", {
+      params: { campId, startTime, endTime },
+    });
+    return response.data;
   },
 
   // Get activity schedules with pending attendance by camp ID
@@ -241,21 +288,10 @@ const activityScheduleService = {
     return response.data as ActivityScheduleBatchResponseDto;
   },
 
-  // Update core activity schedule
-  updateCoreActivitySchedule: async (id: number, schedule: ActivityScheduleCreateDto): Promise<ActivityScheduleResponseDto> => {
-    console.log(`[activityScheduleService] PUT /ActivitySchedule/core/${id}`);
-    const requestPayload = {
-      activityId: schedule.activityId,
-      staffId: schedule.staffId ?? null,
-      locationId: schedule.locationId ?? null,
-      startTime: schedule.startTime,
-      endTime: schedule.endTime,
-      isLiveStream: schedule.isLiveStream ?? null,
-      isRepeat: schedule.isRepeat ?? false,
-      groupIds: schedule.groupIds ?? null,
-    };
-
-    const response = await axiosInstance.put(`/ActivitySchedule/core/${id}`, requestPayload);
+  // Create check-in/check-out activity schedule
+  createCheckInCheckOutSchedule: async (data: CreateCheckInCheckOutRequestDto): Promise<ActivityScheduleResponseDto> => {
+    console.log("[activityScheduleService] POST /ActivitySchedule/checkin-checkout");
+    const response = await axiosInstance.post("/ActivitySchedule/checkin-checkout", data);
     return response.data as ActivityScheduleResponseDto;
   },
 

@@ -131,9 +131,9 @@ const CampTransaction: React.FC = () => {
     return (
       <div className="p-6 flex items-center justify-center min-h-[500px]">
         <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-indigo-200 p-12 rounded-2xl text-center shadow-lg hover:shadow-xl transition-shadow duration-300 max-w-md">
-          <h3 className="text-xl font-bold text-indigo-900 mb-2">Select Camp</h3>
+          <h3 className="text-xl font-bold text-indigo-900 mb-2">Chọn Trại</h3>
           <p className="text-indigo-700 text-base leading-relaxed">
-            Please select a camp from the left sidebar to view transactions
+            Vui lòng chọn một chương trình trại từ menu bên trái để xem giao dịch
           </p>
         </div>
       </div>
@@ -144,9 +144,9 @@ const CampTransaction: React.FC = () => {
     <div className="min-h-screen bg-[#F9FAFB] p-6">
       {/* Page Header */}
       <div className="mb-4">
-        <h1 className="text-2xl font-bold text-[#111827]">Transactions</h1>
+        <h1 className="text-2xl font-bold text-[#111827]">Giao Dịch</h1>
         <p className="text-xs text-[#6B7280] mt-0.5">
-          View and manage camp transactions and payments
+          Xem và quản lý các giao dịch và thanh toán của trại
         </p>
       </div>
 
@@ -159,12 +159,12 @@ const CampTransaction: React.FC = () => {
           {/* Left Sidebar - Filters & Stats */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-xl shadow-sm border border-[#E5E7EB] p-6 sticky top-6 space-y-6">
-              <h3 className="text-lg font-bold text-[#111827]">Filters</h3>
+              <h3 className="text-lg font-bold text-[#111827]">Bộ Lọc</h3>
 
               {/* Search */}
               <div>
                 <label className="block text-xs font-semibold text-[#374151] mb-2 uppercase tracking-wider">
-                  Search
+                  Tìm Kiếm
                 </label>
                 <div className="relative">
                   <Search
@@ -173,7 +173,7 @@ const CampTransaction: React.FC = () => {
                   />
                   <input
                     type="text"
-                    placeholder="Code or camp..."
+                    placeholder="Mã hoặc tên trại..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full pl-9 pr-4 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:border-transparent text-sm text-[#6B7280] placeholder:text-[#9CA3AF]"
@@ -184,7 +184,7 @@ const CampTransaction: React.FC = () => {
               {/* Status Filter */}
               <div>
                 <label className="block text-xs font-semibold text-[#374151] mb-3 uppercase tracking-wider">
-                  Status
+                  Trạng Thái
                 </label>
                 <div className="space-y-2">
                   {/* All checkbox */}
@@ -196,7 +196,7 @@ const CampTransaction: React.FC = () => {
                       className="w-4 h-4 rounded border-[#D1D5DB] text-[#6366F1] focus:ring-[#6366F1] focus:ring-2 bg-white"
                     />
                     <span className="text-sm text-[#374151] group-hover:text-[#111827] font-medium">
-                      All
+                      Tất Cả
                     </span>
                     <span className="text-xs font-semibold text-[#6366F1] bg-[#EFF6FF] px-2 py-0.5 rounded-full ml-auto">
                       {transactions.length}
@@ -234,7 +234,7 @@ const CampTransaction: React.FC = () => {
               {/* Table Header */}
               <div className="px-6 py-4 border-b border-[#E5E7EB]">
                 <h2 className="text-lg font-bold text-[#111827]">
-                  Found: {filteredTransactions.length} transaction(s)
+                  Tìm Thấy: {filteredTransactions.length} giao dịch
                 </h2>
               </div>
 
@@ -244,25 +244,25 @@ const CampTransaction: React.FC = () => {
                   <thead className="bg-[#F9FAFB] border-b border-[#E5E7EB]">
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                        ID
+                        STT
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                        Transaction Code
+                        Mã Giao Dịch
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                        Amount
+                        Số Tiền
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                        Type
+                        Loại
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                        Status
+                        Trạng Thái
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                        Method
+                        Phương Thức
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                        Time
+                        Thời Gian
                       </th>
                     </tr>
                   </thead>
@@ -274,8 +274,8 @@ const CampTransaction: React.FC = () => {
                           className="px-6 py-12 text-center text-[#6B7280]"
                         >
                           <DollarSign size={48} className="mx-auto mb-4 text-[#9CA3AF]" />
-                          <p className="text-base font-medium">No transactions found</p>
-                          <p className="text-sm mt-1">Transactions will appear here once payments are made</p>
+                          <p className="text-base font-medium">Không tìm thấy giao dịch</p>
+                          <p className="text-sm mt-1">Các giao dịch sẽ xuất hiện ở đây sau khi thanh toán được thực hiện</p>
                         </td>
                       </tr>
                     ) : (
@@ -322,10 +322,10 @@ const CampTransaction: React.FC = () => {
                 <div className="px-6 py-4 bg-[#F9FAFB] border-t border-[#E5E7EB]">
                   <div className="flex items-center justify-between">
                     <div className="text-sm text-[#6B7280]">
-                      Showing {filteredTransactions.length} of {transactions.length} transaction(s)
+                      Hiển thị {filteredTransactions.length} trong số {transactions.length} giao dịch
                     </div>
                     <div className="text-lg font-bold text-[#111827]">
-                      Total Amount: {formatCurrency(totalAmount)}
+                      Tổng Tiền: {formatCurrency(totalAmount)}
                     </div>
                   </div>
                 </div>

@@ -7,7 +7,7 @@ import {
   Home,
   User,
   Clock,
-  DollarSign,
+
   Info,
 } from 'lucide-react';
 import { StaffContext } from '../../../contexts/StaffContext';
@@ -18,6 +18,7 @@ import staffService, {
   type CampAccommodationResponseDto,
 } from '../../../services/staffService';
 import camperService, { type CamperCampResponseDto } from '../../../services/camperService';
+import camperGroupService from '../../../services/camperGroupService';
 import CamperDetailModal from '../../../components/CamperDetailModal';
 
 const StaffCampDetail: React.FC = () => {
@@ -102,10 +103,19 @@ const StaffCampDetail: React.FC = () => {
 
     try {
       setLoadingCampers(true);
-      const allCampers = await camperService.getCampersByCampId(selectedCampId);
-      // Filter campers by group - assuming campers have groupId field
-      // If API doesn't provide this, you may need a different endpoint
-      setGroupCampers(allCampers);
+      // Call camperGroupService with groupId to get campers in this specific group
+      const camperGroups = await camperGroupService.getCamperGroups({ groupId: group.groupId });
+      
+      // Transform CamperGroupResponseDto[] to CamperCampResponseDto[] for UI compatibility
+      const transformedCampers: CamperCampResponseDto[] = camperGroups.map((cg) => ({
+        camperId: cg.camperName.camperId,
+        camperName: cg.camperName.camperName,
+        gender: '', // Not provided by API, will be empty
+        dob: '', // Not provided by API, will be empty
+        camperRegistrationStatus: cg.status,
+      }));
+      
+      setGroupCampers(transformedCampers);
       setShowGroupCampersModal(true);
     } catch (error: any) {
       console.error('Failed to load group campers:', error);
@@ -166,10 +176,10 @@ const StaffCampDetail: React.FC = () => {
       <div className="p-6 flex items-center justify-center min-h-[500px]">
         <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-indigo-200 p-12 rounded-2xl text-center shadow-lg max-w-md">
           <h3 className="text-xl font-bold text-indigo-900 mb-2">
-            Select Camp
+            Chọn Trại
           </h3>
           <p className="text-indigo-700 text-base leading-relaxed">
-            Please select a camp from the sidebar to view details
+            Vui lòng chọn một chương trình trại từ menu bên trái để xem chi tiết
           </p>
         </div>
       </div>
@@ -187,7 +197,7 @@ const StaffCampDetail: React.FC = () => {
   if (!camp) {
     return (
       <div className="p-6 text-center text-gray-500">
-        Camp not found
+        Không tìm thấy trại
       </div>
     );
   }
@@ -196,9 +206,9 @@ const StaffCampDetail: React.FC = () => {
     <div className="p-6">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-[#111827]">Camp Detail</h1>
+        <h1 className="text-2xl font-bold text-[#111827]">Chi Tiết Trại</h1>
         <p className="text-[#6B7280] text-sm mt-1">
-          View your assigned camp information
+          Xem thông tin trại được phân công của bạn
         </p>
       </div>
 
@@ -229,7 +239,7 @@ const StaffCampDetail: React.FC = () => {
               <div className="flex items-start gap-3">
                 <Info size={20} className="text-[#6366F1] mt-1" />
                 <div>
-                  <p className="text-sm font-semibold text-[#374151]">Description</p>
+                  <p className="text-sm font-semibold text-[#374151]">Mô Tả</p>
                   <p className="text-sm text-[#6B7280]">{camp.description || 'N/A'}</p>
                 </div>
               </div>
@@ -237,7 +247,7 @@ const StaffCampDetail: React.FC = () => {
               <div className="flex items-start gap-3">
                 <MapPin size={20} className="text-[#6366F1] mt-1" />
                 <div>
-                  <p className="text-sm font-semibold text-[#374151]">Location</p>
+                  <p className="text-sm font-semibold text-[#374151]">Địa Điểm</p>
                   <p className="text-sm text-[#6B7280]">{camp.place || 'N/A'}</p>
                   <p className="text-xs text-[#9CA3AF]">{camp.address || ''}</p>
                 </div>
@@ -246,7 +256,7 @@ const StaffCampDetail: React.FC = () => {
               <div className="flex items-start gap-3">
                 <Calendar size={20} className="text-[#6366F1] mt-1" />
                 <div>
-                  <p className="text-sm font-semibold text-[#374151]">Duration</p>
+                  <p className="text-sm font-semibold text-[#374151]">Thời Gian</p>
                   <p className="text-sm text-[#6B7280]">
                     {formatDate(camp.startDate)} - {formatDate(camp.endDate)}
                   </p>
@@ -256,12 +266,12 @@ const StaffCampDetail: React.FC = () => {
               <div className="flex items-start gap-3">
                 <Clock size={20} className="text-[#6366F1] mt-1" />
                 <div>
-                  <p className="text-sm font-semibold text-[#374151]">Registration Period</p>
+                  <p className="text-sm font-semibold text-[#374151]">Thời Gian Đăng Ký</p>
                   <p className="text-sm text-[#6B7280]">
                     {formatDateTime(camp.registrationStartDate)}
                   </p>
                   <p className="text-sm text-[#6B7280]">
-                    to {formatDateTime(camp.registrationEndDate)}
+                    đến {formatDateTime(camp.registrationEndDate)}
                   </p>
                 </div>
               </div>
@@ -271,9 +281,9 @@ const StaffCampDetail: React.FC = () => {
               <div className="flex items-start gap-3">
                 <Users size={20} className="text-[#6366F1] mt-1" />
                 <div>
-                  <p className="text-sm font-semibold text-[#374151]">Participants</p>
+                  <p className="text-sm font-semibold text-[#374151]">Số Lượng Trại Viên</p>
                   <p className="text-sm text-[#6B7280]">
-                    Min: {camp.minParticipants} - Max: {camp.maxParticipants}
+                    Tối thiểu: {camp.minParticipants} - Tối đa: {camp.maxParticipants}
                   </p>
                 </div>
               </div>
@@ -281,28 +291,20 @@ const StaffCampDetail: React.FC = () => {
               <div className="flex items-start gap-3">
                 <User size={20} className="text-[#6366F1] mt-1" />
                 <div>
-                  <p className="text-sm font-semibold text-[#374151]">Age Range</p>
+                  <p className="text-sm font-semibold text-[#374151]">Độ Tuổi</p>
                   <p className="text-sm text-[#6B7280]">
-                    {camp.minAge} - {camp.maxAge} years old
+                    {camp.minAge} - {camp.maxAge} tuổi
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-3">
-                <DollarSign size={20} className="text-[#6366F1] mt-1" />
-                <div>
-                  <p className="text-sm font-semibold text-[#374151]">Price</p>
-                  <p className="text-sm text-[#6B7280]">
-                    {camp.price.toLocaleString()} VND
-                  </p>
-                </div>
-              </div>
+
 
               {camp.campType && (
                 <div className="flex items-start gap-3">
                   <Info size={20} className="text-[#6366F1] mt-1" />
                   <div>
-                    <p className="text-sm font-semibold text-[#374151]">Camp Type</p>
+                    <p className="text-sm font-semibold text-[#374151]">Phân Loại Hội Trại</p>
                     <p className="text-sm text-[#6B7280]">{camp.campType.name}</p>
                   </div>
                 </div>
@@ -317,7 +319,7 @@ const StaffCampDetail: React.FC = () => {
               className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-all font-medium"
             >
               <Users size={20} />
-              View All Campers in Camp
+              Xem Tất Cả Trại Viên
             </button>
           </div>
         </div>
@@ -331,13 +333,13 @@ const StaffCampDetail: React.FC = () => {
             <div className="px-6 py-4 bg-gradient-to-r from-green-50 to-emerald-50 border-b border-[#E5E7EB]">
               <div className="flex items-center gap-2">
                 <Users size={20} className="text-green-600" />
-                <h3 className="text-lg font-bold text-[#111827]">Supervising Group</h3>
+                <h3 className="text-lg font-bold text-[#111827]">Nhóm Phụ Trách</h3>
               </div>
             </div>
             <div className="p-6">
               <div className="space-y-3">
                 <div>
-                  <p className="text-sm font-semibold text-[#374151]">Group Name</p>
+                  <p className="text-sm font-semibold text-[#374151]">Tên Nhóm</p>
                   <p className="text-sm text-[#6B7280]">{group.groupName}</p>
                 </div>
                 <button
@@ -345,7 +347,7 @@ const StaffCampDetail: React.FC = () => {
                   className="w-full mt-4 inline-flex items-center justify-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-medium text-sm"
                 >
                   <Users size={16} />
-                  View Group Campers
+                  Xem Trại Viên Trong Nhóm
                 </button>
               </div>
             </div>
@@ -358,13 +360,13 @@ const StaffCampDetail: React.FC = () => {
             <div className="px-6 py-4 bg-gradient-to-r from-orange-50 to-amber-50 border-b border-[#E5E7EB]">
               <div className="flex items-center gap-2">
                 <Home size={20} className="text-orange-600" />
-                <h3 className="text-lg font-bold text-[#111827]">Supervising Accommodation</h3>
+                <h3 className="text-lg font-bold text-[#111827]">Chỗ Ở Phụ Trách</h3>
               </div>
             </div>
             <div className="p-6">
               <div className="space-y-3">
                 <div>
-                  <p className="text-sm font-semibold text-[#374151]">Accommodation Name</p>
+                  <p className="text-sm font-semibold text-[#374151]">Tên Chỗ Ở</p>
                   <p className="text-sm text-[#6B7280]">{accommodation.name}</p>
                 </div>
                 <button
@@ -372,7 +374,7 @@ const StaffCampDetail: React.FC = () => {
                   className="w-full mt-4 inline-flex items-center justify-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-all font-medium text-sm"
                 >
                   <Users size={16} />
-                  View Accommodation Campers
+                  Xem Trại Viên Trong Chỗ Ở
                 </button>
               </div>
             </div>
@@ -385,10 +387,10 @@ const StaffCampDetail: React.FC = () => {
             <div className="text-center">
               <Info size={48} className="mx-auto mb-4 text-blue-600" />
               <h3 className="text-lg font-bold text-blue-900 mb-2">
-                No Assignments Yet
+                Chưa Được Phân Công
               </h3>
               <p className="text-blue-700">
-                You haven't been assigned to any group or accommodation for this camp.
+                Bạn chưa được phân công vào nhóm hoặc chỗ ở nào cho trại này.
               </p>
             </div>
           </div>
@@ -400,19 +402,20 @@ const StaffCampDetail: React.FC = () => {
         title={
           <div className="flex items-center gap-2">
             <Users size={20} className="text-[#6366F1]" />
-            <span>All Campers in {camp.name}</span>
+            <span>Tất Cả Trại Viên Trong {camp.name}</span>
           </div>
         }
         open={showCampersModal}
         onCancel={() => setShowCampersModal(false)}
         footer={null}
         width={800}
+        centered
       >
         <Spin spinning={loadingCampers}>
           <div className="max-h-[500px] overflow-y-auto">
             {allCampers.length === 0 ? (
               <div className="text-center py-8 text-gray-500">
-                No campers found
+                Không tìm thấy trại viên
               </div>
             ) : (
               <div className="divide-y divide-gray-200">
@@ -431,7 +434,7 @@ const StaffCampDetail: React.FC = () => {
                     <div className="flex-1">
                       <p className="font-semibold text-gray-900">{camper.camperName}</p>
                       <p className="text-sm text-gray-500">
-                        {camper.gender} • Born: {formatDate(camper.dob)}
+                        {camper.gender} • Ngày sinh: {formatDate(camper.dob)}
                       </p>
                     </div>
                     {camper.camperRegistrationStatus && (
@@ -450,19 +453,20 @@ const StaffCampDetail: React.FC = () => {
         title={
           <div className="flex items-center gap-2">
             <Users size={20} className="text-green-600" />
-            <span>Campers in {group?.groupName}</span>
+            <span>Trại Viên Trong {group?.groupName}</span>
           </div>
         }
         open={showGroupCampersModal}
         onCancel={() => setShowGroupCampersModal(false)}
         footer={null}
         width={800}
+        centered
       >
         <Spin spinning={loadingCampers}>
           <div className="max-h-[500px] overflow-y-auto">
             {groupCampers.length === 0 ? (
               <div className="text-center py-8 text-gray-500">
-                No campers found in this group
+                Không tìm thấy trại viên trong nhóm này
               </div>
             ) : (
               <div className="divide-y divide-gray-200">
@@ -484,9 +488,6 @@ const StaffCampDetail: React.FC = () => {
                         {camper.gender} • Born: {formatDate(camper.dob)}
                       </p>
                     </div>
-                    {camper.camperRegistrationStatus && (
-                      <Tag color="green">{camper.camperRegistrationStatus}</Tag>
-                    )}
                   </div>
                 ))}
               </div>
@@ -500,19 +501,20 @@ const StaffCampDetail: React.FC = () => {
         title={
           <div className="flex items-center gap-2">
             <Home size={20} className="text-orange-600" />
-            <span>Campers in {accommodation?.name}</span>
+            <span>Trại Viên Trong {accommodation?.name}</span>
           </div>
         }
         open={showAccommodationCampersModal}
         onCancel={() => setShowAccommodationCampersModal(false)}
         footer={null}
         width={800}
+        centered
       >
         <Spin spinning={loadingCampers}>
           <div className="max-h-[500px] overflow-y-auto">
             {accommodationCampers.length === 0 ? (
               <div className="text-center py-8 text-gray-500">
-                No campers found in this accommodation
+                Không tìm thấy trại viên trong chỗ ở này
               </div>
             ) : (
               <div className="divide-y divide-gray-200">
@@ -553,7 +555,7 @@ const StaffCampDetail: React.FC = () => {
             setCamperDetailModalOpen(false);
             setSelectedCamperId(null);
           }}
-          camperId={selectedCamperId}
+          camperId={selectedCamperId!}
           campId={selectedCampId}
         />
       )}

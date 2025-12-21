@@ -175,6 +175,8 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
           PagePath.STAFF_CHECKIN,
           PagePath.STAFF_CHAT,
           PagePath.STAFF_CHAT_ROOM,
+          PagePath.STAFF_PHOTOS,
+          PagePath.STAFF_INCIDENTS,
           "/staff/profile",
           "/staff/chat",
           "/profile",
@@ -227,7 +229,7 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
           PagePath.ADMIN_FAQS,
           PagePath.ADMIN_TRANSACTIONS,
           PagePath.ADMIN_CALENDAR,
-          PagePath.ADMIN_REPORTS,
+          PagePath.ADMIN_INCIDENTS,
           "/admin/profile",
           "/profile",
           PagePath.CHAT,
@@ -258,6 +260,7 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
           PagePath.USER_PAYMENT_CALLBACK,
           PagePath.USER_STAFF_DETAIL,
           PagePath.CHAT,
+          PagePath.USER_CAMPER_PHOTOGALLERY,  
         ],
       };
 

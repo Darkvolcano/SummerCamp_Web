@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Spin, message } from "antd";
+import { Spin, message, Modal, List } from "antd";
 import {
   CalendarOutlined,
   EnvironmentOutlined,
@@ -11,8 +11,10 @@ import {
   CheckCircleFilled,
   TagOutlined,
   GiftOutlined,
+  UnorderedListOutlined,
 } from "@ant-design/icons";
 import campService, { type CampResponseDto } from "../../services/campService";
+import activityScheduleService, { type ActivityScheduleResponseDto } from "../../services/activityScheduleService";
 import { useAuthStore } from "../../services/userService";
 import "./CampDetail.css";
 
@@ -22,6 +24,9 @@ const CampDetail: React.FC = () => {
   const { user } = useAuthStore();
   const [camp, setCamp] = useState<CampResponseDto | null>(null);
   const [loading, setLoading] = useState(true);
+  const [scheduleModalVisible, setScheduleModalVisible] = useState(false);
+  const [schedules, setSchedules] = useState<ActivityScheduleResponseDto[]>([]);
+  const [schedulesLoading, setSchedulesLoading] = useState(false);
 
   useEffect(() => {
     console.log("🔍 [CampDetail] Component mounted, id:", campId);
@@ -106,6 +111,11 @@ const CampDetail: React.FC = () => {
       return;
     }
 
+    if (camp && camp.currentCapacity >= camp.maxParticipants) {
+      message.warning("Trại hè đã đầy, không thể đăng ký thêm");
+      return;
+    }
+
     if (!user) {
       message.warning("Vui lòng đăng nhập để đăng ký");
       navigate("/login");
@@ -113,6 +123,21 @@ const CampDetail: React.FC = () => {
     }
     // Navigate to registration page
     navigate(`/register-camp/${camp?.campId}`);
+  };
+
+  const handleViewSchedules = async () => {
+    if (!camp) return;
+    try {
+      setSchedulesLoading(true);
+      setScheduleModalVisible(true);
+      const data = await activityScheduleService.getActivitySchedulesByCamp(camp.campId);
+      setSchedules(data);
+    } catch (error) {
+      console.error("Error fetching schedules:", error);
+      message.error("Không thể tải lịch trình hoạt động");
+    } finally {
+      setSchedulesLoading(false);
+    }
   };
 
   if (loading) {
@@ -266,11 +291,39 @@ const CampDetail: React.FC = () => {
                   <div className="w-12 h-12 rounded-full bg-orange-200 flex items-center justify-center flex-shrink-0">
                     <UsergroupAddOutlined className="text-[#FF8F50] text-xl" />
                   </div>
-                  <div>
+                  <div className="flex-1">
                     <p className="text-sm text-gray-500 mb-1">Số lượng</p>
                     <p className="text-lg font-bold text-gray-900">
                       {camp.minParticipants} - {camp.maxParticipants} trẻ
                     </p>
+                    <div className="mt-2">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-sm text-gray-600">Đã đăng ký:</span>
+                        <span className={`text-sm font-bold ${
+                          camp.currentCapacity >= camp.maxParticipants 
+                            ? 'text-red-600' 
+                            : camp.currentCapacity >= camp.maxParticipants * 0.8
+                            ? 'text-orange-600'
+                            : 'text-green-600'
+                        }`}>
+                          {camp.currentCapacity}/{camp.maxParticipants}
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                        <div
+                          className={`h-full rounded-full transition-all ${
+                            camp.currentCapacity >= camp.maxParticipants
+                              ? 'bg-red-500'
+                              : camp.currentCapacity >= camp.maxParticipants * 0.8
+                              ? 'bg-orange-500'
+                              : 'bg-green-500'
+                          }`}
+                          style={{
+                            width: `${Math.min((camp.currentCapacity / camp.maxParticipants) * 100, 100)}%`,
+                          }}
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -350,6 +403,18 @@ const CampDetail: React.FC = () => {
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
+                  <span className="text-gray-600 font-medium">Còn trống:</span>
+                  <span className={`font-bold ${
+                    camp.currentCapacity >= camp.maxParticipants
+                      ? 'text-red-600'
+                      : camp.currentCapacity >= camp.maxParticipants * 0.8
+                      ? 'text-orange-600'
+                      : 'text-green-600'
+                  }`}>
+                    {camp.maxParticipants - camp.currentCapacity} chỗ
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
                   <span className="text-gray-600 font-medium">Trạng thái:</span>
                   <div
                     className="px-3 py-1 rounded-full text-white text-sm font-bold"
@@ -397,10 +462,12 @@ const CampDetail: React.FC = () => {
               {/* Register Button */}
               <button
                 onClick={handleRegister}
-                disabled={!getStatusLabel(camp.status).canRegister}
+                disabled={!getStatusLabel(camp.status).canRegister || camp.currentCapacity >= camp.maxParticipants}
                 className="w-full bg-gradient-to-r from-[#FF8F50] to-[#ff7e3d] hover:from-[#ff7e3d] hover:to-[#FF8F50] text-white font-bold py-4 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 text-lg disabled:from-gray-400 disabled:to-gray-500"
               >
-                {!getStatusLabel(camp.status).canRegister
+                {camp.currentCapacity >= camp.maxParticipants
+                  ? "❌ Đã đầy chỗ"
+                  : !getStatusLabel(camp.status).canRegister
                   ? "🔒 Chưa mở đăng ký"
                   : user
                   ? "🎯 Đăng ký ngay"
@@ -408,35 +475,100 @@ const CampDetail: React.FC = () => {
               </button>
 
               {/* Info Text */}
-              {getStatusLabel(camp.status).canRegister && !user && (
+              {camp.currentCapacity >= camp.maxParticipants ? (
+                <p className="text-center text-sm text-red-600 font-semibold">
+                  ⚠️ Trại hè đã hết chỗ
+                </p>
+              ) : getStatusLabel(camp.status).canRegister && !user ? (
                 <p className="text-center text-sm text-gray-500">
                   Bạn cần đăng nhập để đăng ký trại hè
                 </p>
-              )}
-
-              {/* Contact Info */}
-              <div className="pt-6 border-t-2 border-gray-100 text-center">
-                <p className="text-sm text-gray-600 mb-3 font-medium">
-                  💬 Cần hỗ trợ thêm thông tin?
+              ) : camp.currentCapacity >= camp.maxParticipants * 0.8 && getStatusLabel(camp.status).canRegister ? (
+                <p className="text-center text-sm text-orange-600 font-semibold">
+                  ⚡ Chỉ còn {camp.maxParticipants - camp.currentCapacity} chỗ!
                 </p>
-                <a
-                  href="/contact"
-                  className="text-[#FF8F50] font-bold hover:underline hover:text-[#ff7e3d] transition-colors"
-                >
-                  Liên hệ với chúng tôi →
-                </a>
-              </div>
+              ) : null}
+
+              {/* View Schedule Button (only when logged in) */}
+              {user && (
+                <div className="pt-6 border-t-2 border-gray-100">
+                  <button
+                    onClick={handleViewSchedules}
+                    className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 rounded-full transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+                  >
+                    <UnorderedListOutlined />
+                    Xem lịch trình hoạt động
+                  </button>
+                </div>
+              )}
 
               {/* Additional Info */}
               <div className="p-4">
-                <p className="text-sm text-gray-400 text-center">
-                  ✨ Số lượng có hạn, đăng ký sớm để đảm bảo chỗ!
+                <p className={`text-sm text-center font-medium ${
+                  camp.currentCapacity >= camp.maxParticipants
+                    ? 'text-red-500'
+                    : camp.currentCapacity >= camp.maxParticipants * 0.8
+                    ? 'text-orange-500'
+                    : 'text-gray-400'
+                }`}>
+                  {camp.currentCapacity >= camp.maxParticipants
+                    ? '🚫 Trại hè đã hết chỗ'
+                    : camp.currentCapacity >= camp.maxParticipants * 0.8
+                    ? '⚡ Sắp hết chỗ! Đăng ký ngay!'
+                    : '✨ Số lượng có hạn, đăng ký sớm để đảm bảo chỗ!'}
                 </p>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Activity Schedule Modal */}
+      <Modal
+        title="Lịch trình hoạt động"
+        open={scheduleModalVisible}
+        onCancel={() => setScheduleModalVisible(false)}
+        footer={null}
+        width={700}
+      >
+        {schedulesLoading ? (
+          <div className="flex justify-center py-8">
+            <Spin size="large" />
+          </div>
+        ) : (
+          <List
+            dataSource={schedules}
+            locale={{ emptyText: "Chưa có lịch trình hoạt động nào" }}
+            renderItem={(schedule) => (
+              <List.Item className="hover:bg-gray-50 transition-colors px-4 rounded-lg">
+                <div className="w-full">
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-gray-900 text-base mb-1">
+                        {schedule.activity?.name || "Hoạt động"}
+                      </h4>
+                      <p className="text-sm text-gray-600">
+                        📅 {new Date(schedule.startTime).toLocaleString("vi-VN", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                        {" - "}
+                        {new Date(schedule.endTime).toLocaleString("vi-VN", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </List.Item>
+            )}
+          />
+        )}
+      </Modal>
     </div>
   );
 };

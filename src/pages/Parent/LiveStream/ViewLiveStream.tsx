@@ -40,7 +40,6 @@ const ViewerMeetingView: React.FC<{ onLeave: () => void }> = ({ onLeave }) => {
     },
     onMeetingLeft: () => {
       console.log("[Viewer] Meeting left");
-      // Only navigate if user clicked leave button, not on errors
       if (!error) {
         onLeave();
       }
@@ -52,13 +51,18 @@ const ViewerMeetingView: React.FC<{ onLeave: () => void }> = ({ onLeave }) => {
   });
 
   useEffect(() => {
-    // Only join once when component mounts
-    if (!hasJoinedRef.current) {
-      hasJoinedRef.current = true;
-      console.log("[Viewer] Attempting to join meeting");
-      join();
+    if (join && !hasJoinedRef.current) {
+      const timer = setTimeout(() => {
+        if (!hasJoinedRef.current) {
+          hasJoinedRef.current = true;
+          console.log("[Viewer] Joining meeting...");
+          join();
+        }
+      }, 300);
+
+      return () => clearTimeout(timer);
     }
-  }, []); // Empty dependency - join only once
+  }, [join]);
 
   if (error) {
     return (
