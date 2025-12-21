@@ -1,16 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, MessageSquare, Loader2 } from 'lucide-react';
-import axios from '../../../config/axios';
+import { MessageSquare, Loader2 } from 'lucide-react';
 import chatRoomService from '../../../services/chatRoomService';
-
-interface User {
-    userId: number;
-    fullName: string;
-    email: string;
-    avatar?: string;
-    role?: string;
-}
 
 interface ExistingRoom {
     chatRoomId: number;
@@ -22,11 +13,8 @@ interface ExistingRoom {
 
 const StaffChatList: React.FC = () => {
     const navigate = useNavigate();
-    const [users, setUsers] = useState<User[]>([]);
     const [existingRooms, setExistingRooms] = useState<ExistingRoom[]>([]);
-    const [searchQuery, setSearchQuery] = useState('');
     const [loading, setLoading] = useState(true);
-    const [creatingChat, setCreatingChat] = useState<number | null>(null);
 
     useEffect(() => {
         loadData();
@@ -35,17 +23,7 @@ const StaffChatList: React.FC = () => {
     const loadData = async () => {
         try {
             setLoading(true);
-            const [usersResponse, roomsResponse] = await Promise.all([
-                axios.get('/user'),
-                chatRoomService.getMyRooms()
-            ]);
-
-            // Filter only parents/users (not staff)
-            const parentUsers = (usersResponse.data || []).filter(
-                (user: User) => user.role?.toLowerCase() !== 'staff'
-            );
-
-            setUsers(parentUsers);
+            const roomsResponse = await chatRoomService.getMyRooms();
             setExistingRooms(roomsResponse);
         } catch (error) {
             console.error('Failed to load data:', error);
@@ -54,30 +32,9 @@ const StaffChatList: React.FC = () => {
         }
     };
 
-    const handleStartChat = async (userId: number) => {
-        try {
-            setCreatingChat(userId);
-            const response = await chatRoomService.createOrGetPrivateRoom({
-                recipientUserId: userId
-            });
-
-            // Navigate to the staff chat room
-            navigate(`/staff/chat/${response.chatRoomId}`);
-        } catch (error) {
-            console.error('Failed to create chat:', error);
-        } finally {
-            setCreatingChat(null);
-        }
-    };
-
     const handleRoomClick = (roomId: number) => {
         navigate(`/staff/chat/${roomId}`);
     };
-
-    const filteredUsers = users.filter(user =>
-        user.fullName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        user.email?.toLowerCase().includes(searchQuery.toLowerCase())
-    );
 
     return (
         <div className="flex h-screen bg-gray-50">
@@ -94,19 +51,6 @@ const StaffChatList: React.FC = () => {
                 </div>
 
                 <div className="flex-1 overflow-y-auto p-6">
-                    {/* Search Bar */}
-                    <div className="mb-6">
-                        <div className="relative">
-                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-                            <input
-                                type="text"
-                                placeholder="Tìm kiếm theo tên hoặc email..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            />
-                        </div>
-                    </div>
 
                     {loading ? (
                         <div className="flex justify-center items-center py-12">
@@ -149,62 +93,16 @@ const StaffChatList: React.FC = () => {
                                 </div>
                             )}
 
-                            {/* All Parents */}
-                            <div>
-                                <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                                    Danh Sách Phụ Huynh
-                                </h2>
-                                {filteredUsers.length === 0 ? (
-                                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
-                                        <MessageSquare className="mx-auto text-gray-400 mb-3" size={48} />
-                                        <p className="text-gray-500">
-                                            {searchQuery ? 'Không tìm thấy phụ huynh' : 'Chưa có phụ huynh nào'}
-                                        </p>
-                                    </div>
-                                ) : (
-                                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 divide-y divide-gray-100">
-                                        {filteredUsers.map((user) => (
-                                            <div
-                                                key={user.userId}
-                                                className="px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
-                                            >
-                                                <div className="flex items-center gap-4 flex-1 min-w-0">
-                                                    <img
-                                                        src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.userId}`}
-                                                        alt={user.fullName}
-                                                        className="w-12 h-12 rounded-full"
-                                                    />
-                                                    <div className="flex-1 min-w-0">
-                                                        <h3 className="font-semibold text-gray-900 truncate">
-                                                            {user.fullName}
-                                                        </h3>
-                                                        <p className="text-sm text-gray-500 truncate">
-                                                            {user.email}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                                <button
-                                                    onClick={() => handleStartChat(user.userId)}
-                                                    disabled={creatingChat === user.userId}
-                                                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors flex items-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
-                                                >
-                                                    {creatingChat === user.userId ? (
-                                                        <>
-                                                            <Loader2 className="animate-spin" size={16} />
-                                                            <span>Đang mở...</span>
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            <MessageSquare size={16} />
-                                                            <span>Trò Chuyện</span>
-                                                        </>
-                                                    )}
-                                                </button>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
+
+
+                            {/* Empty State */}
+                            {existingRooms.length === 0 && (
+                                <div className="flex flex-col items-center justify-center py-12">
+                                    <MessageSquare className="text-gray-400 mb-4" size={48} />
+                                    <p className="text-gray-500 text-lg">Bạn chưa có cuộc trò chuyện nào</p>
+                                </div>
+                            )}
+
                         </>
                     )}
                 </div>
