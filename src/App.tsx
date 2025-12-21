@@ -75,6 +75,7 @@ import ManagerIncidents from "./pages/Manager/Incidents/ManagerIncidents";
 import AdminIncidents from "./pages/Admin/Incidents/AdminIncidents";
 import PhotoGallery from "./pages/Parent/MyCampers/PhotoGallery";
 import FAQPage from "./pages/Admin/FAQManagement/FAQPage";
+import CustomerFAQPage from "./pages/FAQ/FAQPage";
 
 
 function App() {
@@ -135,6 +136,14 @@ function App() {
               element={
                 <MainLayout>
                   <BlogDetail />
+                </MainLayout>
+              }
+            />
+            <Route
+              path={PagePath.FAQ}
+              element={
+                <MainLayout>
+                  <CustomerFAQPage />
                 </MainLayout>
               }
             />

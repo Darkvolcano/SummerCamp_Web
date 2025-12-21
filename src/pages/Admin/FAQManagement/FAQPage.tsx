@@ -4,8 +4,7 @@ import { Modal, Form, Input, Spin } from "antd";
 import faqService, { type FAQResponseDto, type FAQRequestDto } from "../../../services/faqService";
 import DeletePopover from "../../../components/DeletePopover";
 import { useNotification } from "../../../contexts/NotificationContext";
-
-const { TextArea } = Input;
+import { CKEditorComponent } from "../../../components/CKEditor/CKEditor";
 
 const FAQPage: React.FC = () => {
     const { toastSuccess, toastError } = useNotification();
@@ -48,6 +47,14 @@ const FAQPage: React.FC = () => {
             answer: faq.answer,
         });
         setIsModalVisible(true);
+    };
+
+    const handleQuestionChange = (value: string) => {
+        form.setFieldsValue({ question: value });
+    };
+
+    const handleAnswerChange = (value: string) => {
+        form.setFieldsValue({ answer: value });
     };
 
     const handleSubmit = async () => {
@@ -142,10 +149,16 @@ const FAQPage: React.FC = () => {
                                 {faqs.map((faq) => (
                                     <tr key={faq.faqId} className="hover:bg-[#F9FAFB] transition-colors">
                                         <td className="px-6 py-4">
-                                            <div className="text-sm font-medium text-[#111827]">{faq.question}</div>
+                                            <div
+                                                className="text-sm font-medium text-[#111827] line-clamp-2"
+                                                dangerouslySetInnerHTML={{ __html: faq.question }}
+                                            />
                                         </td>
                                         <td className="px-6 py-4">
-                                            <div className="text-sm text-[#6B7280] whitespace-pre-wrap">{faq.answer}</div>
+                                            <div
+                                                className="text-sm text-[#6B7280] line-clamp-3"
+                                                dangerouslySetInnerHTML={{ __html: faq.answer }}
+                                            />
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex items-center justify-end gap-2">
@@ -190,19 +203,29 @@ const FAQPage: React.FC = () => {
             >
                 <Form form={form} layout="vertical" className="mt-4">
                     <Form.Item
-                        label="Câu Hỏi"
                         name="question"
-                        rules={[{ required: true, message: "Vui lòng nhập câu hỏi!" }, { min: 5, message: "Ít nhất 5 ký tự" }]}
+                        rules={[{ required: true, message: "Vui lòng nhập câu hỏi!" }]}
                     >
-                        <Input placeholder="Ví dụ: Làm thế nào để đăng ký?" />
+                        <CKEditorComponent
+                            name="question"
+                            label="Câu Hỏi"
+                            value={form.getFieldValue("question") || ""}
+                            onChange={handleQuestionChange}
+                            required={true}
+                        />
                     </Form.Item>
 
                     <Form.Item
-                        label="Câu Trả Lời"
                         name="answer"
-                        rules={[{ required: true, message: "Vui lòng nhập câu trả lời!" }, { min: 5, message: "Ít nhất 5 ký tự" }]}
+                        rules={[{ required: true, message: "Vui lòng nhập câu trả lời!" }]}
                     >
-                        <TextArea rows={6} placeholder="Nhập câu trả lời chi tiết..." />
+                        <CKEditorComponent
+                            name="answer"
+                            label="Câu Trả Lời"
+                            value={form.getFieldValue("answer") || ""}
+                            onChange={handleAnswerChange}
+                            required={true}
+                        />
                     </Form.Item>
                 </Form>
             </Modal>
