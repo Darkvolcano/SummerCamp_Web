@@ -115,7 +115,7 @@ const ChatArea: React.FC<ChatAreaProps> = ({
                             onChange={(e) => setMessageInput(e.target.value)}
                             onKeyPress={handleKeyPress}
                             placeholder={`Message ${chatTitle}`}
-                            className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                            className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg resize-none text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                             rows={1}
                             style={{ maxHeight: '120px', minHeight: '48px' }}
                             disabled={disabled}
