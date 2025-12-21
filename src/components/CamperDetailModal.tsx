@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Modal, Spin, Tabs, Form, Input, Upload, Button, Popover, Select } from 'antd';
 import { User, Calendar, Heart, Users, Tent, MapPin, Mail, Phone, UserCircle, LogOut, Upload as UploadIcon, AlertTriangle, MessageCircle } from 'lucide-react';
 import { WarningOutlined } from '@ant-design/icons';
@@ -11,6 +12,7 @@ import registrationCamperService, {
 } from '../services/registrationCamperService';
 import reportService from '../services/reportService';
 import activityScheduleService, { type ActivityScheduleResponseDto } from '../services/activityScheduleService';
+import chatRoomService from '../services/chatRoomService';
 import { uploadGenericImage } from '../services/uploadService';
 import { useAuthStore } from '../services/userService';
 import { useNotification } from '../contexts/NotificationContext';
@@ -28,6 +30,7 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
   camperId,
   campId,
 }) => {
+  const navigate = useNavigate();
   const { toastError, toastSuccess } = useNotification();
   const { user } = useAuthStore();
   const [loading, setLoading] = useState(false);
@@ -35,13 +38,13 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
   const [campRegistration, setCampRegistration] = useState<RegistrationCamperResponseDto | null>(null);
   const [guardians, setGuardians] = useState<Guardian[]>([]);
   const [activeTab, setActiveTab] = useState('info');
-  
+
   const [showEarlyCheckoutModal, setShowEarlyCheckoutModal] = useState(false);
   const [earlyCheckoutForm] = Form.useForm();
   const [submittingCheckout, setSubmittingCheckout] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [showPopover, setShowPopover] = useState(false);
-  
+
   // Incident Ticket states
   const [showIncidentModal, setShowIncidentModal] = useState(false);
   const [incidentForm] = Form.useForm();
@@ -140,13 +143,13 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
   const handleEarlyCheckoutSubmit = async () => {
     try {
       const values = await earlyCheckoutForm.validateFields();
-      
+
       // Validate campId exists
       if (!campId) {
         toastError('Lỗi', 'Không tìm thấy thông tin trại');
         return;
       }
-      
+
       setSubmittingCheckout(true);
 
       let imageUrl: string | null = null;
@@ -163,7 +166,7 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
       });
 
       toastSuccess('Thành công', 'Đã ghi nhận check out sớm');
-      
+
       // Close all modals
       handleClose();
     } catch (error) {
@@ -181,7 +184,7 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
     }
 
     setShowIncidentModal(true);
-    
+
     // Fetch activity schedules for this camper
     try {
       setLoadingActivities(true);
@@ -198,12 +201,12 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
   const handleIncidentSubmit = async () => {
     try {
       const values = await incidentForm.validateFields();
-      
+
       if (!campId) {
         toastError('Lỗi', 'Không tìm thấy thông tin trại');
         return;
       }
-      
+
       setSubmittingIncident(true);
 
       let imageUrl: string | null = null;
@@ -222,7 +225,7 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
       });
 
       toastSuccess('Thành công', 'Đã tạo incident ticket');
-      
+
       // Close modal and reset
       setShowIncidentModal(false);
       incidentForm.resetFields();
@@ -257,9 +260,9 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
                   <p className="text-sm mb-3">Chưa đến hoạt động check out. Trại viên có muốn check out sớm?</p>
                   <div className="flex gap-2 justify-end">
                     <Button size="small" onClick={() => setShowPopover(false)}>Hủy</Button>
-                    <Button 
-                      size="small" 
-                      type="primary" 
+                    <Button
+                      size="small"
+                      type="primary"
                       danger
                       onClick={handleEarlyCheckoutClick}
                     >
@@ -273,8 +276,8 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
               open={showPopover}
               onOpenChange={setShowPopover}
             >
-              <Button 
-                type="primary" 
+              <Button
+                type="primary"
                 danger
                 icon={<LogOut size={16} />}
               >
@@ -363,13 +366,28 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
                             </p>
                           </div>
                         </div>
-                        
+
                         {/* Chat Button - Only for Staff */}
                         {isStaff && (
                           <button
-                            onClick={() => {
-                              // TODO: Implement chat functionality
-                              console.log('Open chat with parent:', campRegistration.userAccount.fullName);
+                            onClick={async () => {
+                              if (!campRegistration.userAccount?.userId) {
+                                toastError('Lỗi', 'Không tìm thấy thông tin phụ huynh');
+                                return;
+                              }
+
+                              try {
+                                // Create or get existing private chat room
+                                const roomResponse = await chatRoomService.createOrGetPrivateRoom({
+                                  recipientUserId: campRegistration.userAccount.userId
+                                });
+
+                                // Navigate to the chat room
+                                navigate(`/staff/chat/${roomResponse.chatRoomId}`);
+                              } catch (error) {
+                                console.error('Error creating/getting chat room:', error);
+                                toastError('Lỗi', 'Không thể mở phòng chat');
+                              }
                             }}
                             className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all font-medium shadow-sm"
                           >
@@ -624,8 +642,8 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
             name="note"
             rules={[{ required: true, message: 'Vui lòng nhập lý do' }]}
           >
-            <Input.TextArea 
-              rows={4} 
+            <Input.TextArea
+              rows={4}
               placeholder="Nhập lý do trại viên check out sớm..."
             />
           </Form.Item>
@@ -643,13 +661,13 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
               fileList={
                 imageFile
                   ? [
-                      {
-                        uid: '-1',
-                        name: imageFile.name,
-                        status: 'done',
-                        url: URL.createObjectURL(imageFile),
-                      },
-                    ]
+                    {
+                      uid: '-1',
+                      name: imageFile.name,
+                      status: 'done',
+                      url: URL.createObjectURL(imageFile),
+                    },
+                  ]
                   : []
               }
             >
@@ -728,8 +746,8 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
             name="note"
             rules={[{ required: true, message: 'Vui lòng mô tả sự cố' }]}
           >
-            <Input.TextArea 
-              rows={4} 
+            <Input.TextArea
+              rows={4}
               placeholder="Mô tả chi tiết sự cố xảy ra..."
             />
           </Form.Item>
@@ -747,13 +765,13 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
               fileList={
                 incidentImageFile
                   ? [
-                      {
-                        uid: '-1',
-                        name: incidentImageFile.name,
-                        status: 'done',
-                        url: URL.createObjectURL(incidentImageFile),
-                      },
-                    ]
+                    {
+                      uid: '-1',
+                      name: incidentImageFile.name,
+                      status: 'done',
+                      url: URL.createObjectURL(incidentImageFile),
+                    },
+                  ]
                   : []
               }
             >
