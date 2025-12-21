@@ -8,6 +8,7 @@ import {
   FileText,
   CreditCard,
   LayoutDashboard,
+  MessageSquare,
 } from "lucide-react";
 import Logoforblack from "../../assets/Logo.png";
 import { useAuthStore } from "../../services/userService";
@@ -184,6 +185,16 @@ export default function Navbar() {
             </button>
             <button
               onClick={() => {
+                handleMobileLinkClick();
+                navigate(PagePath.CHAT);
+              }}
+              className="block w-full text-center bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 text-white font-bold py-1.5 rounded-md transition-all duration-300 shadow-lg text-xs mb-2 flex items-center justify-center gap-1"
+            >
+              <MessageSquare size={14} />
+              Trò chuyện
+            </button>
+            <button
+              onClick={() => {
                 logout();
                 handleMobileLinkClick();
                 navigate(PagePath.ROOT);
@@ -280,6 +291,17 @@ export default function Navbar() {
                   >
                     <UserCircle size={18} className="text-gray-600" />
                     <span>Thông tin cá nhân</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setShowUserDropdown(false);
+                      navigate(PagePath.CHAT);
+                    }}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-800 bg-white hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-3"
+                  >
+                    <MessageSquare size={18} className="text-gray-600" />
+                    <span>Trò chuyện</span>
                   </button>
 
                   {/* User-exclusive items - only show for parent/user roles */}

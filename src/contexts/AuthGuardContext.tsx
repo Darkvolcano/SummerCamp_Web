@@ -173,11 +173,14 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
           PagePath.STAFF_CAMP_DETAIL,
           PagePath.STAFF_LIVESTREAM_HOST,
           PagePath.STAFF_CHECKIN,
+          PagePath.STAFF_CHAT,
+          PagePath.STAFF_CHAT_ROOM,
           PagePath.STAFF_PHOTOS,
           PagePath.STAFF_INCIDENTS,
           "/staff/profile",
           "/staff/chat",
           "/profile",
+          PagePath.CHAT,
         ],
         parent: [
           PagePath.HOME,
@@ -192,6 +195,7 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
           "/profile",
           PagePath.REGISTRATION_FORM,
           PagePath.REGISTER_SUCCESS,
+          PagePath.CHAT,
         ],
         manager: [
           PagePath.MANAGER_DASHBOARD,
@@ -207,6 +211,7 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
           PagePath.MANAGER_LOCATIONS,
           PagePath.MANAGER_STAFFS,
           "/profile",
+          PagePath.CHAT,
         ],
         admin: [
           PagePath.ADMIN_DASHBOARD,
@@ -227,6 +232,7 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
           PagePath.ADMIN_INCIDENTS,
           "/admin/profile",
           "/profile",
+          PagePath.CHAT,
         ],
         user: [
           PagePath.HOME,
@@ -253,6 +259,7 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
           PagePath.USER_CAMPER_TRANSPORTSCHEDULE,
           PagePath.USER_PAYMENT_CALLBACK,
           PagePath.USER_STAFF_DETAIL,
+          PagePath.CHAT,
           PagePath.USER_CAMPER_PHOTOGALLERY,  
         ],
       };
