@@ -1,5 +1,6 @@
 import React from 'react';
 import { useAuthStore } from '../../services/userService';
+import { formatMessageTimestamp } from '../../utils/dateUtils';
 
 // Updated Message interface to match API structure
 interface Message {
@@ -19,36 +20,6 @@ interface ChatMessageProps {
 const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
     const { user } = useAuthStore();
     const isOwnMessage = message.senderId === user?.id;
-    const formatTimestamp = (date: Date) => {
-        const now = new Date();
-        const diff = now.getTime() - date.getTime();
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-
-        if (days === 0) {
-            return date.toLocaleTimeString('en-US', {
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-        } else if (days === 1) {
-            return 'Yesterday ' + date.toLocaleTimeString('en-US', {
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-        } else if (days < 7) {
-            return date.toLocaleDateString('en-US', {
-                weekday: 'short',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-        } else {
-            return date.toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-        }
-    };
 
     const getRoleBadgeColor = (role: string) => {
         return role === 'Staff'
@@ -78,7 +49,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
                         {message.senderRole}
                     </span>
                     <span className="text-xs text-gray-500">
-                        {formatTimestamp(message.timestamp)}
+                        {formatMessageTimestamp(message.timestamp, 'en-US')}
                     </span>
                 </div>
 

@@ -5,6 +5,7 @@ import chatRoomService, { type ChatRoomMessageDto, type ChatRoomDetailDto } from
 import { useSignalRChat } from '../../../hooks/useSignalRChat';
 import { useAuthStore } from '../../../services/userService';
 import { PagePath } from '../../../enums/page-path.enum';
+import { parseUTCTimestamp, formatMessageTimestamp } from '../../../utils/dateUtils';
 
 interface UIMessage {
     id: number;
@@ -21,39 +22,8 @@ const transformMessage = (msg: ChatRoomMessageDto): UIMessage => ({
     senderName: msg.senderName,
     senderAvatar: msg.avatar,
     content: msg.content,
-    timestamp: new Date(msg.sentAt)
+    timestamp: parseUTCTimestamp(msg.sentAt)
 });
-
-const formatTimestamp = (date: Date) => {
-    const now = new Date();
-    const diff = now.getTime() - date.getTime();
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-
-    if (days === 0) {
-        return date.toLocaleTimeString('vi-VN', {
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-    } else if (days === 1) {
-        return 'Hôm qua ' + date.toLocaleTimeString('vi-VN', {
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-    } else if (days < 7) {
-        return date.toLocaleDateString('vi-VN', {
-            weekday: 'short',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-    } else {
-        return date.toLocaleDateString('vi-VN', {
-            month: 'short',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-    }
-};
 
 const StaffChatRoom: React.FC = () => {
     const { roomId } = useParams<{ roomId: string }>();
@@ -70,18 +40,28 @@ const StaffChatRoom: React.FC = () => {
     // SignalR integration
     const { isConnected, joinRoom, leaveRoom } = useSignalRChat({
         onMessageReceived: (message: ChatRoomMessageDto) => {
+            console.log('[StaffChatRoom] Received message via SignalR:', {
+                messageId: message.messageId,
+                chatRoomId: message.chatRoomId,
+                currentRoomId: roomId,
+                isInCurrentRoom: roomId === message.chatRoomId.toString()
+            });
+
             const uiMessage = transformMessage(message);
 
-            // Avoid duplicates - check if message already exists
-            setMessages(prev => {
-                const exists = prev.some(msg =>
-                    msg.id === uiMessage.id ||
-                    (msg.content === uiMessage.content &&
-                        msg.senderId === uiMessage.senderId &&
-                        Math.abs(msg.timestamp.getTime() - uiMessage.timestamp.getTime()) < 2000)
-                );
-                return exists ? prev : [...prev, uiMessage];
-            });
+            // Only add messages that belong to the current room
+            if (roomId && message.chatRoomId === parseInt(roomId)) {
+                // Avoid duplicates - check if message already exists
+                setMessages(prev => {
+                    const exists = prev.some(msg =>
+                        msg.id === uiMessage.id ||
+                        (msg.content === uiMessage.content &&
+                            msg.senderId === uiMessage.senderId &&
+                            Math.abs(msg.timestamp.getTime() - uiMessage.timestamp.getTime()) < 2000)
+                    );
+                    return exists ? prev : [...prev, uiMessage];
+                });
+            }
         }
     });
 
@@ -142,8 +122,8 @@ const StaffChatRoom: React.FC = () => {
             const optimisticMessage: UIMessage = {
                 id: -Date.now(), // Temporary negative ID
                 senderId: user.id,
-                senderName: `${user.lastName} ${user.firstName}`,
-                senderAvatar: user.avatar,
+                senderName: user.fullName,
+                senderAvatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}`,
                 content: messageInput.trim(),
                 timestamp: new Date()
             };
@@ -252,7 +232,7 @@ const StaffChatRoom: React.FC = () => {
                                                 {isOwnMessage ? 'Bạn' : message.senderName}
                                             </span>
                                             <span className="text-xs text-gray-400">
-                                                {formatTimestamp(message.timestamp)}
+                                                {formatMessageTimestamp(message.timestamp, 'vi-VN')}
                                             </span>
                                         </div>
                                         <div

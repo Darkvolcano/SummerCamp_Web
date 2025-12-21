@@ -2,6 +2,7 @@ import axios from '../config/axios';
 
 export interface ChatRoomMessageDto {
     messageId: number;
+    chatRoomId: number;
     senderId: number;
     senderName: string;
     avatar: string;

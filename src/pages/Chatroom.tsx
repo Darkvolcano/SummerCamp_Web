@@ -7,6 +7,7 @@ import Navbar from '../components/navbar/Navbar';
 import { useSignalRChat } from '../hooks/useSignalRChat';
 import chatRoomService, { type ChatRoomDetailDto, type ChatRoomMessageDto } from '../services/chatRoomService';
 import { useAuthStore } from '../services/userService';
+import { parseUTCTimestamp } from '../utils/dateUtils';
 
 type ChatType = 'community' | 'private';
 
@@ -33,7 +34,7 @@ const transformMessage = (msg: ChatRoomMessageDto): UIMessage => ({
     senderRole: 'User',
     senderAvatar: msg.avatar,
     content: msg.content,
-    timestamp: new Date(msg.sentAt)
+    timestamp: parseUTCTimestamp(msg.sentAt)
 });
 
 const Chatroom: React.FC = () => {
@@ -50,19 +51,32 @@ const Chatroom: React.FC = () => {
     // SignalR integration
     const { isConnected, joinRoom, leaveRoom } = useSignalRChat({
         onMessageReceived: (message: ChatRoomMessageDto) => {
+            console.log('[Chatroom] Received message via SignalR:', {
+                messageId: message.messageId,
+                chatRoomId: message.chatRoomId,
+                activeRoomId: activeChat.roomId,
+                isInActiveRoom: activeChat.roomId === message.chatRoomId
+            });
+
             // Handle incoming real-time message
             const uiMessage = transformMessage(message);
 
-            // Avoid duplicates - check if message already exists
-            setCurrentMessages(prev => {
-                const exists = prev.some(msg =>
-                    msg.id === uiMessage.id ||
-                    (msg.content === uiMessage.content &&
-                        msg.senderId === uiMessage.senderId &&
-                        Math.abs(msg.timestamp.getTime() - uiMessage.timestamp.getTime()) < 2000)
-                );
-                return exists ? prev : [...prev, uiMessage];
-            });
+            // If message is for the active chat, add it to current messages
+            if (activeChat.type === 'private' && activeChat.roomId === message.chatRoomId) {
+                // Avoid duplicates - check if message already exists
+                setCurrentMessages(prev => {
+                    const exists = prev.some(msg =>
+                        msg.id === uiMessage.id ||
+                        (msg.content === uiMessage.content &&
+                            msg.senderId === uiMessage.senderId &&
+                            Math.abs(msg.timestamp.getTime() - uiMessage.timestamp.getTime()) < 2000)
+                    );
+                    return exists ? prev : [...prev, uiMessage];
+                });
+            }
+
+            // Also update the room list to show latest message
+            loadMyRooms();
         }
     });
 
