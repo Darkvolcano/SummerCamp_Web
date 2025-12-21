@@ -1,0 +1,67 @@
+.faq-page {
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Smooth scroll behavior */
+.faq-page {
+    scroll-behavior: smooth;
+}
+
+/* Custom styling for FAQ content */
+.faq-page [dangerouslySetInnerHTML] p {
+    margin-bottom: 1rem;
+    line-height: 1.75;
+}
+
+.faq-page [dangerouslySetInnerHTML] h2,
+.faq-page [dangerouslySetInnerHTML] h3 {
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+    font-weight: 700;
+}
+
+.faq-page [dangerouslySetInnerHTML] ul,
+.faq-page [dangerouslySetInnerHTML] ol {
+    margin-bottom: 1rem;
+}
+
+.faq-page [dangerouslySetInnerHTML] li {
+    margin-bottom: 0.5rem;
+}
+
+/* Animation for FAQ cards */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.faq-page .space-y-6>div {
+    animation: fadeInUp 0.5s ease-out forwards;
+}
+
+.faq-page .space-y-6>div:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.faq-page .space-y-6>div:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.faq-page .space-y-6>div:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.faq-page .space-y-6>div:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+.faq-page .space-y-6>div:nth-child(5) {
+    animation-delay: 0.5s;
+}
