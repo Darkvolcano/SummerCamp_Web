@@ -102,7 +102,7 @@ const CampDetailDashboard: React.FC<CampDetailDashboardProps> = ({ campId }) => 
       } catch (error: any) {
         console.error("Failed to load dashboard:", error);
         const errorMessage = error.response?.data?.message || "Không thể tải dashboard";
-        toastError("Lỗi", errorMessage);
+        toastError('Cảnh báo', errorMessage);
       } finally {
         setLoading(false);
         setDashboardLoading(false);
@@ -130,7 +130,7 @@ const CampDetailDashboard: React.FC<CampDetailDashboardProps> = ({ campId }) => 
     } catch (error: any) {
       console.error("Failed to export report:", error);
       const errorMessage = error.response?.data?.message || "Không thể xuất báo cáo";
-      toastError("Lỗi", errorMessage);
+      toastError('Cảnh báo', errorMessage);
     } finally {
       setExportLoading(false);
     }

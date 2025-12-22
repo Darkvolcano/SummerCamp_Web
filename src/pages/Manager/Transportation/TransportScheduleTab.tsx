@@ -85,7 +85,7 @@ const TransportScheduleTab: React.FC = () => {
       setSchedules(data);
     } catch (error) {
       console.error('Failed to load schedules:', error);
-      toastError('Lỗi', 'Không thể tải lịch trình đưa đón');
+      toastError('Cảnh báo', 'Không thể tải lịch trình đưa đón');
     } finally {
       setLoading(false);
     }
@@ -113,7 +113,7 @@ const TransportScheduleTab: React.FC = () => {
       setRoutes(campRoutes);
     } catch (error) {
       console.error('Failed to load dropdown data:', error);
-      toastError('Lỗi', 'Không thể tải tùy chọn form');
+      toastError('Cảnh báo', 'Không thể tải tùy chọn form');
     } finally {
       setLoadingDropdowns(false);
     }
@@ -186,7 +186,7 @@ const TransportScheduleTab: React.FC = () => {
     } catch (error: any) {
       console.error('Error creating schedule:', error);
       const errorMessage = error.response?.data?.message || 'Không thể tạo lịch trình';
-      toastError('Lỗi', errorMessage);
+      toastError('Cảnh báo', errorMessage);
     } finally {
       setSubmitting(false);
     }
@@ -200,7 +200,7 @@ const TransportScheduleTab: React.FC = () => {
       setDeletePopoverOpen(null);
     } catch (error) {
       console.error('Failed to delete schedule:', error);
-      toastError('Lỗi', 'Không thể xóa lịch trình');
+      toastError('Cảnh báo', 'Không thể xóa lịch trình');
     }
   };
 
@@ -219,7 +219,7 @@ const TransportScheduleTab: React.FC = () => {
       loadScheduleCampers(scheduleId);
     } catch (error) {
       console.error('Failed to load schedule details:', error);
-      toastError('Lỗi', 'Không thể tải chi tiết lịch trình');
+      toastError('Cảnh báo', 'Không thể tải chi tiết lịch trình');
       setIsDetailModalVisible(false);
     } finally {
       setLoadingDetail(false);
@@ -278,7 +278,7 @@ const TransportScheduleTab: React.FC = () => {
 
   const handleAddStaff = async () => {
     if (selectedStaffId === undefined || !scheduleDetail?.transportScheduleId) {
-      toastError('Lỗi', 'Vui lòng chọn nhân viên');
+      toastError('Cảnh báo', 'Vui lòng chọn nhân viên');
       return;
     }
 
@@ -302,7 +302,7 @@ const TransportScheduleTab: React.FC = () => {
     } catch (error: any) {
       console.error('Failed to add staff:', error);
       const errorMsg = error.response?.data?.message || 'Không thể thêm nhân viên';
-      toastError('Lỗi', errorMsg);
+      toastError('Cảnh báo', errorMsg);
     } finally {
       setAddingStaff(false);
     }
@@ -720,7 +720,7 @@ const TransportScheduleTab: React.FC = () => {
                           setVehicles(vehiclesData);
                         } catch (error) {
                           console.error('Failed to load available vehicles:', error);
-                          toastError('Lỗi', 'Không thể tải xe khả dụng');
+                          toastError('Cảnh báo', 'Không thể tải xe khả dụng');
                         } finally {
                           setLoadingVehicles(false);
                         }
@@ -772,7 +772,7 @@ const TransportScheduleTab: React.FC = () => {
                           setDrivers(driversData);
                         } catch (error) {
                           console.error('Failed to load available drivers:', error);
-                          toastError('Lỗi', 'Không thể tải tài xế khả dụng');
+                          toastError('Cảnh báo', 'Không thể tải tài xế khả dụng');
                         } finally {
                           setLoadingDrivers(false);
                         }
@@ -948,7 +948,7 @@ const TransportScheduleTab: React.FC = () => {
                             setVehicles(vehiclesData);
                           } catch (error) {
                             console.error('Failed to load available vehicles:', error);
-                            toastError('Lỗi', 'Không thể tải xe khả dụng');
+                            toastError('Cảnh báo', 'Không thể tải xe khả dụng');
                           } finally {
                             setLoadingVehicles(false);
                           }
@@ -1000,7 +1000,7 @@ const TransportScheduleTab: React.FC = () => {
                             setDrivers(driversData);
                           } catch (error) {
                             console.error('Failed to load available drivers:', error);
-                            toastError('Lỗi', 'Không thể tải tài xế khả dụng');
+                            toastError('Cảnh báo', 'Không thể tải tài xế khả dụng');
                           } finally {
                             setLoadingDrivers(false);
                           }
@@ -1222,7 +1222,7 @@ const TransportScheduleTab: React.FC = () => {
                           } catch (error: any) {
                             console.error('Failed to delete staff assignment:', error);
                             const errorMsg = error.response?.data?.message || 'Không thể xóa nhân viên';
-                            toastError('Lỗi', errorMsg);
+                            toastError('Cảnh báo', errorMsg);
                           }
                         }}
                         title="Xóa nhân viên"

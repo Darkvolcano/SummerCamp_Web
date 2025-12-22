@@ -16,12 +16,14 @@ export interface GroupResponseDto {
   groupId: number;
   groupName: string;
   description: string | null;
+  currentSize: number;
   maxSize: number;
   supervisorId: number | null;
   supervisorName: string | null;
   campId: number;
   minAge: number;
   maxAge: number;
+  status: string;
 }
 
 const groupService = {

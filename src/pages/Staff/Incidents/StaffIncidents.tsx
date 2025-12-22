@@ -24,7 +24,7 @@ const StaffIncidents: React.FC = () => {
     } catch (error: any) {
       console.error('Failed to load reports:', error);
       const errorMessage = error.response?.data?.message || error.response?.data?.title || 'Không thể tải báo cáo';
-      toastError('Lỗi', errorMessage);
+      toastError('Cảnh báo', errorMessage);
     } finally {
       setLoading(false);
     }

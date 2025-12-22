@@ -28,7 +28,7 @@ const CheckIn: React.FC = () => {
       } catch (error: any) {
         console.error("Failed to load check-in/check-out schedules:", error);
         const errorMessage = error.response?.data?.message || error.response?.data?.title || "Không thể tải lịch trình checkIn/Out";
-        toastError("Lỗi", errorMessage);
+        toastError('Cảnh báo', errorMessage);
         setSchedules([]);
       } finally {
         setLoading(false);

@@ -31,7 +31,7 @@ const LiveActivities: React.FC<LiveActivitiesProps> = ({ campId, camperId }) => 
       setLiveActivities(live);
     } catch (error) {
       console.error("Error fetching live activities:", error);
-      toastError("Lỗi", "Không thể tải danh sách hoạt động đang phát trực tiếp");
+      toastError('Cảnh báo', "Không thể tải danh sách hoạt động đang phát trực tiếp");
     } finally {
       setLoading(false);
     }
@@ -50,7 +50,7 @@ const LiveActivities: React.FC<LiveActivitiesProps> = ({ campId, camperId }) => 
       // Navigate to livestream viewer page
       navigate(`/parent/livestream/view/${activity.liveStream.roomId}`);
     } else {
-      toastError("Lỗi", "Không tìm thấy phòng livestream");
+      toastError('Cảnh báo', "Không tìm thấy phòng livestream");
     }
   };
 

@@ -3,18 +3,25 @@ import { Spin, message } from "antd";
 import { SearchOutlined, EnvironmentOutlined } from "@ant-design/icons";
 import { useAuthStore } from "../../services/userService";
 import campTypeService, { type CampType } from "../../services/campTypeService";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import campService, { type CampResponseDto } from "../../services/campService";
 import "./ListCamp.css";
 
 const ListCamp: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [camps, setCamps] = useState<CampResponseDto[]>([]);
   const [campTypes, setCampTypes] = useState<CampType[]>([]);
   const [selectedType, setSelectedType] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const { user } = useAuthStore();
+
+  // Get query params from URL
+  const locationParam = searchParams.get('location') || '';
+  const ageParam = searchParams.get('age') || '';
+  const monthParam = searchParams.get('month') || '';
+  const yearParam = searchParams.get('year') || '';
 
   useEffect(() => {
     fetchData();
@@ -53,14 +60,44 @@ const ListCamp: React.FC = () => {
     navigate("/register");
   };
 
-  // Filter camps
+  // Clear query params when using internal filters
+  const clearParams = () => {
+    navigate('/camp', { replace: true });
+  };
+
+  // Filter camps with query params
   const filteredCamps = camps.filter((camp) => {
     const matchesType =
       selectedType === null || camp.campType?.id === selectedType;
     const matchesSearch =
       camp.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       camp.description.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesType && matchesSearch;
+    
+    // Filter by location (place or address)
+    const matchesLocation = !locationParam || 
+      camp.place?.toLowerCase().includes(locationParam.toLowerCase()) ||
+      camp.address?.toLowerCase().includes(locationParam.toLowerCase());
+    
+    // Filter by age
+    const matchesAge = !ageParam || 
+      (parseInt(ageParam) >= camp.minAge && parseInt(ageParam) <= camp.maxAge);
+    
+    // Filter by month/year
+    let matchesDate = true;
+    if (monthParam || yearParam) {
+      const campStartDate = new Date(camp.startDate);
+      const campMonth = campStartDate.getMonth() + 1; // 1-12
+      const campYear = campStartDate.getFullYear();
+      
+      if (monthParam && parseInt(monthParam) !== campMonth) {
+        matchesDate = false;
+      }
+      if (yearParam && parseInt(yearParam) !== campYear) {
+        matchesDate = false;
+      }
+    }
+    
+    return matchesType && matchesSearch && matchesLocation && matchesAge && matchesDate;
   });
 
   // const getCampTypeName = (camp: CampResponseDto) => {
@@ -120,7 +157,9 @@ const ListCamp: React.FC = () => {
                 className="w-full text-base font-semibold text-gray-800 border-none outline-none bg-transparent py-3"
               />
             </div>
-            <button className="bg-[#FF8F50] text-white rounded-full px-8 py-4 font-bold hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2 whitespace-nowrap hover:bg-[#ff7e3d]">
+            <button 
+              onClick={clearParams}
+              className="bg-[#FF8F50] text-white rounded-full px-8 py-4 font-bold hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2 whitespace-nowrap hover:bg-[#ff7e3d]">
               <SearchOutlined className="text-lg" />
               <span>Tìm kiếm</span>
             </button>
@@ -147,7 +186,10 @@ const ListCamp: React.FC = () => {
 
               <div className="space-y-2">
                 <button
-                  onClick={() => setSelectedType(null)}
+                  onClick={() => {
+                    setSelectedType(null);
+                    clearParams();
+                  }}
                   className={`w-full text-left px-4 py-3 rounded-xl font-semibold transition-all duration-300 ${
                     selectedType === null
                       ? "bg-gradient-to-r from-[#FF8F50] to-[#ff7e3d] text-white shadow-lg"
@@ -167,7 +209,10 @@ const ListCamp: React.FC = () => {
                   return (
                     <button
                       key={type.campTypeId}
-                      onClick={() => setSelectedType(type.campTypeId)}
+                      onClick={() => {
+                        setSelectedType(type.campTypeId);
+                        clearParams();
+                      }}
                       className={`w-full text-left px-4 py-3 rounded-xl font-semibold transition-all duration-300 ${
                         selectedType === type.campTypeId
                           ? "bg-gradient-to-r from-[#FF8F50] to-[#ff7e3d] text-white shadow-lg"

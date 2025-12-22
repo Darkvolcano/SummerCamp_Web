@@ -92,7 +92,7 @@ const AdminDashboard: React.FC = () => {
       } catch (error: any) {
         console.error("Failed to load admin dashboard:", error);
         const errorMessage = error.response?.data?.message || "Không thể tải dashboard";
-        toastError("Lỗi", errorMessage);
+        toastError('Cảnh báo', errorMessage);
       } finally {
         setLoading(false);
       }

@@ -51,7 +51,7 @@ const AdminSidebar = () => {
     {
       key: "/manager/products",
       icon: <ShoppingOutlined />,
-      label: "Quản lý trại hè",
+      label: "Quản lý hội trại",
     },
     {
       key: "/manager/promotions",

@@ -158,7 +158,7 @@ export default function MyCamps() {
                     ) : (
                         <div className="no-camps">
                             <Tent size={64} />
-                            <p>Không tìm thấy trại hè</p>
+                            <p>Không tìm thấy hội trại</p>
                         </div>
                     )}
                 </div>

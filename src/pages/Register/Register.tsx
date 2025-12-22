@@ -544,7 +544,7 @@ const Register = () => {
             </h1>
 
             <p className="hero-description">
-              Đăng ký ngay để khám phá hàng trăm chương trình trại hè hấp dẫn và
+              Đăng ký ngay để khám phá hàng trăm chương trình hội trại hấp dẫn và
               trải nghiệm không giới hạn
             </p>
 
@@ -563,7 +563,7 @@ const Register = () => {
                 <div className="benefit-text">
                   <div className="benefit-title">Chương trình đa dạng</div>
                   <div className="benefit-desc">
-                    Hơn 500+ trại hè cho mọi lứa tuổi
+                    Hơn 500+ hội trại cho mọi lứa tuổi
                   </div>
                 </div>
               </div>

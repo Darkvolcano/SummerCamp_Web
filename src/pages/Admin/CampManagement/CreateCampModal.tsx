@@ -118,7 +118,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
     } catch (error: any) {
       console.error("Lỗi khi truy suất địa điểm:", error);
       const errorMsg = error.response?.data?.message || "Không thể lấy địa điểm khả dụng";
-      toastError("Lỗi", errorMsg);
+      toastError('Cảnh báo', errorMsg);
     } finally {
       setLocationsLoading(false);
     }
@@ -200,7 +200,7 @@ const CreateCampModal: React.FC<CreateCampModalProps> = ({
       }
 
       // Show error notification
-      toastError("Lỗi", errorMsg);
+      toastError('Cảnh báo', errorMsg);
     } finally {
       setLoading(false);
     }

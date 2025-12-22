@@ -99,7 +99,7 @@ const CamperSchedule: React.FC = () => {
       } catch (error: any) {
         const errorMessage =
           error.response?.data?.message || "Không thể tải lịch hoạt động";
-        toastError("Lỗi", errorMessage);
+        toastError('Cảnh báo', errorMessage);
       } finally {
         setLoading(false);
       }
@@ -120,7 +120,7 @@ const CamperSchedule: React.FC = () => {
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message || "Không thể tải thông tin chi tiết";
-      toastError("Lỗi", errorMessage);
+      toastError('Cảnh báo', errorMessage);
       setIsModalVisible(false);
     } finally {
       setScheduleLoading(false);

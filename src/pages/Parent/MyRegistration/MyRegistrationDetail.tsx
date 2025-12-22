@@ -59,7 +59,7 @@ const RegistrationDetail: React.FC = () => {
       } catch (error: any) {
         const errorMessage =
           error.response?.data?.message || "Không thể tải thông tin đơn đăng ký";
-        toastError("Lỗi", errorMessage);
+        toastError('Cảnh báo', errorMessage);
         navigate("/my-registrations");
       } finally {
         setLoading(false);
@@ -80,7 +80,7 @@ const RegistrationDetail: React.FC = () => {
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message || "Không thể tải thông tin đơn đăng ký";
-      toastError("Lỗi", errorMessage);
+      toastError('Cảnh báo', errorMessage);
     }
   };
 
@@ -95,7 +95,7 @@ const RegistrationDetail: React.FC = () => {
         const accounts = await bankUserService.getMyBankAccounts();
         setBankAccounts(accounts);
       } catch {
-        toastError("Lỗi", "Không thể tải danh sách tài khoản ngân hàng");
+        toastError('Cảnh báo', "Không thể tải danh sách tài khoản ngân hàng");
         setBankAccounts([]);
       } finally {
         setLoadingBankAccounts(false);
@@ -121,7 +121,7 @@ const RegistrationDetail: React.FC = () => {
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message || "Không thể thêm tài khoản ngân hàng";
-      toastError("Lỗi", errorMessage);
+      toastError('Cảnh báo', errorMessage);
     }
   };
 
@@ -140,7 +140,7 @@ const RegistrationDetail: React.FC = () => {
       // If status is Confirmed, include bankUserId
       if (registration.status === "Confirmed") {
         if (!values.bankUserId) {
-          toastError("Lỗi", "Vui lòng chọn tài khoản ngân hàng");
+          toastError('Cảnh báo', "Vui lòng chọn tài khoản ngân hàng");
           return;
         }
         cancelData.bankUserId = values.bankUserId;
@@ -154,7 +154,7 @@ const RegistrationDetail: React.FC = () => {
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message || "Không thể hủy đơn đăng ký";
-      toastError("Lỗi", errorMessage);
+      toastError('Cảnh báo', errorMessage);
     } finally {
       setCancelLoading(false);
     }
@@ -229,6 +229,17 @@ const RegistrationDetail: React.FC = () => {
 
   const statusInfo = getStatusInfo(registration.status);
   const isCancelable = CANCELABLE_STATUSES.includes(registration.status);
+  
+  const campStatusesPreventingCancellation = [
+    'RegistrationClosed',
+    'UnderEnrolled', 
+    'InProgress',
+    'Completed'
+  ];
+  const canCancelBasedOnCampStatus = camp 
+    ? !campStatusesPreventingCancellation.includes(camp.status)
+    : true;
+  const showCancelButton = isCancelable && canCancelBasedOnCampStatus;
 
   return (
     <div className="min-h-screen bg-white py-20">
@@ -305,10 +316,10 @@ const RegistrationDetail: React.FC = () => {
         {/* Camp Information */}
         {camp && (
           <div className="bg-gray-50 rounded-lg p-6 mb-8 border border-gray-200">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Thông tin trại hè</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Thông tin hội trại</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <p className="text-sm text-gray-600 font-medium mb-1">Tên trại hè</p>
+                <p className="text-sm text-gray-600 font-medium mb-1">Tên hội trại</p>
                 <p className="text-lg font-semibold text-gray-900">{camp.name}</p>
               </div>
               <div>
@@ -413,13 +424,19 @@ const RegistrationDetail: React.FC = () => {
             </button>
           )}
 
-          {isCancelable && (
+          {showCancelButton && (
             <button
               onClick={handleOpenCancelModal}
               className="flex items-center justify-center gap-1 bg-red-500 text-white font-medium py-1.5 px-4 rounded-full text-sm hover:bg-red-600 transition-colors"
             >
               Hủy đơn đăng ký
             </button>
+          )}
+
+          {isCancelable && !canCancelBasedOnCampStatus && (
+            <p className="text-red-600 font-medium text-sm py-1.5">
+              * Đã hết thời gian huỷ đăng ký
+            </p>
           )}
 
           {registration.status === "Confirmed" && camp?.status === "Completed" && (
@@ -459,7 +476,7 @@ const RegistrationDetail: React.FC = () => {
         <FeedbackModal
           visible={feedbackModalVisible}
           registrationId={registration.registrationId}
-          campName={registration.camp?.name || "Trại hè"}
+          campName={registration.camp?.name || "Hội trại"}
           onClose={handleCloseFeedbackModal}
           onSuccess={handleFeedbackSuccess}
         />

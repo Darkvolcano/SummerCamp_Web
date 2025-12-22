@@ -58,7 +58,7 @@ const RouteTab: React.FC = () => {
       calculateTypeCounts(campRoutes);
     } catch (error) {
       console.error('Failed to load routes:', error);
-      toastError('Lỗi', 'Không thể tải tuyến đường');
+      toastError('Cảnh báo', 'Không thể tải tuyến đường');
     } finally {
       setLoading(false);
     }
@@ -152,7 +152,7 @@ const RouteTab: React.FC = () => {
       setLocations(allLocations);
     } catch (error) {
       console.error('Failed to load route details:', error);
-      toastError('Lỗi', 'Không thể tải chi tiết tuyến đường');
+      toastError('Cảnh báo', 'Không thể tải chi tiết tuyến đường');
     } finally {
       setLoadingStops(false);
     }
@@ -183,7 +183,7 @@ const RouteTab: React.FC = () => {
       fetchRoutes();
     } catch (error) {
       console.error('Failed to save route:', error);
-      toastError('Lỗi', 'Không thể lưu tuyến đường');
+      toastError('Cảnh báo', 'Không thể lưu tuyến đường');
     } finally {
       setSubmitting(false);
     }
@@ -226,7 +226,7 @@ const RouteTab: React.FC = () => {
       }
     } catch (error) {
       console.error('Failed to save route:', error);
-      toastError('Lỗi', 'Không thể lưu tuyến đường');
+      toastError('Cảnh báo', 'Không thể lưu tuyến đường');
       setSubmitting(false);
     }
   };
@@ -236,7 +236,7 @@ const RouteTab: React.FC = () => {
       setSubmitting(true);
 
       if (!routeFormValues) {
-        toastError('Lỗi', 'Thiếu thông tin tuyến đường');
+        toastError('Cảnh báo', 'Thiếu thông tin tuyến đường');
         return;
       }
 
@@ -273,7 +273,7 @@ const RouteTab: React.FC = () => {
     } catch (error: any) {
       console.error('Failed to create composite route:', error);
       const errorMessage = error.response?.data?.message || 'Không thể tạo tuyến đường';
-      toastError('Lỗi', errorMessage);
+      toastError('Cảnh báo', errorMessage);
     } finally {
       setSubmitting(false);
     }
@@ -287,7 +287,7 @@ const RouteTab: React.FC = () => {
       fetchRoutes();
     } catch (error) {
       console.error('Failed to delete route:', error);
-      toastError('Lỗi', 'Không thể xóa tuyến đường');
+      toastError('Cảnh báo', 'Không thể xóa tuyến đường');
     }
   };
 

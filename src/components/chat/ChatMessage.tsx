@@ -21,12 +21,6 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
     const { user } = useAuthStore();
     const isOwnMessage = message.senderId === user?.id;
 
-    const getRoleBadgeColor = (role: string) => {
-        return role === 'Staff'
-            ? 'bg-blue-100 text-blue-700 border-blue-200'
-            : 'bg-green-100 text-green-700 border-green-200';
-    };
-
     return (
         <div className={`flex gap-3 px-4 py-3 hover:bg-gray-50 transition-colors ${isOwnMessage ? 'bg-blue-50/50' : ''}`}>
             {/* Avatar */}
@@ -44,9 +38,6 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
                 <div className="flex items-center gap-2 mb-1">
                     <span className="font-semibold text-gray-900 text-sm">
                         {message.senderName}
-                    </span>
-                    <span className={`px-2 py-0.5 text-xs font-medium rounded-full border ${getRoleBadgeColor(message.senderRole)}`}>
-                        {message.senderRole}
                     </span>
                     <span className="text-xs text-gray-500">
                         {formatMessageTimestamp(message.timestamp, 'en-US')}

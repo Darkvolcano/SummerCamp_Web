@@ -30,7 +30,7 @@ const CampTypePage: React.FC = () => {
       setCampTypes(data);
     } catch (error) {
       console.error("Error fetching camp types:", error);
-      toastError("Lỗi", "Không thể tải phân loại hội trại");
+      toastError('Cảnh báo', "Không thể tải phân loại hội trại");
     } finally {
       setLoading(false);
     }
@@ -89,7 +89,7 @@ const CampTypePage: React.FC = () => {
       form.resetFields();
     } catch (error) {
       console.error("Error submitting camp type:", error);
-      toastError("Lỗi", "Không thể lưu phân loại hội trại");
+      toastError('Cảnh báo', "Không thể lưu phân loại hội trại");
     } finally {
       setSubmitting(false);
     }
@@ -103,7 +103,7 @@ const CampTypePage: React.FC = () => {
       setDeletePopoverOpen(null);
     } catch (error) {
       console.error("Failed to delete camp type:", error);
-      toastError("Lỗi", "Không thể xóa phân loại hội trại");
+      toastError('Cảnh báo', "Không thể xóa phân loại hội trại");
     }
   };
 

@@ -35,7 +35,7 @@ const PromotionPage: React.FC = () => {
       setPromotions(data);
     } catch (error) {
       console.error("Error fetching promotions:", error);
-      toastError("Lỗi", "Không thể tải khuyến mãi");
+      toastError('Cảnh báo', "Không thể tải khuyến mãi");
     } finally {
       setLoading(false);
     }
@@ -47,7 +47,7 @@ const PromotionPage: React.FC = () => {
       setPromotionTypes(data);
     } catch (error) {
       console.error("Error fetching promotion types:", error);
-      toastError("Lỗi", "Không thể tải loại khuyến mãi");
+      toastError('Cảnh báo', "Không thể tải loại khuyến mãi");
     }
   }, [toastError]);
 
@@ -118,7 +118,7 @@ const PromotionPage: React.FC = () => {
       form.resetFields();
     } catch (error) {
       console.error("Error submitting promotion:", error);
-      toastError("Lỗi", "Không thể lưu khuyến mãi");
+      toastError('Cảnh báo', "Không thể lưu khuyến mãi");
     } finally {
       setSubmitting(false);
     }
@@ -132,7 +132,7 @@ const PromotionPage: React.FC = () => {
       setDeletePopoverOpen(null);
     } catch (error) {
       console.error("Failed to delete promotion:", error);
-      toastError("Lỗi", "Không thể xóa khuyến mãi");
+      toastError('Cảnh báo', "Không thể xóa khuyến mãi");
     }
   };
 

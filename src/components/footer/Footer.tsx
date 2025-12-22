@@ -98,7 +98,7 @@ const Footer = () => {
                 to="/camps"
                 className="text-gray-300 hover:text-orange-400 transition-colors text-sm"
               >
-                Tìm trại hè
+                Tìm hội trại
               </Link>
             </li>
             <li>
@@ -144,7 +144,7 @@ const Footer = () => {
                 to="/management"
                 className="text-gray-300 hover:text-orange-400 transition-colors text-sm"
               >
-                Quản lý trại hè
+                Quản lý hội trại
               </Link>
             </li>
             <li>

@@ -80,13 +80,13 @@ const CampDetailPage: React.FC = () => {
       if (error.response?.data?.message) {
         errorMsg = error.response.data.message;
       }
-      toastError('Lỗi', errorMsg);
+      toastError('Cảnh báo', errorMsg);
     }
   };
 
   const handleReject = async () => {
     if (!rejectReason.trim()) {
-      toastError('Lỗi', 'Vui lòng cung cấp lý do từ chối');
+      toastError('Cảnh báo', 'Vui lòng cung cấp lý do từ chối');
       return;
     }
 
@@ -102,7 +102,7 @@ const CampDetailPage: React.FC = () => {
       if (error.response?.data?.message) {
         errorMsg = error.response.data.message;
       }
-      toastError('Lỗi', errorMsg);
+      toastError('Cảnh báo', errorMsg);
     } finally {
       setRejectLoading(false);
     }
@@ -110,7 +110,7 @@ const CampDetailPage: React.FC = () => {
 
   const handleCancel = async () => {
     if (!cancelReason.trim()) {
-      toastError('Lỗi', 'Vui lòng cung cấp lý do hủy trại');
+      toastError('Cảnh báo', 'Vui lòng cung cấp lý do hủy trại');
       return;
     }
 
@@ -126,7 +126,7 @@ const CampDetailPage: React.FC = () => {
       if (error.response?.data?.message) {
         errorMsg = error.response.data.message;
       }
-      toastError('Lỗi', errorMsg);
+      toastError('Cảnh báo', errorMsg);
     } finally {
       setCancelLoading(false);
     }
@@ -134,7 +134,7 @@ const CampDetailPage: React.FC = () => {
 
   const handleExtendRegistration = async () => {
     if (!selectedExtendDate) {
-      toastError('Lỗi', 'Vui lòng chọn ngày đóng đăng ký mới');
+      toastError('Cảnh báo', 'Vui lòng chọn ngày đóng đăng ký mới');
       return;
     }
 
@@ -155,7 +155,7 @@ const CampDetailPage: React.FC = () => {
       if (error.response?.data?.message) {
         errorMsg = error.response.data.message;
       }
-      toastError('Lỗi', errorMsg);
+      toastError('Cảnh báo', errorMsg);
     } finally {
       setExtendLoading(false);
     }

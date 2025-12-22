@@ -52,7 +52,7 @@ const CustomerFAQPage: React.FC = () => {
                         </span>
                     </h1>
                     <p className="text-xl text-white/90 leading-relaxed max-w-2xl mx-auto">
-                        Tìm câu trả lời cho các thắc mắc phổ biến về chương trình trại hè của chúng tôi
+                        Tìm câu trả lời cho các thắc mắc phổ biến về chương trình hội trại của chúng tôi
                     </p>
                 </div>
             </section>

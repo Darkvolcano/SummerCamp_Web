@@ -53,7 +53,7 @@ const VehicleTab: React.FC = () => {
       setVehicles(data);
     } catch (error) {
       console.error('Failed to load vehicles:', error);
-      toastError('Lỗi', 'Không thể tải phương tiện');
+      toastError('Cảnh báo', 'Không thể tải phương tiện');
     } finally {
       setLoading(false);
     }
@@ -72,7 +72,7 @@ const VehicleTab: React.FC = () => {
       setVehicleTypes(types);
     } catch (error) {
       console.error('Failed to load vehicle types:', error);
-      toastError('Lỗi', 'Không thể tải loại phương tiện');
+      toastError('Cảnh báo', 'Không thể tải loại phương tiện');
     }
   };
 
@@ -108,7 +108,7 @@ const VehicleTab: React.FC = () => {
       setIsModalVisible(true);
     } catch (error) {
       console.error('Failed to load vehicle details:', error);
-      toastError('Lỗi', 'Không thể tải chi tiết phương tiện');
+      toastError('Cảnh báo', 'Không thể tải chi tiết phương tiện');
     }
   };
 
@@ -158,7 +158,7 @@ const VehicleTab: React.FC = () => {
       form.resetFields();
     } catch (error) {
       console.error('Error submitting vehicle:', error);
-      toastError('Lỗi', 'Không thể lưu phương tiện');
+      toastError('Cảnh báo', 'Không thể lưu phương tiện');
     } finally {
       setSubmitting(false);
     }
@@ -173,7 +173,7 @@ const VehicleTab: React.FC = () => {
       setDeletePopoverOpen(null);
     } catch (error) {
       console.error('Failed to delete vehicle:', error);
-      toastError('Lỗi', 'Không thể xóa phương tiện');
+      toastError('Cảnh báo', 'Không thể xóa phương tiện');
     }
   };
 
@@ -195,7 +195,7 @@ const VehicleTab: React.FC = () => {
       typeForm.resetFields();
     } catch (error) {
       console.error('Error creating vehicle type:', error);
-      toastError('Lỗi', 'Không thể tạo loại phương tiện');
+      toastError('Cảnh báo', 'Không thể tạo loại phương tiện');
     } finally {
       setTypeSubmitting(false);
     }

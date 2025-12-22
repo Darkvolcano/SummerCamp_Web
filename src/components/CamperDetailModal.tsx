@@ -95,7 +95,7 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
       if (error.response?.data?.message) {
         errorMsg = error.response.data.message;
       }
-      toastError('Lỗi', errorMsg);
+      toastError('Cảnh báo', errorMsg);
     } finally {
       setLoading(false);
     }
@@ -146,7 +146,7 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
 
       // Validate campId exists
       if (!campId) {
-        toastError('Lỗi', 'Không tìm thấy thông tin trại');
+        toastError('Cảnh báo', 'Không tìm thấy thông tin trại');
         return;
       }
 
@@ -171,7 +171,7 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
       handleClose();
     } catch (error) {
       console.error('Error submitting early checkout:', error);
-      toastError('Lỗi', 'Không thể ghi nhận check out sớm');
+      toastError('Cảnh báo', 'Không thể ghi nhận check out sớm');
     } finally {
       setSubmittingCheckout(false);
     }
@@ -179,7 +179,7 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
 
   const handleOpenIncidentModal = async () => {
     if (!campId) {
-      toastError('Lỗi', 'Không tìm thấy thông tin trại');
+      toastError('Cảnh báo', 'Không tìm thấy thông tin trại');
       return;
     }
 
@@ -192,7 +192,7 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
       setActivitySchedules(schedules);
     } catch (error) {
       console.error('Error fetching activity schedules:', error);
-      toastError('Lỗi', 'Không thể tải danh sách hoạt động');
+      toastError('Cảnh báo', 'Không thể tải danh sách hoạt động');
     } finally {
       setLoadingActivities(false);
     }
@@ -203,7 +203,7 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
       const values = await incidentForm.validateFields();
 
       if (!campId) {
-        toastError('Lỗi', 'Không tìm thấy thông tin trại');
+        toastError('Cảnh báo', 'Không tìm thấy thông tin trại');
         return;
       }
 
@@ -232,7 +232,7 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
       setIncidentImageFile(null);
     } catch (error) {
       console.error('Error creating incident ticket:', error);
-      toastError('Lỗi', 'Không thể tạo incident ticket');
+      toastError('Cảnh báo', 'Không thể tạo incident ticket');
     } finally {
       setSubmittingIncident(false);
     }
@@ -372,7 +372,7 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
                           <button
                             onClick={async () => {
                               if (!campRegistration.userAccount?.userId) {
-                                toastError('Lỗi', 'Không tìm thấy thông tin phụ huynh');
+                                toastError('Cảnh báo', 'Không tìm thấy thông tin phụ huynh');
                                 return;
                               }
 
@@ -386,7 +386,7 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
                                 navigate(`/staff/chat/${roomResponse.chatRoomId}`);
                               } catch (error) {
                                 console.error('Error creating/getting chat room:', error);
-                                toastError('Lỗi', 'Không thể mở phòng chat');
+                                toastError('Cảnh báo', 'Không thể mở phòng chat');
                               }
                             }}
                             className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all font-medium shadow-sm"

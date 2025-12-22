@@ -21,7 +21,7 @@ const TransactionPage: React.FC = () => {
             setTransactions(data);
         } catch (error) {
             console.error("Error fetching transactions:", error);
-            toastError("Lỗi", "Không thể tải danh sách giao dịch");
+            toastError('Cảnh báo', "Không thể tải danh sách giao dịch");
         } finally {
             setLoading(false);
         }
