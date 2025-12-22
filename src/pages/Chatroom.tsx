@@ -170,7 +170,7 @@ const Chatroom: React.FC = () => {
         if (activeChat.type === 'community') {
             return 'Community chat is coming soon!';
         } else if (activeChat.type === 'private') {
-            return 'Private conversation';
+            return 'Tin nhắn riêng';
         }
         return undefined;
     };
@@ -279,7 +279,7 @@ const Chatroom: React.FC = () => {
                     <div className="w-64 bg-white flex flex-col shadow-xl border-r border-gray-200">
                         {/* Server Header */}
                         <div className="h-16 px-4 flex items-center border-b border-gray-200 shadow-sm">
-                            <h2 className="text-gray-900 font-semibold text-sm">CampEase Chat</h2>
+                            <h2 className="text-[#FF8F50] font-bold text-sm">CampEase Chat</h2>
                         </div>
 
                         {/* Channels Section */}

@@ -65,7 +65,7 @@ const MyProfile: React.FC = () => {
       } catch (error: any) {
         const errorMessage =
           error.response?.data?.message || "Không thể tải thông tin hồ sơ";
-        toastError("Lỗi", errorMessage);
+        toastError('Cảnh báo', errorMessage);
       } finally {
         setLoading(false);
       }
@@ -117,7 +117,7 @@ const MyProfile: React.FC = () => {
 
     const validation = validateImageFile(file, 5);
     if (!validation.valid) {
-      toastError("Lỗi", validation.error || "File không hợp lệ");
+      toastError('Cảnh báo', validation.error || "File không hợp lệ");
       return;
     }
 
@@ -140,7 +140,7 @@ const MyProfile: React.FC = () => {
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message || "Không thể upload avatar";
-      toastError("Lỗi", errorMessage);
+      toastError('Cảnh báo', errorMessage);
       // Reset preview on error
       setAvatarPreview(userData?.avatar || "");
     } finally {
@@ -171,7 +171,7 @@ const MyProfile: React.FC = () => {
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message || "Không thể cập nhật hồ sơ";
-      toastError("Lỗi", errorMessage);
+      toastError('Cảnh báo', errorMessage);
     } finally {
       setLoading(false);
     }
@@ -180,7 +180,7 @@ const MyProfile: React.FC = () => {
   // Handle password change
   const handleChangePassword = async (values: any) => {
     if (values.newPassword !== values.confirmPassword) {
-      toastError("Lỗi", "Mật khẩu không trùng khớp");
+      toastError('Cảnh báo', "Mật khẩu không trùng khớp");
       return;
     }
 
@@ -197,7 +197,7 @@ const MyProfile: React.FC = () => {
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message || "Không thể thay đổi mật khẩu";
-      toastError("Lỗi", errorMessage);
+      toastError('Cảnh báo', errorMessage);
     } finally {
       setLoading(false);
     }
@@ -217,7 +217,7 @@ const MyProfile: React.FC = () => {
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message || "Không thể gửi mã OTP";
-      toastError("Lỗi", errorMessage);
+      toastError('Cảnh báo', errorMessage);
     } finally {
       setLoading(false);
     }
@@ -231,7 +231,7 @@ const MyProfile: React.FC = () => {
       setBankAccounts(data);
     } catch (error: any) {
       console.error("Failed to load bank accounts:", error);
-      toastError("Lỗi", "Không thể tải danh sách tài khoản ngân hàng");
+      toastError('Cảnh báo', "Không thể tải danh sách tài khoản ngân hàng");
     } finally {
       setLoadingBankAccounts(false);
     }
@@ -274,7 +274,7 @@ const MyProfile: React.FC = () => {
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message || "Không thể lưu tài khoản ngân hàng";
-      toastError("Lỗi", errorMessage);
+      toastError('Cảnh báo', errorMessage);
     } finally {
       setSubmittingBank(false);
     }
@@ -288,7 +288,7 @@ const MyProfile: React.FC = () => {
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message || "Không thể xóa tài khoản ngân hàng";
-      toastError("Lỗi", errorMessage);
+      toastError('Cảnh báo', errorMessage);
     }
   };
 
@@ -300,7 +300,7 @@ const MyProfile: React.FC = () => {
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message || "Không thể đặt tài khoản chính";
-      toastError("Lỗi", errorMessage);
+      toastError('Cảnh báo', errorMessage);
     }
   };
 

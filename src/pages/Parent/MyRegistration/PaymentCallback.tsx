@@ -72,7 +72,7 @@ const PaymentCallback: React.FC = () => {
           message: "Có lỗi xảy ra khi xử lý kết quả thanh toán",
           detail: "Vui lòng liên hệ bộ phận hỗ trợ nếu bạn đã thanh toán thành công.",
         });
-        toastError("Lỗi", "Không thể xử lý kết quả thanh toán");
+        toastError('Cảnh báo', "Không thể xử lý kết quả thanh toán");
       } finally {
         setLoading(false);
       }

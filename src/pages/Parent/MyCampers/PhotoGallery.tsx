@@ -37,7 +37,7 @@ const PhotoGallery: React.FC = () => {
       } catch (error: any) {
         console.error('Failed to load data:', error);
         const errorMessage = error.response?.data?.message || error.response?.data?.title || 'Không thể tải dữ liệu';
-        toastError('Lỗi', errorMessage);
+        toastError('Cảnh báo', errorMessage);
       } finally {
         setLoading(false);
       }
@@ -55,7 +55,7 @@ const PhotoGallery: React.FC = () => {
     } catch (error: any) {
       console.error('Failed to load photos:', error);
       const errorMessage = error.response?.data?.message || error.response?.data?.title || 'Không thể tải ảnh';
-      toastError('Lỗi', errorMessage);
+      toastError('Cảnh báo', errorMessage);
     } finally {
       setLoadingPhotos(false);
     }

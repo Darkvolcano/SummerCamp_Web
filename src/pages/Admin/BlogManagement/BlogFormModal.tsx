@@ -168,7 +168,7 @@ export default function BlogFormModal({
     } catch (error) {
       console.error("Error saving blog:", error);
       const errorMessage = error instanceof Error ? error.message : "Không thể lưu blog";
-      toastError("Lỗi", errorMessage);
+      toastError('Cảnh báo', errorMessage);
     } finally {
       setSaving(false);
     }

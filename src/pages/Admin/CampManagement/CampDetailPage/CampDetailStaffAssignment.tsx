@@ -57,7 +57,7 @@ const CampDetailStaffAssignment: React.FC<CampDetailStaffAssignmentProps> = ({
       setAssignedStaff(assignedData);
     } catch (error) {
       console.error("Error fetching staff data:", error);
-      toastError("Lỗi", "Không thể tải dữ liệu nhân viên");
+      toastError('Cảnh báo', "Không thể tải dữ liệu nhân viên");
     } finally {
       setLoading(false);
     }
@@ -85,7 +85,7 @@ const CampDetailStaffAssignment: React.FC<CampDetailStaffAssignmentProps> = ({
       if (error.response?.data?.message) {
         errorMsg = error.response.data.message;
       }
-      toastError("Lỗi", errorMsg);
+      toastError('Cảnh báo', errorMsg);
     } finally {
       setAssigning(false);
     }
@@ -105,7 +105,7 @@ const CampDetailStaffAssignment: React.FC<CampDetailStaffAssignmentProps> = ({
   // Handle bulk assign
   const handleBulkAssign = async () => {
     if (selectedStaffIds.size === 0) {
-      toastError("Lỗi", "Vui lòng chọn ít nhất một nhân viên");
+      toastError('Cảnh báo', "Vui lòng chọn ít nhất một nhân viên");
       return;
     }
 
@@ -141,7 +141,7 @@ const CampDetailStaffAssignment: React.FC<CampDetailStaffAssignmentProps> = ({
         toastSuccess("Thành công một phần", message);
       }
     } catch {
-      toastError("Lỗi", "Không thể phân công nhân viên");
+      toastError('Cảnh báo', "Không thể phân công nhân viên");
     } finally {
       setAssigning(false);
     }

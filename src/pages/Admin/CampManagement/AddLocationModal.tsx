@@ -61,7 +61,7 @@ const AddLocationModal: React.FC<AddLocationModalProps> = ({
       if (error.response?.data?.message) {
         errorMsg = error.response.data.message;
       }
-      toastError("Lỗi", errorMsg);
+      toastError('Cảnh báo', errorMsg);
     } finally {
       setLoading(false);
     }

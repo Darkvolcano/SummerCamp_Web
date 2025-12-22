@@ -47,7 +47,7 @@ const CampDetail: React.FC = () => {
       setCamp(data);
     } catch (error) {
       console.error("❌ [CampDetail] Error fetching camp detail:", error);
-      message.error("Không thể tải thông tin trại hè");
+      message.error("Không thể tải thông tin hội trại");
     } finally {
       setLoading(false);
     }
@@ -107,12 +107,12 @@ const CampDetail: React.FC = () => {
     const statusInfo = getStatusLabel(camp?.status || "");
 
     if (!statusInfo.canRegister) {
-      message.warning("Hiện tại chưa mở đăng ký cho trại hè này");
+      message.warning("Hiện tại chưa mở đăng ký cho hội trại này");
       return;
     }
 
     if (camp && camp.currentCapacity >= camp.maxParticipants) {
-      message.warning("Trại hè đã đầy, không thể đăng ký thêm");
+      message.warning("Hội trại đã đầy, không thể đăng ký thêm");
       return;
     }
 
@@ -146,7 +146,7 @@ const CampDetail: React.FC = () => {
         <div className="text-center">
           <Spin size="large" />
           <p className="mt-4 text-gray-600 font-semibold">
-            Đang tải thông tin trại hè...
+            Đang tải thông tin hội trại...
           </p>
         </div>
       </div>
@@ -158,10 +158,32 @@ const CampDetail: React.FC = () => {
       <div className="flex flex-col justify-center items-center min-h-screen bg-gradient-to-b from-gray-50 to-white">
         <div className="text-6xl mb-4 animate-bounce">🏕️</div>
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          Không tìm thấy trại hè
+          Không tìm thấy hội trại
         </h2>
         <p className="text-gray-600 mb-6">
-          Trại hè không tồn tại hoặc đã bị xóa
+          Hội trại không tồn tại hoặc đã bị xóa
+        </p>
+        <button
+          onClick={() => navigate("/camp")}
+          className="bg-[#FF8F50] text-white px-8 py-3 rounded-full hover:bg-[#ff7e3d] transition-all shadow-lg hover:shadow-xl hover:scale-105 font-semibold"
+        >
+          ← Quay lại danh sách
+        </button>
+      </div>
+    );
+  }
+
+  // Check if camp status is valid for public viewing
+  const allowedStatuses = ['Published', 'OpenForRegistration', 'RegistrationClosed'];
+  if (!allowedStatuses.includes(camp.status)) {
+    return (
+      <div className="flex flex-col justify-center items-center min-h-screen bg-gradient-to-b from-gray-50 to-white">
+        <div className="text-6xl mb-4 animate-bounce">🏕️</div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          Không tìm thấy hội trại
+        </h2>
+        <p className="text-gray-600 mb-6">
+          Hội trại không tồn tại hoặc đã bị xóa
         </p>
         <button
           onClick={() => navigate("/camp")}
@@ -376,7 +398,7 @@ const CampDetail: React.FC = () => {
               {/* Price */}
               <div className="text-center pb-6 border-b-2 border-gray-100">
                 <p className="text-gray-500 text-sm mb-2 uppercase tracking-wide">
-                  Giá trại hè
+                  Giá hội trại
                 </p>
                 <div className="flex items-center justify-center gap-2">
                   <DollarOutlined className="text-[#FF8F50] text-2xl" />
@@ -477,11 +499,11 @@ const CampDetail: React.FC = () => {
               {/* Info Text */}
               {camp.currentCapacity >= camp.maxParticipants ? (
                 <p className="text-center text-sm text-red-600 font-semibold">
-                  ⚠️ Trại hè đã hết chỗ
+                  ⚠️ Hội trại đã hết chỗ
                 </p>
               ) : getStatusLabel(camp.status).canRegister && !user ? (
                 <p className="text-center text-sm text-gray-500">
-                  Bạn cần đăng nhập để đăng ký trại hè
+                  Bạn cần đăng nhập để đăng ký hội trại
                 </p>
               ) : camp.currentCapacity >= camp.maxParticipants * 0.8 && getStatusLabel(camp.status).canRegister ? (
                 <p className="text-center text-sm text-orange-600 font-semibold">
@@ -512,7 +534,7 @@ const CampDetail: React.FC = () => {
                     : 'text-gray-400'
                 }`}>
                   {camp.currentCapacity >= camp.maxParticipants
-                    ? '🚫 Trại hè đã hết chỗ'
+                    ? '🚫 Hội trại đã hết chỗ'
                     : camp.currentCapacity >= camp.maxParticipants * 0.8
                     ? '⚡ Sắp hết chỗ! Đăng ký ngay!'
                     : '✨ Số lượng có hạn, đăng ký sớm để đảm bảo chỗ!'}

@@ -28,7 +28,7 @@ const CampDetailGroup: React.FC<CampDetailGroupProps> = ({ campId, campStatus })
       setCampData(campInfo);
     } catch (error) {
       console.error('Lỗi khi tải nhóm:', error);
-      toastError('Lỗi', 'Không thể tải nhóm cho trại này. Vui lòng thử lại sau.');
+      toastError('Cảnh báo', 'Không thể tải nhóm cho trại này. Vui lòng thử lại sau.');
     } finally {
       setLoading(false);
     }

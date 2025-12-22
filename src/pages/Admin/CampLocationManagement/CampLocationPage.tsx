@@ -38,7 +38,7 @@ const CampLocationPage: React.FC = () => {
       setCampLocations(data);
     } catch (error) {
       console.error("Error fetching camp locations:", error);
-      toastError("Lỗi", "Không thể tải danh sách địa điểm trại");
+      toastError('Cảnh báo', "Không thể tải danh sách địa điểm trại");
     } finally {
       setLoading(false);
     }
@@ -51,7 +51,7 @@ const CampLocationPage: React.FC = () => {
       setInCampLocations(inCampLocs);
     } catch (error) {
       console.error("Error fetching in-camp locations:", error);
-      toastError("Lỗi", "Không thể tải danh sách địa điểm trong trại");
+      toastError('Cảnh báo', "Không thể tải danh sách địa điểm trong trại");
     }
   }, [toastError]);
 
@@ -153,7 +153,7 @@ const CampLocationPage: React.FC = () => {
       inCampForm.resetFields();
     } catch (error) {
       console.error("Error submitting in-camp location:", error);
-      toastError("Lỗi", "Không thể lưu địa điểm trong trại");
+      toastError('Cảnh báo', "Không thể lưu địa điểm trong trại");
     } finally {
       setInCampSubmitting(false);
     }
@@ -170,7 +170,7 @@ const CampLocationPage: React.FC = () => {
       setInCampDeletePopoverOpen(null);
     } catch (error) {
       console.error("Failed to delete in-camp location:", error);
-      toastError("Lỗi", "Không thể xóa địa điểm trong trại");
+      toastError('Cảnh báo', "Không thể xóa địa điểm trong trại");
     }
   };
 
@@ -211,7 +211,7 @@ const CampLocationPage: React.FC = () => {
       form.resetFields();
     } catch (error) {
       console.error("Error submitting camp location:", error);
-      toastError("Lỗi", "Không thể lưu địa điểm trại");
+      toastError('Cảnh báo', "Không thể lưu địa điểm trại");
     } finally {
       setSubmitting(false);
     }
@@ -225,7 +225,7 @@ const CampLocationPage: React.FC = () => {
       setDeletePopoverOpen(null);
     } catch (error) {
       console.error("Failed to delete camp location:", error);
-      toastError("Lỗi", "Không thể xóa địa điểm trại");
+      toastError('Cảnh báo', "Không thể xóa địa điểm trại");
     }
   };
 
@@ -467,7 +467,7 @@ const CampLocationPage: React.FC = () => {
                     { max: 255, message: "Tên không được vượt quá 255 ký tự!" },
                   ]}
                 >
-                  <Input placeholder="VD: Địa điểm trại hè trung tâm" />
+                  <Input placeholder="VD: Địa điểm hội trại trung tâm" />
                 </Form.Item>
 
                 <Form.Item
@@ -478,7 +478,7 @@ const CampLocationPage: React.FC = () => {
                   ]}
                 >
                   <Input.TextArea
-                    placeholder="Địa chỉ đầy đủ của địa điểm trại"
+                    placeholder="Địa chỉ của hội trại"
                     rows={2}
                   />
                 </Form.Item>

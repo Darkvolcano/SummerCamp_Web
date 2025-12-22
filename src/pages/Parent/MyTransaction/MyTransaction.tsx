@@ -37,7 +37,7 @@ const MyTransaction: React.FC = () => {
       } catch (error: any) {
         const errorMessage =
           error.response?.data?.message || "Không thể tải danh sách giao dịch";
-        toastError("Lỗi", errorMessage);
+        toastError('Cảnh báo', errorMessage);
       } finally {
         setLoading(false);
       }
@@ -123,7 +123,7 @@ const MyTransaction: React.FC = () => {
               />
               <input
                 type="text"
-                placeholder="Tìm kiếm theo tên trại hè..."
+                placeholder="Tìm kiếm theo tên hội trại..."
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
                 className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF8F50] focus:border-transparent"
@@ -183,7 +183,7 @@ const MyTransaction: React.FC = () => {
               onClick={() => navigate(PagePath.CAMP)}
               className="mt-6 px-6 py-2 bg-[#FF8F50] text-white rounded-full font-medium hover:bg-[#ff7e3d] transition-colors"
             >
-              Khám phá trại hè
+              Khám phá hội trại
             </button>
           </div>
         ) : (

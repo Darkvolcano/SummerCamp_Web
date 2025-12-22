@@ -93,7 +93,7 @@ const CompleteRegistrationModal: React.FC<CompleteRegistrationModalProps> = ({
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message || "Không thể tải danh sách hoạt động";
-      toastError("Lỗi", errorMessage);
+      toastError('Cảnh báo', errorMessage);
     } finally {
       setLoading(false);
     }
@@ -115,7 +115,7 @@ const CompleteRegistrationModal: React.FC<CompleteRegistrationModalProps> = ({
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message || "Không thể tải danh sách tuyến đường";
-      toastError("Lỗi", errorMessage);
+      toastError('Cảnh báo', errorMessage);
     } finally {
       setLoadingRoutes(false);
     }
@@ -219,7 +219,7 @@ const CompleteRegistrationModal: React.FC<CompleteRegistrationModalProps> = ({
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message || "Không thể tải thông tin tuyến đường";
-      toastError("Lỗi", errorMessage);
+      toastError('Cảnh báo', errorMessage);
     }
   };
 
@@ -354,7 +354,7 @@ const CompleteRegistrationModal: React.FC<CompleteRegistrationModalProps> = ({
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message || "Không thể hoàn tất đăng ký";
-      toastError("Lỗi", errorMessage);
+      toastError('Cảnh báo', errorMessage);
     } finally {
       setSubmitting(false);
     }

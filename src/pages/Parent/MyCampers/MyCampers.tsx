@@ -38,7 +38,7 @@ const MyCampers: React.FC = () => {
       } catch (error: any) {
         const errorMessage =
           error.response?.data?.message || "Không thể tải danh sách trại viên";
-        toastError("Lỗi", errorMessage);
+        toastError('Cảnh báo', errorMessage);
       } finally {
         setLoading(false);
       }
@@ -130,7 +130,7 @@ const MyCampers: React.FC = () => {
       toastSuccess("Thành công", "Tạo trại viên mới thành công!");
     } catch (error) {
       console.error("Error creating new camper:", error);
-      toastError("Lỗi", "Không thể tạo trại viên mới");
+      toastError('Cảnh báo', "Không thể tạo trại viên mới");
     } finally {
       setSubmitting(false);
     }

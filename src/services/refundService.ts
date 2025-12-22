@@ -134,6 +134,20 @@ const refundService = {
   },
 
   /**
+   * GET /api/refund/my-requests
+   * Get current user's refund requests
+   */
+  getMyRefundRequests: async (
+    status?: RegistrationCancelStatus
+  ): Promise<RegistrationCancelResponseDto[]> => {
+    console.log("[refundService] GET /refund/my-requests");
+    const response = await axiosInstance.get("/refund/my-requests", {
+      params: status ? { status } : {},
+    });
+    return response.data as RegistrationCancelResponseDto[];
+  },
+
+  /**
    * POST /api/refund/approve
    * Approve refund with image upload (multipart/form-data)
    */

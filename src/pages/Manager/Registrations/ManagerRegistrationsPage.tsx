@@ -38,7 +38,7 @@ const ManagerRegistrationsPage: React.FC = () => {
         calculateStatusCounts(data);
       } catch (error) {
         console.error('[ManagerRegistrationsPage] Failed to load registrations:', error);
-        toastError('Lỗi', 'Không thể tải đăng ký');
+        toastError('Cảnh báo', 'Không thể tải đăng ký');
       } finally {
         setLoading(false);
       }
@@ -149,7 +149,7 @@ const ManagerRegistrationsPage: React.FC = () => {
       }
     } catch (error) {
       console.error('Failed to approve registration:', error);
-      toastError('Lỗi', 'Không thể phê duyệt đăng ký');
+      toastError('Cảnh báo', 'Không thể phê duyệt đăng ký');
     }
   };
 

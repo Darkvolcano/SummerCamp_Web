@@ -24,7 +24,7 @@ const StaffDetail: React.FC = () => {
         setStaff(staffData);
       } catch (error: any) {
         const errorMessage = error.response?.data?.message || 'Không thể tải thông tin nhân viên';
-        toastError('Lỗi', errorMessage);
+        toastError('Cảnh báo', errorMessage);
         navigate(-1);
       } finally {
         setLoading(false);

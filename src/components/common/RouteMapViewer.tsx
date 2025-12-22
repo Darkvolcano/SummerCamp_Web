@@ -113,7 +113,7 @@ const RouteMapViewer: React.FC<RouteMapViewerProps> = ({
       }
     } catch (error) {
       console.error('Search error:', error);
-      toastError('Error', 'Failed to search location');
+      toastError('Cảnh báo', 'Failed to search location');
     } finally {
       setIsSearching(false);
     }
@@ -229,7 +229,7 @@ const RouteMapViewer: React.FC<RouteMapViewerProps> = ({
       }
       
       const errorMessage = error.response?.data?.message || 'Failed to create location';
-      toastError('Error', errorMessage);
+      toastError('Cảnh báo', errorMessage);
     }
   };
 

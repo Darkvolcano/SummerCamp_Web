@@ -48,7 +48,7 @@ const CampDetailSchedule: React.FC<CampDetailScheduleProps> = ({
         setCampData(campInfo);
       } catch (error) {
         console.error("Failed to load schedules:", error);
-        toastError("Lỗi", "Không thể tải lịch trình hoạt động");
+        toastError('Cảnh báo', "Không thể tải lịch trình hoạt động");
       } finally {
         setLoading(false);
       }
@@ -68,7 +68,7 @@ const CampDetailSchedule: React.FC<CampDetailScheduleProps> = ({
       setSelectedSchedule(selectedSchedule);
       setShowScheduleDetail(true);
     } else {
-      toastError("Lỗi", "Không tìm thấy lịch trình");
+      toastError('Cảnh báo', "Không tìm thấy lịch trình");
     }
   };
 

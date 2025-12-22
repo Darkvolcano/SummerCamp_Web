@@ -102,7 +102,7 @@ const CamperDetail: React.FC = () => {
       } catch (error: any) {
         const errorMessage =
           error.response?.data?.message || "Không thể tải thông tin trại viên";
-        toastError("Lỗi", errorMessage);
+        toastError('Cảnh báo', errorMessage);
         navigate(PagePath.USER_MYCAMPERS);
       } finally {
         setLoading(false);
@@ -193,7 +193,7 @@ const CamperDetail: React.FC = () => {
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message || "Không thể xóa trại viên";
-      toastError("Lỗi", errorMessage);
+      toastError('Cảnh báo', errorMessage);
     } finally {
       setDeleteLoading(false);
     }
@@ -240,7 +240,7 @@ const CamperDetail: React.FC = () => {
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message || "Không thể cập nhật thông tin trại viên";
-      toastError("Lỗi", errorMessage);
+      toastError('Cảnh báo', errorMessage);
     }
   };
 
@@ -269,7 +269,7 @@ const CamperDetail: React.FC = () => {
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message || "Không thể cập nhật ảnh đại diện";
-      toastError("Lỗi", errorMessage);
+      toastError('Cảnh báo', errorMessage);
     } finally {
       setAvatarLoading(false);
     }
@@ -320,7 +320,7 @@ const CamperDetail: React.FC = () => {
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message || "Không thể thêm người giám hộ";
-      toastError("Lỗi", errorMessage);
+      toastError('Cảnh báo', errorMessage);
     } finally {
       setGuardianLoading(false);
     }
@@ -335,7 +335,7 @@ const CamperDetail: React.FC = () => {
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message || "Không thể xoá người giám hộ";
-      toastError("Lỗi", errorMessage);
+      toastError('Cảnh báo', errorMessage);
     }
   };
 
@@ -712,7 +712,7 @@ const CamperDetail: React.FC = () => {
     },
     {
       key: "registrations",
-      label: "Trạng thái trại hè",
+      label: "Trạng thái hội trại",
       children: (
         <div className="space-y-4">
           {campsLoading ? (
@@ -720,12 +720,12 @@ const CamperDetail: React.FC = () => {
               <div className="text-center">
                 <Spin size="large" />
                 <p className="mt-4 text-gray-600 font-medium">
-                  Đang tải danh sách trại hè...
+                  Đang tải danh sách hội trại...
                 </p>
               </div>
             </div>
           ) : camps.length === 0 ? (
-            <Empty description="Chưa có trại hè nào" />
+            <Empty description="Chưa có hội trại nào" />
           ) : (
             <>
               {/* Camp Dropdown and Navigation */}
@@ -734,7 +734,7 @@ const CamperDetail: React.FC = () => {
                   onClick={() => setSelectedCampIndex(Math.max(0, selectedCampIndex - 1))}
                   disabled={selectedCampIndex === 0 || campsLoading}
                   className="h-7.75 w-7.75 bg-[#FF8F50] text-white rounded hover:bg-[#ff7e3d] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
-                  title="Trại hè trước"
+                  title="Hội trại trước"
                 >
                   <ArrowLeftOutlined />
                 </button>
@@ -757,7 +757,7 @@ const CamperDetail: React.FC = () => {
                   onClick={() => setSelectedCampIndex(Math.min(camps.length - 1, selectedCampIndex + 1))}
                   disabled={selectedCampIndex === camps.length - 1 || campsLoading}
                   className="h-7.75 w-7.75 bg-[#FF8F50] text-white rounded hover:bg-[#ff7e3d] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
-                  title="Trại hè tiếp theo"
+                  title="Hội trại tiếp theo"
                 >
                   <ArrowLeftOutlined style={{ transform: "rotate(180deg)" }} />
                 </button>
@@ -768,7 +768,7 @@ const CamperDetail: React.FC = () => {
                 <div className="bg-white rounded-lg p-6 border border-gray-200">
                   <div className="space-y-4">
                     <div>
-                      <p className="text-sm text-gray-600 font-medium mb-1">Tên trại hè</p>
+                      <p className="text-sm text-gray-600 font-medium mb-1">Tên hội trại</p>
                       <p className="text-lg font-semibold text-gray-900">{camps[selectedCampIndex].camp.name}</p>
                     </div>
                     <div className="grid grid-cols-2 gap-4">

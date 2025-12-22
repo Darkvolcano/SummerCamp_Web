@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import ChatMessage from './ChatMessage';
+import ChatMessageBubble from './ChatMessageBubble';
 
 // Updated Message interface to match API structure
 interface Message {
@@ -83,7 +83,7 @@ const ChatArea: React.FC<ChatAreaProps> = ({
             </div>
 
             {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
                 {messages.length === 0 ? (
                     <div className="flex items-center justify-center h-full text-gray-400">
                         <div className="text-center">
@@ -95,7 +95,7 @@ const ChatArea: React.FC<ChatAreaProps> = ({
                 ) : (
                     <>
                         {messages.map((message) => (
-                            <ChatMessage
+                            <ChatMessageBubble
                                 key={message.id}
                                 message={message}
                             />

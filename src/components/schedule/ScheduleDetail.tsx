@@ -1,8 +1,9 @@
-import React, { useState } from "react";
-import { Descriptions, Badge, Button } from "antd";
+import React, { useState, useEffect } from "react";
+import { Descriptions, Badge, Button, Tag, Spin } from "antd";
 import { Edit, Check, X, Video } from "lucide-react";
 import { useAuthStore } from "../../services/userService";
 import type { ActivityScheduleResponseDto } from "../../services/activityScheduleService";
+import groupService, { type GroupResponseDto } from "../../services/groupService";
 import DeletePopover from "../DeletePopover";
 import "./ScheduleDetail.css";
 
@@ -29,6 +30,8 @@ const ScheduleDetail: React.FC<ScheduleDetailProps> = ({
 }) => {
   const { user } = useAuthStore();
   const [deletePopoverOpen, setDeletePopoverOpen] = useState(false);
+  const [assignedGroups, setAssignedGroups] = useState<GroupResponseDto[]>([]);
+  const [loadingGroups, setLoadingGroups] = useState(false);
   
   const canManage = userRole === 'manager';
   const canApprove = false; // Admin cannot approve/reject schedules - read-only access
@@ -81,6 +84,28 @@ const ScheduleDetail: React.FC<ScheduleDetailProps> = ({
       second: "2-digit",
     });
   };
+
+  // Fetch assigned groups for Core activities
+  useEffect(() => {
+    const fetchAssignedGroups = async () => {
+      if (schedule.activity?.activityType !== "Core" || !schedule.activityScheduleId) {
+        return;
+      }
+
+      try {
+        setLoadingGroups(true);
+        const groups = await groupService.getGroupsByActivityScheduleId(schedule.activityScheduleId);
+        setAssignedGroups(groups);
+      } catch (error) {
+        console.error("Failed to fetch assigned groups:", error);
+        setAssignedGroups([]);
+      } finally {
+        setLoadingGroups(false);
+      }
+    };
+
+    fetchAssignedGroups();
+  }, [schedule]);
 
   return (
     <div className="schedule-detail-sidebar">
@@ -195,6 +220,30 @@ const ScheduleDetail: React.FC<ScheduleDetailProps> = ({
             <span className="font-medium">
               {schedule.currentCapacity} / {schedule.maxCapacity || "Unlimited"}
             </span>
+          </Descriptions.Item>
+        )}
+
+        {/* Display assigned groups for Core activities */}
+        {schedule.activity?.activityType === "Core" && (
+          <Descriptions.Item label="Nhóm">
+            {loadingGroups ? (
+              <div className="flex items-center gap-2">
+                <Spin size="small" />
+                <span className="text-sm text-gray-500">Đang tải...</span>
+              </div>
+            ) : assignedGroups.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {assignedGroups.map((group) => (
+                  <Tag key={group.groupId} color="blue">
+                    {group.groupName}
+                  </Tag>
+                ))}
+              </div>
+            ) : (
+              <span className="text-sm text-gray-500 italic">
+                Tất cả nhóm
+              </span>
+            )}
           </Descriptions.Item>
         )}
       </Descriptions>

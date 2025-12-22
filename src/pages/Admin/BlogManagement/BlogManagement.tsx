@@ -69,7 +69,7 @@ export default function BlogManagement() {
       setDeletePopoverOpen(null);
     } catch (error) {
       console.error("Error deleting blog:", error);
-      toastError("Lỗi", "Không thể xóa blog");
+      toastError('Cảnh báo', "Không thể xóa blog");
     }
   };
 

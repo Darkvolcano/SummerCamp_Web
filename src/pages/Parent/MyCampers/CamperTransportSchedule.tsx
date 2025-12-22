@@ -38,7 +38,7 @@ const CamperTransportSchedule: React.FC = () => {
         setSchedules(sorted);
       } catch (error: any) {
         console.error("Failed to fetch transport schedules:", error);
-        toastError("Lỗi", "Không thể tải lịch đưa đón.");
+        toastError('Cảnh báo', "Không thể tải lịch đưa đón.");
       } finally {
         setLoading(false);
       }

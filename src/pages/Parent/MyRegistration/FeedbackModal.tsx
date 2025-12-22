@@ -41,7 +41,7 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({
       }
       const errorMessage =
         error.response?.data?.message || "Không thể gửi đánh giá";
-      toastError("Lỗi", errorMessage);
+      toastError('Cảnh báo', errorMessage);
     } finally {
       setLoading(false);
     }
@@ -54,7 +54,7 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({
 
   return (
     <Modal
-      title="Đánh giá trại hè"
+      title="Đánh giá hội trại"
       open={visible}
       onOk={handleSubmit}
       onCancel={handleCancel}
@@ -65,7 +65,7 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({
     >
       <div className="mb-4">
         <p className="text-gray-700">
-          Đánh giá cho trại hè: <strong>{campName}</strong>
+          Đánh giá cho hội trại: <strong>{campName}</strong>
         </p>
       </div>
 
@@ -87,7 +87,7 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({
           ]}
         >
           <Input.TextArea
-            placeholder="Chia sẻ trải nghiệm của bạn về trại hè..."
+            placeholder="Chia sẻ trải nghiệm của bạn về hội trại..."
             rows={5}
             showCount
             maxLength={500}

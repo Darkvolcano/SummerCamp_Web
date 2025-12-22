@@ -119,7 +119,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
       setCampStatus(campData.status);
     } catch (error) {
       console.error("Lỗi khi tải dữ liệu trại:", error);
-      toastError("Lỗi", "Không thể tải chi tiết trại. Vui lòng thử lại sau.");
+      toastError('Cảnh báo', "Không thể tải chi tiết trại. Vui lòng thử lại sau.");
     } finally {
       setLoading(false);
     }
@@ -164,7 +164,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
         !formData.endDate ||
         !formData.price || formData.price <= 0
       ) {
-        toastError("Lỗi", "Vui lòng điền vào tất cả các trường bắt buộc.");
+        toastError('Cảnh báo', "Vui lòng điền vào tất cả các trường bắt buộc.");
         return;
       }
 
@@ -178,7 +178,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
       if (error.response?.data?.message) {
         errorMsg = error.response.data.message;
       }
-      toastError("Lỗi", errorMsg);
+      toastError('Cảnh báo', errorMsg);
     }
   };
 
@@ -197,7 +197,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
       if (error.response?.data?.message) {
         errorMsg = error.response.data.message;
       }
-      toastError('Lỗi', errorMsg);
+      toastError('Cảnh báo', errorMsg);
     }
   };
 
@@ -212,7 +212,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
       if (error.response?.data?.message) {
         errorMsg = error.response.data.message;
       }
-      toastError('Lỗi', errorMsg);
+      toastError('Cảnh báo', errorMsg);
     }
   };
 
@@ -225,7 +225,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
       if (error.response?.data?.message) {
         errorMsg = error.response.data.message;
       }
-      toastError('Lỗi', errorMsg);
+      toastError('Cảnh báo', errorMsg);
     }
   };
 
@@ -238,7 +238,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
       if (error.response?.data?.message) {
         errorMsg = error.response.data.message;
       }
-      toastError('Lỗi', errorMsg);
+      toastError('Cảnh báo', errorMsg);
     }
   };
 
@@ -251,7 +251,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
       if (error.response?.data?.message) {
         errorMsg = error.response.data.message;
       }
-      toastError('Lỗi', errorMsg);
+      toastError('Cảnh báo', errorMsg);
     }
   };
 
@@ -277,7 +277,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
       if (error.response?.data?.message) {
         errorMsg = error.response.data.message;
       }
-      toastError('Lỗi', errorMsg);
+      toastError('Cảnh báo', errorMsg);
     }
   };
 
@@ -290,7 +290,7 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
       if (error.response?.data?.message) {
         errorMsg = error.response.data.message;
       }
-      toastError('Lỗi', errorMsg);
+      toastError('Cảnh báo', errorMsg);
     }
   };
 

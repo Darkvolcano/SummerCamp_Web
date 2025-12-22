@@ -95,7 +95,7 @@ const GroupManagement: React.FC = () => {
           setStaffList(staffData);
         } catch (error) {
           console.error('Failed to load staff:', error);
-          toastError('Lỗi', 'Không thể tải người giám sát');
+          toastError('Cảnh báo', 'Không thể tải người giám sát');
         }
       };
 
@@ -166,7 +166,7 @@ const GroupManagement: React.FC = () => {
       setIsModalVisible(true);
     } catch (error) {
       console.error('Failed to load group details:', error);
-      toastError('Lỗi', 'Không thể tải chi tiết nhóm');
+      toastError('Cảnh báo', 'Không thể tải chi tiết nhóm');
     }
   };
 
@@ -222,9 +222,10 @@ const GroupManagement: React.FC = () => {
 
       setIsModalVisible(false);
       form.resetFields();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error submitting group:', error);
-      toastError('Lỗi', 'Không thể lưu nhóm');
+      const errorMessage = error.response?.data?.message || error.message || 'Không thể lưu nhóm';
+      toastError('Cảnh báo', errorMessage);
     } finally {
       setSubmitting(false);
     }
@@ -241,9 +242,10 @@ const GroupManagement: React.FC = () => {
         setGroups(groupsData);
       }
       setDeletePopoverOpen(null);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to delete group:', error);
-      toastError('Lỗi', 'Không thể xóa nhóm');
+      const errorMessage = error.response?.data?.message || error.message || 'Không thể xóa nhóm';
+      toastError('Cảnh báo', errorMessage);
     }
   };
 
@@ -351,10 +353,10 @@ const GroupManagement: React.FC = () => {
                               } catch (error: any) {
                                 console.error('Failed to assign camper:', error);
                                 const errorMsg = error.response?.data?.message || error.message || 'Không thể phân trại viên vào nhóm';
-                                toastError('Lỗi', errorMsg);
+                                toastError('Cảnh báo', errorMsg);
                               }
                             } else {
-                              toastError('Lỗi', 'Vui lòng chọn một nhóm trước');
+                              toastError('Cảnh báo', 'Vui lòng chọn một nhóm trước');
                             }
                           }}
                           disabled={!selectedGroups[registration?.camper?.camperId]}
@@ -507,8 +509,12 @@ const GroupManagement: React.FC = () => {
                               )}
                             </td>
                             <td className="px-6 py-4 text-sm">
-                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
-                                Active
+                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                group.status === 'Active' 
+                                  ? 'bg-green-100 text-green-700' 
+                                  : 'bg-gray-100 text-gray-700'
+                              }`}>
+                                {group.status || 'N/A'}
                               </span>
                             </td>
                             <td className="px-6 py-4 text-right">
@@ -722,7 +728,7 @@ const GroupManagement: React.FC = () => {
                             onClick={async () => {
                               const newGroupId = selectedNewGroups[member.camperName?.camperId];
                               if (!newGroupId) {
-                                toastError('Lỗi', 'Vui lòng chọn nhóm mới');
+                                toastError('Cảnh báo', 'Vui lòng chọn nhóm mới');
                                 return;
                               }
                               try {
@@ -743,7 +749,7 @@ const GroupManagement: React.FC = () => {
                               } catch (error: any) {
                                 console.error('Failed to change group:', error);
                                 const errorMsg = error.response?.data?.message || error.message || 'Không thể chuyển nhóm';
-                                toastError('Lỗi', errorMsg);
+                                toastError('Cảnh báo', errorMsg);
                               }
                             }}
                             disabled={!selectedNewGroups[member.camperName?.camperId]}

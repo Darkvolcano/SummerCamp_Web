@@ -36,7 +36,7 @@ const CampDetailAccommodation: React.FC<CampDetailAccommodationProps> = ({
       setCampData(campInfo);
     } catch (error) {
       console.error('Lỗi khi tải chỗ ở:', error);
-      toastError('Lỗi', 'Không thể tải chỗ ở cho trại này.');
+      toastError('Cảnh báo', 'Không thể tải chỗ ở cho trại này.');
     } finally {
       setLoading(false);
     }

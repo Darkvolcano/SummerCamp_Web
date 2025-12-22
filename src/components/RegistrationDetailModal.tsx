@@ -52,7 +52,7 @@ const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = ({
       if (error.response?.data?.message) {
         errorMsg = error.response.data.message;
       }
-      toastError('Lỗi', errorMsg);
+      toastError('Cảnh báo', errorMsg);
     } finally {
       setLoading(false);
     }
@@ -77,7 +77,7 @@ const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = ({
       if (error.response?.data?.message) {
         errorMsg = error.response.data.message;
       }
-      toastError('Lỗi', errorMsg);
+      toastError('Cảnh báo', errorMsg);
     } finally {
       setApproving(false);
     }
@@ -91,7 +91,7 @@ const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = ({
 
   const handleReject = async () => {
     if (!rejectReason.trim()) {
-      toastError('Lỗi', 'Vui lòng cung cấp lý do từ chối');
+      toastError('Cảnh báo', 'Vui lòng cung cấp lý do từ chối');
       return;
     }
 
@@ -129,7 +129,7 @@ const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = ({
       if (error.response?.data?.message) {
         errorMsg = error.response.data.message;
       }
-      toastError('Lỗi', errorMsg);
+      toastError('Cảnh báo', errorMsg);
     } finally {
       setRejecting(false);
     }

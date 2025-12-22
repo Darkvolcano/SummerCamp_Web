@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from "react";
+import React, { Suspense, lazy, useState } from "react";
 import { Card, Row, Col } from "antd";
 import { StarFilled, SearchOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
@@ -16,8 +16,24 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuthStore();
 
+  // Search filters state
+  const [searchLocation, setSearchLocation] = useState("");
+  const [searchAge, setSearchAge] = useState("");
+  const [searchMonth, setSearchMonth] = useState("");
+  const [searchYear, setSearchYear] = useState("");
+
   const handleSignUpClick = () => {
     navigate("/register");
+  };
+
+  const handleSearch = () => {
+    const params = new URLSearchParams();
+    if (searchLocation) params.append('location', searchLocation);
+    if (searchAge) params.append('age', searchAge);
+    if (searchMonth) params.append('month', searchMonth);
+    if (searchYear) params.append('year', searchYear);
+    
+    navigate(`/camp?${params.toString()}`);
   };
 
   // Features data
@@ -251,6 +267,8 @@ const Home: React.FC = () => {
                 <input
                   type="text"
                   placeholder="Chọn địa điểm"
+                  value={searchLocation}
+                  onChange={(e) => setSearchLocation(e.target.value)}
                   className="w-full text-sm font-semibold text-gray-800 border-none outline-none bg-transparent"
                 />
               </div>
@@ -278,8 +296,10 @@ const Home: React.FC = () => {
               <div className="flex-1">
                 <p className="text-xs text-gray-500 font-medium">Độ tuổi</p>
                 <input
-                  type="text"
+                  type="number"
                   placeholder="Chọn độ tuổi"
+                  value={searchAge}
+                  onChange={(e) => setSearchAge(e.target.value)}
                   className="w-full text-sm font-semibold text-gray-800 border-none outline-none bg-transparent"
                 />
               </div>
@@ -304,18 +324,36 @@ const Home: React.FC = () => {
                   />
                 </svg>
               </div>
-              <div className="flex-1">
-                <p className="text-xs text-gray-500 font-medium">Thời gian</p>
-                <input
-                  type="text"
-                  placeholder="Chọn thời gian"
-                  className="w-full text-sm font-semibold text-gray-800 border-none outline-none bg-transparent"
-                />
+              <div className="flex-1 flex gap-2">
+                <div className="flex-1">
+                  <p className="text-xs text-gray-500 font-medium">Tháng/Năm</p>
+                  <div className="flex gap-1">
+                    <input
+                      type="number"
+                      placeholder="MM"
+                      min="1"
+                      max="12"
+                      value={searchMonth}
+                      onChange={(e) => setSearchMonth(e.target.value)}
+                      className="w-12 text-sm font-semibold text-gray-800 border-none outline-none bg-transparent"
+                    />
+                    <span className="text-sm text-gray-400">/</span>
+                    <input
+                      type="number"
+                      placeholder="YYYY"
+                      min="2024"
+                      max="2030"
+                      value={searchYear}
+                      onChange={(e) => setSearchYear(e.target.value)}
+                      className="w-16 text-sm font-semibold text-gray-800 border-none outline-none bg-transparent"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
 
             <button
-              onClick={() => navigate("/camps")}
+              onClick={handleSearch}
               className="bg-[#FF8F50] text-white rounded-[105px] px-8 py-4 font-bold hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2 whitespace-nowrap hover:bg-[#ff7e3d]"
             >
               <SearchOutlined className="text-lg" />
@@ -854,7 +892,7 @@ const Home: React.FC = () => {
 
           <div className="mb-8">
             <h3 className="text-xl font-semibold text-gray-800 mb-6">
-              Các loại trại hè
+              Các phân loại hội trại
             </h3>
             <Row gutter={[24, 24]}>
               {campCategories.map((category, index) => (
@@ -882,7 +920,7 @@ const Home: React.FC = () => {
                 onClick={() => navigate("/camp")}
                 className="bg-[#FF8F50] text-white rounded-[105px] px-8 py-4 font-bold hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2 whitespace-nowrap hover:bg-[#ff7e3d]"
               >
-                Xem tất cả chương trình trại hè →
+                Xem tất cả chương trình hội trại →
               </button>
             </div>
           </div>
@@ -955,7 +993,7 @@ const Home: React.FC = () => {
                 onClick={() => navigate("/camp")}
                 className="bg-transparent border-2 border-white text-white font-bold px-10 py-4 rounded-xl hover:bg-white hover:text-orange-600 transition-all duration-300"
               >
-                Xem các trại hè
+                Xem các chương trình hội trại
               </button>
             </div>
           )}
@@ -964,7 +1002,7 @@ const Home: React.FC = () => {
               onClick={() => navigate("/camp")}
               className="bg-white text-orange-600 font-bold px-10 py-4 rounded-xl hover:bg-gray-50 transition-all duration-300 shadow-lg hover:shadow-xl"
             >
-              Khám phá các trại hè →
+              Khám phá các chương trình hội trại →
             </button>
           )}
         </div>
