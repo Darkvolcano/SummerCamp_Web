@@ -207,6 +207,8 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
           PagePath.MANAGER_TRANSPORTATION,
           PagePath.MANAGER_ACCOMODATION,
           PagePath.MANAGER_PAYMENTS,
+          PagePath.MANAGER_REFUNDS,
+          PagePath.MANAGER_FEEDBACKS,
           PagePath.MANAGER_CALENDAR,
           PagePath.MANAGER_INCIDENTS,
           PagePath.MANAGER_LOCATIONS,

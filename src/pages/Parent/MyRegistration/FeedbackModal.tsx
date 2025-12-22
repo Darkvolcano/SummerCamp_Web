@@ -19,7 +19,7 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({
   onSuccess,
 }) => {
   const [form] = Form.useForm();
-  const { toastSuccess, toastError } = useNotification();
+  const { toastError } = useNotification();
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
@@ -33,7 +33,6 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({
         comment: values.comment || null,
       });
 
-      toastSuccess("Thành công", "Gửi đánh giá thành công!");
       form.resetFields();
       onSuccess();
     } catch (error: any) {
@@ -76,7 +75,7 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({
           label="Đánh giá"
           rules={[{ required: true, message: "Vui lòng chọn đánh giá" }]}
         >
-          <Rate allowHalf />
+          <Rate />
         </Form.Item>
 
         <Form.Item

@@ -79,7 +79,9 @@ export interface GeneratePaymentLinkRequestDto {
 
 export interface OptionalChoiceDto {
   camperId: number;
-  activityScheduleId: number;
+  activityScheduleId?: number;
+  activityName?: string | null;
+  status?: string;
 }
 
 export interface TransportChoiceDto {
@@ -91,7 +93,12 @@ export interface TransportChoiceDto {
 export interface RejectRegistrationRequestDto {
   registrationId: number;
   rejectReason: string;
-  camperId?: number | null;
+  camperIds?: number[] | null;
+}
+
+export interface CancelRegistrationRequestDto {
+  bankUserId?: number | null;
+  reason?: string | null;
 }
 
 const registrationService = {
@@ -209,7 +216,7 @@ const registrationService = {
     return response.data as RegistrationResponseDto;
   },
 
-  // Reject registration or specific camper
+  // Reject registration or specific campers
   rejectRegistration: async (
     data: RejectRegistrationRequestDto
   ): Promise<void> => {
@@ -217,10 +224,28 @@ const registrationService = {
     const requestPayload = {
       registrationId: data.registrationId,
       rejectReason: data.rejectReason,
-      camperId: data.camperId || null,
+      camperIds: data.camperIds || null,
     };
 
     await axiosInstance.post("/registration/reject", requestPayload);
+  },
+
+  // Cancel registration
+  cancelRegistration: async (
+    id: number,
+    data: CancelRegistrationRequestDto
+  ): Promise<RegistrationResponseDto> => {
+    console.log(`[registrationService] POST /registration/${id}/cancel`);
+    const requestPayload = {
+      bankUserId: data.bankUserId || null,
+      reason: data.reason || null,
+    };
+
+    const response = await axiosInstance.post(
+      `/registration/${id}/cancel`,
+      requestPayload
+    );
+    return response.data as RegistrationResponseDto;
   },
 };
 

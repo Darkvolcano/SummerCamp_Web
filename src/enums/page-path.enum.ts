@@ -86,6 +86,8 @@ export enum PagePath {
   MANAGER_TRANSPORTATION = "/manager/transportation",
   MANAGER_ACCOMODATION = "/manager/accomodation",
   MANAGER_PAYMENTS = "/manager/payments",
+  MANAGER_REFUNDS = "/manager/refunds",
+  MANAGER_FEEDBACKS = "/manager/feedbacks",
   MANAGER_CALENDAR = "/manager/calendar",
   MANAGER_INCIDENTS = "/manager/incidents",
   MANAGER_LOCATIONS = "/manager/locations",

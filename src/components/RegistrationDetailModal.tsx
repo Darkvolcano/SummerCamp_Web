@@ -101,7 +101,7 @@ const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = ({
       const rejectData = {
         registrationId: registrationId,
         rejectReason: rejectReason,
-        camperId: selectedCamperIdsForReject.length === 1 ? selectedCamperIdsForReject[0] : undefined,
+        camperIds: selectedCamperIdsForReject.length > 0 ? selectedCamperIdsForReject : null,
       };
 
       await registrationService.rejectRegistration(rejectData);

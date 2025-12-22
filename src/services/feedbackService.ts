@@ -23,11 +23,12 @@ export interface FeedbackResponseDto {
   registrationId: number;
   rating?: number | null;
   comment?: string | null;
-  reply?: string | null;
+  managerReply?: string | null;
   rejectionReason?: string | null;
   status?: string | null;
-  createdDate?: string;
-  updatedDate?: string;
+  createAt?: string;
+  updateAt?: string;
+  replyAt?: string | null;
   userId?: number;
   userName?: string | null;
   campId?: number;
@@ -84,6 +85,26 @@ const feedbackService = {
   deleteFeedback: async (id: number): Promise<void> => {
     console.log(`[feedbackService] DELETE /Feedback/${id}`);
     await axiosInstance.delete(`/Feedback/${id}`);
+  },
+
+  /**
+   * GET /api/Feedback/camps/{campId}
+   * Get feedbacks by camp ID
+   */
+  getFeedbacksByCampId: async (campId: number): Promise<FeedbackResponseDto[]> => {
+    console.log(`[feedbackService] GET /Feedback/camps/${campId}`);
+    const response = await axiosInstance.get(`/Feedback/camps/${campId}`);
+    return response.data;
+  },
+
+  /**
+   * GET /api/Feedback/registrattions/{registrationId}
+   * Get feedbacks by registration ID
+   */
+  getFeedbacksByRegistrationId: async (registrationId: number): Promise<FeedbackResponseDto[]> => {
+    console.log(`[feedbackService] GET /Feedback/registrattions/${registrationId}`);
+    const response = await axiosInstance.get(`/Feedback/registrattions/${registrationId}`);
+    return response.data;
   },
 
   /**
