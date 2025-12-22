@@ -173,6 +173,28 @@ const CampDetail: React.FC = () => {
     );
   }
 
+  // Check if camp status is valid for public viewing
+  const allowedStatuses = ['Published', 'OpenForRegistration', 'RegistrationClosed'];
+  if (!allowedStatuses.includes(camp.status)) {
+    return (
+      <div className="flex flex-col justify-center items-center min-h-screen bg-gradient-to-b from-gray-50 to-white">
+        <div className="text-6xl mb-4 animate-bounce">🏕️</div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          Không tìm thấy hội trại
+        </h2>
+        <p className="text-gray-600 mb-6">
+          Hội trại không tồn tại hoặc đã bị xóa
+        </p>
+        <button
+          onClick={() => navigate("/camp")}
+          className="bg-[#FF8F50] text-white px-8 py-3 rounded-full hover:bg-[#ff7e3d] transition-all shadow-lg hover:shadow-xl hover:scale-105 font-semibold"
+        >
+          ← Quay lại danh sách
+        </button>
+      </div>
+    );
+  }
+
   const duration = calculateDuration(camp.startDate, camp.endDate);
 
   return (
