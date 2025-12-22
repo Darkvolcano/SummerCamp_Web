@@ -27,13 +27,15 @@ export const formatMessageTimestamp = (date: Date, locale: string = 'vi-VN'): st
         // Today - show time only
         return date.toLocaleTimeString(locale, {
             hour: '2-digit',
-            minute: '2-digit'
+            minute: '2-digit',
+            hour12: false
         });
     } else if (days === 1) {
         // Yesterday
         const timeStr = date.toLocaleTimeString(locale, {
             hour: '2-digit',
-            minute: '2-digit'
+            minute: '2-digit',
+            hour12: false
         });
         return locale === 'vi-VN' ? `Hôm qua ${timeStr}` : `Yesterday ${timeStr}`;
     } else if (days < 7) {
@@ -41,7 +43,8 @@ export const formatMessageTimestamp = (date: Date, locale: string = 'vi-VN'): st
         return date.toLocaleDateString(locale, {
             weekday: 'short',
             hour: '2-digit',
-            minute: '2-digit'
+            minute: '2-digit',
+            hour12: false
         });
     } else {
         // Older - show date and time
@@ -49,7 +52,8 @@ export const formatMessageTimestamp = (date: Date, locale: string = 'vi-VN'): st
             month: 'short',
             day: 'numeric',
             hour: '2-digit',
-            minute: '2-digit'
+            minute: '2-digit',
+            hour12: false
         });
     }
 };
