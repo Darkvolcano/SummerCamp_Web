@@ -216,9 +216,10 @@ const AccommodationManagement: React.FC = () => {
 
       setIsModalVisible(false);
       form.resetFields();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error submitting accommodation:', error);
-      toastError('Lỗi', 'Không thể lưu nơi ở');
+      const errorMessage = error.response?.data?.message || error.message || 'Không thể lưu nơi ở';
+      toastError('Lỗi', errorMessage);
     } finally {
       setSubmitting(false);
     }
@@ -236,9 +237,10 @@ const AccommodationManagement: React.FC = () => {
         setAccommodations(accommodationsData);
       }
       setDeletePopoverOpen(null);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to toggle accommodation status:', error);
-      toastError('Lỗi', 'Không thể cập nhật trạng thái nơi ở');
+      const errorMessage = error.response?.data?.message || error.message || 'Không thể cập nhật trạng thái nơi ở';
+      toastError('Lỗi', errorMessage);
     }
   };
 
@@ -264,9 +266,10 @@ const AccommodationManagement: React.FC = () => {
 
       setIsTypeModalVisible(false);
       typeForm.resetFields();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating accommodation type:', error);
-      toastError('Lỗi', 'Không thể tạo loại nơi ở');
+      const errorMessage = error.response?.data?.message || error.message || 'Không thể tạo loại nơi ở';
+      toastError('Lỗi', errorMessage);
     } finally {
       setTypeSubmitting(false);
     }

@@ -222,9 +222,10 @@ const GroupManagement: React.FC = () => {
 
       setIsModalVisible(false);
       form.resetFields();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error submitting group:', error);
-      toastError('Lỗi', 'Không thể lưu nhóm');
+      const errorMessage = error.response?.data?.message || error.message || 'Không thể lưu nhóm';
+      toastError('Lỗi', errorMessage);
     } finally {
       setSubmitting(false);
     }
@@ -241,9 +242,10 @@ const GroupManagement: React.FC = () => {
         setGroups(groupsData);
       }
       setDeletePopoverOpen(null);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to delete group:', error);
-      toastError('Lỗi', 'Không thể xóa nhóm');
+      const errorMessage = error.response?.data?.message || error.message || 'Không thể xóa nhóm';
+      toastError('Lỗi', errorMessage);
     }
   };
 
@@ -507,8 +509,12 @@ const GroupManagement: React.FC = () => {
                               )}
                             </td>
                             <td className="px-6 py-4 text-sm">
-                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
-                                Active
+                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                group.status === 'Active' 
+                                  ? 'bg-green-100 text-green-700' 
+                                  : 'bg-gray-100 text-gray-700'
+                              }`}>
+                                {group.status || 'N/A'}
                               </span>
                             </td>
                             <td className="px-6 py-4 text-right">

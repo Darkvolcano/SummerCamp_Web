@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { Spin, Empty, Collapse, Modal, Form, Input } from "antd";
+import { Spin, Empty, Collapse, Modal, Form, Input, Tabs } from "antd";
 import { SearchOutlined, CaretRightOutlined, EyeOutlined, EditOutlined, StarOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
@@ -10,6 +10,9 @@ import { PagePath } from "../../../enums/page-path.enum";
 import registrationService, {
   type RegistrationResponseDto,
 } from "../../../services/registrationService";
+import refundService, {
+  type RegistrationCancelResponseDto,
+} from "../../../services/refundService";
 import CompleteRegistrationModal from "./CompleteRegistrationModal";
 import EditRegistrationModal from "./EditRegistrationModal";
 import FeedbackModal from "./FeedbackModal";
@@ -43,6 +46,13 @@ const MyRegistration: React.FC = () => {
   const [cancelForm] = Form.useForm();
   const [feedbackModalVisible, setFeedbackModalVisible] = useState(false);
 
+  // Refund requests state
+  const [activeTab, setActiveTab] = useState<string>("registrations");
+  const [refunds, setRefunds] = useState<RegistrationCancelResponseDto[]>([]);
+  const [refundsLoading, setRefundsLoading] = useState(false);
+  const [refundDetailModalVisible, setRefundDetailModalVisible] = useState(false);
+  const [selectedRefund, setSelectedRefund] = useState<RegistrationCancelResponseDto | null>(null);
+
   // Fetch registration history
   useEffect(() => {
     const fetchRegistrations = async () => {
@@ -65,6 +75,29 @@ const MyRegistration: React.FC = () => {
       navigate("/login");
     }
   }, [user, navigate, toastError]);
+
+  // Fetch refund requests when tab changes
+  useEffect(() => {
+    const fetchRefunds = async () => {
+      if (activeTab !== "refunds") return;
+      
+      try {
+        setRefundsLoading(true);
+        const data = await refundService.getMyRefundRequests();
+        setRefunds(data);
+      } catch (error: any) {
+        const errorMessage =
+          error.response?.data?.message || "Không thể tải danh sách yêu cầu hoàn tiền";
+        toastError("Lỗi", errorMessage);
+      } finally {
+        setRefundsLoading(false);
+      }
+    };
+
+    if (user && activeTab === "refunds") {
+      fetchRefunds();
+    }
+  }, [activeTab, user, toastError]);
 
   // Filter registrations
   const filteredRegistrations = useMemo(() => {
@@ -214,268 +247,397 @@ const MyRegistration: React.FC = () => {
       {/* Header */}
       <div className="max-w-4xl mx-auto px-4 py-8">
         <h1 className="text-5xl font-bold text-gray-900 mb-2">
-          Danh sách đăng ký của tôi
+          Quản lý đăng ký
         </h1>
         <p className="text-xl text-gray-600 mb-8">
-          Quản lý các đơn đăng ký trại hè của bạn
+          Xem và quản lý các đơn đăng ký và yêu cầu hoàn tiền
         </p>
 
-        {/* Search & Filter Section */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
-          {/* Search */}
-          <div className="mb-6">
-            <p className="text-sm font-bold text-gray-900 mb-3">Tìm kiếm:</p>
-            <div className="relative">
-              <SearchOutlined className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" style={{ color: "gray" }}/>
-              <input
-                type="text"
-                placeholder="Tìm kiếm theo tên trại hè..."
-                value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF8F50] focus:border-transparent"
-              />
-            </div>
-          </div>
-
-          {/* Status Filter */}
-          <div>
-            <p className="text-sm font-bold text-gray-900 mb-3">Trạng thái:</p>
-            <div className="flex flex-wrap gap-2">
-              <button
-                onClick={() => setSelectedStatuses([])}
-                className={`px-3 py-1 text-sm rounded-full font-medium transition-all ${
-                  selectedStatuses.length === 0
-                    ? "bg-[#FF8F50] text-white border-2 border-[#FF8F50]"
-                    : "bg-orange-50 text-gray-700 border-2 border-dashed border-[#FF8F50] hover:bg-orange-100"
-                }`}
-              >
-                Tất cả ({registrations.length})
-              </button>
-              {STATUS_OPTIONS.map((status) => {
-                const count = getStatusCount(status.key);
-                const isSelected = selectedStatuses.includes(status.key);
-                return (
-                  <button
-                    key={status.key}
-                    onClick={() => {
-                      if (isSelected) {
-                        setSelectedStatuses(selectedStatuses.filter((s) => s !== status.key));
-                      } else {
-                        setSelectedStatuses([...selectedStatuses, status.key]);
-                      }
-                    }}
-                    className={`px-3 py-1 text-sm rounded-full font-medium transition-all ${
-                      isSelected
-                        ? "bg-[#FF8F50] text-white border-2 border-[#FF8F50]"
-                        : "bg-orange-50 text-gray-700 border-2 border-dashed border-[#FF8F50] hover:bg-orange-100"
-                    }`}
-                  >
-                    {status.label} ({count})
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-
-        {/* List */}
-        {filteredRegistrations.length === 0 ? (
-          <div className="bg-gray-50 rounded-lg p-12 text-center">
-            <Empty
-              description="Không tìm thấy đơn đăng ký"
-              style={{ marginBottom: 0 }}
-            />
-            <button
-              onClick={() => navigate("/camps")}
-              className="mt-6 px-6 py-2 bg-[#FF8F50] text-white rounded-full font-medium hover:bg-[#ff7e3d] transition-colors"
-            >
-              Khám phá trại hè
-            </button>
-          </div>
-        ) : (
-          <Collapse
-            bordered={false}
-            expandIcon={({ isActive }) => (
-              <CaretRightOutlined
-                rotate={isActive ? 90 : 0}
-                style={{ color: "#FF8F50", fontSize: "16px", transition: "transform 0.3s" }}
-              />
-            )}
-            items={filteredRegistrations.map((registration, index) => ({
-              key: registration.registrationId.toString(),
-              style: {
-                marginBottom: 16,
-                background: "white",
-                borderRadius: "12px",
-                border: "1px solid #e5e7eb",
-                overflow: "hidden",
-              },
-              label: (
-                <div className="flex-1 flex items-center justify-between gap-4 py-3 px-2">
-                  <div className="flex items-center gap-4 flex-1 min-w-0">
-                    {/* Number */}
-                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
-                      <p className="text-sm font-bold text-gray-600">{index + 1}</p>
-                    </div>
-
-                    {/* Camp Name */}
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-base font-semibold text-gray-900 truncate">
-                        {registration.camp?.name || "Trại hè"}
-                      </h3>
-                    </div>
-                  </div>
-
-                  {/* Status Badge */}
-                  <span
-                    className={`flex-shrink-0 text-xs font-medium px-3 py-1.5 rounded-full ${getStatusInfo(
-                      registration.status
-                    ).bg} ${getStatusInfo(registration.status).text}`}
-                  >
-                    {getStatusLabel(registration.status)}
-                  </span>
-
-                  {/* Date */}
-                  <div className="flex-shrink-0 text-center hidden sm:block">
-                    <p className="text-xs text-gray-500 font-medium mb-0.5">NGÀY ĐĂNG KÝ</p>
-                    <p className="text-sm text-gray-900 font-medium">
-                      {dayjs(registration.registrationCreateAt).format("DD/MM/YYYY")}
-                    </p>
-                  </div>
-
-                  {/* Price */}
-                  <div className="flex-shrink-0 text-center">
-                    <p className="text-xs text-gray-500 font-medium mb-0.5">GIÁ</p>
-                    <p className="text-sm font-bold text-[#FF8F50]">
-                      {registration.finalPrice?.toLocaleString("vi-VN")} ₫
-                    </p>
-                  </div>
-                </div>
-              ),
+        <Tabs
+          activeKey={activeTab}
+          onChange={setActiveTab}
+          size="large"
+          items={[
+            {
+              key: "registrations",
+              label: "Đăng ký của tôi",
               children: (
-                <div className="space-y-4">
-                  {/* Price */}
-                  <div>
-                    <p className="text-xs text-gray-600 font-medium mb-1">
-                      TỔNG THANH TOÁN
-                    </p>
-                    <p className="text-2xl font-bold text-[#FF8F50]">
-                      {registration.finalPrice?.toLocaleString("vi-VN")} ₫
-                    </p>
+                <>
+                  {/* Search & Filter Section */}
+                  <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
+                    {/* Search */}
+                    <div className="mb-6">
+                      <p className="text-sm font-bold text-gray-900 mb-3">Tìm kiếm:</p>
+                      <div className="relative">
+                        <SearchOutlined className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" style={{ color: "gray" }}/>
+                        <input
+                          type="text"
+                          placeholder="Tìm kiếm theo tên trại hè..."
+                          value={searchText}
+                          onChange={(e) => setSearchText(e.target.value)}
+                          className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF8F50] focus:border-transparent"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Status Filter */}
+                    <div>
+                      <p className="text-sm font-bold text-gray-900 mb-3">Trạng thái:</p>
+                      <div className="flex flex-wrap gap-2">
+                        <button
+                          onClick={() => setSelectedStatuses([])}
+                          className={`px-3 py-1 text-sm rounded-full font-medium transition-all ${
+                            selectedStatuses.length === 0
+                              ? "bg-[#FF8F50] text-white border-2 border-[#FF8F50]"
+                              : "bg-orange-50 text-gray-700 border-2 border-dashed border-[#FF8F50] hover:bg-orange-100"
+                          }`}
+                        >
+                          Tất cả ({registrations.length})
+                        </button>
+                        {STATUS_OPTIONS.map((status) => {
+                          const count = getStatusCount(status.key);
+                          const isSelected = selectedStatuses.includes(status.key);
+                          return (
+                            <button
+                              key={status.key}
+                              onClick={() => {
+                                if (isSelected) {
+                                  setSelectedStatuses(selectedStatuses.filter((s) => s !== status.key));
+                                } else {
+                                  setSelectedStatuses([...selectedStatuses, status.key]);
+                                }
+                              }}
+                              className={`px-3 py-1 text-sm rounded-full font-medium transition-all ${
+                                isSelected
+                                  ? "bg-[#FF8F50] text-white border-2 border-[#FF8F50]"
+                                  : "bg-orange-50 text-gray-700 border-2 border-dashed border-[#FF8F50] hover:bg-orange-100"
+                              }`}
+                            >
+                              {status.label} ({count})
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Promotion */}
-                  {registration.appliedPromotion && (
-                    <div className="bg-orange-50 p-3 rounded-lg border border-orange-200">
-                      <p className="text-xs text-gray-600 font-medium mb-1">
-                        KHUYẾN MÃI
-                      </p>
-                      <p className="text-sm text-gray-900">
-                        {registration.appliedPromotion.name} (
-                        {registration.appliedPromotion.percent}%)
-                      </p>
+                  {/* List */}
+                  {filteredRegistrations.length === 0 ? (
+                    <div className="bg-gray-50 rounded-lg p-12 text-center">
+                      <Empty
+                        description="Không tìm thấy đơn đăng ký"
+                        style={{ marginBottom: 0 }}
+                      />
+                      <button
+                        onClick={() => navigate("/camps")}
+                        className="mt-6 px-6 py-2 bg-[#FF8F50] text-white rounded-full font-medium hover:bg-[#ff7e3d] transition-colors"
+                      >
+                        Khám phá trại hè
+                      </button>
                     </div>
-                  )}
+                  ) : (
+                    <Collapse
+                      bordered={false}
+                      expandIcon={({ isActive }) => (
+                        <CaretRightOutlined
+                          rotate={isActive ? 90 : 0}
+                          style={{ color: "#FF8F50", fontSize: "16px", transition: "transform 0.3s" }}
+                        />
+                      )}
+                      items={filteredRegistrations.map((registration, index) => ({
+                        key: registration.registrationId.toString(),
+                        style: {
+                          marginBottom: 16,
+                          background: "white",
+                          borderRadius: "12px",
+                          border: "1px solid #e5e7eb",
+                          overflow: "hidden",
+                        },
+                        label: (
+                          <div className="flex-1 flex items-center justify-between gap-4 py-3 px-2">
+                            <div className="flex items-center gap-4 flex-1 min-w-0">
+                              {/* Number */}
+                              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+                                <p className="text-sm font-bold text-gray-600">{index + 1}</p>
+                              </div>
 
-                  {/* Campers */}
-                  {registration.campers &&
-                    registration.campers.length > 0 && (
-                      <div>
-                        <p className="text-xs text-gray-600 font-medium mb-2">
-                          TRẠI VIÊN: ({registration.campers.length})
-                        </p>
-                        <div className="space-y-2">
-                          {registration.campers.map((camper) => (
-                            <div
-                              key={camper.camperId}
-                              className="bg-gray-50 p-3 rounded-lg flex items-center gap-3"
-                            >
-                              {camper.avatar ? (
-                                <img
-                                  src={camper.avatar}
-                                  alt={camper.camperName}
-                                  className="w-8 h-8 rounded-full object-cover"
-                                />
-                              ) : (
-                                <div className="w-8 h-8 rounded-full bg-[#FF8F50] flex items-center justify-center text-white text-xs font-bold">
-                                  {camper.camperName.charAt(0).toUpperCase()}
-                                </div>
-                              )}
-                              <div className="flex-1">
-                                <p className="text-sm font-medium text-gray-900">
-                                  {camper.camperName}
-                                </p>
-                                <p className="text-xs text-gray-600">
-                                  {camper.gender} • Sinh:{" "}
-                                  {dayjs(camper.dob).format("DD/MM/YYYY")}
-                                </p>
+                              {/* Camp Name */}
+                              <div className="flex-1 min-w-0">
+                                <h3 className="text-base font-semibold text-gray-900 truncate">
+                                  {registration.camp?.name || "Trại hè"}
+                                </h3>
                               </div>
                             </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
 
-                  {/* Note */}
-                  {registration.note && (
-                    <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
-                      <p className="text-xs text-gray-600 font-medium mb-1">
-                        GHI CHÚ
-                      </p>
-                      <p className="text-sm text-gray-900 italic">
-                        "{registration.note}"
-                      </p>
+                            {/* Status Badge */}
+                            <span
+                              className={`flex-shrink-0 text-xs font-medium px-3 py-1.5 rounded-full ${getStatusInfo(
+                                registration.status
+                              ).bg} ${getStatusInfo(registration.status).text}`}
+                            >
+                              {getStatusLabel(registration.status)}
+                            </span>
+
+                            {/* Date */}
+                            <div className="flex-shrink-0 text-center hidden sm:block">
+                              <p className="text-xs text-gray-500 font-medium mb-0.5">NGÀY ĐĂNG KÝ</p>
+                              <p className="text-sm text-gray-900 font-medium">
+                                {dayjs(registration.registrationCreateAt).format("DD/MM/YYYY")}
+                              </p>
+                            </div>
+
+                            {/* Price */}
+                            <div className="flex-shrink-0 text-center">
+                              <p className="text-xs text-gray-500 font-medium mb-0.5">GIÁ</p>
+                              <p className="text-sm font-bold text-[#FF8F50]">
+                                {registration.finalPrice?.toLocaleString("vi-VN")} ₫
+                              </p>
+                            </div>
+                          </div>
+                        ),
+                        children: (
+                          <div className="space-y-4">
+                            {/* Price */}
+                            <div>
+                              <p className="text-xs text-gray-600 font-medium mb-1">
+                                TỔNG THANH TOÁN
+                              </p>
+                              <p className="text-2xl font-bold text-[#FF8F50]">
+                                {registration.finalPrice?.toLocaleString("vi-VN")} ₫
+                              </p>
+                            </div>
+
+                            {/* Promotion */}
+                            {registration.appliedPromotion && (
+                              <div className="bg-orange-50 p-3 rounded-lg border border-orange-200">
+                                <p className="text-xs text-gray-600 font-medium mb-1">
+                                  KHUYẾN MÃI
+                                </p>
+                                <p className="text-sm text-gray-900">
+                                  {registration.appliedPromotion.name} (
+                                  {registration.appliedPromotion.percent}%)
+                                </p>
+                              </div>
+                            )}
+
+                            {/* Campers */}
+                            {registration.campers &&
+                              registration.campers.length > 0 && (
+                                <div>
+                                  <p className="text-xs text-gray-600 font-medium mb-2">
+                                    TRẠI VIÊN: ({registration.campers.length})
+                                  </p>
+                                  <div className="space-y-2">
+                                    {registration.campers.map((camper) => (
+                                      <div
+                                        key={camper.camperId}
+                                        className="bg-gray-50 p-3 rounded-lg flex items-center gap-3"
+                                      >
+                                        {camper.avatar ? (
+                                          <img
+                                            src={camper.avatar}
+                                            alt={camper.camperName}
+                                            className="w-8 h-8 rounded-full object-cover"
+                                          />
+                                        ) : (
+                                          <div className="w-8 h-8 rounded-full bg-[#FF8F50] flex items-center justify-center text-white text-xs font-bold">
+                                            {camper.camperName.charAt(0).toUpperCase()}
+                                          </div>
+                                        )}
+                                        <div className="flex-1">
+                                          <p className="text-sm font-medium text-gray-900">
+                                            {camper.camperName}
+                                          </p>
+                                          <p className="text-xs text-gray-600">
+                                            {camper.gender} • Sinh:{" "}
+                                            {dayjs(camper.dob).format("DD/MM/YYYY")}
+                                          </p>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+
+                            {/* Note */}
+                            {registration.note && (
+                              <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
+                                <p className="text-xs text-gray-600 font-medium mb-1">
+                                  GHI CHÚ
+                                </p>
+                                <p className="text-sm text-gray-900 italic">
+                                  "{registration.note}"
+                                </p>
+                              </div>
+                            )}
+
+                            {/* Actions */}
+                            <div className="pt-4 border-t border-gray-200">
+                              <div className="flex gap-2 justify-end">
+                                <button
+                                  onClick={() => navigate(PagePath.USER_MYREGISTRATIONS_DETAIL.replace(":registrationId", registration.registrationId.toString()))}
+                                  className="flex items-center justify-center gap-1 bg-blue-500 text-white font-medium py-1.5 px-4 rounded-full text-sm hover:bg-blue-600 transition-colors"
+                                >
+                                  <EyeOutlined />
+                                  Xem chi tiết
+                                </button>
+
+                                {(registration.status === "Rejected" || registration.status === "PendingApproval") && (
+                                  <button
+                                    onClick={() => handleOpenEditModal(registration)}
+                                    className="flex items-center justify-center gap-1 bg-orange-500 text-white font-medium py-1.5 px-4 rounded-full text-sm hover:bg-orange-600 transition-colors"
+                                  >
+                                    <EditOutlined />
+                                    Chỉnh sửa
+                                  </button>
+                                )}
+
+                                {(registration.status === "Approved" || registration.status === "PendingPayment") && (
+                                  <button
+                                    onClick={() => handleOpenCompleteModal(registration)}
+                                    className="flex items-center justify-center gap-1 bg-[#FF8F50] text-white font-medium py-1.5 px-4 rounded-full text-sm hover:bg-[#ff7e3d] transition-colors"
+                                  >
+                                    Hoàn tất & Thanh toán
+                                  </button>
+                                )}
+
+                                {registration.status === "Confirmed" && registration.camp?.status === "Completed" && (
+                                  <button
+                                    onClick={() => handleOpenFeedbackModal(registration)}
+                                    className="flex items-center justify-center gap-1 bg-yellow-500 text-white font-medium py-1.5 px-4 rounded-full text-sm hover:bg-yellow-600 transition-colors"
+                                  >
+                                    <StarOutlined />
+                                    Đánh giá
+                                  </button>
+                                )}
+
+                              </div>
+                            </div>
+                          </div>
+                        ),
+                      }))}
+                      style={{ background: "transparent" }}
+                    />
+                  )}
+                </>
+              ),
+            },
+            {
+              key: "refunds",
+              label: "Yêu cầu hoàn tiền",
+              children: (
+                <>
+                  {refundsLoading ? (
+                    <div className="flex justify-center items-center py-12">
+                      <div className="text-center">
+                        <Spin size="large" />
+                        <p className="mt-4 text-gray-600 font-medium">
+                          Đang tải danh sách yêu cầu hoàn tiền...
+                        </p>
+                      </div>
+                    </div>
+                  ) : refunds.length === 0 ? (
+                    <div className="bg-gray-50 rounded-lg p-12 text-center">
+                      <Empty
+                        description="Chưa có yêu cầu hoàn tiền nào"
+                        style={{ marginBottom: 0 }}
+                      />
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {refunds.map((refund) => (
+                        <div
+                          key={refund.registrationCancelId}
+                          className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow"
+                        >
+                          <div className="flex items-start justify-between mb-4">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-3 mb-2">
+                                <h3 className="text-lg font-semibold text-gray-900">
+                                  Yêu cầu #{refund.registrationCancelId}
+                                </h3>
+                                <span
+                                  className={`text-xs font-medium px-3 py-1 rounded-full ${
+                                    refund.status === "Pending"
+                                      ? "bg-yellow-100 text-yellow-700"
+                                      : refund.status === "Approved" || refund.status === "Completed"
+                                      ? "bg-green-100 text-green-700"
+                                      : "bg-red-100 text-red-700"
+                                  }`}
+                                >
+                                  {refund.status === "Pending"
+                                    ? "Chờ xử lý"
+                                    : refund.status === "Approved"
+                                    ? "Đã phê duyệt"
+                                    : refund.status === "Completed"
+                                    ? "Hoàn thành"
+                                    : "Đã từ chối"}
+                                </span>
+                              </div>
+                              <p className="text-sm text-gray-600">
+                                Ngày yêu cầu: {dayjs(refund.requestDate).format("DD/MM/YYYY HH:mm")}
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-xs text-gray-500 mb-1">Số tiền hoàn</p>
+                              <p className="text-xl font-bold text-green-600">
+                                {refund.refundAmount.toLocaleString("vi-VN")} ₫
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* Campers */}
+                          <div className="mb-4">
+                            <p className="text-xs text-gray-600 font-medium mb-2">
+                              Trại viên tham gia ({refund.camperNames.length})
+                            </p>
+                            <div className="flex flex-wrap gap-2">
+                              {refund.camperNames.map((name, idx) => (
+                                <span
+                                  key={idx}
+                                  className="text-sm bg-gray-100 px-3 py-1 rounded-full text-gray-700"
+                                >
+                                  {name}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Bank Info */}
+                          <div className="bg-blue-50 p-3 rounded-lg border border-blue-100 mb-4">
+                            <p className="text-xs text-gray-600 font-medium mb-1">
+                              Tài khoản nhận tiền
+                            </p>
+                            <p className="text-sm font-semibold text-gray-900">
+                              {refund.bankName} - {refund.bankNumber}
+                            </p>
+                            <p className="text-sm text-gray-700">
+                              {refund.bankAccountName}
+                            </p>
+                          </div>
+
+                          {/* Action Button */}
+                          <div className="flex justify-end">
+                            <button
+                              onClick={() => {
+                                setSelectedRefund(refund);
+                                setRefundDetailModalVisible(true);
+                              }}
+                              className="flex items-center gap-1 bg-blue-500 text-white font-medium py-2 px-4 rounded-full text-sm hover:bg-blue-600 transition-colors"
+                            >
+                              <EyeOutlined />
+                              Xem chi tiết
+                            </button>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   )}
-
-                  {/* Actions */}
-                  <div className="pt-4 border-t border-gray-200">
-                    <div className="flex gap-2 justify-end">
-                      <button
-                        onClick={() => navigate(PagePath.USER_MYREGISTRATIONS_DETAIL.replace(":registrationId", registration.registrationId.toString()))}
-                        className="flex items-center justify-center gap-1 bg-blue-500 text-white font-medium py-1.5 px-4 rounded-full text-sm hover:bg-blue-600 transition-colors"
-                      >
-                        <EyeOutlined />
-                        Xem chi tiết
-                      </button>
-
-                      {(registration.status === "Rejected" || registration.status === "PendingApproval") && (
-                        <button
-                          onClick={() => handleOpenEditModal(registration)}
-                          className="flex items-center justify-center gap-1 bg-orange-500 text-white font-medium py-1.5 px-4 rounded-full text-sm hover:bg-orange-600 transition-colors"
-                        >
-                          <EditOutlined />
-                          Chỉnh sửa
-                        </button>
-                      )}
-
-                      {(registration.status === "Approved" || registration.status === "PendingPayment") && (
-                        <button
-                          onClick={() => handleOpenCompleteModal(registration)}
-                          className="flex items-center justify-center gap-1 bg-[#FF8F50] text-white font-medium py-1.5 px-4 rounded-full text-sm hover:bg-[#ff7e3d] transition-colors"
-                        >
-                          Hoàn tất & Thanh toán
-                        </button>
-                      )}
-
-                      {registration.status === "Confirmed" && registration.camp?.status === "Completed" && (
-                        <button
-                          onClick={() => handleOpenFeedbackModal(registration)}
-                          className="flex items-center justify-center gap-1 bg-yellow-500 text-white font-medium py-1.5 px-4 rounded-full text-sm hover:bg-yellow-600 transition-colors"
-                        >
-                          <StarOutlined />
-                          Đánh giá
-                        </button>
-                      )}
-
-                    </div>
-                  </div>
-                </div>
+                </>
               ),
-            }))}
-            style={{ background: "transparent" }}
-          />
-        )}
+            },
+          ]}
+        />
       </div>
 
       {/* Complete Registration Modal */}
@@ -551,6 +713,166 @@ const MyRegistration: React.FC = () => {
             />
           </Form.Item>
         </Form>
+      </Modal>
+
+      {/* Refund Detail Modal */}
+      <Modal
+        title={`Chi tiết yêu cầu hoàn tiền #${selectedRefund?.registrationCancelId}`}
+        open={refundDetailModalVisible}
+        onCancel={() => {
+          setRefundDetailModalVisible(false);
+          setSelectedRefund(null);
+        }}
+        footer={[
+          <Button
+            key="close"
+            onClick={() => {
+              setRefundDetailModalVisible(false);
+              setSelectedRefund(null);
+            }}
+          >
+            Đóng
+          </Button>,
+        ]}
+        width={700}
+      >
+        {selectedRefund && (
+          <div className="space-y-6">
+            {/* Status and Amount */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Trạng thái</p>
+                <span
+                  className={`inline-block text-base font-bold px-4 py-1.5 rounded-full ${
+                    selectedRefund.status === "Pending"
+                      ? "bg-yellow-100 text-yellow-700"
+                      : selectedRefund.status === "Approved" || selectedRefund.status === "Completed"
+                      ? "bg-green-100 text-green-700"
+                      : "bg-red-100 text-red-700"
+                  }`}
+                >
+                  {selectedRefund.status === "Pending"
+                    ? "Chờ xử lý"
+                    : selectedRefund.status === "Approved"
+                    ? "Đã phê duyệt"
+                    : selectedRefund.status === "Completed"
+                    ? "Hoàn thành"
+                    : "Đã từ chối"}
+                </span>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Số tiền hoàn</p>
+                <p className="text-2xl font-bold text-green-600">
+                  {selectedRefund.refundAmount.toLocaleString("vi-VN")} ₫
+                </p>
+              </div>
+            </div>
+
+            {/* Dates */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Ngày yêu cầu</p>
+                <p className="text-base font-medium text-gray-900">
+                  {dayjs(selectedRefund.requestDate).format("DD/MM/YYYY HH:mm")}
+                </p>
+              </div>
+              {selectedRefund.approvalDate && (
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">Ngày phê duyệt</p>
+                  <p className="text-base font-medium text-gray-900">
+                    {dayjs(selectedRefund.approvalDate).format("DD/MM/YYYY HH:mm")}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Campers */}
+            <div>
+              <p className="text-sm text-gray-600 font-medium mb-2">
+                Trại viên tham gia ({selectedRefund.camperNames.length})
+              </p>
+              <div className="space-y-2">
+                {selectedRefund.camperNames.map((name, idx) => (
+                  <div key={idx} className="bg-gray-50 px-3 py-2 rounded">
+                    <p className="text-sm font-medium text-gray-900">{name}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Bank Info */}
+            <div>
+              <p className="text-sm text-gray-600 font-medium mb-2">
+                Tài khoản nhận tiền
+              </p>
+              <div className="bg-blue-50 p-3 rounded border border-blue-100">
+                <p className="text-sm font-semibold text-gray-900">
+                  {selectedRefund.bankName}
+                </p>
+                <p className="text-sm text-gray-700">
+                  STK: {selectedRefund.bankNumber}
+                </p>
+                <p className="text-sm text-gray-700">
+                  Chủ TK: {selectedRefund.bankAccountName}
+                </p>
+              </div>
+            </div>
+
+            {/* Reason */}
+            {selectedRefund.reason && (
+              <div>
+                <p className="text-sm text-gray-600 font-medium mb-2">
+                  Lý do hủy
+                </p>
+                <p className="text-sm text-gray-900 bg-gray-50 p-3 rounded">
+                  {selectedRefund.reason}
+                </p>
+              </div>
+            )}
+
+            {/* Transaction Code */}
+            {selectedRefund.transactionCode && (
+              <div>
+                <p className="text-sm text-gray-600 font-medium mb-2">
+                  Mã giao dịch
+                </p>
+                <p className="text-base font-semibold text-gray-900">
+                  {selectedRefund.transactionCode}
+                </p>
+              </div>
+            )}
+
+            {/* Manager Note */}
+            {selectedRefund.managerNote && (
+              <div>
+                <p className="text-sm text-gray-600 font-medium mb-2">
+                  {selectedRefund.status === "Rejected" ? "Lý do từ chối" : "Ghi chú"}
+                </p>
+                <p className={`text-sm p-3 rounded ${
+                  selectedRefund.status === "Rejected"
+                    ? "text-red-800 bg-red-50 border border-red-100"
+                    : "text-gray-900 bg-gray-50"
+                }`}>
+                  {selectedRefund.managerNote}
+                </p>
+              </div>
+            )}
+
+            {/* Refund Image */}
+            {selectedRefund.imageRefund && (
+              <div>
+                <p className="text-sm text-gray-600 font-medium mb-2">
+                  Hình ảnh xác nhận
+                </p>
+                <img
+                  src={selectedRefund.imageRefund}
+                  alt="Refund confirmation"
+                  className="max-w-full h-auto rounded border"
+                />
+              </div>
+            )}
+          </div>
+        )}
       </Modal>
     </div>
   );

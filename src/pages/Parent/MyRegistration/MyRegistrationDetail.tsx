@@ -229,6 +229,17 @@ const RegistrationDetail: React.FC = () => {
 
   const statusInfo = getStatusInfo(registration.status);
   const isCancelable = CANCELABLE_STATUSES.includes(registration.status);
+  
+  const campStatusesPreventingCancellation = [
+    'RegistrationClosed',
+    'UnderEnrolled', 
+    'InProgress',
+    'Completed'
+  ];
+  const canCancelBasedOnCampStatus = camp 
+    ? !campStatusesPreventingCancellation.includes(camp.status)
+    : true;
+  const showCancelButton = isCancelable && canCancelBasedOnCampStatus;
 
   return (
     <div className="min-h-screen bg-white py-20">
@@ -413,13 +424,19 @@ const RegistrationDetail: React.FC = () => {
             </button>
           )}
 
-          {isCancelable && (
+          {showCancelButton && (
             <button
               onClick={handleOpenCancelModal}
               className="flex items-center justify-center gap-1 bg-red-500 text-white font-medium py-1.5 px-4 rounded-full text-sm hover:bg-red-600 transition-colors"
             >
               Hủy đơn đăng ký
             </button>
+          )}
+
+          {isCancelable && !canCancelBasedOnCampStatus && (
+            <p className="text-red-600 font-medium text-sm py-1.5">
+              * Đã hết thời gian huỷ đăng ký
+            </p>
           )}
 
           {registration.status === "Confirmed" && camp?.status === "Completed" && (
