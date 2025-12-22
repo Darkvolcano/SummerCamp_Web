@@ -10,7 +10,9 @@ import {
   Bus,
   Bed,
   CreditCard,
+  DollarSign,
   AlertTriangle,
+  MessageSquare,
   ChevronDown,
   ChevronUp,
   LogOut,
@@ -111,6 +113,16 @@ const ManagerSidebar: React.FC<ManagerSidebarProps> = ({
       path: PagePath.MANAGER_PAYMENTS,
       label: "Giao Dịch",
       icon: <CreditCard size={20} />,
+    },
+    {
+      path: PagePath.MANAGER_REFUNDS,
+      label: "Hoàn Tiền",
+      icon: <DollarSign size={20} />,
+    },
+    {
+      path: PagePath.MANAGER_FEEDBACKS,
+      label: "Đánh Giá",
+      icon: <MessageSquare size={20} />,
     },
   ];
 

@@ -76,11 +76,11 @@ const CustomerFAQPage: React.FC = () => {
                             return (
                                 <div
                                     key={faq.faqId}
-                                    className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border-2 border-transparent hover:border-orange-200"
+                                    className="!bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border-2 border-transparent hover:border-orange-200"
                                 >
                                     <button
                                         onClick={() => toggleFaq(faq.faqId)}
-                                        className="w-full p-6 flex items-center gap-4 text-left hover:bg-gray-50 transition-colors"
+                                        className="w-full p-6 flex items-center gap-4 text-left bg-white hover:bg-gray-50 transition-colors"
                                     >
                                         <div className="flex-shrink-0">
                                             <div className="w-12 h-12 bg-gradient-to-br from-orange-400 to-yellow-400 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg">

@@ -260,7 +260,7 @@ const Chatroom: React.FC = () => {
             <Navbar />
 
             {/* Add padding-top to account for fixed navbar */}
-            <div className="flex-shrink-0" style={{ height: '64px' }} />
+            <div className="flex-shrink-0" style={{ height: '48px' }} />
 
             {/* Loading State */}
             {loading && (
@@ -276,10 +276,10 @@ const Chatroom: React.FC = () => {
 
 
                     {/* Channel/Chat Type Panel */}
-                    <div className="w-64 bg-gray-800 flex flex-col shadow-xl">
+                    <div className="w-64 bg-white flex flex-col shadow-xl border-r border-gray-200">
                         {/* Server Header */}
-                        <div className="h-16 px-4 flex items-center border-b border-gray-700 shadow-sm">
-                            <h2 className="text-white font-semibold text-sm">CampEase Chat</h2>
+                        <div className="h-16 px-4 flex items-center border-b border-gray-200 shadow-sm">
+                            <h2 className="text-gray-900 font-semibold text-sm">CampEase Chat</h2>
                         </div>
 
                         {/* Channels Section */}
@@ -287,16 +287,16 @@ const Chatroom: React.FC = () => {
 
 
                             {/* Private Chats */}
-                            <div className="px-2 py-4 border-t border-gray-700">
+                            <div className="px-2 py-4 border-t border-gray-200">
                                 <div className="flex items-center justify-between px-2 mb-2">
-                                    <div className="text-gray-400 text-xs font-semibold uppercase tracking-wide">
+                                    <div className="text-gray-600 text-xs font-semibold uppercase tracking-wide">
                                         Private Messages
                                     </div>
                                 </div>
 
                                 {/* Private Chat List */}
                                 {myRooms.length === 0 ? (
-                                    <div className="px-2 py-4 text-center text-gray-500 text-xs">
+                                    <div className="px-2 py-4 text-center text-gray-400 text-xs">
                                         No private chats yet
                                     </div>
                                 ) : (
@@ -305,8 +305,8 @@ const Chatroom: React.FC = () => {
                                             <button
                                                 key={room.chatRoomId}
                                                 onClick={() => handleOpenPrivateChat(room.chatRoomId)}
-                                                className={`w-full px-2 py-2 rounded flex items-center gap-3 hover:bg-gray-700/50 transition-colors ${activeChat.type === 'private' && activeChat.roomId === room.chatRoomId
-                                                    ? 'bg-gray-700'
+                                                className={`w-full px-2 py-2 rounded flex items-center gap-3 bg-transparent hover:bg-gray-100 transition-colors ${activeChat.type === 'private' && activeChat.roomId === room.chatRoomId
+                                                    ? 'bg-gray-100'
                                                     : ''
                                                     }`}
                                             >
@@ -316,7 +316,7 @@ const Chatroom: React.FC = () => {
                                                     className="w-8 h-8 rounded-full"
                                                 />
                                                 <div className="flex-1 text-left min-w-0">
-                                                    <div className="text-sm font-medium text-gray-300 truncate">
+                                                    <div className="text-sm font-medium text-gray-900 truncate">
                                                         {room.name}
                                                     </div>
                                                     {room.lastMessage && (
@@ -334,19 +334,19 @@ const Chatroom: React.FC = () => {
                         </div>
 
                         {/* User Panel */}
-                        <div className="h-16 bg-gray-900 px-2 flex items-center gap-3 border-t border-gray-700">
+                        <div className="h-16 bg-gray-50 px-2 flex items-center gap-3 border-t border-gray-200">
                             <img
                                 src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.id}`}
                                 alt={user?.fullName || 'User'}
                                 className="w-9 h-9 rounded-full"
                             />
                             <div className="flex-1 min-w-0">
-                                <div className="text-white text-sm font-semibold truncate">
+                                <div className="text-gray-900 text-sm font-semibold truncate">
                                     {user?.fullName || 'User'}
                                 </div>
                                 <div className="flex items-center gap-1">
                                     <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-gray-500'}`} />
-                                    <span className="text-gray-400 text-xs">{isConnected ? 'Online' : 'Connecting...'}</span>
+                                    <span className="text-gray-600 text-xs">{isConnected ? 'Online' : 'Connecting...'}</span>
                                 </div>
                             </div>
                         </div>

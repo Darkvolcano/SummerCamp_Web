@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Spin, Modal, Form, Input } from "antd";
+import { Button, Spin, Modal, Form, Input, Select } from "antd";
 import { ArrowLeftOutlined, EditOutlined, StarOutlined } from "@ant-design/icons";
 import { useNavigate, useParams } from "react-router-dom";
 import dayjs from "dayjs";
@@ -8,6 +8,7 @@ import registrationService, {
   type RegistrationResponseDto,
 } from "../../../services/registrationService";
 import campService, { type CampResponseDto } from "../../../services/campService";
+import bankUserService, { type BankUserResponseDto } from "../../../services/bankUserService";
 import CompleteRegistrationModal from "./CompleteRegistrationModal";
 import EditRegistrationModal from "./EditRegistrationModal";
 import FeedbackModal from "./FeedbackModal";
@@ -34,6 +35,10 @@ const RegistrationDetail: React.FC = () => {
   const [cancelConfirmModal, setCancelConfirmModal] = useState(false);
   const [cancelForm] = Form.useForm();
   const [feedbackModalVisible, setFeedbackModalVisible] = useState(false);
+  const [bankAccounts, setBankAccounts] = useState<BankUserResponseDto[]>([]);
+  const [loadingBankAccounts, setLoadingBankAccounts] = useState(false);
+  const [createBankModalVisible, setCreateBankModalVisible] = useState(false);
+  const [createBankForm] = Form.useForm();
 
   // Fetch registration and camp details
   useEffect(() => {
@@ -67,7 +72,6 @@ const RegistrationDetail: React.FC = () => {
   // Handle edit registration
   const handleEditSuccess = async () => {
     setEditModalVisible(false);
-    // Refresh registration data
     if (!registrationId) return;
     try {
       const regId = parseInt(registrationId);
@@ -80,19 +84,73 @@ const RegistrationDetail: React.FC = () => {
     }
   };
 
+  // Fetch bank accounts when opening cancel modal for Confirmed status
+  const handleOpenCancelModal = async () => {
+    if (!registration) return;
+
+    // If status is Confirmed, need to fetch bank accounts
+    if (registration.status === "Confirmed") {
+      try {
+        setLoadingBankAccounts(true);
+        const accounts = await bankUserService.getMyBankAccounts();
+        setBankAccounts(accounts);
+      } catch {
+        toastError("Lỗi", "Không thể tải danh sách tài khoản ngân hàng");
+        setBankAccounts([]);
+      } finally {
+        setLoadingBankAccounts(false);
+      }
+    }
+
+    setCancelConfirmModal(true);
+  };
+
+  // Handle create bank account
+  const handleCreateBankAccount = async () => {
+    try {
+      const values = await createBankForm.validateFields();
+      await bankUserService.createBankAccount(values);
+      toastSuccess("Thành công", "Đã thêm tài khoản ngân hàng");
+      
+      // Refresh bank accounts
+      const accounts = await bankUserService.getMyBankAccounts();
+      setBankAccounts(accounts);
+      
+      setCreateBankModalVisible(false);
+      createBankForm.resetFields();
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message || "Không thể thêm tài khoản ngân hàng";
+      toastError("Lỗi", errorMessage);
+    }
+  };
+
   // Handle cancel registration
   const handleCancelRegistration = async () => {
     if (!registration) return;
 
     try {
       setCancelLoading(true);
-      // const reason = cancelForm.getFieldValue("reason");
-      // Call cancel API (assuming it exists)
-      // await registrationService.cancelRegistration(registration.registrationId, reason);
-      // For now, just show a placeholder
+      const values = await cancelForm.validateFields();
+      
+      const cancelData: any = {
+        reason: values.reason || null,
+      };
+
+      // If status is Confirmed, include bankUserId
+      if (registration.status === "Confirmed") {
+        if (!values.bankUserId) {
+          toastError("Lỗi", "Vui lòng chọn tài khoản ngân hàng");
+          return;
+        }
+        cancelData.bankUserId = values.bankUserId;
+      }
+
+      await registrationService.cancelRegistration(registration.registrationId, cancelData);
       toastSuccess("Thành công", "Hủy đơn đăng ký thành công");
       setCancelConfirmModal(false);
-      navigate("/my-registrations");
+      cancelForm.resetFields();
+      navigate("/user/my-registrations");
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message || "Không thể hủy đơn đăng ký";
@@ -127,6 +185,19 @@ const RegistrationDetail: React.FC = () => {
       PendingRefund: { bg: "bg-yellow-100", text: "text-yellow-700", label: "Chờ hoàn tiền" },
       Refunded: { bg: "bg-green-100", text: "text-green-700", label: "Đã hoàn tiền" },
       Canceled: { bg: "bg-gray-100", text: "text-gray-700", label: "Đã hủy" },
+    };
+    return (
+      statusMap[status] || { bg: "bg-gray-100", text: "text-gray-700", label: status }
+    );
+  };
+
+  // Get camp status info
+  const getCampStatusInfo = (status: string) => {
+    const statusMap: { [key: string]: { bg: string; text: string; label: string } } = {
+      Upcoming: { bg: "bg-blue-100", text: "text-blue-700", label: "Sắp diễn ra" },
+      Ongoing: { bg: "bg-green-100", text: "text-green-700", label: "Đang diễn ra" },
+      Completed: { bg: "bg-gray-100", text: "text-gray-700", label: "Đã hoàn thành" },
+      Cancelled: { bg: "bg-red-100", text: "text-red-700", label: "Đã hủy" },
     };
     return (
       statusMap[status] || { bg: "bg-gray-100", text: "text-gray-700", label: status }
@@ -241,6 +312,14 @@ const RegistrationDetail: React.FC = () => {
                 <p className="text-lg font-semibold text-gray-900">{camp.name}</p>
               </div>
               <div>
+                <p className="text-sm text-gray-600 font-medium mb-1">Trạng thái trại</p>
+                <span
+                  className={`inline-block text-base font-bold px-4 py-1.5 rounded-full ${getCampStatusInfo(camp.status).bg} ${getCampStatusInfo(camp.status).text}`}
+                >
+                  {getCampStatusInfo(camp.status).label}
+                </span>
+              </div>
+              <div>
                 <p className="text-sm text-gray-600 font-medium mb-1">Địa điểm</p>
                 <p className="text-lg font-semibold text-gray-900">{camp.place}</p>
               </div>
@@ -336,7 +415,7 @@ const RegistrationDetail: React.FC = () => {
 
           {isCancelable && (
             <button
-              onClick={() => setCancelConfirmModal(true)}
+              onClick={handleOpenCancelModal}
               className="flex items-center justify-center gap-1 bg-red-500 text-white font-medium py-1.5 px-4 rounded-full text-sm hover:bg-red-600 transition-colors"
             >
               Hủy đơn đăng ký
@@ -409,9 +488,7 @@ const RegistrationDetail: React.FC = () => {
             type="primary"
             danger
             loading={cancelLoading}
-            onClick={() => {
-              handleCancelRegistration();
-            }}
+            onClick={handleCancelRegistration}
           >
             Xác nhận hủy
           </Button>,
@@ -421,15 +498,120 @@ const RegistrationDetail: React.FC = () => {
           <p className="text-gray-700 mb-4">
             Bạn có chắc chắn muốn hủy đơn đăng ký này? Hành động này không thể hoàn tác.
           </p>
+
+          {registration?.status === "Confirmed" && (
+            <>
+              <Form.Item
+                name="bankUserId"
+                label="Tài khoản ngân hàng nhận tiền hoàn"
+                rules={[{ required: true, message: "Vui lòng chọn tài khoản ngân hàng" }]}
+              >
+                <Select
+                  placeholder="Chọn tài khoản ngân hàng"
+                  loading={loadingBankAccounts}
+                  size="large"
+                  notFoundContent={
+                    <div className="text-center py-4">
+                      <p className="text-gray-500 mb-2">Chưa có tài khoản ngân hàng</p>
+                      <Button
+                        type="link"
+                        onClick={() => {
+                          setCreateBankModalVisible(true);
+                        }}
+                      >
+                        + Thêm tài khoản ngân hàng
+                      </Button>
+                    </div>
+                  }
+                >
+                  {bankAccounts.map((account) => (
+                    <Select.Option key={account.bankUserId} value={account.bankUserId}>
+                      {account.bankName} - {account.bankNumber}
+                      {account.isPrimary && " (Mặc định)"}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+
+              {bankAccounts.length > 0 && (
+                <div className="mb-4">
+                  <Button
+                    type="dashed"
+                    block
+                    onClick={() => setCreateBankModalVisible(true)}
+                  >
+                    + Thêm tài khoản ngân hàng mới
+                  </Button>
+                </div>
+              )}
+            </>
+          )}
+
           <Form.Item
             name="reason"
-            label="Lý do hủy (tùy chọn)"
-            className="mb-0"
+            label="Lý do hủy"
+            rules={[{ required: true, message: "Vui lòng nhập lý do hủy" }]}
           >
             <Input.TextArea
               placeholder="Vui lòng cho chúng tôi biết lý do hủy..."
-              rows={3}
+              rows={4}
+              showCount
+              maxLength={500}
             />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* Create Bank Account Modal */}
+      <Modal
+        title="Thêm tài khoản ngân hàng"
+        open={createBankModalVisible}
+        onCancel={() => {
+          setCreateBankModalVisible(false);
+          createBankForm.resetFields();
+        }}
+        footer={[
+          <Button
+            key="cancel"
+            onClick={() => {
+              setCreateBankModalVisible(false);
+              createBankForm.resetFields();
+            }}
+          >
+            Hủy
+          </Button>,
+          <Button
+            key="submit"
+            type="primary"
+            onClick={handleCreateBankAccount}
+          >
+            Thêm tài khoản
+          </Button>,
+        ]}
+      >
+        <Form form={createBankForm} layout="vertical">
+          <Form.Item
+            name="bankName"
+            label="Tên ngân hàng"
+            rules={[{ required: true, message: "Vui lòng nhập tên ngân hàng" }]}
+          >
+            <Input placeholder="Ví dụ: Vietcombank, Techcombank..." size="large" />
+          </Form.Item>
+
+          <Form.Item
+            name="bankCode"
+            label="Mã ngân hàng"
+            rules={[{ required: true, message: "Vui lòng nhập mã ngân hàng" }]}
+          >
+            <Input placeholder="Ví dụ: VCB, TCB..." size="large" />
+          </Form.Item>
+
+          <Form.Item
+            name="bankNumber"
+            label="Số tài khoản"
+            rules={[{ required: true, message: "Vui lòng nhập số tài khoản" }]}
+          >
+            <Input placeholder="Nhập số tài khoản ngân hàng" size="large" />
           </Form.Item>
         </Form>
       </Modal>
