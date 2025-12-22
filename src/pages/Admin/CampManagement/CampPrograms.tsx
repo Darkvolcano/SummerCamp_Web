@@ -182,7 +182,7 @@ const CampPrograms: React.FC = () => {
       <div className="mb-4">
         <h1 className="text-2xl font-bold text-[#111827]">Chương Trình Trại</h1>
         <p className="text-xs text-[#6B7280] mt-0.5">
-          Quản lý và tổ chức các chương trình trại hè
+          Quản lý và tổ chức các chương trình hội trại
         </p>
       </div>
 

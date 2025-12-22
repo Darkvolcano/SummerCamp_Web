@@ -39,7 +39,7 @@ const AdminIncidents: React.FC = () => {
       calculateCounts(sortedData);
     } catch (error) {
       console.error('[AdminIncidents] Failed to load reports:', error);
-      toastError('Lỗi', 'Không thể tải báo cáo sự cố');
+      toastError('Cảnh báo', 'Không thể tải báo cáo sự cố');
     } finally {
       setLoading(false);
     }

@@ -115,7 +115,7 @@ const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
         note: registration.note || "",
       });
     } catch {
-      toastError("Lỗi", "Không thể tải dữ liệu");
+      toastError('Cảnh báo', "Không thể tải dữ liệu");
     } finally {
       setLoading(false);
     }
@@ -164,7 +164,7 @@ const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message || "Không thể cập nhật đơn đăng ký";
-      toastError("Lỗi", errorMessage);
+      toastError('Cảnh báo', errorMessage);
     } finally {
       setSubmitting(false);
     }
@@ -367,7 +367,7 @@ const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
           {/* Step 2: Camp Info (Read-only) */}
           <div className="bg-gray-50 rounded-lg p-4 mb-6">
             <h3 className="text-lg font-bold text-gray-900 mb-4">
-              2. Thông tin trại hè
+              2. Thông tin hội trại
             </h3>
             <div className="bg-white p-4 rounded border border-gray-200">
               <h4 className="font-semibold text-gray-900 mb-2">

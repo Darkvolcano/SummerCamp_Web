@@ -100,7 +100,7 @@ const Contact: React.FC = () => {
 
             <p className="text-lg text-white/90 max-w-3xl mx-auto leading-relaxed">
               Hãy liên hệ với chúng tôi để được tư vấn chi tiết về các chương
-              trình trại hè, đăng ký tham gia hoặc giải đáp mọi thắc mắc.
+              trình hội trại, đăng ký tham gia hoặc giải đáp mọi thắc mắc.
             </p>
           </div>
         </div>
@@ -242,7 +242,7 @@ const Contact: React.FC = () => {
                     Chủ đề
                   </label>
                   <select className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-orange-400 transition-all duration-300">
-                    <option>Tư vấn chương trình trại hè</option>
+                    <option>Tư vấn chương trình hội trại</option>
                     <option>Đăng ký tham gia</option>
                     <option>Hỗ trợ kỹ thuật</option>
                     <option>Khác</option>
@@ -324,7 +324,7 @@ const Contact: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               {
-                question: "Độ tuổi tham gia trại hè?",
+                question: "Độ tuổi tham gia hội trại?",
                 answer: "CampEase phục vụ trẻ em từ 6-15 tuổi",
               },
               {

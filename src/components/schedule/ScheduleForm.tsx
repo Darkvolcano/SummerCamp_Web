@@ -149,7 +149,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
     } catch (error: any) {
       console.error("Failed to add group:", error);
       const errorMessage = error.response?.data?.message || "Không thể thêm nhóm";
-      toastError("Lỗi", errorMessage);
+      toastError('Cảnh báo', errorMessage);
     }
   };
 
@@ -168,7 +168,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
     } catch (error: any) {
       console.error("Failed to remove group:", error);
       const errorMessage = error.response?.data?.message || "Không thể xóa nhóm";
-      toastError("Lỗi", errorMessage);
+      toastError('Cảnh báo', errorMessage);
     }
   };
 
@@ -199,7 +199,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
       toastSuccess("Success", `Activity "${newActivity.name}" created successfully`);
     } catch (error) {
       console.error("Error creating activity:", error);
-      toastError("Error", "Failed to create activity");
+      toastError("Cảnh báo", "Failed to create activity");
     } finally {
       setCreatingActivity(false);
     }
@@ -215,7 +215,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
 
       const selectedActivity = activities.find(a => a.activityId === activityId);
       if (!selectedActivity) {
-        toastError("Error", "Selected activity not found");
+        toastError("Cảnh báo", "Selected activity not found");
         return;
       }
 
@@ -358,7 +358,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
         onSave(response);
         onClose();
       } else {
-        toastError("Error", `Activity type "${activityType}" is not supported for schedule creation`);
+        toastError("Cảnh báo", `Activity type "${activityType}" is not supported for schedule creation`);
       }
     } catch (error: any) {
       console.error("Error submitting form:", error);
@@ -387,7 +387,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
         errorMessage = error.message;
       }
       
-      toastError("Lỗi", errorMessage);
+      toastError('Cảnh báo', errorMessage);
     } finally {
       setLoading(false);
     }
@@ -549,7 +549,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
                           setAvailableStaffs(staffs);
                         } catch (error) {
                           console.error("Failed to fetch available staffs:", error);
-                          toastError("Error", "Failed to load available staff");
+                          toastError("Cảnh báo", "Failed to load available staff");
                         } finally {
                           setLoadingStaffs(false);
                         }
@@ -603,7 +603,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
                           setAvailableLocations(locations);
                         } catch (error) {
                           console.error("Failed to fetch available locations:", error);
-                          toastError("Error", "Failed to load available locations");
+                          toastError("Cảnh báo", "Failed to load available locations");
                         } finally {
                           setLoadingLocations(false);
                         }
@@ -658,7 +658,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
                           setAvailableGroups(groups);
                         } catch (error) {
                           console.error("Failed to fetch available groups:", error);
-                          toastError("Error", "Failed to load available groups");
+                          toastError("Cảnh báo", "Failed to load available groups");
                         } finally {
                           setLoadingGroups(false);
                         }
@@ -724,7 +724,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
                           setAvailableStaffs(staffs);
                         } catch (error) {
                           console.error("Failed to fetch staffs:", error);
-                          toastError("Lỗi", "Không thể tải danh sách nhân viên");
+                          toastError('Cảnh báo', "Không thể tải danh sách nhân viên");
                         } finally {
                           setLoadingStaffs(false);
                         }
@@ -777,7 +777,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
                           setAvailableLocations(locations);
                         } catch (error) {
                           console.error("Failed to fetch locations:", error);
-                          toastError("Lỗi", "Không thể tải danh sách địa điểm");
+                          toastError('Cảnh báo', "Không thể tải danh sách địa điểm");
                         } finally {
                           setLoadingLocations(false);
                         }
@@ -881,7 +881,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
                             setAvailableGroupsForEdit(filteredGroups);
                           } catch (error) {
                             console.error("Failed to fetch available groups:", error);
-                            toastError("Lỗi", "Không thể tải danh sách nhóm khả dụng");
+                            toastError('Cảnh báo', "Không thể tải danh sách nhóm khả dụng");
                           } finally {
                             setLoadingAvailableGroupsForEdit(false);
                           }
@@ -954,7 +954,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
                           setAvailableStaffs(staffs);
                         } catch (error) {
                           console.error("Failed to fetch available staffs:", error);
-                          toastError("Error", "Failed to load available staff");
+                          toastError("Cảnh báo", "Failed to load available staff");
                         } finally {
                           setLoadingStaffs(false);
                         }
@@ -1008,7 +1008,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
                           setAvailableLocations(locations);
                         } catch (error) {
                           console.error("Failed to fetch available locations:", error);
-                          toastError("Error", "Failed to load available locations");
+                          toastError("Cảnh báo", "Failed to load available locations");
                         } finally {
                           setLoadingLocations(false);
                         }
@@ -1094,7 +1094,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
                           setAvailableLocations(locations);
                         } catch (error) {
                           console.error("Failed to fetch locations:", error);
-                          toastError("Lỗi", "Không thể tải danh sách địa điểm");
+                          toastError('Cảnh báo', "Không thể tải danh sách địa điểm");
                         } finally {
                           setLoadingLocations(false);
                         }

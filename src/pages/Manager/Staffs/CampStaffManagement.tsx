@@ -61,7 +61,7 @@ const CampStaffManagement: React.FC = () => {
         setFilteredAssignedStaff(assignedData);
       } catch (error) {
         console.error('Failed to load staff data:', error);
-        toastError('Lỗi', 'Không thể tải dữ liệu nhân viên');
+        toastError('Cảnh báo', 'Không thể tải dữ liệu nhân viên');
       } finally {
         setLoading(false);
       }
@@ -115,7 +115,7 @@ const CampStaffManagement: React.FC = () => {
   // Handle bulk assign
   const handleBulkAssign = async () => {
     if (selectedStaffIds.size === 0) {
-      toastError('Lỗi', 'Vui lòng chọn ít nhất một nhân viên');
+      toastError('Cảnh báo', 'Vui lòng chọn ít nhất một nhân viên');
       return;
     }
 
@@ -164,7 +164,7 @@ const CampStaffManagement: React.FC = () => {
       }
     } catch (error) {
       console.error('Failed to assign staff:', error);
-      toastError('Lỗi', 'Không thể phân công nhân viên');
+      toastError('Cảnh báo', 'Không thể phân công nhân viên');
     } finally {
       setAssigning(false);
     }
@@ -192,7 +192,7 @@ const CampStaffManagement: React.FC = () => {
       if (error.response?.data?.message) {
         errorMsg = error.response.data.message;
       }
-      toastError('Error', errorMsg);
+      toastError('Cảnh báo', errorMsg);
     } finally {
       setAssigning(false);
     }

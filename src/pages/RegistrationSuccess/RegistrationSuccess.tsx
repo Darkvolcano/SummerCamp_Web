@@ -51,7 +51,7 @@ const RegistrationSuccess: React.FC = () => {
               <Title level={4}>Chi tiết đơn hàng</Title>
 
               <Row justify="space-between" className="text-base">
-                <Text type="secondary">Trại hè</Text>
+                <Text type="secondary">Hội trại</Text>
 
                 <Text strong className="max-w-[70%] truncate">
                   {campName}
@@ -84,7 +84,7 @@ const RegistrationSuccess: React.FC = () => {
               onClick={() => navigate("/camp")}
               className="font-semibold"
             >
-              Khám phá trại hè khác
+              Khám phá hội trại khác
             </Button>
 
             <Button

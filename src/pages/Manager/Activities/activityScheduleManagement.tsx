@@ -55,7 +55,7 @@ const ActivityScheduleManagement: React.FC = () => {
         setCampData(campInfo);
       } catch (error) {
         console.error("Failed to load activities and schedules:", error);
-        toastError("Lỗi", "Không thể tải hoạt động và lịch trình");
+        toastError('Cảnh báo', "Không thể tải hoạt động và lịch trình");
       } finally {
         setLoading(false);
       }
@@ -98,7 +98,7 @@ const ActivityScheduleManagement: React.FC = () => {
       setSelectedSchedule(selectedSchedule);
       setShowScheduleDetail(true);
     } else {
-      toastError("Lỗi", "Không tìm thấy lịch trình");
+      toastError('Cảnh báo', "Không tìm thấy lịch trình");
     }
   };
 
@@ -114,7 +114,7 @@ const ActivityScheduleManagement: React.FC = () => {
       setLoading(true);
 
       if (!selectedCampId) {
-        toastError("Lỗi", "Chưa chọn trại hè");
+        toastError('Cảnh báo', "Chưa chọn hội trại");
         return;
       }
 
@@ -126,7 +126,7 @@ const ActivityScheduleManagement: React.FC = () => {
       setSchedules(updatedSchedules);
     } catch (error) {
       console.error("Failed to save schedule:", error);
-      toastError("Lỗi", "Không thể lưu lịch trình");
+      toastError('Cảnh báo', "Không thể lưu lịch trình");
     } finally {
       setLoading(false);
     }
@@ -152,7 +152,7 @@ const ActivityScheduleManagement: React.FC = () => {
     } catch (error: any) {
       console.error("Failed to delete schedule:", error);
       const errorMessage = error.response?.data?.message || error.response?.data?.title || "Không thể huỷ lịch trình";
-      toastError("Lỗi", errorMessage);
+      toastError('Cảnh báo', errorMessage);
     } finally {
       setLoading(false);
     }

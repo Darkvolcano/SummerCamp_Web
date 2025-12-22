@@ -41,7 +41,7 @@ const UserManagement: React.FC = () => {
       calculateCounts(usersData);
     } catch (error) {
       console.error("Error fetching users:", error);
-      toastError("Lỗi", "Không thể tải người dùng");
+      toastError('Cảnh báo', "Không thể tải người dùng");
     } finally {
       setLoading(false);
     }
@@ -54,7 +54,7 @@ const UserManagement: React.FC = () => {
       setPendingDrivers(driversData);
     } catch (error) {
       console.error("Error fetching pending drivers:", error);
-      toastError("Lỗi", "Không thể tải tài xế chờ duyệt");
+      toastError('Cảnh báo', "Không thể tải tài xế chờ duyệt");
     } finally {
       setLoadingPendingDrivers(false);
     }
@@ -152,7 +152,7 @@ const UserManagement: React.FC = () => {
           fetchData();
         } catch (error) {
           console.error("Error deleting user:", error);
-          toastError("Lỗi", "Không thể xóa người dùng");
+          toastError('Cảnh báo', "Không thể xóa người dùng");
         }
       },
     });
@@ -166,7 +166,7 @@ const UserManagement: React.FC = () => {
       fetchPendingDrivers();
     } catch (error) {
       console.error("Error approving driver:", error);
-      toastError("Lỗi", "Không thể duyệt tài xế");
+      toastError('Cảnh báo', "Không thể duyệt tài xế");
     }
   };
 
@@ -185,7 +185,7 @@ const UserManagement: React.FC = () => {
           fetchPendingDrivers();
         } catch (error) {
           console.error("Error rejecting driver:", error);
-          toastError("Lỗi", "Không thể từ chối tài xế");
+          toastError('Cảnh báo', "Không thể từ chối tài xế");
         }
       },
     });
@@ -202,7 +202,7 @@ const UserManagement: React.FC = () => {
       fetchData();
     } catch (error) {
       console.error("Error updating user status:", error);
-      toastError("Lỗi", "Không thể cập nhật trạng thái người dùng");
+      toastError('Cảnh báo', "Không thể cập nhật trạng thái người dùng");
     }
   };
 

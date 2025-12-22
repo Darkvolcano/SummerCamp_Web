@@ -51,7 +51,7 @@ const AttendanceCamperList: React.FC = () => {
       setAttendanceData(initialData);
     } catch (error) {
       console.error("Lỗi tải danh sách trại viên:", error);
-      toastError("Lỗi", "Không thể tải danh sách trại viên cho hoạt động này");
+      toastError('Cảnh báo', "Không thể tải danh sách trại viên cho hoạt động này");
       setCampers([]);
     } finally {
       setLoading(false);
@@ -96,7 +96,7 @@ const AttendanceCamperList: React.FC = () => {
       }, 1500);
     } catch (error) {
       console.error("Lỗi cập nhật điểm danh:", error);
-      toastError("Lỗi", "Không thể cập nhật điểm danh");
+      toastError('Cảnh báo', "Không thể cập nhật điểm danh");
     } finally {
       setSubmitting(false);
     }

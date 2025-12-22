@@ -63,7 +63,7 @@ const MyRegistration: React.FC = () => {
       } catch (error: any) {
         const errorMessage =
           error.response?.data?.message || "Không thể tải danh sách đăng ký";
-        toastError("Lỗi", errorMessage);
+        toastError('Cảnh báo', errorMessage);
       } finally {
         setLoading(false);
       }
@@ -88,7 +88,7 @@ const MyRegistration: React.FC = () => {
       } catch (error: any) {
         const errorMessage =
           error.response?.data?.message || "Không thể tải danh sách yêu cầu hoàn tiền";
-        toastError("Lỗi", errorMessage);
+        toastError('Cảnh báo', errorMessage);
       } finally {
         setRefundsLoading(false);
       }
@@ -135,7 +135,7 @@ const MyRegistration: React.FC = () => {
       } catch (error: any) {
         const errorMessage =
           error.response?.data?.message || "Không thể tải danh sách đăng ký";
-        toastError("Lỗi", errorMessage);
+        toastError('Cảnh báo', errorMessage);
       }
     };
     fetchRegistrations();
@@ -161,7 +161,7 @@ const MyRegistration: React.FC = () => {
       } catch (error: any) {
         const errorMessage =
           error.response?.data?.message || "Không thể tải danh sách đăng ký";
-        toastError("Lỗi", errorMessage);
+        toastError('Cảnh báo', errorMessage);
       }
     };
     fetchRegistrations();
@@ -203,7 +203,7 @@ const MyRegistration: React.FC = () => {
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message || "Không thể hủy đơn đăng ký";
-      toastError("Lỗi", errorMessage);
+      toastError('Cảnh báo', errorMessage);
     } finally {
       setCancelLoading(false);
     }
@@ -272,7 +272,7 @@ const MyRegistration: React.FC = () => {
                         <SearchOutlined className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" style={{ color: "gray" }}/>
                         <input
                           type="text"
-                          placeholder="Tìm kiếm theo tên trại hè..."
+                          placeholder="Tìm kiếm theo tên hội trại..."
                           value={searchText}
                           onChange={(e) => setSearchText(e.target.value)}
                           className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF8F50] focus:border-transparent"
@@ -332,7 +332,7 @@ const MyRegistration: React.FC = () => {
                         onClick={() => navigate("/camps")}
                         className="mt-6 px-6 py-2 bg-[#FF8F50] text-white rounded-full font-medium hover:bg-[#ff7e3d] transition-colors"
                       >
-                        Khám phá trại hè
+                        Khám phá hội trại
                       </button>
                     </div>
                   ) : (
@@ -364,7 +364,7 @@ const MyRegistration: React.FC = () => {
                               {/* Camp Name */}
                               <div className="flex-1 min-w-0">
                                 <h3 className="text-base font-semibold text-gray-900 truncate">
-                                  {registration.camp?.name || "Trại hè"}
+                                  {registration.camp?.name || "Hội trại"}
                                 </h3>
                               </div>
                             </div>

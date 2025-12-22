@@ -28,7 +28,7 @@ const AttendanceChecking: React.FC = () => {
       } catch (error: any) {
         console.error("Failed to load attendances:", error);
         const errorMessage = error.response?.data?.message || error.response?.data?.title || "Không thể tải lịch điểm danh";
-        toastError("Lỗi", errorMessage);
+        toastError('Cảnh báo', errorMessage);
         setSchedules([]);
       } finally {
         setLoading(false);

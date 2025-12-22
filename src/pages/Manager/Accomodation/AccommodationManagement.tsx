@@ -68,7 +68,7 @@ const AccommodationManagement: React.FC = () => {
         setCampData(campInfo);
       } catch (error) {
         console.error('Failed to load data:', error);
-        toastError('Lỗi', 'Không thể tải nơi ở');
+        toastError('Cảnh báo', 'Không thể tải nơi ở');
       } finally {
         setLoading(false);
       }
@@ -86,7 +86,7 @@ const AccommodationManagement: React.FC = () => {
           setStaffList(staffData);
         } catch (error) {
           console.error('Failed to load staff:', error);
-          toastError('Lỗi', 'Không thể tải người giám sát');
+          toastError('Cảnh báo', 'Không thể tải người giám sát');
         }
       };
 
@@ -156,7 +156,7 @@ const AccommodationManagement: React.FC = () => {
       setIsModalVisible(true);
     } catch (error) {
       console.error('Failed to load accommodation details:', error);
-      toastError('Lỗi', 'Không thể tải chi tiết nơi ở');
+      toastError('Cảnh báo', 'Không thể tải chi tiết nơi ở');
     }
   };
 
@@ -219,7 +219,7 @@ const AccommodationManagement: React.FC = () => {
     } catch (error: any) {
       console.error('Error submitting accommodation:', error);
       const errorMessage = error.response?.data?.message || error.message || 'Không thể lưu nơi ở';
-      toastError('Lỗi', errorMessage);
+      toastError('Cảnh báo', errorMessage);
     } finally {
       setSubmitting(false);
     }
@@ -240,7 +240,7 @@ const AccommodationManagement: React.FC = () => {
     } catch (error: any) {
       console.error('Failed to toggle accommodation status:', error);
       const errorMessage = error.response?.data?.message || error.message || 'Không thể cập nhật trạng thái nơi ở';
-      toastError('Lỗi', errorMessage);
+      toastError('Cảnh báo', errorMessage);
     }
   };
 
@@ -269,7 +269,7 @@ const AccommodationManagement: React.FC = () => {
     } catch (error: any) {
       console.error('Error creating accommodation type:', error);
       const errorMessage = error.response?.data?.message || error.message || 'Không thể tạo loại nơi ở';
-      toastError('Lỗi', errorMessage);
+      toastError('Cảnh báo', errorMessage);
     } finally {
       setTypeSubmitting(false);
     }
@@ -668,7 +668,7 @@ const AccommodationManagement: React.FC = () => {
                             onClick={async () => {
                               const newAccommodationId = selectedNewAccommodations[member.camperId];
                               if (!newAccommodationId) {
-                                toastError('Lỗi', 'Vui lòng chọn nơi ở mới');
+                                toastError('Cảnh báo', 'Vui lòng chọn nơi ở mới');
                                 return;
                               }
                               try {
@@ -691,7 +691,7 @@ const AccommodationManagement: React.FC = () => {
                               } catch (error: any) {
                                 console.error('Failed to change accommodation:', error);
                                 const errorMsg = error.response?.data?.message || error.message || 'Không thể chuyển nơi ở';
-                                toastError('Lỗi', errorMsg);
+                                toastError('Cảnh báo', errorMsg);
                               }
                             }}
                             disabled={!selectedNewAccommodations[member.camperId]}

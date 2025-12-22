@@ -112,7 +112,7 @@ const RegistrationPage: React.FC = () => {
         }
       } catch (error) {
         console.error("Error fetching initial data:", error);
-        toastError("Lỗi", "Không thể tải dữ liệu");
+        toastError('Cảnh báo', "Không thể tải dữ liệu");
       } finally {
         setLoading(false);
       }
@@ -260,7 +260,7 @@ const RegistrationPage: React.FC = () => {
       });
     } catch (error) {
       console.error("Error fetching camper details:", error);
-      toastError("Lỗi", "Không thể tải thông tin trại viên");
+      toastError('Cảnh báo', "Không thể tải thông tin trại viên");
 
       // Clear loading state and reset selections on critical error
       setGuardianLoadingByIndex((prev) => {
@@ -352,7 +352,7 @@ const RegistrationPage: React.FC = () => {
       toastSuccess("Thành công", "Tạo trại viên mới thành công!");
     } catch (error) {
       console.error("Error creating new camper:", error);
-      toastError("Lỗi", "Không thể tạo trại viên mới");
+      toastError('Cảnh báo', "Không thể tạo trại viên mới");
     }
   };
 
@@ -441,8 +441,7 @@ const RegistrationPage: React.FC = () => {
             `Thêm người giám hộ cho ${successCount} trại viên thành công!`
           );
         } else if (successCount === 0) {
-          toastError(
-            "Lỗi",
+          toastError('Cảnh báo',
             `Không thể thêm người giám hộ cho ${failCount} trại viên`
           );
         } else {
@@ -456,7 +455,7 @@ const RegistrationPage: React.FC = () => {
         const camperId = selectedCamperIds[guardianModalIndex];
 
         if (!camperId) {
-          toastError("Lỗi", "Vui lòng chọn trại viên trước");
+          toastError('Cảnh báo', "Vui lòng chọn trại viên trước");
           setGuardianAdding(false);
           return;
         }
@@ -481,7 +480,7 @@ const RegistrationPage: React.FC = () => {
       setApplyToAllCampers(false);
     } catch (error) {
       console.error("Error adding guardian:", error);
-      toastError("Lỗi", "Không thể thêm người giám hộ");
+      toastError('Cảnh báo', "Không thể thêm người giám hộ");
     } finally {
       setGuardianAdding(false);
     }
@@ -508,7 +507,7 @@ const RegistrationPage: React.FC = () => {
       toastSuccess("Thành công", "Xoá người giám hộ thành công!");
     } catch (error) {
       console.error("Error deleting guardian:", error);
-      toastError("Lỗi", "Không thể xoá người giám hộ");
+      toastError('Cảnh báo', "Không thể xoá người giám hộ");
     }
   };
 
@@ -536,17 +535,17 @@ const RegistrationPage: React.FC = () => {
   // Handle registration submission
   const handleSubmit = async () => {
     if (!selectedCampId) {
-      toastError("Lỗi", "Vui lòng chọn trại hè");
+      toastError('Cảnh báo', "Vui lòng chọn hội trại");
       return;
     }
 
     if (!agreeTerms) {
-      toastError("Lỗi", "Vui lòng đồng ý với quy định");
+      toastError('Cảnh báo', "Vui lòng đồng ý với quy định");
       return;
     }
 
     if (registrationCampers.some((c) => !c.camperName)) {
-      toastError("Lỗi", "Vui lòng điền đầy đủ thông tin tất cả trại viên");
+      toastError('Cảnh báo', "Vui lòng điền đầy đủ thông tin tất cả trại viên");
       return;
     }
 
@@ -586,7 +585,7 @@ const RegistrationPage: React.FC = () => {
       );
       toastSuccess(
         "Thành công",
-        "Đăng ký đã được gửi phê duyệt! Vui lòng chờ xác nhận từ trại hè."
+        "Đăng ký đã được gửi phê duyệt! Vui lòng chờ xác nhận từ hội trại."
       );
 
       // Reset form and redirect
@@ -598,18 +597,19 @@ const RegistrationPage: React.FC = () => {
     } catch (error: any) {
       console.error("Error creating registration:", error);
       const errorMessage = error.response?.data?.message || error.response?.data?.title || "Không thể tạo đăng ký";
-      toastError("Lỗi", errorMessage);
+      toastError('Cảnh báo', errorMessage);
     } finally {
       setSubmitting(false);
     }
   };
 
   const REGULATIONS = [
-    "Đối với các lớp trại hè không đủ số lượng trại viên đăng ký để mở lớp (tối thiểu từ 10 trại viên/ lớp tuỳ từng trại hè), nhà trường sẽ hoàn lại phí hè Phụ huynh đã đóng cho trại viên",
-    "Nhà trường chỉ xếp lớp khi đã tiếp nhận đầy đủ đăng ký và khoản phí theo yêu cầu",
-    "Trại viên khi mắc bệnh truyền nhiễm phải được nghỉ ở nhà, Phụ huynh cần nộp cho nhà trường giấy khám sức khỏe khi trại viên đi học lại",
-    "Phụ huynh ủy quyền cho nhà trường trong trường hợp trại viên cần cấp cứu y khoa, nhà trường sẽ đưa trại viên đến Bệnh viện có đủ khả năng cấp cứu gần nhất. Phụ huynh vui lòng thanh toán hoặc hoàn trả cho nhà trường các chi phí thăm khám và điều trị cho trại viên",
-    "Nhà trường sẽ tổ chức chụp ảnh, ghi hình các hoạt động của trại viên khi tham gia chương trình và có quyền sử dụng các hình ảnh này vào mục đích liên quan đến hoạt động giáo dục và quảng bá của trường",
+    "Đối với các lớp hội trại không đủ số lượng trại viên đăng ký để mở lớp (tối thiểu từ 10 trại viên/ lớp tuỳ từng hội trại), hội trại sẽ hoàn lại phí hè Phụ huynh đã đóng cho trại viên",
+    "Hội trại chỉ xếp lớp khi đã tiếp nhận đầy đủ đăng ký và khoản phí theo yêu cầu",
+    "Hội trại sẽ chỉ chấp nhận yêu cầu huỷ đăng ký và hoàn tiền khi chương trình trại chưa đóng đăng ký",
+    "Trại viên khi mắc bệnh truyền nhiễm phải được nghỉ ở nhà, Phụ huynh cần nộp cho hội trại giấy khám sức khỏe khi trại viên đi học lại",
+    "Phụ huynh ủy quyền cho hội trại trong trường hợp trại viên cần cấp cứu y khoa, hội trại sẽ đưa trại viên đến Bệnh viện có đủ khả năng cấp cứu gần nhất. Phụ huynh vui lòng thanh toán hoặc hoàn trả cho hội trại các chi phí thăm khám và điều trị cho trại viên",
+    "Hội trại sẽ tổ chức chụp ảnh, ghi hình các hoạt động của trại viên khi tham gia chương trình và có quyền sử dụng các hình ảnh này vào mục đích liên quan đến hoạt động giáo dục và quảng bá của hội trại",
   ];
 
   if (loading) {
@@ -625,7 +625,7 @@ const RegistrationPage: React.FC = () => {
       <div className="registration-page min-h-screen bg-gray-50 py-20">
         <div className="max-w-4xl mx-auto px-4">
           <h1 className="text-4xl font-bold text-gray-900 mb-8">
-            Đăng ký trại hè
+            Đăng ký hội trại
           </h1>
 
           <Form form={form} layout="vertical" className="space-y-8">
@@ -961,16 +961,16 @@ const RegistrationPage: React.FC = () => {
             {/* Step 3: Select Camp */}
             <div className="bg-white rounded-lg shadow p-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                3. Chọn trại hè
+                3. Chọn hội trại
               </h2>
               <Form.Item
-                label="Trại hè"
+                label="Hội trại"
                 name="campId"
                 initialValue={selectedCampId}
-                rules={[{ required: true, message: "Vui lòng chọn trại hè" }]}
+                rules={[{ required: true, message: "Vui lòng chọn hội trại" }]}
               >
                 <Select
-                  placeholder="Chọn trại hè"
+                  placeholder="Chọn hội trại"
                   onChange={handleCampChange}
                   optionLabelProp="label"
                 >

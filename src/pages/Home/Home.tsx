@@ -854,7 +854,7 @@ const Home: React.FC = () => {
 
           <div className="mb-8">
             <h3 className="text-xl font-semibold text-gray-800 mb-6">
-              Các loại trại hè
+              Các phân loại hội trại
             </h3>
             <Row gutter={[24, 24]}>
               {campCategories.map((category, index) => (
@@ -882,7 +882,7 @@ const Home: React.FC = () => {
                 onClick={() => navigate("/camp")}
                 className="bg-[#FF8F50] text-white rounded-[105px] px-8 py-4 font-bold hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2 whitespace-nowrap hover:bg-[#ff7e3d]"
               >
-                Xem tất cả chương trình trại hè →
+                Xem tất cả chương trình hội trại →
               </button>
             </div>
           </div>
@@ -955,7 +955,7 @@ const Home: React.FC = () => {
                 onClick={() => navigate("/camp")}
                 className="bg-transparent border-2 border-white text-white font-bold px-10 py-4 rounded-xl hover:bg-white hover:text-orange-600 transition-all duration-300"
               >
-                Xem các trại hè
+                Xem các chương trình hội trại
               </button>
             </div>
           )}
@@ -964,7 +964,7 @@ const Home: React.FC = () => {
               onClick={() => navigate("/camp")}
               className="bg-white text-orange-600 font-bold px-10 py-4 rounded-xl hover:bg-gray-50 transition-all duration-300 shadow-lg hover:shadow-xl"
             >
-              Khám phá các trại hè →
+              Khám phá các chương trình hội trại →
             </button>
           )}
         </div>

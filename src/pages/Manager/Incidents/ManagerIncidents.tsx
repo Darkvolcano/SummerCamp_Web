@@ -38,7 +38,7 @@ const ManagerIncidents: React.FC = () => {
         calculateCounts(data);
       } catch (error) {
         console.error('[ManagerIncidents] Failed to load reports:', error);
-        toastError('Lỗi', 'Không thể tải báo cáo sự cố');
+        toastError('Cảnh báo', 'Không thể tải báo cáo sự cố');
       } finally {
         setLoading(false);
       }

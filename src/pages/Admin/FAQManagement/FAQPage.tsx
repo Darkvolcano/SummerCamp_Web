@@ -24,7 +24,7 @@ const FAQPage: React.FC = () => {
             setFaqs(data);
         } catch (error) {
             console.error("Error fetching FAQs:", error);
-            toastError("Lỗi", "Không thể tải FAQs");
+            toastError('Cảnh báo', "Không thể tải FAQs");
         } finally {
             setLoading(false);
         }
@@ -81,7 +81,7 @@ const FAQPage: React.FC = () => {
             setEditingFaq(null);
         } catch (error) {
             console.error("Error submitting FAQ:", error);
-            toastError("Lỗi", "Không thể lưu FAQ");
+            toastError('Cảnh báo', "Không thể lưu FAQ");
         } finally {
             setSubmitting(false);
         }
@@ -95,7 +95,7 @@ const FAQPage: React.FC = () => {
             setDeletePopoverOpen(null);
         } catch (error) {
             console.error("Failed to delete FAQ:", error);
-            toastError("Lỗi", "Không thể xóa FAQ");
+            toastError('Cảnh báo', "Không thể xóa FAQ");
         }
     };
 

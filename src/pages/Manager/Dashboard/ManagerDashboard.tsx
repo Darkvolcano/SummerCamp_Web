@@ -109,7 +109,7 @@ const ManagerDashboard: React.FC = () => {
       } catch (error: any) {
         console.error("Failed to load dashboard:", error);
         const errorMessage = error.response?.data?.message || "Không thể tải dashboard";
-        toastError("Lỗi", errorMessage);
+        toastError('Cảnh báo', errorMessage);
       } finally {
         setLoading(false);
         setDashboardLoading(false);
@@ -140,11 +140,11 @@ const ManagerDashboard: React.FC = () => {
       // Step 3: Validation passed - proceed with submission
       const updatedCamp = await campService.submitCampForApproval(camp.campId);
       setCamp(updatedCamp);
-      toastSuccess("Thành công", "Gửi trại hè để phê duyệt");
+      toastSuccess("Thành công", "Gửi hội trại để phê duyệt");
     } catch (error: any) {
       console.error("Failed to submit camp:", error);
       const errorMessage = error.response?.data?.message || "Không thể gửi duyệt";
-      toastError("Lỗi", errorMessage);
+      toastError('Cảnh báo', errorMessage);
     } finally {
       setLoading(false);
     }
@@ -168,7 +168,7 @@ const ManagerDashboard: React.FC = () => {
     } catch (error: any) {
       console.error("Failed to export report:", error);
       const errorMessage = error.response?.data?.message || "Không thể xuất báo cáo";
-      toastError("Lỗi", errorMessage);
+      toastError('Cảnh báo', errorMessage);
     } finally {
       setExportLoading(false);
     }
@@ -452,7 +452,7 @@ const ManagerDashboard: React.FC = () => {
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-[#111827]">Dashboard</h1>
-          <p className="text-[#6B7280] mt-1">Tổng quan trại hè {camp?.name}</p>
+          <p className="text-[#6B7280] mt-1">Tổng quan hội trại {camp?.name}</p>
         </div>
         <Button
           type="primary"

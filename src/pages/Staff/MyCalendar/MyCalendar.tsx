@@ -40,7 +40,7 @@ const MyCalendar: React.FC = () => {
       } catch (error: any) {
         console.error("Failed to load camp:", error);
         const errorMessage = error.response?.data?.message || error.response?.data?.title || "Không thể tải chi tiết trại";
-        toastError("Lỗi", errorMessage);
+        toastError('Cảnh báo', errorMessage);
       } finally {
         setLoading(false);
       }
@@ -83,7 +83,7 @@ const MyCalendar: React.FC = () => {
       } catch (error: any) {
         console.error("Failed to load activities:", error);
         const errorMessage = error.response?.data?.message || error.response?.data?.title || "Không thể tải hoạt động lịch";
-        toastError("Lỗi", errorMessage);
+        toastError('Cảnh báo', errorMessage);
         setCampActivities([]);
         setGroupStaffActivities([]);
       } finally {
@@ -135,7 +135,7 @@ const MyCalendar: React.FC = () => {
     } catch (error: any) {
       console.error("Failed to load schedule details:", error);
       const errorMessage = error.response?.data?.message || error.response?.data?.title || "Không thể tải chi tiết lịch";
-      toastError("Lỗi", errorMessage);
+      toastError('Cảnh báo', errorMessage);
     } finally {
       setLoading(false);
     }
@@ -175,7 +175,7 @@ const MyCalendar: React.FC = () => {
     } catch (error: any) {
       console.error("[MyCalendar] Error starting livestream:", error);
       const errorMessage = error.response?.data?.message || error.response?.data?.title || "Không thể bắt đầu livestream. Vui lòng thử lại.";
-      toastError("Lỗi", errorMessage);
+      toastError('Cảnh báo', errorMessage);
     } finally {
       setLoading(false);
     }

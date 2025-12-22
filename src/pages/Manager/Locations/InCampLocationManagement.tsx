@@ -64,7 +64,7 @@ const InCampLocationManagement: React.FC = () => {
         }
       } catch (error) {
         console.error("Failed to load data:", error);
-        toastError("Lỗi", "Không thể tải dữ liệu");
+        toastError('Cảnh báo', "Không thể tải dữ liệu");
       } finally {
         setLoading(false);
       }
@@ -144,7 +144,7 @@ const InCampLocationManagement: React.FC = () => {
       form.resetFields();
     } catch (error) {
       console.error("Error submitting location:", error);
-      toastError("Lỗi", "Không thể lưu địa điểm");
+      toastError('Cảnh báo', "Không thể lưu địa điểm");
     } finally {
       setSubmitting(false);
     }

@@ -100,7 +100,7 @@ const LocationMapPicker: React.FC<LocationMapPickerProps> = ({
       }
     } catch (error) {
       console.error('Search error:', error);
-      toastError('Error', 'Failed to search location');
+      toastError('Cảnh báo', 'Failed to search location');
     } finally {
       setIsSearching(false);
     }

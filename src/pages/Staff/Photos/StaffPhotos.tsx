@@ -41,7 +41,7 @@ const StaffPhotos: React.FC = () => {
       } catch (error: any) {
         console.error('Failed to load albums:', error);
         const errorMessage = error.response?.data?.message || error.response?.data?.title || 'Không thể tải album';
-        toastError('Lỗi', errorMessage);
+        toastError('Cảnh báo', errorMessage);
       } finally {
         setLoading(false);
       }
@@ -57,7 +57,7 @@ const StaffPhotos: React.FC = () => {
       setCreatingAlbum(true);
 
       if (!selectedCampId) {
-        toastError('Lỗi', 'Chưa chọn trại');
+        toastError('Cảnh báo', 'Chưa chọn trại');
         return;
       }
 
@@ -78,7 +78,7 @@ const StaffPhotos: React.FC = () => {
     } catch (error: any) {
       console.error('Failed to create album:', error);
       const errorMessage = error.response?.data?.message || error.response?.data?.title || 'Không thể tạo album';
-      toastError('Lỗi', errorMessage);
+      toastError('Cảnh báo', errorMessage);
     } finally {
       setCreatingAlbum(false);
     }
@@ -94,7 +94,7 @@ const StaffPhotos: React.FC = () => {
     } catch (error: any) {
       console.error('Failed to load photos:', error);
       const errorMessage = error.response?.data?.message || error.response?.data?.title || 'Không thể tải ảnh';
-      toastError('Lỗi', errorMessage);
+      toastError('Cảnh báo', errorMessage);
     } finally {
       setLoadingPhotos(false);
     }
@@ -111,12 +111,12 @@ const StaffPhotos: React.FC = () => {
   // Upload photos
   const handleUploadPhotos = async () => {
     if (selectedFiles.length === 0) {
-      toastError('Lỗi', 'Vui lòng chọn ít nhất một ảnh');
+      toastError('Cảnh báo', 'Vui lòng chọn ít nhất một ảnh');
       return;
     }
 
     if (!photoCaption.trim()) {
-      toastError('Lỗi', 'Vui lòng nhập mô tả cho ảnh');
+      toastError('Cảnh báo', 'Vui lòng nhập mô tả cho ảnh');
       return;
     }
 
@@ -145,7 +145,7 @@ const StaffPhotos: React.FC = () => {
     } catch (error: any) {
       console.error('Failed to upload photos:', error);
       const errorMessage = error.response?.data?.message || error.response?.data?.title || 'Không thể tải ảnh lên';
-      toastError('Lỗi', errorMessage);
+      toastError('Cảnh báo', errorMessage);
     } finally {
       setUploadingPhotos(false);
     }
@@ -165,7 +165,7 @@ const StaffPhotos: React.FC = () => {
     } catch (error: any) {
       console.error('Failed to delete photo:', error);
       const errorMessage = error.response?.data?.message || error.response?.data?.title || 'Không thể xóa ảnh';
-      toastError('Lỗi', errorMessage);
+      toastError('Cảnh báo', errorMessage);
     }
   };
 
