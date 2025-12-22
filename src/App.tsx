@@ -76,6 +76,9 @@ import AdminIncidents from "./pages/Admin/Incidents/AdminIncidents";
 import PhotoGallery from "./pages/Parent/MyCampers/PhotoGallery";
 import FAQPage from "./pages/Admin/FAQManagement/FAQPage";
 import CustomerFAQPage from "./pages/FAQ/FAQPage";
+import RefundManagement from "./pages/Manager/Refund/RefundManagement";
+import FeedbackManagement from "./pages/Manager/Feedback/FeedbackManagement";
+
 
 
 function App() {
@@ -261,6 +264,14 @@ function App() {
               <Route
                 path={PagePath.MANAGER_PAYMENTS}
                 element={<CampTransaction />}
+              />
+              <Route
+                path={PagePath.MANAGER_REFUNDS}
+                element={<RefundManagement />}
+              />
+              <Route
+                path={PagePath.MANAGER_FEEDBACKS}
+                element={<FeedbackManagement />}
               />
               <Route
                 path={PagePath.MANAGER_CALENDAR}

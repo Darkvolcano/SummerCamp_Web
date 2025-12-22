@@ -69,7 +69,7 @@ const StaffChatList: React.FC = () => {
                                             <button
                                                 key={room.chatRoomId}
                                                 onClick={() => handleRoomClick(room.chatRoomId)}
-                                                className="w-full px-6 py-4 hover:bg-blue-50 transition-colors text-left flex items-center gap-4"
+                                                className="w-full px-6 py-4 bg-white hover:bg-blue-50 transition-colors text-left flex items-center gap-4"
                                             >
                                                 <img
                                                     src={room.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${room.chatRoomId}`}
@@ -81,7 +81,7 @@ const StaffChatList: React.FC = () => {
                                                         {room.name}
                                                     </h3>
                                                     {room.lastMessage && (
-                                                        <p className="text-sm text-gray-500 truncate">
+                                                        <p className="text-sm text-gray-600 truncate">
                                                             {room.lastMessage}
                                                         </p>
                                                     )}

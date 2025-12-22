@@ -155,6 +155,7 @@ const AdminDashboard: React.FC = () => {
               <div className="flex items-center gap-1 text-xs bg-white/20 px-2 py-1 rounded-full">
                 <TrendingUp size={14} />
                 <span>{summary?.totalRevenue.growth.toFixed(1)}%</span>
+                <p className="text-xs opacity-75 ">{summary?.totalRevenue.label}</p>
               </div>
             )}
           </div>
@@ -162,7 +163,6 @@ const AdminDashboard: React.FC = () => {
           <p className="text-2xl font-bold">
             {summary?.totalRevenue.value.toLocaleString("vi-VN")} ₫
           </p>
-          <p className="text-xs opacity-75 mt-1">{summary?.totalRevenue.label}</p>
         </div>
 
         <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg p-5 text-white hover:shadow-xl transition-shadow">

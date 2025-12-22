@@ -194,9 +194,9 @@ const StaffChatRoom: React.FC = () => {
             <div className="bg-white shadow-sm border-b border-gray-200 px-4 py-3 flex items-center gap-4">
                 <button
                     onClick={() => navigate(PagePath.STAFF_CHAT)}
-                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                    className="p-2 bg-transparent hover:bg-gray-100 rounded-lg transition-colors"
                 >
-                    <ArrowLeft size={24} />
+                    <ArrowLeft size={24} className="text-gray-900" />
                 </button>
                 <div className="flex items-center gap-3 flex-1">
                     <img
@@ -239,7 +239,7 @@ const StaffChatRoom: React.FC = () => {
                                     />
                                     <div className={`flex flex-col max-w-[70%] ${isOwnMessage ? 'items-end' : 'items-start'}`}>
                                         <div className="flex items-center gap-2 mb-1">
-                                            <span className="text-xs font-medium text-gray-700">
+                                            <span className="text-xs font-medium text-gray-900">
                                                 {isOwnMessage ? 'Bạn' : message.senderName}
                                             </span>
                                             <span className="text-xs text-gray-400">
@@ -274,7 +274,7 @@ const StaffChatRoom: React.FC = () => {
                         onChange={(e) => setMessageInput(e.target.value)}
                         onKeyPress={handleKeyPress}
                         placeholder="Nhập tin nhắn..."
-                        className="flex-1 px-4 py-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        className="flex-1 px-4 py-3 border border-gray-300 rounded-lg resize-none text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                         rows={1}
                         style={{ maxHeight: '120px', minHeight: '48px' }}
                         disabled={sendingMessage}
