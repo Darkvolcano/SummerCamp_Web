@@ -28,7 +28,7 @@ const DeletePopover: React.FC<DeletePopoverProps> = ({
   isOpen,
   onOpenChange,
   buttonSize = 'small',
-  buttonText = 'Delete',
+  buttonText = 'Xoá',
   showIcon = true,
 }) => {
   return (
@@ -68,7 +68,7 @@ const DeletePopover: React.FC<DeletePopoverProps> = ({
         disabled={disabled}
         className="inline-flex items-center justify-center gap-2 px-3 py-1.5 bg-[#FEE2E2] text-[#DC2626] rounded-lg hover:bg-[#FECACA] transition-all font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
         title={buttonText || title}
-        style={buttonText ? { minWidth: '140px' } : {}}
+        style={buttonText ? { minWidth: '90px' } : {}}
       >
         {showIcon && <Trash2 size={16} />}
         {buttonText}

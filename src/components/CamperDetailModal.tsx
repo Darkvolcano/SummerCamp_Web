@@ -484,7 +484,7 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
                                 <Users size={18} className="text-blue-600" />
                               </div>
                               <div className="flex-1">
-                                <p className="text-xs text-blue-600 font-semibold uppercase mb-1">Nhóm Được Phân Công</p>
+                                <p className="text-xs text-blue-600 font-semibold uppercase mb-1">Nhóm Được Phân</p>
                                 <p className="text-sm text-[#111827] font-bold mb-2">
                                   {campRegistration.groupName.groupName}
                                 </p>
@@ -499,7 +499,7 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
                           </div>
                         ) : (
                           <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                            <p className="text-sm text-gray-500 italic text-center">Chưa được phân công vào nhóm</p>
+                            <p className="text-sm text-gray-500 italic text-center">Chưa được phân vào nhóm</p>
                           </div>
                         )}
 
@@ -524,7 +524,7 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
                           </div>
                         ) : (
                           <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                            <p className="text-sm text-gray-500 italic text-center">Chưa được phân công chỗ ở</p>
+                            <p className="text-sm text-gray-500 italic text-center">Chưa được phân chỗ ở</p>
                           </div>
                         )}
 

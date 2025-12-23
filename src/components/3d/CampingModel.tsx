@@ -21,7 +21,7 @@ const CampingModel: React.FC<CampingModelProps> = ({
     if (modelRef.current) {
       // Gentle rotation
       modelRef.current.rotation.y =
-        Math.sin(state.clock.elapsedTime * 0.3) * 0.2;
+        Math.sin(state.clock.elapsedTime * 0.4) * 0.2;
       // Subtle floating effect
       modelRef.current.position.y =
         Math.sin(state.clock.elapsedTime * 0.5) * 0.1;

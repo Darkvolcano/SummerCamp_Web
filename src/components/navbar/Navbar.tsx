@@ -97,9 +97,9 @@ export default function Navbar() {
     { to: "/", label: "Trang chủ" },
     { to: "/camp", label: "Chương trình" },
     { to: "/blog-posts", label: "Tin tức" },
-    { to: "/faq", label: "FAQ" },
     { to: "/about", label: "Giới thiệu" },
     { to: "/contact", label: "Liên hệ" },
+    { to: "/faq", label: "FAQ" },
   ];
 
   // Desktop Navigation
