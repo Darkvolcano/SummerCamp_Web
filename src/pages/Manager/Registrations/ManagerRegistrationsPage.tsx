@@ -393,28 +393,28 @@ const ManagerRegistrationsPage: React.FC = () => {
                   <table className="w-full">
                     <thead className="bg-[#F9FAFB] border-b border-[#E5E7EB]">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider w-20">
                           ID
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider w-28">
                           Trại Viên
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider w-24">
                           Ngày ĐK
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider w-28">
                           Giá
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider w-32">
                           Khuyến Mãi
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider w-32">
                           Ghi Chú
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider w-32">
                           Trạng Thái
                         </th>
-                        <th className="px-6 py-3 text-right text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                        <th className="px-4 py-3 text-right text-xs font-semibold text-[#6B7280] uppercase tracking-wider w-28">
                           Thao Tác
                         </th>
                       </tr>
@@ -435,29 +435,33 @@ const ManagerRegistrationsPage: React.FC = () => {
                             key={reg.registrationId}
                             className="hover:bg-[#F9FAFB] transition-colors"
                           >
-                            <td className="px-6 py-4 text-sm font-mono text-[#6B7280]">
+                            <td className="px-4 py-4 text-sm font-mono text-[#6B7280] whitespace-nowrap">
                               #{reg.registrationId}
                             </td>
-                            <td className="px-6 py-4">
+                            <td className="px-4 py-4 whitespace-nowrap">
                               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#EFF6FF] text-[#3B82F6]">
-                                {reg.campers?.length || 0} trại viên
+                                {reg.campers?.length || 0}
                               </span>
                             </td>
-                            <td className="px-6 py-4 text-sm text-[#374151]">
+                            <td className="px-4 py-4 text-sm text-[#374151] whitespace-nowrap">
                               {formatDate(reg.registrationCreateAt)}
                             </td>
-                            <td className="px-6 py-4 text-sm font-semibold text-[#111827]">
+                            <td className="px-4 py-4 text-sm font-semibold text-[#111827] whitespace-nowrap">
                               {reg.finalPrice ? `${reg.finalPrice.toLocaleString('vi-VN')} đ` : 'N/A'}
                             </td>
-                            <td className="px-6 py-4 text-sm text-[#6B7280]">
-                              {reg.appliedPromotion
-                                ? `${reg.appliedPromotion.name} (${reg.appliedPromotion.percent}%)`
-                                : '-'}
+                            <td className="px-4 py-4 text-sm text-[#6B7280]">
+                              <div className="max-w-[120px] truncate">
+                                {reg.appliedPromotion
+                                  ? `${reg.appliedPromotion.name} (${reg.appliedPromotion.percent}%)`
+                                  : '-'}
+                              </div>
                             </td>
-                            <td className="px-6 py-4 text-sm text-[#6B7280] max-w-xs truncate">
-                              {reg.note || '-'}
+                            <td className="px-4 py-4 text-sm text-[#6B7280]">
+                              <div className="max-w-[120px] truncate">
+                                {reg.note || '-'}
+                              </div>
                             </td>
-                            <td className="px-6 py-4">
+                            <td className="px-4 py-4 whitespace-nowrap">
                               <span
                                 className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
                                   reg.status
@@ -466,13 +470,13 @@ const ManagerRegistrationsPage: React.FC = () => {
                                 {reg.status.replace(/([A-Z])/g, ' $1').trim()}
                               </span>
                             </td>
-                            <td className="px-6 py-4 text-right">
+                            <td className="px-4 py-4 text-right whitespace-nowrap">
                               <button
                                 onClick={() => {
                                   setSelectedRegistrationId(reg.registrationId);
                                   setRegistrationDetailModalOpen(true);
                                 }}
-                                className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-all font-medium text-sm"
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#F3F4F6] text-[#6B7280] rounded-lg hover:bg-[#E5E7EB] transition-all font-medium text-sm"
                                 title="Xem Chi Tiết"
                               >
                                 <Eye size={16} />

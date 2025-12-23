@@ -53,19 +53,6 @@ const CampingScene: React.FC<CampingSceneProps> = ({ autoRotate = true }) => {
           {/* Model */}
           <CampingModel position={[0, -1, 0]} scale={1.1} />
 
-          {/* Ground plane */}
-          <mesh
-            rotation={[-Math.PI / 2, 0, 0]}
-            position={[0, -1, 0]}
-            receiveShadow
-          >
-            <planeGeometry args={[15, 15]} />
-            <meshStandardMaterial 
-              color="#FFD700" 
-              roughness={0.7}
-              metalness={0.2}
-            />
-          </mesh>
 
           {/* Shadow layer */}
           <mesh
@@ -81,11 +68,11 @@ const CampingScene: React.FC<CampingSceneProps> = ({ autoRotate = true }) => {
           <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.98, 0]}>
             <circleGeometry args={[2.75, 64]} />
             <meshStandardMaterial
-              color="#FF8C00"
+              color="#4CAF50"
               opacity={0.5}
               transparent
               roughness={0.8}
-              emissive="#FF6B00"
+              emissive="#2E7D32"
               emissiveIntensity={0.2}
             />
           </mesh>

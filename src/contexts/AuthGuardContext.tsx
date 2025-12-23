@@ -284,7 +284,32 @@ export function AuthGuardProvider(props: AuthGuardProviderProps) {
         });
 
       if (!isAllowed) {
-        navigate(PagePath.FORBIDDEN, { replace: true });
+        // Check if the route exists for any role (is a valid protected route)
+        const allProtectedRoutes = Object.values(restrictedPages).flat();
+        const isValidProtectedRoute = allProtectedRoutes.some((route) => {
+          if (route.includes(":")) {
+            return matchDynamicRoute(route, location.pathname);
+          }
+          return route === location.pathname;
+        });
+
+        if (isValidProtectedRoute) {
+          // Valid route but wrong role - redirect to user's home page
+          const roleHomePages: Record<string, string> = {
+            parent: PagePath.HOME,
+            staff: PagePath.STAFF_CALENDAR,
+            admin: PagePath.ADMIN_DASHBOARD,
+            manager: PagePath.MANAGER_DASHBOARD,
+            user: PagePath.HOME,
+            driver: PagePath.DRIVER_CALENDAR,
+          };
+          
+          const homePage = roleHomePages[userRole] || PagePath.HOME;
+          navigate(homePage, { replace: true });
+        } else {
+          // Invalid route - show 403
+          navigate(PagePath.FORBIDDEN, { replace: true });
+        }
       }
     } catch (error) {
       console.error("Error in auth guard:", error);
