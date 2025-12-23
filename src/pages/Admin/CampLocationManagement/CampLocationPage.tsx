@@ -394,7 +394,7 @@ const CampLocationPage: React.FC = () => {
                                   title="Chỉnh sửa địa điểm trại"
                                 >
                                   <Edit2 size={16} />
-                                  Chỉnh sửa
+                                  Sửa
                                 </button>
                                 <DeletePopover
                                   onConfirm={() =>

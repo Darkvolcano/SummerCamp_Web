@@ -124,10 +124,10 @@ const RefundManagement: React.FC = () => {
 
   const columns: ColumnsType<RegistrationCancelResponseDto> = [
     {
-      title: 'Mã yêu cầu',
+      title: 'Mã YC',
       dataIndex: 'registrationCancelId',
       key: 'registrationCancelId',
-      width: 120,
+      width: 80,
     },
     {
       title: 'Phụ huynh',
@@ -138,10 +138,10 @@ const RefundManagement: React.FC = () => {
           <div className="text-xs text-gray-500">{record.parentEmail}</div>
         </div>
       ),
-      width: 200,
+      width: 180,
     },
     {
-      title: 'Trẻ tham gia',
+      title: 'Trẻ',
       dataIndex: 'camperNames',
       key: 'camperNames',
       render: (names: string[]) => (
@@ -151,10 +151,10 @@ const RefundManagement: React.FC = () => {
           ))}
         </div>
       ),
-      width: 180,
+      width: 140,
     },
     {
-      title: 'Số tiền hoàn',
+      title: 'Số tiền',
       dataIndex: 'refundAmount',
       key: 'refundAmount',
       render: (amount: number) => (
@@ -162,48 +162,45 @@ const RefundManagement: React.FC = () => {
           {amount.toLocaleString('vi-VN')} ₫
         </span>
       ),
-      width: 150,
+      width: 120,
     },
     {
       title: 'Ngân hàng',
       key: 'bank',
       render: (record: RegistrationCancelResponseDto) => (
         <div className="text-sm">
-          <div className="font-medium">{record.bankName}</div>
-          <div className="text-gray-600">{record.bankNumber}</div>
-          <div className="text-gray-500">{record.bankAccountName}</div>
+          <div className="font-medium truncate">{record.bankName}</div>
+          <div className="text-gray-600 text-xs">{record.bankNumber}</div>
         </div>
       ),
-      width: 200,
+      width: 160,
     },
     {
-      title: 'Ngày yêu cầu',
+      title: 'Ngày YC',
       dataIndex: 'requestDate',
       key: 'requestDate',
       render: (date: string) => new Date(date).toLocaleDateString('vi-VN'),
-      width: 120,
+      width: 100,
     },
     {
       title: 'Trạng thái',
       dataIndex: 'status',
       key: 'status',
       render: (status: string) => getStatusTag(status),
-      width: 130,
+      width: 110,
     },
     {
       title: 'Hành động',
       key: 'action',
       render: (record: RegistrationCancelResponseDto) => (
         <Button
-          type="primary"
-          ghost
           icon={<EyeOutlined />}
           onClick={() => handleViewDetail(record)}
         >
           Chi tiết
         </Button>
       ),
-      width: 120,
+      width: 110,
       fixed: 'right',
     },
   ];
@@ -233,7 +230,7 @@ const RefundManagement: React.FC = () => {
           dataSource={refunds}
           loading={loading}
           rowKey="registrationCancelId"
-          scroll={{ x: 1200 }}
+          scroll={{ x: 1000 }}
           pagination={{
             pageSize: 10,
             showSizeChanger: true,
@@ -452,6 +449,7 @@ const RefundManagement: React.FC = () => {
                       icon={<CloseOutlined />}
                       onClick={handleOpenRejectModal}
                       size="large"
+                      style={{ color: 'white' }}
                     >
                       Từ Chối
                     </Button>
@@ -461,6 +459,7 @@ const RefundManagement: React.FC = () => {
                       onClick={handleApproveRefund}
                       loading={actionLoading}
                       size="large"
+                      style={{ color: 'white' }}
                     >
                       Phê Duyệt
                     </Button>

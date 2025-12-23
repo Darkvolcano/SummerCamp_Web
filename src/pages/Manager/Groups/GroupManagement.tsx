@@ -523,6 +523,7 @@ const GroupManagement: React.FC = () => {
                                   onClick={() => handleViewDetails(group)}
                                   className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#F3F4F6] text-[#6B7280] rounded-lg hover:bg-[#E5E7EB] transition-all font-medium text-sm"
                                   title="Xem Chi Tiết"
+                                  style={{ minWidth: '100px' }}
                                 >
                                   <Eye size={16} />
                                   Chi tiết
@@ -531,7 +532,7 @@ const GroupManagement: React.FC = () => {
                                   onConfirm={() => handleDelete(group.groupId)}
                                   title="Hủy Kích Hoạt Nhóm"
                                   message={`Bạn có chắc chắn muốn hủy kích hoạt "${group.groupName}"?`}
-                                  buttonText="Hủy Kích Hoạt"
+                                  buttonText="Huỷ"
                                   isOpen={deletePopoverOpen === group.groupId}
                                   onOpenChange={(open) =>
                                     setDeletePopoverOpen(open ? group.groupId : null)
