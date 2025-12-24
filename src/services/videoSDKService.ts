@@ -37,18 +37,19 @@ const videoSDKService = {
         response: responseData,
       });
       
-      // Fallback for testing when VideoSDK API fails
-      console.warn("[videoSDKService] Using fallback random roomId");
-      return "test-room-" + Math.random().toString(36).substring(7);
+      // Throw error with detailed message
+      const errorMessage = responseData?.message || responseData?.error || "Failed to create VideoSDK room";
+      throw new Error(`VideoSDK API Error (${res.status}): ${errorMessage}`);
     }
     
     const { roomId } = responseData;
     
     if (!roomId) {
-      throw new Error("No roomId in response");
+      console.error("[videoSDKService] No roomId in response:", responseData);
+      throw new Error("VideoSDK API returned no roomId");
     }
     
-    console.log("[videoSDKService] Room created:", roomId);
+    console.log("[videoSDKService] Room created successfully:", roomId);
     return roomId;
   },
 
