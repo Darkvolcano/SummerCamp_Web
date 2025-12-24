@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Spin, Tag } from 'antd';
-import { Calendar, Clock, User, Truck, MapPin, ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
+import { Spin, Tag, Modal } from 'antd';
+import { Calendar, Clock, User, Truck, MapPin, ArrowUpCircle, ArrowDownCircle, Eye } from 'lucide-react';
 import { useNotification } from '../../../../contexts/NotificationContext';
 import transportScheduleService, {
   type TransportScheduleResponseDto,
@@ -21,6 +21,11 @@ const CampDetailTransportSchedule: React.FC<CampDetailTransportScheduleProps> = 
   const [schedules, setSchedules] = useState<TransportScheduleResponseDto[]>([]);
   const [loading, setLoading] = useState(false);
   const [camp, setCamp] = useState<CampResponseDto | null>(null);
+  
+  // Detail Modal States
+  const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
+  const [scheduleDetail, setScheduleDetail] = useState<TransportScheduleResponseDto | null>(null);
+  const [loadingDetail, setLoadingDetail] = useState(false);
 
   // Fetch camp details and schedules
   const fetchCampDetails = useCallback(async () => {
@@ -79,6 +84,21 @@ const CampDetailTransportSchedule: React.FC<CampDetailTransportScheduleProps> = 
 
   const formatDate = (date: string) => {
     return new Date(date).toLocaleDateString('en-GB');
+  };
+
+  const handleViewDetails = async (scheduleId: number) => {
+    try {
+      setLoadingDetail(true);
+      setIsDetailModalVisible(true);
+      const detail = await transportScheduleService.getTransportScheduleById(scheduleId);
+      setScheduleDetail(detail);
+    } catch (error) {
+      console.error('Failed to load schedule details:', error);
+      toastError('Cảnh báo', 'Không thể tải chi tiết lịch trình');
+      setIsDetailModalVisible(false);
+    } finally {
+      setLoadingDetail(false);
+    }
   };
 
   // Split schedules by type
@@ -201,6 +221,13 @@ const CampDetailTransportSchedule: React.FC<CampDetailTransportScheduleProps> = 
                     </div>
                     <div className="flex flex-col items-end gap-2">
                       {getStatusBadge(schedule.status)}
+                      <button
+                        onClick={() => handleViewDetails(schedule.transportScheduleId)}
+                        className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-all font-medium text-sm"
+                      >
+                        <Eye size={16} />
+                        Chi tiết
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -261,6 +288,13 @@ const CampDetailTransportSchedule: React.FC<CampDetailTransportScheduleProps> = 
                     </div>
                     <div className="flex flex-col items-end gap-2">
                       {getStatusBadge(schedule.status)}
+                      <button
+                        onClick={() => handleViewDetails(schedule.transportScheduleId)}
+                        className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-all font-medium text-sm"
+                      >
+                        <Eye size={16} />
+                        Chi tiết
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -269,6 +303,124 @@ const CampDetailTransportSchedule: React.FC<CampDetailTransportScheduleProps> = 
           </div>
         </div>
       </div>
+
+      {/* Detail Modal */}
+      <Modal
+        title={
+          <div className="flex items-center gap-2">
+            <Truck size={20} className="text-[#6366F1]" />
+            <span className="text-lg font-bold text-[#111827]">Chi Tiết Lịch Trình Đưa Đón</span>
+          </div>
+        }
+        open={isDetailModalVisible}
+        onCancel={() => {
+          setIsDetailModalVisible(false);
+          setScheduleDetail(null);
+        }}
+        footer={null}
+        width={700}
+        centered
+      >
+        {loadingDetail ? (
+          <div className="flex justify-center items-center py-12">
+            <Spin size="large" tip="Đang tải chi tiết..." />
+          </div>
+        ) : scheduleDetail ? (
+          <div className="space-y-6">
+            {/* Basic Info - Single Card with 2 Columns */}
+            <div className="bg-[#F9FAFB] rounded-lg p-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex items-start gap-3">
+                  <MapPin size={18} className="text-[#6366F1] mt-0.5" />
+                  <div className="flex-1">
+                    <span className="text-xs font-semibold text-[#6B7280] uppercase block mb-1">Tuyến Đường</span>
+                    <p className="text-sm font-bold text-[#111827]">
+                      {scheduleDetail.routeName?.routeName || 'N/A'}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <ArrowUpCircle size={18} className={scheduleDetail.transportType === 'PickUp' ? 'text-green-600' : 'text-orange-600'} />
+                  <div className="flex-1">
+                    <span className="text-xs font-semibold text-[#6B7280] uppercase block mb-1">Loại</span>
+                    <p className="text-sm font-bold text-[#111827]">
+                      {scheduleDetail.transportType === 'PickUp' ? 'Đón' : 'Trả'}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <Truck size={18} className="text-[#6366F1] mt-0.5" />
+                  <div className="flex-1">
+                    <span className="text-xs font-semibold text-[#6B7280] uppercase block mb-1">Phương Tiện</span>
+                    <p className="text-sm font-bold text-[#111827]">
+                      {scheduleDetail.vehicleName?.vehicleName || 'N/A'}
+                    </p>
+                    {scheduleDetail.vehicleName?.vehicleNumber && (
+                      <p className="text-xs text-[#6B7280] mt-0.5">
+                        Biển số: {scheduleDetail.vehicleName.vehicleNumber}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <User size={18} className="text-[#6366F1] mt-0.5" />
+                  <div className="flex-1">
+                    <span className="text-xs font-semibold text-[#6B7280] uppercase block mb-1">Tài Xế</span>
+                    <p className="text-sm font-bold text-[#111827]">
+                      {scheduleDetail.driverFullName?.fullName || 'N/A'}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <Calendar size={18} className="text-[#6366F1] mt-0.5" />
+                  <div className="flex-1">
+                    <span className="text-xs font-semibold text-[#6B7280] uppercase block mb-1">Ngày</span>
+                    <p className="text-sm font-bold text-[#111827]">
+                      {formatDate(scheduleDetail.date)}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 col-span-2">
+                  <Clock size={18} className="text-[#6366F1] mt-0.5" />
+                  <div className="flex-1">
+                    <span className="text-xs font-semibold text-[#6B7280] uppercase block mb-1">Giờ Dự Kiến</span>
+                    <p className="text-sm font-bold text-[#111827]">
+                      {formatTime(scheduleDetail.startTime)} - {formatTime(scheduleDetail.endTime)}
+                    </p>
+                  </div>
+                </div>
+
+                {(scheduleDetail.actualStartTime || scheduleDetail.actualEndTime) && (
+                  <div className="flex items-start gap-3 col-span-2">
+                    <Clock size={18} className="text-green-600 mt-0.5" />
+                    <div className="flex-1">
+                      <span className="text-xs font-semibold text-[#6B7280] uppercase block mb-1">Giờ Thực Tế</span>
+                      <p className="text-sm font-bold text-green-700">
+                        {scheduleDetail.actualStartTime ? formatTime(scheduleDetail.actualStartTime) : '--:--'} - {scheduleDetail.actualEndTime ? formatTime(scheduleDetail.actualEndTime) : '--:--'}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Status */}
+            <div className="flex items-center justify-between p-4 bg-[#F9FAFB] rounded-lg">
+              <span className="text-sm font-semibold text-[#6B7280]">Trạng Thái:</span>
+              {getStatusBadge(scheduleDetail.status)}
+            </div>
+          </div>
+        ) : (
+          <div className="text-center py-12 text-[#6B7280]">
+            Không có dữ liệu
+          </div>
+        )}
+      </Modal>
     </div>
   );
 };

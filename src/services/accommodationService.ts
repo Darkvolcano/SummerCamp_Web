@@ -122,6 +122,12 @@ const accommodationService = {
     );
     return response.data as AccommodationResponseDto;
   },
+
+  // Delete accommodation
+  deleteAccommodation: async (accommodationId: number): Promise<void> => {
+    console.log(`[accommodationService] DELETE /Accommodation/${accommodationId}`);
+    await axiosInstance.delete(`/Accommodation/${accommodationId}`);
+  },
 };
 
 export default accommodationService;

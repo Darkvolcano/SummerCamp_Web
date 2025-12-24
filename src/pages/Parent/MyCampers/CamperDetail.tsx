@@ -800,12 +800,16 @@ const CamperDetail: React.FC = () => {
                               </p>
                               <div className="flex items-center gap-2 text-sm text-gray-700">
                                 <span className="font-medium">Giám sát viên:</span>
-                                <span
-                                  onClick={() => navigate(`/user/staff/${camps[selectedCampIndex].groupName!.supervisor.userId}`)}
-                                  className="text-blue-600 hover:text-blue-800 underline cursor-pointer transition-colors"
-                                >
-                                  {camps[selectedCampIndex].groupName.supervisor.fullName}
-                                </span>
+                                {camps[selectedCampIndex].groupName.supervisor ? (
+                                  <span
+                                    onClick={() => navigate(`/user/staff/${camps[selectedCampIndex].groupName!.supervisor!.userId}`)}
+                                    className="text-blue-600 hover:text-blue-800 underline cursor-pointer transition-colors"
+                                  >
+                                    {camps[selectedCampIndex].groupName.supervisor.fullName}
+                                  </span>
+                                ) : (
+                                  <span className="text-gray-500 italic">Chưa có</span>
+                                )}
                               </div>
                             </div>
                           ) : (
@@ -825,12 +829,16 @@ const CamperDetail: React.FC = () => {
                               </p>
                               <div className="flex items-center gap-2 text-sm text-gray-700">
                                 <span className="font-medium">Giám sát viên:</span>
-                                <span
-                                  onClick={() => navigate(`/user/staff/${camps[selectedCampIndex].accommodation!.supervisor.userId}`)}
-                                  className="text-blue-600 hover:text-blue-800 underline cursor-pointer transition-colors"
-                                >
-                                  {camps[selectedCampIndex].accommodation.supervisor.fullName}
-                                </span>
+                                {camps[selectedCampIndex].accommodation.supervisor ? (
+                                  <span
+                                    onClick={() => navigate(`/user/staff/${camps[selectedCampIndex].accommodation!.supervisor!.userId}`)}
+                                    className="text-blue-600 hover:text-blue-800 underline cursor-pointer transition-colors"
+                                  >
+                                    {camps[selectedCampIndex].accommodation.supervisor.fullName}
+                                  </span>
+                                ) : (
+                                  <span className="text-gray-500 italic">Chưa có</span>
+                                )}
                               </div>
                             </div>
                           ) : (

@@ -350,9 +350,10 @@ const RegistrationPage: React.FC = () => {
       newCamperForm.resetFields();
       setCamperAvatarPreview(null);
       toastSuccess("Thành công", "Tạo trại viên mới thành công!");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating new camper:", error);
-      toastError('Cảnh báo', "Không thể tạo trại viên mới");
+      const errorMessage = error.response?.data?.message || error.response?.data?.title || "Không thể tạo trại viên mới";
+      toastError('Cảnh báo', errorMessage);
     }
   };
 
@@ -475,12 +476,14 @@ const RegistrationPage: React.FC = () => {
         toastSuccess("Thành công", "Thêm người giám hộ thành công!");
       }
 
+
       setIsGuardianModalVisible(false);
       newGuardianForm.resetFields();
       setApplyToAllCampers(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error adding guardian:", error);
-      toastError('Cảnh báo', "Không thể thêm người giám hộ");
+      const errorMessage = error.response?.data?.message || error.response?.data?.title || "Không thể thêm người giám hộ";
+      toastError('Cảnh báo', errorMessage);
     } finally {
       setGuardianAdding(false);
     }
@@ -505,9 +508,10 @@ const RegistrationPage: React.FC = () => {
       setGuardiansByIndex(newGuardians);
 
       toastSuccess("Thành công", "Xoá người giám hộ thành công!");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error deleting guardian:", error);
-      toastError('Cảnh báo', "Không thể xoá người giám hộ");
+      const errorMessage = error.response?.data?.message || error.response?.data?.title || "Không thể xoá người giám hộ";
+      toastError('Cảnh báo', errorMessage);
     }
   };
 
@@ -1013,12 +1017,6 @@ const RegistrationPage: React.FC = () => {
                       <p className="text-gray-600">Giá tiền</p>
                       <p className="font-semibold text-gray-900">
                         {selectedCamp.price?.toLocaleString()} VNĐ
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-gray-600">Trạng thái</p>
-                      <p className="font-semibold text-gray-900">
-                        {selectedCamp.status}
                       </p>
                     </div>
                   </div>

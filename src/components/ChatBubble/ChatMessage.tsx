@@ -1,3 +1,5 @@
+import React from "react";
+
 interface ChatMessageProps {
     role: "user" | "model";
     content: string;
@@ -6,6 +8,70 @@ interface ChatMessageProps {
 
 export default function ChatMessage({ role, content, timestamp }: ChatMessageProps) {
     const isUser = role === "user";
+
+    // Function to convert URLs in text to clickable links
+    const renderContentWithLinks = (text: string) => {
+        // Regex to detect URLs (excluding trailing punctuation)
+        const urlRegex = /(https?:\/\/[^\s]+?)([.,;:!?)]*)(?=\s|$)/g;
+        
+        const elements: React.ReactNode[] = [];
+        let lastIndex = 0;
+        let match;
+
+        // Reset regex state
+        urlRegex.lastIndex = 0;
+
+        while ((match = urlRegex.exec(text)) !== null) {
+            const fullMatch = match[0];
+            const url = match[1];
+            const punctuation = match[2];
+            const matchStart = match.index;
+
+            // Add text before the URL
+            if (matchStart > lastIndex) {
+                elements.push(
+                    <span key={`text-${lastIndex}`}>
+                        {text.substring(lastIndex, matchStart)}
+                    </span>
+                );
+            }
+
+            // Add the URL as a link
+            elements.push(
+                <a
+                    key={`link-${matchStart}`}
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`underline font-medium hover:opacity-80 transition-opacity ${
+                        isUser ? "text-white" : "text-blue-600"
+                    }`}
+                >
+                    {url}
+                </a>
+            );
+
+            // Add the punctuation after the link
+            if (punctuation) {
+                elements.push(
+                    <span key={`punct-${matchStart}`}>{punctuation}</span>
+                );
+            }
+
+            lastIndex = matchStart + fullMatch.length;
+        }
+
+        // Add remaining text after the last URL
+        if (lastIndex < text.length) {
+            elements.push(
+                <span key={`text-${lastIndex}`}>
+                    {text.substring(lastIndex)}
+                </span>
+            );
+        }
+
+        return elements.length > 0 ? elements : <span>{text}</span>;
+    };
 
     return (
         <div
@@ -19,7 +85,7 @@ export default function ChatMessage({ role, content, timestamp }: ChatMessagePro
             >
                 {/* Message Content */}
                 <div className="text-[13px] sm:text-sm leading-relaxed whitespace-pre-wrap break-words">
-                    {content}
+                    {renderContentWithLinks(content)}
                 </div>
 
                 {/* Timestamp */}

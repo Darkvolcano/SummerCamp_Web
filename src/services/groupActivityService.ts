@@ -25,12 +25,17 @@ const groupActivityService = {
   },
 
   /**
-   * DELETE /api/group-activity/{id}
-   * Delete group activity assignment
+   * DELETE /api/group-activity
+   * Delete group activity assignment by groupId and activityScheduleId
    */
-  deleteGroupActivity: async (id: number): Promise<void> => {
-    console.log(`[groupActivityService] DELETE /group-activity/${id}`);
-    await axiosInstance.delete(`/group-activity/${id}`);
+  deleteGroupActivity: async (
+    groupId: number,
+    activityScheduleId: number
+  ): Promise<void> => {
+    console.log(`[groupActivityService] DELETE /group-activity?groupId=${groupId}&activityScheduleId=${activityScheduleId}`);
+    await axiosInstance.delete("/group-activity", {
+      params: { groupId, activityScheduleId }
+    });
   },
 };
 
