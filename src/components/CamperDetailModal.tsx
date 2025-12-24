@@ -238,8 +238,35 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
     }
   };
 
+
+  const handleLateCheckin = async () => {
+    try {
+      if (!campId) {
+        toastError('Cảnh báo', 'Không tìm thấy thông tin trại');
+        return;
+      }
+
+      await registrationCamperService.lateCheckin({
+        campId: campId,
+        camperId: camperId,
+      });
+
+      toastSuccess('Thành công', 'Check-in thành công!');
+      
+      // Refresh data
+      await fetchCamperDetails();
+    } catch (error: any) {
+      console.error('Error performing late check-in:', error);
+      const errorMessage = error.message || 'Không thể thực hiện check-in';
+      toastError('Cảnh báo', errorMessage);
+    }
+  };
+
   const isStaff = user?.role === 'Staff';
   const isCheckedIn = campRegistration?.status === 'CheckedIn';
+  const canLateCheckin = isStaff && campRegistration?.status && 
+    ['Confirmed', 'Transporting', 'Transported'].includes(campRegistration.status);
+
 
   return (
     <Modal
@@ -252,7 +279,18 @@ const CamperDetailModal: React.FC<CamperDetailModalProps> = ({
       open={isOpen}
       onCancel={handleClose}
       footer={
-        isStaff && isCheckedIn ? (
+        canLateCheckin ? (
+          <div className="flex justify-end gap-2">
+            <Button
+              type="primary"
+              icon={<LogOut size={16} />}
+              onClick={handleLateCheckin}
+              className="bg-green-500 hover:bg-green-600"
+            >
+              Check-in
+            </Button>
+          </div>
+        ) : isStaff && isCheckedIn ? (
           <div className="flex justify-end gap-2">
             <Popover
               content={

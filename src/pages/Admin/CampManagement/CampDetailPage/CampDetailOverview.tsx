@@ -485,11 +485,11 @@ const CampDetailOverview: React.FC<CampDetailOverviewProps> = ({
                 />
               </div>
 
-              {/* Cancel Note - Only show when status is Canceled */}
-              {campStatus === CampStatus.CANCELED && camp.note && (
+              {/* Cancel/Reject Note - Show when status is Canceled or Rejected */}
+              {(campStatus === CampStatus.CANCELED || campStatus === CampStatus.REJECTED) && camp.note && (
                 <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                   <label className="block text-sm font-semibold text-red-900 mb-2">
-                    Lý do hủy trại
+                    {campStatus === CampStatus.CANCELED ? 'Lý do hủy trại' : 'Lý do từ chối'}
                   </label>
                   <p className="text-sm text-red-800 italic">
                     "{camp.note}"

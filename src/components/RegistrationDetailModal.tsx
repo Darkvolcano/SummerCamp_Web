@@ -417,16 +417,16 @@ const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = ({
             </div>
           )}
 
-          {/* Reject Reason */}
-          {registrationData.status === 'Rejected' && registrationData.rejectReason && (
+          {/* Reject/Cancel Reason */}
+          {(registrationData.status === 'Rejected' || registrationData.status === 'Canceled') && registrationData.rejectReason && (
             <div>
-              <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3 pb-2 border-b-2 border-red-600 inline-block">
-                Lý Do Từ Chối
+              <h3 className={`text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3 pb-2 border-b-2 ${registrationData.status === 'Canceled' ? 'border-orange-600' : 'border-red-600'} inline-block`}>
+                {registrationData.status === 'Canceled' ? 'Lý Do Hủy' : 'Lý Do Từ Chối'}
               </h3>
-              <div className="mt-4 bg-red-50 rounded-lg p-4 border border-red-200">
+              <div className={`mt-4 ${registrationData.status === 'Canceled' ? 'bg-orange-50 border-orange-200' : 'bg-red-50 border-red-200'} rounded-lg p-4 border`}>
                 <div className="flex items-start gap-3">
-                  <XCircle size={18} className="text-red-600 flex-shrink-0 mt-0.5" />
-                  <p className="text-sm text-red-800">{registrationData.rejectReason}</p>
+                  <XCircle size={18} className={`${registrationData.status === 'Canceled' ? 'text-orange-600' : 'text-red-600'} flex-shrink-0 mt-0.5`} />
+                  <p className={`text-sm ${registrationData.status === 'Canceled' ? 'text-orange-800' : 'text-red-800'}`}>{registrationData.rejectReason}</p>
                 </div>
               </div>
             </div>

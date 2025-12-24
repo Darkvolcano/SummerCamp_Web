@@ -802,115 +802,117 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
                   <Checkbox>Bật live stream cho lịch trình này</Checkbox>
                 </Form.Item>
 
-                {/* Manage assigned groups for Core activity in edit mode */}
-                <div className="mb-4">
-                  <label className="text-sm font-semibold text-[#374151] block mb-2">
-                    Quản Lý Nhóm
-                  </label>
-                  
-                  {/* Display assigned groups with delete buttons */}
-                  {loadingAssignedGroups ? (
-                    <div className="flex items-center gap-2 text-gray-500 mb-3">
-                      <Spin size="small" />
-                      <span className="text-sm">Đang tải danh sách nhóm...</span>
-                    </div>
-                  ) : (
-                    <div className="mb-3">
-                      {assignedGroups.length > 0 ? (
-                        <div className="flex flex-wrap gap-2">
-                          {assignedGroups.map((group) => (
-                            <div
-                              key={group.groupId}
-                              className="inline-flex items-center gap-1 bg-blue-100 text-blue-700 px-3 py-1 rounded text-sm"
-                            >
-                              <span>{group.groupName}</span>
-                              <button
-                                onClick={() => handleRemoveGroupFromActivity(group.groupId)}
-                                className="ml-1 bg-transparent hover:bg-blue-200 rounded-full p-0.5 transition-colors"
-                                type="button"
+                {/* Manage assigned groups - ONLY for Core activity in edit mode */}
+                {selectedActivityType === "Core" && (
+                  <div className="mb-4">
+                    <label className="text-sm font-semibold text-[#374151] block mb-2">
+                      Quản Lý Nhóm
+                    </label>
+                    
+                    {/* Display assigned groups with delete buttons */}
+                    {loadingAssignedGroups ? (
+                      <div className="flex items-center gap-2 text-gray-500 mb-3">
+                        <Spin size="small" />
+                        <span className="text-sm">Đang tải danh sách nhóm...</span>
+                      </div>
+                    ) : (
+                      <div className="mb-3">
+                        {assignedGroups.length > 0 ? (
+                          <div className="flex flex-wrap gap-2">
+                            {assignedGroups.map((group) => (
+                              <div
+                                key={group.groupId}
+                                className="inline-flex items-center gap-1 bg-blue-100 text-blue-700 px-3 py-1 rounded text-sm"
                               >
-                                <X size={14} />
-                              </button>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <p className="text-sm text-gray-500 italic mb-2">
-                          Tất cả nhóm (chưa có nhóm cụ thể nào được phân)
-                        </p>
-                      )}
-                    </div>
-                  )}
+                                <span>{group.groupName}</span>
+                                <button
+                                  onClick={() => handleRemoveGroupFromActivity(group.groupId)}
+                                  className="ml-1 bg-transparent hover:bg-blue-200 rounded-full p-0.5 transition-colors"
+                                  type="button"
+                                >
+                                  <X size={14} />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-sm text-gray-500 italic mb-2">
+                            Tất cả nhóm (chưa có nhóm cụ thể nào được phân)
+                          </p>
+                        )}
+                      </div>
+                    )}
 
-                  {/* Add group dropdown */}
-                  <div className="flex gap-2">
-                    <Select
-                      placeholder="Chọn nhóm để thêm"
-                      showSearch
-                      loading={loadingAvailableGroupsForEdit}
-                      style={{ flex: 1 }}
-                      notFoundContent={
-                        !form.getFieldValue("startTime") || !form.getFieldValue("endTime")
-                          ? "Vui lòng điền Thời Gian Bắt Đầu và Kết Thúc trước"
-                          : loadingAvailableGroupsForEdit
-                          ? null
-                          : "Không có nhóm khả dụng"
-                      }
-                      onDropdownVisibleChange={async (open) => {
-                        if (open && schedule) {
-                          const startTime = form.getFieldValue("startTime") as dayjs.Dayjs;
-                          const endTime = form.getFieldValue("endTime") as dayjs.Dayjs;
-
-                          if (!startTime || !endTime) {
-                            return;
-                          }
-
-                          try {
-                            setLoadingAvailableGroupsForEdit(true);
-                            const groups = await activityScheduleService.getAvailableGroups(
-                              campId,
-                              startTime.toISOString(),
-                              endTime.toISOString()
-                            );
-                            // Filter out already assigned groups
-                            const filteredGroups = groups.filter(
-                              (g: any) => !assignedGroups.some(ag => ag.groupId === g.groupId)
-                            );
-                            setAvailableGroupsForEdit(filteredGroups);
-                          } catch (error) {
-                            console.error("Failed to fetch available groups:", error);
-                            toastError('Cảnh báo', "Không thể tải danh sách nhóm khả dụng");
-                          } finally {
-                            setLoadingAvailableGroupsForEdit(false);
-                          }
+                    {/* Add group dropdown */}
+                    <div className="flex gap-2">
+                      <Select
+                        placeholder="Chọn nhóm để thêm"
+                        showSearch
+                        loading={loadingAvailableGroupsForEdit}
+                        style={{ flex: 1 }}
+                        notFoundContent={
+                          !form.getFieldValue("startTime") || !form.getFieldValue("endTime")
+                            ? "Vui lòng điền Thời Gian Bắt Đầu và Kết Thúc trước"
+                            : loadingAvailableGroupsForEdit
+                            ? null
+                            : "Không có nhóm khả dụng"
                         }
-                      }}
-                      filterOption={(input, option) =>
-                        (option?.label ?? "")
-                          .toString()
-                          .toLowerCase()
-                          .includes(input.toLowerCase())
-                      }
-                      options={availableGroupsForEdit.map((group) => ({
-                        label: group.groupName,
-                        value: group.groupId,
-                      }))}
-                      onChange={(groupId) => {
-                        if (groupId) {
-                          handleAddGroupToActivity(groupId);
-                          // Clear selection after adding
-                          setTimeout(() => {
-                            const selectElement = document.querySelector('.ant-select-selection-search-input') as HTMLInputElement;
-                            if (selectElement) {
-                              selectElement.value = '';
+                        onDropdownVisibleChange={async (open) => {
+                          if (open && schedule) {
+                            const startTime = form.getFieldValue("startTime") as dayjs.Dayjs;
+                            const endTime = form.getFieldValue("endTime") as dayjs.Dayjs;
+
+                            if (!startTime || !endTime) {
+                              return;
                             }
-                          }, 100);
+
+                            try {
+                              setLoadingAvailableGroupsForEdit(true);
+                              const groups = await activityScheduleService.getAvailableGroups(
+                                campId,
+                                startTime.toISOString(),
+                                endTime.toISOString()
+                              );
+                              // Filter out already assigned groups
+                              const filteredGroups = groups.filter(
+                                (g: any) => !assignedGroups.some(ag => ag.groupId === g.groupId)
+                              );
+                              setAvailableGroupsForEdit(filteredGroups);
+                            } catch (error) {
+                              console.error("Failed to fetch available groups:", error);
+                              toastError('Cảnh báo', "Không thể tải danh sách nhóm khả dụng");
+                            } finally {
+                              setLoadingAvailableGroupsForEdit(false);
+                            }
+                          }
+                        }}
+                        filterOption={(input, option) =>
+                          (option?.label ?? "")
+                            .toString()
+                            .toLowerCase()
+                            .includes(input.toLowerCase())
                         }
-                      }}
-                      value={null}
-                    />
+                        options={availableGroupsForEdit.map((group) => ({
+                          label: group.groupName,
+                          value: group.groupId,
+                        }))}
+                        onChange={(groupId) => {
+                          if (groupId) {
+                            handleAddGroupToActivity(groupId);
+                            // Clear selection after adding
+                            setTimeout(() => {
+                              const selectElement = document.querySelector('.ant-select-selection-search-input') as HTMLInputElement;
+                              if (selectElement) {
+                                selectElement.value = '';
+                              }
+                            }, 100);
+                          }
+                        }}
+                        value={null}
+                      />
+                    </div>
                   </div>
-                </div>
+                )}
               </>
             )}
 

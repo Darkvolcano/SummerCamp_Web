@@ -218,7 +218,7 @@ const ScheduleDetail: React.FC<ScheduleDetailProps> = ({
         {schedule.currentCapacity !== null && schedule.activity?.activityType === "Optional" && (
           <Descriptions.Item label="Số Trại Viên Tham Gia">
             <span className="font-medium">
-              {schedule.currentCapacity} / {schedule.maxCapacity || "Unlimited"}
+              {schedule.currentCapacity}
             </span>
           </Descriptions.Item>
         )}
