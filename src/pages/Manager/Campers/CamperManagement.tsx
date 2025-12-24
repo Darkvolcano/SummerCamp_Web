@@ -129,6 +129,26 @@ const CamperManagement: React.FC = () => {
     return age;
   };
 
+  // Get status badge color
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'Canceled':
+        return 'bg-red-100 text-red-700';
+      case 'Confirmed':
+        return 'bg-green-100 text-green-700';
+      case 'Approved':
+        return 'bg-blue-100 text-blue-700';
+      case 'PendingRefund':
+        return 'bg-orange-100 text-orange-700';
+      case 'Refunded':
+        return 'bg-purple-100 text-purple-700';
+      case 'PendingPayment':
+        return 'bg-yellow-100 text-yellow-700';
+      default:
+        return 'bg-gray-100 text-gray-700';
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#F9FAFB] p-6">
       {/* Header */}
@@ -323,8 +343,8 @@ const CamperManagement: React.FC = () => {
                               {calculateAge(camper.dob)} tuổi
                             </td>
                             <td className="px-6 py-4">
-                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
-                                {camper.camperRegistrationStatus || 'Registered'}
+                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(camper.camperRegistrationStatus || 'Confirmed')}`}>
+                                {camper.camperRegistrationStatus || 'Confirmed'}
                               </span>
                             </td>
                             <td className="px-6 py-4 text-right">

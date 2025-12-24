@@ -177,7 +177,7 @@ const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = ({
       title={
         <div className="flex items-center gap-2">
           <FileText size={20} className="text-[#6366F1]" />
-          <span className="text-lg font-bold text-[#111827]">Registration Details</span>
+          <span className="text-lg font-bold text-[#111827]">Chi Tiết Đăng Ký</span>
         </div>
       }
       open={isOpen}
@@ -190,7 +190,7 @@ const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = ({
               className="px-4 py-2 bg-[#F3F4F6] text-[#6B7280] rounded-lg hover:bg-[#E5E7EB] transition-all font-medium text-sm"
               disabled={approving || rejecting}
             >
-              Close
+              Đóng
             </button>
             <button
               onClick={handleOpenRejectModal}
@@ -200,21 +200,21 @@ const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = ({
               {rejecting ? (
                 <>
                   <Spin size="small" />
-                  Rejecting...
+                  Đang từ chối...
                 </>
               ) : (
                 <>
                   <XCircle size={16} />
-                  Reject
+                  Từ Chối
                 </>
               )}
             </button>
             <Popconfirm
-              title="Approve Registration"
-              description="Are you sure you want to approve this registration?"
+              title="Duyệt Đăng Ký"
+              description="Bạn có chắc chắn muốn duyệt đăng ký này?"
               onConfirm={handleApprove}
-              okText="Yes, Approve"
-              cancelText="Cancel"
+              okText="Có, Duyệt"
+              cancelText="Hủy"
               okButtonProps={{
                 className: "bg-[#6366F1] hover:bg-[#4F46E5]",
                 loading: approving,
@@ -228,12 +228,12 @@ const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = ({
                 {approving ? (
                   <>
                     <Spin size="small" />
-                    Approving...
+                    Đang duyệt...
                   </>
                 ) : (
                   <>
                     <CheckCircle2 size={16} />
-                    Approve Registration
+                    Duyệt Đăng Ký
                   </>
                 )}
               </button>
@@ -246,7 +246,7 @@ const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = ({
     >
       {loading ? (
         <div className="flex justify-center items-center py-12">
-          <Spin size="large" tip="Loading registration details..." />
+          <Spin size="large" tip="Đang tải chi tiết đăng ký..." />
         </div>
       ) : registrationData ? (
         <div className="space-y-6">
@@ -254,10 +254,10 @@ const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = ({
           <div className="flex items-center justify-between pb-6 border-b border-[#E5E7EB]">
             <div>
               <h2 className="text-2xl font-bold text-[#111827] mb-2">
-                Registration #{registrationData.registrationId}
+                Đăng Ký #{registrationData.registrationId}
               </h2>
               <p className="text-sm text-[#6B7280]">
-                Created on {formatDate(registrationData.registrationCreateAt)}
+                Tạo ngày {formatDate(registrationData.registrationCreateAt)}
               </p>
             </div>
             <span
@@ -272,7 +272,7 @@ const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = ({
           {/* User Information */}
           <div>
             <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3 pb-2 border-b-2 border-blue-600 inline-block">
-              Registration Created By
+              Người Đăng Ký
             </h3>
             <div className="space-y-3 mt-4">
               <div className="flex items-center gap-3">
@@ -280,7 +280,7 @@ const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = ({
                   <Users size={18} className="text-[#3B82F6]" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-xs text-[#6B7280] font-medium">Parent/Guardian</p>
+                  <p className="text-xs text-[#6B7280] font-medium">Phụ Huynh/Người Giám Hộ</p>
                   <p className="text-sm text-[#111827] font-semibold">{registrationData.user.fullName}</p>
                 </div>
               </div>
@@ -290,7 +290,7 @@ const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = ({
           {/* Camp Information */}
           <div>
             <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3 pb-2 border-b-2 border-blue-600 inline-block">
-              Camp Information
+              Thông Tin Hội Trại
             </h3>
             <div className="space-y-3 mt-4">
               <div className="flex items-center gap-3">
@@ -298,7 +298,7 @@ const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = ({
                   <Calendar size={18} className="text-[#3B82F6]" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-xs text-[#6B7280] font-medium">Camp Name</p>
+                  <p className="text-xs text-[#6B7280] font-medium">Tên Hội Trại</p>
                   <p className="text-sm text-[#111827] font-semibold">{registrationData.camp.name}</p>
                 </div>
               </div>
@@ -308,7 +308,7 @@ const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = ({
                   <Calendar size={18} className="text-[#3B82F6]" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-xs text-[#6B7280] font-medium">Start Date</p>
+                  <p className="text-xs text-[#6B7280] font-medium">Ngày Bắt Đầu</p>
                   <p className="text-sm text-[#111827] font-medium">
                     {formatDate(registrationData.camp.startDate)}
                   </p>
@@ -321,7 +321,7 @@ const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = ({
           {registrationData.campers && registrationData.campers.length > 0 && (
             <div>
               <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3 pb-2 border-b-2 border-blue-600 inline-block">
-                Campers ({registrationData.campers.length})
+                Trại Viên ({registrationData.campers.length})
               </h3>
               <div className="space-y-3 mt-4">
                 {registrationData.campers.map((camper, index) => (
@@ -351,16 +351,11 @@ const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = ({
                         </p>
                         <div className="flex items-center gap-4 text-xs text-[#6B7280]">
                           <span>
-                            <span className="font-medium">Gender:</span> {camper.gender}
+                            <span className="font-medium">Giới tính:</span> {camper.gender}
                           </span>
                           <span>
-                            <span className="font-medium">DOB:</span> {formatDate(camper.dob)}
+                            <span className="font-medium">Ngày sinh:</span> {formatDate(camper.dob)}
                           </span>
-                          {camper.requestTransport && (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
-                              Transport Requested
-                            </span>
-                          )}
                         </div>
                       </div>
                     </div>
@@ -373,7 +368,7 @@ const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = ({
           {/* Payment Information */}
           <div>
             <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3 pb-2 border-b-2 border-blue-600 inline-block">
-              Payment Information
+              Thông Tin Thanh Toán
             </h3>
             <div className="space-y-3 mt-4">
               <div className="flex items-center gap-3">
@@ -381,7 +376,7 @@ const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = ({
                   <Banknote size={18} className="text-[#3B82F6]" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-xs text-[#6B7280] font-medium">Final Price</p>
+                  <p className="text-xs text-[#6B7280] font-medium">Tổng Tiền</p>
                   <p className="text-lg text-[#111827] font-bold">
                     {registrationData.finalPrice
                       ? `${registrationData.finalPrice.toLocaleString('vi-VN')} VND`
@@ -396,7 +391,7 @@ const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = ({
                     <Tag size={18} className="text-[#3B82F6]" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-xs text-[#6B7280] font-medium">Applied Promotion</p>
+                    <p className="text-xs text-[#6B7280] font-medium">Khuyến Mãi Áp Dụng</p>
                     <p className="text-sm text-[#111827] font-medium">
                       {registrationData.appliedPromotion.name} (
                       {registrationData.appliedPromotion.percent}% off)
@@ -411,7 +406,7 @@ const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = ({
           {registrationData.note && (
             <div>
               <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3 pb-2 border-b-2 border-blue-600 inline-block">
-                Note
+                Ghi Chú
               </h3>
               <div className="mt-4 bg-[#F9FAFB] rounded-lg p-4 border border-[#E5E7EB]">
                 <div className="flex items-start gap-3">
@@ -421,10 +416,25 @@ const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = ({
               </div>
             </div>
           )}
+
+          {/* Reject Reason */}
+          {registrationData.status === 'Rejected' && registrationData.rejectReason && (
+            <div>
+              <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3 pb-2 border-b-2 border-red-600 inline-block">
+                Lý Do Từ Chối
+              </h3>
+              <div className="mt-4 bg-red-50 rounded-lg p-4 border border-red-200">
+                <div className="flex items-start gap-3">
+                  <XCircle size={18} className="text-red-600 flex-shrink-0 mt-0.5" />
+                  <p className="text-sm text-red-800">{registrationData.rejectReason}</p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       ) : (
         <div className="text-center py-12 text-[#6B7280]">
-          No registration data available
+          Không có dữ liệu đăng ký
         </div>
       )}
 
@@ -446,7 +456,7 @@ const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = ({
         title={
           <div className="flex items-center gap-2">
             <XCircle size={20} className="text-red-500" />
-            <span className="text-lg font-bold text-[#111827]">Reject Registration</span>
+            <span className="text-lg font-bold text-[#111827]">Từ Chối Đăng Ký</span>
           </div>
         }
         open={rejectModalVisible}
@@ -466,7 +476,7 @@ const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = ({
               className="px-5 py-2.5 bg-[#F3F4F6] text-[#6B7280] rounded-lg hover:bg-[#E5E7EB] transition-all font-medium text-sm"
               disabled={rejecting}
             >
-              Cancel
+              Hủy
             </button>
             <button
               onClick={handleReject}
@@ -476,12 +486,12 @@ const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = ({
               {rejecting ? (
                 <>
                   <Spin size="small" />
-                  Rejecting...
+                  Đang từ chối...
                 </>
               ) : (
                 <>
                   <XCircle size={16} />
-                  Confirm Reject
+                  Xác Nhận Từ Chối
                 </>
               )}
             </button>
@@ -493,8 +503,8 @@ const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = ({
         <div className="space-y-4 mt-4">
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
             <p className="text-sm text-yellow-800">
-              <strong>Note:</strong> If you don't select any campers, the entire registration will be rejected.
-              If you select specific campers, only those campers will be rejected.
+              <strong>Lưu ý:</strong> Nếu bạn không chọn trại viên nào, toàn bộ đăng ký sẽ bị từ chối.
+              Nếu bạn chọn trại viên cụ thể, chỉ những trại viên đó sẽ bị từ chối.
             </p>
           </div>
 
@@ -502,7 +512,7 @@ const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = ({
           {registrationData?.campers && registrationData.campers.length > 0 && (
             <div>
               <h4 className="text-sm font-semibold text-gray-900 mb-3">
-                Select Campers to Reject (Optional)
+                Chọn Trại Viên Cần Từ Chối (Tùy chọn)
               </h4>
               <div className="space-y-2 max-h-60 overflow-y-auto">
                 {registrationData.campers.map((camper) => (
@@ -548,12 +558,12 @@ const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = ({
           {/* Reject Reason */}
           <div className="mb-6">
             <h4 className="text-sm font-semibold text-gray-900 mb-2">
-              Reason for Rejection <span className="text-red-500">*</span>
+              Lý Do Từ Chối <span className="text-red-500">*</span>
             </h4>
             <Input.TextArea
               value={rejectReason}
               onChange={(e) => setRejectReason(e.target.value)}
-              placeholder="Please provide a reason for rejecting this registration..."
+              placeholder="Vui lòng cung cấp lý do từ chối đăng ký này..."
               rows={6}
               maxLength={500}
               showCount

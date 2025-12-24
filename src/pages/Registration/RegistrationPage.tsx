@@ -1015,12 +1015,6 @@ const RegistrationPage: React.FC = () => {
                         {selectedCamp.price?.toLocaleString()} VNĐ
                       </p>
                     </div>
-                    <div>
-                      <p className="text-gray-600">Trạng thái</p>
-                      <p className="font-semibold text-gray-900">
-                        {selectedCamp.status}
-                      </p>
-                    </div>
                   </div>
                 </div>
               )}

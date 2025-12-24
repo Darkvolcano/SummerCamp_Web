@@ -104,6 +104,37 @@ const CamperTransportSchedule: React.FC = () => {
       return upperType === "PICKUP" ? "Chuyến Đón" : upperType === "DROPOFF" ? "Chuyến Trả" : type;
   }
 
+  const renderCamperTransportStatusTag = (status: string) => {
+    let color = 'default';
+    let text = status;
+    switch (status) {
+      case 'Assigned':
+        color = 'blue';
+        text = 'Đã phân lịch';
+        break;
+      case 'Onboard':
+        color = 'cyan';
+        text = 'Đã lên xe';
+        break;
+      case 'Absent':
+        color = 'red';
+        text = 'Vắng mặt';
+        break;
+      case 'Canceled':
+        color = 'volcano';
+        text = 'Đã hủy';
+        break;
+      case 'Completed':
+        color = 'green';
+        text = 'Hoàn thành';
+        break;
+      default:
+        color = 'default';
+        text = status;
+    }
+    return <Tag color={color}>{text}</Tag>;
+  }
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-white">
@@ -265,10 +296,7 @@ const CamperTransportSchedule: React.FC = () => {
                                                     {detail.location.name || "Chưa cập nhật"}
                                                 </Descriptions.Item>
                                                 <Descriptions.Item label="Trạng thái" span={1}>
-                                                    <Tag color={detail.status === 'Completed' ? 'green' : 'blue'}>
-                                                        {detail.status === 'Completed' ? 'Hoàn thành' : 
-                                                         detail.status === 'Pending' ? 'Chờ xử lý' : detail.status}
-                                                    </Tag>
+                                                    {renderCamperTransportStatusTag(detail.status)}
                                                 </Descriptions.Item>
                                                 <Descriptions.Item label="Vắng mặt" span={1}>
                                                     <Tag color={detail.isAbsent ? 'red' : 'green'}>
