@@ -775,8 +775,8 @@ const Home: React.FC = () => {
                   <h3 className="text-2xl font-bold mb-3">ƯU ĐÃI ĐẶC BIỆT</h3>
                   <p className="text-lg">
                     Hưởng ưu đãi giảm giá{" "}
-                    <span className="text-3xl font-bold">20%</span> đối với
-                    thành viên đã tham gia
+                    <span className="text-3xl font-bold">20%</span> đối với các
+                    đăng ký sớm
                   </p>
                 </div>
 

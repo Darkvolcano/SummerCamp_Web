@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Search, Trash2, RefreshCw, Mail, Phone, Calendar, CheckCircle, XCircle, Clock } from "lucide-react";
-import { Spin, Modal } from "antd";
+import { Search, Trash2, RefreshCw, Mail, Phone, Calendar, CheckCircle, XCircle, Clock, UserPlus } from "lucide-react";
+import { Spin, Modal, Form, Input, Select, DatePicker } from "antd";
 import userAccountService, {
   type UserAccountResponseDto,
 } from "../../../services/userAccountService";
+import { useCreateAccountByAdmin, type CreateAccountByAdminRequestDto } from "../../../services/userService";
 import driverService, { type DriverResponseDto, DriverStatus } from "../../../services/driverService";
 import { Role } from "../../../enums/role.enum";
 import { useNotification } from "../../../contexts/NotificationContext";
@@ -12,6 +13,11 @@ const UserManagement: React.FC = () => {
   const { toastSuccess, toastError } = useNotification();
   const [users, setUsers] = useState<UserAccountResponseDto[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Create user modal
+  const [createUserModalVisible, setCreateUserModalVisible] = useState(false);
+  const [createUserForm] = Form.useForm();
+  const createUserMutation = useCreateAccountByAdmin();
 
   // Pending drivers - separate section
   const [pendingDrivers, setPendingDrivers] = useState<DriverResponseDto[]>([]);
@@ -206,6 +212,42 @@ const UserManagement: React.FC = () => {
     }
   };
 
+  // Handle create user
+  const handleOpenCreateModal = () => {
+    setCreateUserModalVisible(true);
+    createUserForm.resetFields();
+  };
+
+  const handleCloseCreateModal = () => {
+    setCreateUserModalVisible(false);
+    createUserForm.resetFields();
+  };
+
+  const handleCreateUser = async () => {
+    try {
+      const values = await createUserForm.validateFields();
+      
+      const accountData: CreateAccountByAdminRequestDto = {
+        firstName: values.firstName,
+        lastName: values.lastName,
+        email: values.email,
+        phoneNumber: values.phoneNumber,
+        password: values.password,
+        dob: values.dob.format('YYYY-MM-DD'),
+        role: values.role,
+      };
+
+      await createUserMutation.mutateAsync(accountData);
+      toastSuccess("Thành công", "Tạo tài khoản thành công!");
+      handleCloseCreateModal();
+      fetchData();
+    } catch (error: any) {
+      console.error("Error creating user:", error);
+      const errorMessage = error?.responseValue?.message || "Không thể tạo tài khoản";
+      toastError('Cảnh báo', errorMessage);
+    }
+  };
+
   // Get role badge color
   const getRoleBadgeColor = (role: string) => {
     switch (role) {
@@ -215,6 +257,8 @@ const UserManagement: React.FC = () => {
         return "bg-blue-100 text-blue-700";
       case Role.STAFF:
         return "bg-green-100 text-green-700";
+      case Role.MANAGER:
+        return "bg-orange-100 text-orange-700";
       case Role.DRIVER:
         return "bg-yellow-100 text-yellow-700";
       case Role.USER:
@@ -237,11 +281,20 @@ const UserManagement: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#F9FAFB] p-6">
       {/* Header */}
-      <div className="mb-4">
-        <h1 className="text-2xl font-bold text-[#111827]">Quản Lý Người Dùng</h1>
-        <p className="text-xs text-[#6B7280] mt-0.5">
-          Quản lý người dùng hệ thống và quyền hạn
-        </p>
+      <div className="mb-4 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-[#111827]">Quản Lý Người Dùng</h1>
+          <p className="text-xs text-[#6B7280] mt-0.5">
+            Quản lý người dùng hệ thống và quyền hạn
+          </p>
+        </div>
+        <button
+          onClick={handleOpenCreateModal}
+          className="flex items-center gap-2 px-4 py-2 bg-[#6366F1] text-white rounded-lg hover:bg-[#5558E3] transition-all font-medium text-sm shadow-sm"
+        >
+          <UserPlus size={18} />
+          Tạo User Mới
+        </button>
       </div>
 
       {/* Pending Drivers Section */}
@@ -682,6 +735,106 @@ const UserManagement: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Create User Modal */}
+      <Modal
+        title={
+          <div className="flex items-center gap-2">
+            <UserPlus size={20} className="text-[#6366F1]" />
+            <span className="text-lg font-bold">Tạo Tài Khoản Mới</span>
+          </div>
+        }
+        open={createUserModalVisible}
+        onCancel={handleCloseCreateModal}
+        onOk={handleCreateUser}
+        okText="Tạo Tài Khoản"
+        cancelText="Hủy"
+        confirmLoading={createUserMutation.isPending}
+        width={600}
+        okButtonProps={{
+          className: "bg-[#6366F1] hover:bg-[#5558E3]"
+        }}
+      >
+        <Form
+          form={createUserForm}
+          layout="vertical"
+          className="mt-4"
+        >
+          <div className="grid grid-cols-2 gap-4">
+            <Form.Item
+              label="Họ"
+              name="firstName"
+              rules={[{ required: true, message: "Vui lòng nhập họ" }]}
+            >
+              <Input placeholder="Nhập họ" />
+            </Form.Item>
+
+            <Form.Item
+              label="Tên"
+              name="lastName"
+              rules={[{ required: true, message: "Vui lòng nhập tên" }]}
+            >
+              <Input placeholder="Nhập tên" />
+            </Form.Item>
+          </div>
+
+          <Form.Item
+            label="Email"
+            name="email"
+            rules={[
+              { required: true, message: "Vui lòng nhập email" },
+              { type: "email", message: "Email không hợp lệ" }
+            ]}
+          >
+            <Input placeholder="example@email.com" />
+          </Form.Item>
+
+          <Form.Item
+            label="Số Điện Thoại"
+            name="phoneNumber"
+            rules={[{ required: true, message: "Vui lòng nhập số điện thoại" }]}
+          >
+            <Input placeholder="0123456789" />
+          </Form.Item>
+
+          <Form.Item
+            label="Mật Khẩu"
+            name="password"
+            rules={[
+              { required: true, message: "Vui lòng nhập mật khẩu" },
+              { min: 6, message: "Mật khẩu phải có ít nhất 6 ký tự" }
+            ]}
+          >
+            <Input.Password placeholder="Nhập mật khẩu" />
+          </Form.Item>
+
+          <Form.Item
+            label="Ngày Sinh"
+            name="dob"
+            rules={[{ required: true, message: "Vui lòng chọn ngày sinh" }]}
+          >
+            <DatePicker 
+              format="DD/MM/YYYY" 
+              placeholder="Chọn ngày sinh"
+              className="w-full"
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Vai Trò"
+            name="role"
+            rules={[{ required: true, message: "Vui lòng chọn vai trò" }]}
+          >
+            <Select placeholder="Chọn vai trò">
+              {Object.values(Role).filter(role => role !== Role.PARENT).map((role) => (
+                <Select.Option key={role} value={role}>
+                  {role}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };

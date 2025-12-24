@@ -642,7 +642,7 @@ const GroupManagement: React.FC = () => {
           >
             <Select
               placeholder="Chọn giám sát viên (tùy chọn)"
-              allowClear
+              allowClear={!editingGroup}
               disabled={!!(editingGroup && !isEditMode)}
               optionLabelProp="label"
               options={staffList.map((staff) => ({

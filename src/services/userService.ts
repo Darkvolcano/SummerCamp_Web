@@ -19,18 +19,33 @@ export interface LoginResponseDto {
   message: string;
 }
 
-// export interface GoogleLoginDto {
-//   idToken: string;
-// }
+export interface GoogleLoginRequestDto {
+  idToken: string;
+}
 
-// CORRECTED: Match Swagger documentation exactly
+export interface GoogleRegisterRequestDto {
+  idToken: string;
+  phoneNumber: string;
+  dob: string;
+}
+
 export interface RegisterDto {
   firstName: string;
   lastName: string;
   email: string;
   phoneNumber: string;
   password: string;
-  dob: string; // Format: "YYYY-MM-DD"
+  dob: string;
+}
+
+export interface CreateAccountByAdminRequestDto {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  password: string;
+  dob: string;
+  role: string;
 }
 
 export interface ForgorPasswordDto {
@@ -503,9 +518,9 @@ export const useResendOTP = () => {
         console.log('=== RESEND OTP REQUEST DEBUG ===');
         console.log('Request Data:', JSON.stringify(resendOTP, null, 2));
 
-        // Note: Backend doesn't have resend-otp endpoint, using register endpoint to resend
-        // This will trigger a new OTP to be sent
-        const response = await axiosInstance.post(`auth/register`, resendOTP);
+        const response = await axiosInstance.post(
+          `auth/resend-otp?email=${encodeURIComponent(resendOTP.email)}`
+        );
 
         console.log('=== RESEND OTP RESPONSE SUCCESS ===');
         console.log('Response:', response.data);
@@ -577,14 +592,188 @@ export const useResetPassword = () => {
   });
 };
 
-// export const useLoginGoogle = () => {
-//   return useMutation({
-//     mutationFn: async (newAccount: GoogleLoginDto) => {
-//       const response = await axiosInstance.post(
-//         `auth/google-login`,
-//         newAccount
-//       );
-//       return response.data;
-//     },
-//   });
-// };
+export const useGoogleLogin = () => {
+  return useMutation({
+    mutationFn: async (googleLogin: GoogleLoginRequestDto) => {
+      try {
+        console.log('=== GOOGLE LOGIN REQUEST DEBUG ===');
+        console.log('Request Data:', JSON.stringify(googleLogin, null, 2));
+
+        const requestPayload = {
+          IdToken: googleLogin.idToken,
+        };
+
+        const response = await axiosInstance.post('auth/google-login', requestPayload);
+
+        console.log('=== GOOGLE LOGIN RESPONSE SUCCESS ===');
+        console.log('Response:', response.data);
+
+        return response.data;
+      } catch (error) {
+        console.error('=== GOOGLE LOGIN ERROR ===');
+
+        if (axios.isAxiosError(error)) {
+          if (error.response) {
+            console.error('Response Status:', error.response.status);
+            console.error('Response Data:', error.response.data);
+
+            const errorData = error.response.data;
+            let errorMessage = 'Đăng nhập Google thất bại';
+
+            if (errorData?.message) {
+              errorMessage = errorData.message;
+            } else if (typeof errorData === 'string') {
+              errorMessage = errorData;
+            }
+
+            const customError = new Error("API Error");
+            (customError as any).responseValue = {
+              message: errorMessage,
+              status: error.response.status,
+              data: errorData
+            };
+            throw customError;
+          } else if (error.request) {
+            console.error('No response received:', error.request);
+            throw new Error('Không thể kết nối đến server. Vui lòng kiểm tra kết nối.');
+          }
+        }
+
+        console.error('Unexpected error:', error);
+        throw new Error('Đã xảy ra lỗi không mong muốn. Vui lòng thử lại.');
+      }
+    },
+  });
+};
+
+export const useGoogleRegister = () => {
+  return useMutation({
+    mutationFn: async (googleRegister: GoogleRegisterRequestDto) => {
+      try {
+        console.log('=== GOOGLE REGISTER REQUEST DEBUG ===');
+        console.log('Request Data:', JSON.stringify(googleRegister, null, 2));
+
+        const requestPayload = {
+          IdToken: googleRegister.idToken,
+          PhoneNumber: googleRegister.phoneNumber,
+          Dob: googleRegister.dob,
+        };
+
+        const response = await axiosInstance.post('auth/google-register', requestPayload);
+
+        console.log('=== GOOGLE REGISTER RESPONSE SUCCESS ===');
+        console.log('Response:', response.data);
+
+        return response.data;
+      } catch (error) {
+        console.error('=== GOOGLE REGISTER ERROR ===');
+
+        if (axios.isAxiosError(error)) {
+          if (error.response) {
+            console.error('Response Status:', error.response.status);
+            console.error('Response Data:', error.response.data);
+
+            const errorData = error.response.data;
+            let errorMessage = 'Đăng ký Google thất bại';
+
+            if (errorData?.message) {
+              errorMessage = errorData.message;
+            } else if (errorData?.title) {
+              errorMessage = errorData.title;
+            } else if (errorData?.errors) {
+              const errors = Object.entries(errorData.errors)
+                .map(([field, messages]) => `${field}: ${(messages as string[]).join(', ')}`)
+                .join('\n');
+              errorMessage = errors;
+            } else if (typeof errorData === 'string') {
+              errorMessage = errorData;
+            }
+
+            const customError = new Error("API Error");
+            (customError as any).responseValue = {
+              message: errorMessage,
+              status: error.response.status,
+              data: errorData
+            };
+            throw customError;
+          } else if (error.request) {
+            console.error('No response received:', error.request);
+            throw new Error('Không thể kết nối đến server. Vui lòng kiểm tra kết nối.');
+          }
+        }
+
+        console.error('Unexpected error:', error);
+        throw new Error('Đã xảy ra lỗi không mong muốn. Vui lòng thử lại.');
+      }
+    },
+  });
+};
+
+export const useCreateAccountByAdmin = () => {
+  return useMutation({
+    mutationFn: async (accountData: CreateAccountByAdminRequestDto) => {
+      try {
+        console.log('=== CREATE ACCOUNT BY ADMIN REQUEST DEBUG ===');
+        console.log('Request Data:', JSON.stringify(accountData, null, 2));
+
+        const requestPayload = {
+          FirstName: accountData.firstName,
+          LastName: accountData.lastName,
+          Email: accountData.email,
+          PhoneNumber: accountData.phoneNumber,
+          Password: accountData.password,
+          Dob: accountData.dob,
+          Role: accountData.role,
+        };
+
+        console.log('Transformed Payload:', JSON.stringify(requestPayload, null, 2));
+
+        const response = await axiosInstance.post('auth/create-account', requestPayload);
+
+        console.log('=== CREATE ACCOUNT RESPONSE SUCCESS ===');
+        console.log('Response:', response.data);
+
+        return response.data;
+      } catch (error) {
+        console.error('=== CREATE ACCOUNT ERROR ===');
+
+        if (axios.isAxiosError(error)) {
+          if (error.response) {
+            console.error('Response Status:', error.response.status);
+            console.error('Response Data:', error.response.data);
+
+            const errorData = error.response.data;
+            let errorMessage = 'Tạo tài khoản thất bại';
+
+            if (errorData?.message) {
+              errorMessage = errorData.message;
+            } else if (errorData?.title) {
+              errorMessage = errorData.title;
+            } else if (errorData?.errors) {
+              const errors = Object.entries(errorData.errors)
+                .map(([field, messages]) => `${field}: ${(messages as string[]).join(', ')}`)
+                .join('\n');
+              errorMessage = errors;
+            } else if (typeof errorData === 'string') {
+              errorMessage = errorData;
+            }
+
+            const customError = new Error("API Error");
+            (customError as any).responseValue = {
+              message: errorMessage,
+              status: error.response.status,
+              data: errorData
+            };
+            throw customError;
+          } else if (error.request) {
+            console.error('No response received:', error.request);
+            throw new Error('Không thể kết nối đến server. Vui lòng kiểm tra kết nối.');
+          }
+        }
+
+        console.error('Unexpected error:', error);
+        throw new Error('Đã xảy ra lỗi không mong muốn. Vui lòng thử lại.');
+      }
+    },
+  });
+};

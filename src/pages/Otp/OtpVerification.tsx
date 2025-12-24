@@ -149,18 +149,12 @@ const OtpVerification = () => {
         setSuccessMessage('');
 
         try {
-            // Note: Backend doesn't have resend-otp endpoint yet
-            // This is a placeholder - you may need to implement resend-otp in backend
-            // For now, user should go back to register page to retry
-            setError('Chức năng gửi lại mã đang được phát triển. Vui lòng quay lại trang đăng ký để thử lại.');
-
-            // Uncomment when backend has resend-otp endpoint:
-            // await resendOtpMutation.mutateAsync({ email: email });
-            // setSuccessMessage('📧 Mã xác thực mới đã được gửi thành công!');
-            // setCountdown(60);
-            // setCanResend(false);
-            // setOtp(['', '', '', '', '', '']);
-            // inputRefs.current[0]?.focus();
+            await resendOtpMutation.mutateAsync({ email: email });
+            setSuccessMessage('📧 Mã xác thực mới đã được gửi thành công!');
+            setCountdown(60);
+            setCanResend(false);
+            setOtp(['', '', '', '', '', '']);
+            inputRefs.current[0]?.focus();
         } catch (error: any) {
             const errorMessage = error?.responseValue?.message || 'Gửi lại mã thất bại. Vui lòng thử lại.';
             setError(errorMessage);

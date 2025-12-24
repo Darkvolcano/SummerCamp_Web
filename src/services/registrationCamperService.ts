@@ -49,6 +49,12 @@ export interface RegistrationCamperResponseDto {
   camp: CampSummaryDto;
 }
 
+export interface LateCheckinRequestDto {
+  campId: number;
+  camperId: number;
+}
+
+
 const registrationCamperService = {
   getRegistrationCampers: async (
     camperId?: number,
@@ -108,6 +114,20 @@ const registrationCamperService = {
         throw new Error(
           error.response?.data?.message ||
             "Failed to fetch camps for camper"
+        );
+      }
+      throw error;
+    }
+  },
+
+  lateCheckin: async (data: LateCheckinRequestDto): Promise<void> => {
+    try {
+      await axiosInstance.post('/RegistrationCamper/late-checkin', data);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw new Error(
+          error.response?.data?.message ||
+            "Failed to perform late check-in"
         );
       }
       throw error;

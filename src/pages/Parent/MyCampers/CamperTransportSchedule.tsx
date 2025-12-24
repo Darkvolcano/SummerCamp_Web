@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Spin, Empty, Tag, Card, Row, Col, Typography, Button } from "antd";
-import { ArrowLeftOutlined, CarOutlined, UserOutlined, EnvironmentOutlined } from "@ant-design/icons";
+import { Spin, Empty, Tag, Card, Row, Col, Typography, Button, Modal, Descriptions } from "antd";
+import { ArrowLeftOutlined, CarOutlined, UserOutlined, EnvironmentOutlined, EyeOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import transportScheduleService, { type TransportScheduleResponseDto } from "../../../services/transportScheduleService";
+import camperTransportService, { type CamperTransportResponseDto } from "../../../services/camperTransportService";
 import { useNotification } from "../../../contexts/NotificationContext";
 import { TransportScheduleStatus } from "../../../enums/transportSchedule-status.enum";
 
@@ -15,23 +16,24 @@ const CamperTransportSchedule: React.FC = () => {
   const { toastError } = useNotification();
   const [loading, setLoading] = useState(false);
   const [schedules, setSchedules] = useState<TransportScheduleResponseDto[]>([]);
+  const [detailModalVisible, setDetailModalVisible] = useState(false);
+  const [selectedSchedule, setSelectedSchedule] = useState<TransportScheduleResponseDto | null>(null);
+  const [camperTransportDetails, setCamperTransportDetails] = useState<CamperTransportResponseDto[]>([]);
+  const [detailLoading, setDetailLoading] = useState(false);
 
   useEffect(() => {
     const fetchSchedules = async () => {
       if (!camperId || !campId) return;
       try {
         setLoading(true);
-        // Fetch schedules using getSchedulesByCamperIdAndCampId
         const data = await transportScheduleService.getSchedulesByCamperIdAndCampId(
           Number(camperId),
           Number(campId)
         );
             
-        // Sort by date and start time
         const sorted = data.sort((a, b) => {
             const dateDiff = dayjs(a.date).diff(dayjs(b.date));
             if (dateDiff !== 0) return dateDiff;
-            // Compare times as strings (HH:mm:ss format)
             return a.startTime.localeCompare(b.startTime);
         });
 
@@ -45,6 +47,32 @@ const CamperTransportSchedule: React.FC = () => {
     };
     fetchSchedules();
   }, [camperId, campId, toastError]);
+
+  const handleViewDetail = async (schedule: TransportScheduleResponseDto) => {
+    setSelectedSchedule(schedule);
+    setDetailModalVisible(true);
+    
+    try {
+      setDetailLoading(true);
+      const details = await camperTransportService.getCamperTransportsBySchedule(
+        schedule.transportScheduleId,
+        Number(camperId)
+      );
+      setCamperTransportDetails(details);
+    } catch (error: any) {
+      console.error("Failed to fetch camper transport details:", error);
+      toastError('Cảnh báo', "Không thể tải chi tiết đưa đón.");
+      setCamperTransportDetails([]);
+    } finally {
+      setDetailLoading(false);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setDetailModalVisible(false);
+    setSelectedSchedule(null);
+    setCamperTransportDetails([]);
+  };
 
   const renderStatusTag = (status: string) => {
     let color = 'default';
@@ -74,6 +102,37 @@ const CamperTransportSchedule: React.FC = () => {
       if (!type) return "Không xác định";
       const upperType = type.toUpperCase();
       return upperType === "PICKUP" ? "Chuyến Đón" : upperType === "DROPOFF" ? "Chuyến Trả" : type;
+  }
+
+  const renderCamperTransportStatusTag = (status: string) => {
+    let color = 'default';
+    let text = status;
+    switch (status) {
+      case 'Assigned':
+        color = 'blue';
+        text = 'Đã phân lịch';
+        break;
+      case 'Onboard':
+        color = 'cyan';
+        text = 'Đã lên xe';
+        break;
+      case 'Absent':
+        color = 'red';
+        text = 'Vắng mặt';
+        break;
+      case 'Canceled':
+        color = 'volcano';
+        text = 'Đã hủy';
+        break;
+      case 'Completed':
+        color = 'green';
+        text = 'Hoàn thành';
+        break;
+      default:
+        color = 'default';
+        text = status;
+    }
+    return <Tag color={color}>{text}</Tag>;
   }
 
   if (loading) {
@@ -155,12 +214,121 @@ const CamperTransportSchedule: React.FC = () => {
                                             Thực tế: {schedule.actualStartTime.substring(0, 5)}
                                         </Text>
                                     )}
+                                    <Button
+                                        type="primary"
+                                        icon={<EyeOutlined />}
+                                        onClick={() => handleViewDetail(schedule)}
+                                        className="bg-[#FF8F50] hover:bg-[#ff7e3d] border-none mt-2"
+                                    >
+                                        Xem chi tiết
+                                    </Button>
                                 </Col>
                              </Row>
                         </Card>
                     ))}
                 </div>
             )}
+
+            <Modal
+                title={
+                    <div className="text-lg font-semibold">
+                        Chi Tiết Lịch Đưa Đón
+                    </div>
+                }
+                open={detailModalVisible}
+                onCancel={handleCloseModal}
+                footer={[
+                    <Button key="close" onClick={handleCloseModal}>
+                        Đóng
+                    </Button>
+                ]}
+                width={800}
+            >
+                {selectedSchedule && (
+                    <div className="space-y-4">
+                        <Card className="bg-gray-50">
+                            <Descriptions column={2} bordered size="small">
+                                <Descriptions.Item label="Ngày:" span={1}>
+                                    {dayjs(selectedSchedule.date).format('DD/MM/YYYY')}
+                                </Descriptions.Item>
+                                <Descriptions.Item label="Loại chuyến:" span={1}>
+                                    <Tag color={selectedSchedule.transportType?.toUpperCase() === 'PICKUP' ? 'blue' : 'green'}>
+                                        {getTransportTypeDisplay(selectedSchedule.transportType)}
+                                    </Tag>
+                                </Descriptions.Item>
+                                <Descriptions.Item label="Thời gian:" span={2}>
+                                    {selectedSchedule.startTime.substring(0, 5)} - {selectedSchedule.endTime.substring(0, 5)}
+                                </Descriptions.Item>
+                                <Descriptions.Item label="Tuyến đường:" span={2}>
+                                    {selectedSchedule.routeName.routeName || "Chưa cập nhật"}
+                                </Descriptions.Item>
+                                <Descriptions.Item label="Phương tiện:" span={2}>
+                                    {selectedSchedule.vehicleName.vehicleName || "Chưa cập nhật"} 
+                                    {selectedSchedule.vehicleName.vehicleNumber && ` (${selectedSchedule.vehicleName.vehicleNumber})`}
+                                </Descriptions.Item>
+                                <Descriptions.Item label="Tài xế:" span={2}>
+                                    {selectedSchedule.driverFullName.fullName || "Chưa cập nhật"}
+                                </Descriptions.Item>
+                                <Descriptions.Item label="Trạng thái chuyến xe:" span={2}>
+                                    {renderStatusTag(selectedSchedule.status)}
+                                </Descriptions.Item>
+                            </Descriptions>
+                        </Card>
+
+                        <div className="mt-4">
+                            <Title level={5} className="mb-3">Thông Tin Camper</Title>
+                            {detailLoading ? (
+                                <div className="flex justify-center py-8">
+                                    <Spin />
+                                </div>
+                            ) : camperTransportDetails.length === 0 ? (
+                                <Empty description="Không có thông tin camper" />
+                            ) : (
+                                <div className="space-y-3">
+                                    {camperTransportDetails.map((detail) => (
+                                        <Card key={detail.camperTransportId} className="shadow-sm">
+                                            <Descriptions column={2} size="small">
+                                                <Descriptions.Item label="Tên Camper" span={2}>
+                                                    <Text strong>{detail.camper.camperName || "Không xác định"}</Text>
+                                                </Descriptions.Item>
+                                                <Descriptions.Item label="Địa điểm đón/trả" span={2}>
+                                                    <EnvironmentOutlined className="mr-2" />
+                                                    {detail.location.name || "Chưa cập nhật"}
+                                                </Descriptions.Item>
+                                                <Descriptions.Item label="Trạng thái" span={1}>
+                                                    {renderCamperTransportStatusTag(detail.status)}
+                                                </Descriptions.Item>
+                                                <Descriptions.Item label="Vắng mặt" span={1}>
+                                                    <Tag color={detail.isAbsent ? 'red' : 'green'}>
+                                                        {detail.isAbsent ? 'Có' : 'Không'}
+                                                    </Tag>
+                                                </Descriptions.Item>
+                                                {detail.checkInTime && (
+                                                    <Descriptions.Item label="Giờ lên xe" span={1}>
+                                                        <ClockCircleOutlined className="mr-2" />
+                                                        {dayjs(detail.checkInTime).format('HH:mm DD/MM/YYYY')}
+                                                    </Descriptions.Item>
+                                                )}
+                                                {detail.checkOutTime && (
+                                                    <Descriptions.Item label="Giờ xuống xe" span={1}>
+                                                        <ClockCircleOutlined className="mr-2" />
+                                                        {dayjs(detail.checkOutTime).format('HH:mm DD/MM/YYYY')}
+                                                    </Descriptions.Item>
+                                                )}
+                                                {detail.note && (
+                                                    <Descriptions.Item label="Ghi chú" span={2}>
+                                                        <Text type="secondary">{detail.note}</Text>
+                                                    </Descriptions.Item>
+                                                )}
+                                            </Descriptions>
+                                        </Card>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
+            </Modal>
         </div>
     </div>
   );

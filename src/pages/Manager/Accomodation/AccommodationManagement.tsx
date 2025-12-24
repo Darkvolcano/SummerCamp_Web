@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Spin, Modal, Form, Input, InputNumber, Select } from 'antd';
-import { Search, Plus, Eye, Edit2, Check, } from 'lucide-react';
+import { Search, Plus, Eye, Edit2 } from 'lucide-react';
 import { useManagerContext } from '../../../hooks/useManagerContext';
 import { useNotification } from '../../../contexts/NotificationContext';
 import accommodationService, { type AccommodationResponseDto, type AccommodationRequestDto } from '../../../services/accommodationService';
@@ -225,7 +225,7 @@ const AccommodationManagement: React.FC = () => {
     }
   };
 
-  // Handle deactivate/activate accommodation
+  // Handle toggle accommodation status
   const handleToggleStatus = async (accommodationId: number, isActive: boolean) => {
     try {
       const newStatus = !isActive;
@@ -236,10 +236,27 @@ const AccommodationManagement: React.FC = () => {
         const accommodationsData = await accommodationService.getAccommodationsByCampId(selectedCampId);
         setAccommodations(accommodationsData);
       }
-      setDeletePopoverOpen(null);
     } catch (error: any) {
       console.error('Failed to toggle accommodation status:', error);
       const errorMessage = error.response?.data?.message || error.message || 'Không thể cập nhật trạng thái nơi ở';
+      toastError('Cảnh báo', errorMessage);
+    }
+  };
+
+  // Handle delete accommodation
+  const handleDelete = async (accommodationId: number) => {
+    try {
+      await accommodationService.deleteAccommodation(accommodationId);
+      toastSuccess('Thành công', 'Xóa nơi ở thành công');
+      // Refresh accommodations
+      if (selectedCampId) {
+        const accommodationsData = await accommodationService.getAccommodationsByCampId(selectedCampId);
+        setAccommodations(accommodationsData);
+      }
+      setDeletePopoverOpen(null);
+    } catch (error: any) {
+      console.error('Failed to delete accommodation:', error);
+      const errorMessage = error.response?.data?.message || error.message || 'Không thể xóa nơi ở';
       toastError('Cảnh báo', errorMessage);
     }
   };
@@ -424,9 +441,13 @@ const AccommodationManagement: React.FC = () => {
                               )}
                             </td>
                             <td className="px-6 py-4 text-sm whitespace-nowrap">
-                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${accommodation.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                              <button
+                                onClick={() => handleToggleStatus(accommodation.accommodationId, accommodation.isActive)}
+                                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium cursor-pointer transition-all hover:opacity-80 ${accommodation.isActive ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-red-100 text-red-700 hover:bg-red-200'}`}
+                                title={`Click để ${accommodation.isActive ? 'hủy kích hoạt' : 'kích hoạt'}`}
+                              >
                                 {accommodation.isActive ? 'Active' : 'Inactive'}
-                              </span>
+                              </button>
                             </td>
                             <td className="px-6 py-4 text-right">
                               <div className="flex items-center justify-end gap-2">
@@ -439,28 +460,16 @@ const AccommodationManagement: React.FC = () => {
                                   <Eye size={16} />
                                   Chi tiết
                                 </button>
-                                {accommodation.isActive ? (
-                                  <DeletePopover
-                                    onConfirm={() => handleToggleStatus(accommodation.accommodationId, accommodation.isActive)}
-                                    title="Hủy Kích Hoạt Nơi Ở"
-                                    message={`Bạn có chắc muốn hủy kích hoạt "${accommodation.name}"?`}
-                                    buttonText="Hủy Kích Hoạt"
-                                    isOpen={deletePopoverOpen === accommodation.accommodationId}
-                                    onOpenChange={(open) =>
-                                      setDeletePopoverOpen(open ? accommodation.accommodationId : null)
-                                    }
-                                  />
-                                ) : (
-                                  <button
-                                    onClick={() => handleToggleStatus(accommodation.accommodationId, accommodation.isActive)}
-                                    className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-all font-medium text-sm whitespace-nowrap"
-                                    title="Kích Hoạt Nơi Ở"
-                                    style={{ minWidth: '110px' }}
-                                  >
-                                    <Check size={16} />
-                                    Kích Hoạt
-                                  </button>
-                                )}
+                                <DeletePopover
+                                  onConfirm={() => handleDelete(accommodation.accommodationId)}
+                                  title="Xóa Nơi Ở"
+                                  message={`Bạn có chắc muốn xóa vĩnh viễn "${accommodation.name}"? Hành động này không thể hoàn tác.`}
+                                  buttonText="Xóa"
+                                  isOpen={deletePopoverOpen === accommodation.accommodationId}
+                                  onOpenChange={(open) =>
+                                    setDeletePopoverOpen(open ? accommodation.accommodationId : null)
+                                  }
+                                />
                               </div>
                             </td>
                           </tr>
@@ -606,6 +615,7 @@ const AccommodationManagement: React.FC = () => {
           >
             <Select
               placeholder="Chọn người giám sát"
+              allowClear={!editingAccommodation || !editingAccommodation.supervisor}
               disabled={!!(editingAccommodation && !isEditMode)}
               optionLabelProp="label"
               options={staffList.map((staff) => ({

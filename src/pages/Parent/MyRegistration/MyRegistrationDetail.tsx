@@ -304,10 +304,12 @@ const RegistrationDetail: React.FC = () => {
             </div>
           )}
 
-          {/* Reject Reason */}
-          {registration.rejectReason && (
+          {/* Reject/Cancel Reason */}
+          {(registration.status === "Rejected" || registration.status === "Canceled") && registration.rejectReason && (
             <div className="mt-6 bg-red-50 p-4 rounded-lg border border-red-200">
-              <p className="text-sm text-red-900 font-semibold mb-1">Lý do từ chối</p>
+              <p className="text-sm text-red-900 font-semibold mb-1">
+                {registration.status === "Canceled" ? "Lý do hủy" : "Lý do từ chối"}
+              </p>
               <p className="text-red-700 italic">"{registration.rejectReason}"</p>
             </div>
           )}
