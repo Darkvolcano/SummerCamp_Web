@@ -157,10 +157,8 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
     if (!schedule?.activityScheduleId) return;
 
     try {
-      // Delete the group-activity assignment
-      await groupActivityService.deleteGroupActivity(groupId);
+      await groupActivityService.deleteGroupActivity(groupId, schedule.activityScheduleId);
 
-      // Only refresh if deletion was successful
       const groups = await groupService.getGroupsByActivityScheduleId(schedule.activityScheduleId);
       setAssignedGroups(groups);
       

@@ -241,7 +241,7 @@ const ScheduleDetail: React.FC<ScheduleDetailProps> = ({
               </div>
             ) : (
               <span className="text-sm text-gray-500 italic">
-                Tất cả nhóm
+                Chưa phân nhóm
               </span>
             )}
           </Descriptions.Item>
