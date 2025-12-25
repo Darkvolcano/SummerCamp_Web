@@ -160,10 +160,10 @@ const ManagerDashboard: React.FC = () => {
       if (result instanceof Blob) {
         const fileName = `Bao_Cao_${camp.name}_${dayjs().format("YYYYMMDD_HHmmss")}.xlsx`;
         campReportService.downloadFile(result, fileName);
-        toastError("Thành công", "Đã tải xuống báo cáo thành công");
+        toastSuccess("Thành công", "Đã tải xuống báo cáo thành công");
       } else {
         await campReportService.downloadFromUrl(result.downloadUrl, result.fileName);
-        toastError("Thành công", "Đã tải xuống báo cáo thành công");
+        toastSuccess("Thành công", "Đã tải xuống báo cáo thành công");
       }
     } catch (error: any) {
       console.error("Failed to export report:", error);

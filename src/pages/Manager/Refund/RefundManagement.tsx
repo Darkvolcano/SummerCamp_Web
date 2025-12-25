@@ -130,6 +130,12 @@ const RefundManagement: React.FC = () => {
       width: 80,
     },
     {
+      title: 'Mã ĐK',
+      dataIndex: 'registrationId',
+      key: 'registrationId',
+      width: 80,
+    },
+    {
       title: 'Phụ huynh',
       key: 'parent',
       render: (record: RegistrationCancelResponseDto) => (
@@ -304,15 +310,19 @@ const RefundManagement: React.FC = () => {
               </h3>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm text-gray-600 mb-1">Số tiền hoàn</p>
-                  <p className="text-lg font-bold text-green-600">
-                    {selectedRefund.refundAmount.toLocaleString('vi-VN')} ₫
-                  </p>
+                  <p className="text-sm text-gray-600 mb-1">Mã đăng ký</p>
+                  <p className="text-base font-medium text-gray-900">#{selectedRefund.registrationId}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-600 mb-1">Ngày yêu cầu</p>
                   <p className="text-base font-medium text-gray-900">
                     {new Date(selectedRefund.requestDate).toLocaleString('vi-VN')}
+                  </p>
+                </div>
+                <div className="col-span-2">
+                  <p className="text-sm text-gray-600 mb-1">Số tiền hoàn</p>
+                  <p className="text-lg font-bold text-green-600">
+                    {selectedRefund.refundAmount.toLocaleString('vi-VN')} ₫
                   </p>
                 </div>
                 <div className="col-span-2">
@@ -449,7 +459,6 @@ const RefundManagement: React.FC = () => {
                       icon={<CloseOutlined />}
                       onClick={handleOpenRejectModal}
                       size="large"
-                      style={{ color: 'white' }}
                     >
                       Từ Chối
                     </Button>
