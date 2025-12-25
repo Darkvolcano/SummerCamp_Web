@@ -369,28 +369,28 @@ const AccommodationManagement: React.FC = () => {
 
                 {/* Table */}
                 <div className="overflow-x-auto">
-                  <table className="w-full" style={{ tableLayout: 'fixed', minWidth: '1200px' }}>
+                  <table className="w-full">
                     <thead className="bg-[#F9FAFB] border-b border-[#E5E7EB]">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider" style={{ width: '60px' }}>
-                          STT
+                        <th className="px-3 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider" style={{ width: '50px' }}>
+                          ID
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider" style={{ width: '110px' }}>
+                        <th className="px-3 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
                           Tên Nơi Ở
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider" style={{ width: '90px' }}>
+                        <th className="px-3 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider" style={{ width: '90px' }}>
                           Loại
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider" style={{ width: '100px' }}>
+                        <th className="px-3 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider" style={{ width: '100px' }}>
                           Sức Chứa
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider" style={{ width: '150px' }}>
+                        <th className="px-3 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
                           Người Giám Sát
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider" style={{ width: '100px' }}>
+                        <th className="px-3 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider" style={{ width: '110px' }}>
                           Trạng Thái
                         </th>
-                        <th className="px-6 py-3 text-right text-xs font-semibold text-[#6B7280] uppercase tracking-wider" style={{ width: '260px' }}>
+                        <th className="px-3 py-3 text-right text-xs font-semibold text-[#6B7280] uppercase tracking-wider" style={{ width: '180px' }}>
                           Thao Tác
                         </th>
                       </tr>
@@ -400,7 +400,7 @@ const AccommodationManagement: React.FC = () => {
                         <tr>
                           <td
                             colSpan={7}
-                            className="px-6 py-12 text-center text-[#6B7280]"
+                            className="px-3 py-12 text-center text-[#6B7280]"
                           >
                             Không tìm thấy nơi ở nào phù hợp
                           </td>
@@ -411,25 +411,25 @@ const AccommodationManagement: React.FC = () => {
                             key={accommodation.accommodationId}
                             className="hover:bg-[#F9FAFB] transition-colors"
                           >
-                            <td className="px-6 py-4 text-sm font-mono text-[#6B7280] whitespace-nowrap">
+                            <td className="px-3 py-3 text-sm font-mono text-[#6B7280] whitespace-nowrap">
                               {index + 1}
                             </td>
-                            <td className="px-6 py-4 text-sm font-medium text-[#111827]">
+                            <td className="px-3 py-3 text-sm font-medium text-[#111827]">
                               <div className="truncate" title={accommodation.name}>
                                 {accommodation.name}
                               </div>
                             </td>
-                            <td className="px-6 py-4 text-sm text-[#6B7280]">
+                            <td className="px-3 py-3 text-sm text-[#6B7280]">
                               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-700 whitespace-nowrap">
                                 {getAccommodationTypeName(accommodation.accommodationTypeId)}
                               </span>
                             </td>
-                            <td className="px-6 py-4 text-sm text-[#6B7280] whitespace-nowrap">
+                            <td className="px-3 py-3 text-sm text-[#6B7280] whitespace-nowrap">
                               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
                                 {accommodation.capacity}
                               </span>
                             </td>
-                            <td className="px-6 py-4 text-sm text-[#6B7280]">
+                            <td className="px-3 py-3 text-sm text-[#6B7280]">
                               {accommodation.supervisor?.fullName ? (
                                 <div className="truncate" title={accommodation.supervisor.fullName}>
                                   {accommodation.supervisor.fullName}
@@ -440,7 +440,7 @@ const AccommodationManagement: React.FC = () => {
                                 </span>
                               )}
                             </td>
-                            <td className="px-6 py-4 text-sm whitespace-nowrap">
+                            <td className="px-3 py-3 text-sm whitespace-nowrap">
                               <button
                                 onClick={() => handleToggleStatus(accommodation.accommodationId, accommodation.isActive)}
                                 className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium cursor-pointer transition-all hover:opacity-80 ${accommodation.isActive ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-red-100 text-red-700 hover:bg-red-200'}`}
@@ -449,13 +449,12 @@ const AccommodationManagement: React.FC = () => {
                                 {accommodation.isActive ? 'Active' : 'Inactive'}
                               </button>
                             </td>
-                            <td className="px-6 py-4 text-right">
-                              <div className="flex items-center justify-end gap-2">
+                            <td className="px-3 py-3 text-right">
+                              <div className="flex items-center justify-end gap-1.5">
                                 <button
                                   onClick={() => handleViewDetails(accommodation)}
-                                  className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#F3F4F6] text-[#6B7280] rounded-lg hover:bg-[#E5E7EB] transition-all font-medium text-sm whitespace-nowrap"
+                                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-[#F3F4F6] text-[#6B7280] rounded-lg hover:bg-[#E5E7EB] transition-all font-medium text-sm whitespace-nowrap"
                                   title="Xem Chi Tiết"
-                                  style={{ minWidth: '110px' }}
                                 >
                                   <Eye size={16} />
                                   Chi tiết

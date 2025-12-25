@@ -411,7 +411,7 @@ const GroupManagement: React.FC = () => {
                     <p className="text-xs font-medium text-[#6B7280] mb-1">Sức Chứa</p>
                     <div className="flex items-center gap-1">
                       <span className="text-2xl font-bold text-[#111827]">{getTotalMaxSize()}</span>
-                      <span className="text-xs text-[#6B7280]">/ {campData.maxParticipants} max</span>
+                      <span className="text-xs text-[#6B7280]">/ {campData.maxParticipants} sức chứa trại</span>
                     </div>
                   </div>
                 )}
@@ -450,9 +450,6 @@ const GroupManagement: React.FC = () => {
                           Tên Nhóm
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                          Mô Tả
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
                           Số Lượng / Tuổi
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
@@ -487,9 +484,6 @@ const GroupManagement: React.FC = () => {
                             </td>
                             <td className="px-6 py-4 text-sm font-medium text-[#111827]">
                               {group.groupName}
-                            </td>
-                            <td className="px-6 py-4 text-sm text-[#374151] max-w-xs truncate">
-                              {group.description}
                             </td>
                             <td className="px-6 py-4 text-sm text-[#6B7280]">
                               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
@@ -665,9 +659,32 @@ const GroupManagement: React.FC = () => {
               rules={[
                 { required: true, message: 'Vui lòng nhập tuổi tối thiểu!' },
                 { type: 'number', min: 0, message: 'Tuổi tối thiểu phải >= 0!' },
+                {
+                  validator: (_, value) => {
+                    if (!campData) return Promise.resolve();
+                    if (value == null) return Promise.resolve();
+                    if (value < campData.minAge) {
+                      return Promise.reject(new Error(`Tuổi tối thiểu phải >= ${campData.minAge} (tuổi tối thiểu của trại)`));
+                    }
+                    if (value > campData.maxAge) {
+                      return Promise.reject(new Error(`Tuổi tối thiểu phải <= ${campData.maxAge} (tuổi tối đa của trại)`));
+                    }
+                    const maxAge = form.getFieldValue('maxAge');
+                    if (maxAge != null && value >= maxAge) {
+                      return Promise.reject(new Error('Tuổi tối thiểu phải < tuổi tối đa'));
+                    }
+                    return Promise.resolve();
+                  }
+                }
               ]}
             >
-              <InputNumber min={0} placeholder="Ví dụ: 5" className="w-full" />
+              <InputNumber 
+                min={campData?.minAge || 0} 
+                max={campData?.maxAge || 100}
+                placeholder={campData ? `${campData.minAge} - ${campData.maxAge}` : "Ví dụ: 5"} 
+                className="w-full"
+                disabled={!!(editingGroup && !isEditMode)}
+              />
             </Form.Item>
 
             <Form.Item
@@ -676,9 +693,32 @@ const GroupManagement: React.FC = () => {
               rules={[
                 { required: true, message: 'Vui lòng nhập tuổi tối đa!' },
                 { type: 'number', min: 0, message: 'Tuổi tối đa phải >= 0!' },
+                {
+                  validator: (_, value) => {
+                    if (!campData) return Promise.resolve();
+                    if (value == null) return Promise.resolve();
+                    if (value < campData.minAge) {
+                      return Promise.reject(new Error(`Tuổi tối đa phải >= ${campData.minAge} (tuổi tối thiểu của trại)`));
+                    }
+                    if (value > campData.maxAge) {
+                      return Promise.reject(new Error(`Tuổi tối đa phải <= ${campData.maxAge} (tuổi tối đa của trại)`));
+                    }
+                    const minAge = form.getFieldValue('minAge');
+                    if (minAge != null && value <= minAge) {
+                      return Promise.reject(new Error('Tuổi tối đa phải > tuổi tối thiểu'));
+                    }
+                    return Promise.resolve();
+                  }
+                }
               ]}
             >
-              <InputNumber min={0} placeholder="Ví dụ: 15" className="w-full" />
+              <InputNumber 
+                min={campData?.minAge || 0}
+                max={campData?.maxAge || 100}
+                placeholder={campData ? `${campData.minAge} - ${campData.maxAge}` : "Ví dụ: 12"} 
+                className="w-full"
+                disabled={!!(editingGroup && !isEditMode)}
+              />
             </Form.Item>
           </div>
 
