@@ -29,6 +29,7 @@ const TransactionPage: React.FC = () => {
 
     useEffect(() => {
         fetchTransactions();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const sortedTransactions = [...transactions].sort((a, b) => {
@@ -169,36 +170,6 @@ const TransactionPage: React.FC = () => {
                                             <span className="text-xs text-[#6B7280]">Tổng: </span>
                                             <span className="text-lg font-bold text-[#111827]">
                                                 {transactions.length}
-                                            </span>
-                                        </div>
-                                        <div>
-                                            <span className="text-xs text-[#6B7280]">Thành công: </span>
-                                            <span className="text-lg font-bold text-[#10B981]">
-                                                {
-                                                    transactions.filter((t) =>
-                                                        ["success", "completed"].includes(t.status.toLowerCase())
-                                                    ).length
-                                                }
-                                            </span>
-                                        </div>
-                                        <div>
-                                            <span className="text-xs text-[#6B7280]">Đang chờ: </span>
-                                            <span className="text-lg font-bold text-[#F59E0B]">
-                                                {
-                                                    transactions.filter((t) =>
-                                                        t.status.toLowerCase() === "pending"
-                                                    ).length
-                                                }
-                                            </span>
-                                        </div>
-                                        <div>
-                                            <span className="text-xs text-[#6B7280]">Thất bại: </span>
-                                            <span className="text-lg font-bold text-[#EF4444]">
-                                                {
-                                                    transactions.filter((t) =>
-                                                        ["failed", "cancelled"].includes(t.status.toLowerCase())
-                                                    ).length
-                                                }
                                             </span>
                                         </div>
                                     </div>
