@@ -542,9 +542,6 @@ const StaffCampDetail: React.FC = () => {
                     <div className="flex-1">
                       <p className="font-semibold text-gray-900">{camper.camperName}</p>
                     </div>
-                    {camper.camperRegistrationStatus && (
-                      <Tag color="orange">{camper.camperRegistrationStatus}</Tag>
-                    )}
                   </div>
                 ))}
               </div>
