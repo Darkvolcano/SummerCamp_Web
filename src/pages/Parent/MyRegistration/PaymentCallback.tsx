@@ -39,13 +39,15 @@ const PaymentCallback: React.FC = () => {
     // Process payment callback
     const processPaymentCallback = async () => {
       try {
+        const normalizedStatus = (status || "UNKNOWN").toUpperCase();
+        
         // Parse the response based on URL parameters
         const callbackResponse: PaymentCallbackResponse = {
-          isSuccess: status === "PAID" || status === "SUCCESS",
+          isSuccess: normalizedStatus === "PAID" || normalizedStatus === "SUCCESS",
           orderCode: orderCode ? parseInt(orderCode) : 0,
-          status: status || "UNKNOWN",
-          message: getMessageByStatus(status || "UNKNOWN"),
-          detail: getDetailByStatus(status || "UNKNOWN"),
+          status: normalizedStatus,
+          message: getMessageByStatus(normalizedStatus),
+          detail: getDetailByStatus(normalizedStatus),
         };
 
         setResult(callbackResponse);
@@ -53,9 +55,9 @@ const PaymentCallback: React.FC = () => {
         // Show toast notification
         if (callbackResponse.isSuccess) {
           toastSuccess("Thanh toán thành công!", callbackResponse.message);
-        } else if (status === "CANCELLED") {
+        } else if (normalizedStatus === "CANCELLED" || normalizedStatus === "CANCELED") {
           toastError("Đã hủy thanh toán", callbackResponse.message);
-        } else if (status === "PENDING") {
+        } else if (normalizedStatus === "PENDING") {
           toastError("Thanh toán đang xử lý", callbackResponse.message);
         } else {
           toastError("Thanh toán thất bại", callbackResponse.message);
@@ -82,11 +84,13 @@ const PaymentCallback: React.FC = () => {
   }, [searchParams, toastSuccess, toastError]);
 
   const getMessageByStatus = (status: string): string => {
-    switch (status) {
+    const normalizedStatus = status.toUpperCase();
+    switch (normalizedStatus) {
       case "PAID":
       case "SUCCESS":
         return "Thanh toán thành công!";
       case "CANCELLED":
+      case "CANCELED":
         return "Giao dịch chưa hoàn tất.";
       case "PENDING":
         return "Thanh toán đang được xử lý.";
@@ -98,11 +102,13 @@ const PaymentCallback: React.FC = () => {
   };
 
   const getDetailByStatus = (status: string): string => {
-    switch (status) {
+    const normalizedStatus = status.toUpperCase();
+    switch (normalizedStatus) {
       case "PAID":
       case "SUCCESS":
         return "Đăng ký của bạn đã được xác nhận. Cảm ơn bạn đã sử dụng dịch vụ!";
       case "CANCELLED":
+      case "CANCELED":
         return "Bạn có thể thử thanh toán lại từ lịch sử đăng ký.";
       case "PENDING":
         return "Chúng tôi sẽ cập nhật trạng thái thanh toán sớm nhất.";

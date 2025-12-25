@@ -225,9 +225,19 @@ const CamperDetail: React.FC = () => {
             }
           : undefined;
 
+      const genderMap: { [key: string]: string } = {
+        'Nam': 'Male',
+        'Nữ': 'Female',
+        'Khác': 'Other',
+        'Male': 'Male',
+        'Female': 'Female',
+        'Other': 'Other',
+      };
+      const genderValue = genderMap[values.gender] || values.gender;
+
       const updateData: CamperUpdateRequestDto = {
         camperName: values.camperName,
-        gender: values.gender,
+        gender: genderValue,
         dob: dobValue,
         healthRecord,
       };

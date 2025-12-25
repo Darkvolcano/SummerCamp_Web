@@ -67,9 +67,6 @@ const CampTransaction: React.FC = () => {
     statusCounts[transaction.status] = (statusCounts[transaction.status] || 0) + 1;
   });
 
-  // Calculate statistics - only Confirmed transactions
-  const confirmedTransactions = filteredTransactions.filter(t => t.status === 'Confirmed');
-  const totalAmount = confirmedTransactions.reduce((sum, t) => sum + t.amount, 0);
 
   const getStatusBadge = (status: string) => {
     const statusConfig: Record<string, { color: string }> = {
@@ -316,20 +313,6 @@ const CampTransaction: React.FC = () => {
                   </tbody>
                 </table>
               </div>
-
-              {/* Summary Footer */}
-              {filteredTransactions.length > 0 && (
-                <div className="px-6 py-4 bg-[#F9FAFB] border-t border-[#E5E7EB]">
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm text-[#6B7280]">
-                      Hiển thị {filteredTransactions.length} trong số {transactions.length} giao dịch
-                    </div>
-                    <div className="text-lg font-bold text-[#111827]">
-                      Tổng Tiền: {formatCurrency(totalAmount)}
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         </div>
