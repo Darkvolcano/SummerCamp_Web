@@ -850,46 +850,32 @@ const ManagerDashboard: React.FC = () => {
                   <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
                     Trại Viên
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                    Độ Tuổi
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
-                    Giới Tính
-                  </th>
                   <th className="px-6 py-3 text-right text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
                     Thao Tác
                   </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#E5E7EB]">
-                {pendingCampers.slice(0, 5).map((camper: any) => (
-                  <tr key={camper.camper?.camperId} className="hover:bg-[#F9FAFB] transition-colors">
+                {pendingCampers.slice(0, 5).map((item: any) => (
+                  <tr key={item.camper?.camperId} className="hover:bg-[#F9FAFB] transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        {camper.camper?.avatar ? (
+                        {item.camper?.avatar ? (
                           <img
-                            src={camper.camper.avatar}
-                            alt={camper.camper.fullName}
+                            src={item.camper.avatar}
+                            alt={item.camper.camperName}
                             className="w-10 h-10 rounded-full object-cover"
                           />
                         ) : (
                           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white font-bold">
-                            {camper.camper?.fullName?.charAt(0).toUpperCase() || '?'}
+                            {item.camper?.camperName?.charAt(0).toUpperCase() || '?'}
                           </div>
                         )}
                         <div>
-                          <p className="text-sm font-semibold text-[#111827]">{camper.camper?.fullName || 'N/A'}</p>
-                          <p className="text-xs text-[#6B7280]">ID: #{camper.camper?.camperId}</p>
+                          <p className="text-sm font-semibold text-[#111827]">{item.camper?.camperName || 'N/A'}</p>
+                          <p className="text-xs text-[#6B7280]">ID: #{item.camper?.camperId}</p>
                         </div>
                       </div>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-[#374151]">
-                      {camper.camper?.age || 'N/A'} tuổi
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
-                        {camper.camper?.gender === 'Male' ? 'Nam' : camper.camper?.gender === 'Female' ? 'Nữ' : 'Khác'}
-                      </span>
                     </td>
                     <td className="px-6 py-4 text-right">
                       <button
