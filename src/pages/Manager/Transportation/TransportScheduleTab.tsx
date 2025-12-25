@@ -908,7 +908,7 @@ const TransportScheduleTab: React.FC = () => {
                 <div className="mb-4 p-4 bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-200 rounded-lg">
                   <div className="flex items-center gap-2 mb-4">
                     <Truck size={20} className="text-indigo-600" />
-                    <h3 className="text-base font-bold text-indigo-900">Tài Nguyên Chia Sẻ</h3>
+                    <h3 className="text-base font-bold text-indigo-900">Tài Xế và Phương Tiện</h3>
                   </div>
 
                   <Form.Item
