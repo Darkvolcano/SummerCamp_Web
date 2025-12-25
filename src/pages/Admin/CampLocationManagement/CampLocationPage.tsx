@@ -383,7 +383,7 @@ const CampLocationPage: React.FC = () => {
                                     : "bg-red-100 text-red-700"
                                   }`}
                               >
-                                {location.isActive ? "Hoạt động" : "Không hoạt động"}
+                                {location.isActive ? "Active" : "Inactive"}
                               </span>
                             </td>
                             <td className="px-6 py-4 text-right">
@@ -586,7 +586,7 @@ const CampLocationPage: React.FC = () => {
                                     : "bg-gray-100 text-gray-700"
                                   }`}
                               >
-                                {loc.isActive ? "Hoạt động" : "Không hoạt động"}
+                                {loc.isActive ? "Active" : "Inactive"}
                               </span>
                             </td>
                             <td className="px-3 py-2 text-right">

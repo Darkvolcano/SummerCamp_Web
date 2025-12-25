@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Search, Trash2, RefreshCw, Mail, Phone, Calendar, CheckCircle, XCircle, Clock, UserPlus } from "lucide-react";
-import { Spin, Modal, Form, Input, Select, DatePicker } from "antd";
+import { Search, Trash2, RefreshCw, Mail, Phone, Calendar, CheckCircle, XCircle, Clock, UserPlus, Eye } from "lucide-react";
+import { Spin, Modal, Form, Input, Select, DatePicker, Button } from "antd";
 import userAccountService, {
   type UserAccountResponseDto,
 } from "../../../services/userAccountService";
@@ -8,6 +8,7 @@ import { useCreateAccountByAdmin, type CreateAccountByAdminRequestDto } from "..
 import driverService, { type DriverResponseDto, DriverStatus } from "../../../services/driverService";
 import { Role } from "../../../enums/role.enum";
 import { useNotification } from "../../../contexts/NotificationContext";
+import axios from "../../../config/axios";
 
 const UserManagement: React.FC = () => {
   const { toastSuccess, toastError } = useNotification();
@@ -22,6 +23,12 @@ const UserManagement: React.FC = () => {
   // Pending drivers - separate section
   const [pendingDrivers, setPendingDrivers] = useState<DriverResponseDto[]>([]);
   const [loadingPendingDrivers, setLoadingPendingDrivers] = useState(true);
+
+  // User detail modal
+  const [detailModalVisible, setDetailModalVisible] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<UserAccountResponseDto | null>(null);
+  const [driverInfo, setDriverInfo] = useState<any>(null);
+  const [loadingDriverInfo, setLoadingDriverInfo] = useState(false);
 
   // Filters
   const [searchQuery, setSearchQuery] = useState("");
@@ -246,6 +253,32 @@ const UserManagement: React.FC = () => {
       const errorMessage = error?.responseValue?.message || "Không thể tạo tài khoản";
       toastError('Cảnh báo', errorMessage);
     }
+  };
+
+  // Handle view user detail
+  const handleViewDetail = async (user: UserAccountResponseDto) => {
+    setSelectedUser(user);
+    setDriverInfo(null);
+    setDetailModalVisible(true);
+
+    if (user.role === Role.DRIVER) {
+      try {
+        setLoadingDriverInfo(true);
+        const response = await axios.get(`/driver/user/${user.userId}`);
+        setDriverInfo(response.data);
+      } catch (error) {
+        console.error("Error fetching driver info:", error);
+        toastError('Cảnh báo', "Không thể tải thông tin tài xế");
+      } finally {
+        setLoadingDriverInfo(false);
+      }
+    }
+  };
+
+  const handleCloseDetailModal = () => {
+    setDetailModalVisible(false);
+    setSelectedUser(null);
+    setDriverInfo(null);
   };
 
   // Get role badge color
@@ -654,6 +687,14 @@ const UserManagement: React.FC = () => {
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <button
+                          onClick={() => handleViewDetail(user)}
+                          className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-all font-medium text-sm"
+                          title="Xem Chi Tiết"
+                        >
+                          <Eye size={14} />
+                          Chi Tiết
+                        </button>
+                        <button
                           onClick={() => handleDelete(user)}
                           className="inline-flex items-center gap-1 px-3 py-1.5 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-all font-medium text-sm"
                           title="Delete User"
@@ -834,6 +875,127 @@ const UserManagement: React.FC = () => {
             </Select>
           </Form.Item>
         </Form>
+      </Modal>
+
+      {/* User Detail Modal */}
+      <Modal
+        title={
+          <div className="flex items-center gap-2">
+            <Eye size={20} className="text-[#6366F1]" />
+            <span className="text-lg font-bold">Chi Tiết Người Dùng</span>
+          </div>
+        }
+        open={detailModalVisible}
+        onCancel={handleCloseDetailModal}
+        footer={[
+          <Button key="close" onClick={handleCloseDetailModal}>
+            Đóng
+          </Button>
+        ]}
+        width={600}
+      >
+        {selectedUser && (
+          <div className="mt-4 space-y-4">
+            {/* Basic Info */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm text-gray-600 font-medium mb-1">Họ</p>
+                <p className="text-gray-900">{selectedUser.firstName}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600 font-medium mb-1">Tên</p>
+                <p className="text-gray-900">{selectedUser.lastName}</p>
+              </div>
+            </div>
+
+            <div>
+              <p className="text-sm text-gray-600 font-medium mb-1">Email</p>
+              <div className="flex items-center gap-2 text-gray-900">
+                <Mail size={14} />
+                {selectedUser.email}
+              </div>
+            </div>
+
+            <div>
+              <p className="text-sm text-gray-600 font-medium mb-1">Số Điện Thoại</p>
+              <div className="flex items-center gap-2 text-gray-900">
+                <Phone size={14} />
+                {selectedUser.phoneNumber || "Không có"}
+              </div>
+            </div>
+
+            <div>
+              <p className="text-sm text-gray-600 font-medium mb-1">Ngày Sinh</p>
+              <div className="flex items-center gap-2 text-gray-900">
+                <Calendar size={14} />
+                {formatDate(selectedUser.dateOfBirth)}
+              </div>
+            </div>
+
+            <div>
+              <p className="text-sm text-gray-600 font-medium mb-1">Vai Trò</p>
+              <span
+                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getRoleBadgeColor(
+                  selectedUser.role
+                )}`}
+              >
+                {selectedUser.role}
+              </span>
+            </div>
+
+            <div>
+              <p className="text-sm text-gray-600 font-medium mb-1">Trạng Thái</p>
+              <span
+                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                  selectedUser.isActive
+                    ? "bg-green-100 text-green-700"
+                    : "bg-red-100 text-red-700"
+                }`}
+              >
+                {selectedUser.isActive ? "Active" : "Inactive"}
+              </span>
+            </div>
+
+            {/* Driver Info Section */}
+            {selectedUser.role === Role.DRIVER && (
+              <div className="border-t border-gray-200 pt-4 mt-4">
+                <h3 className="text-base font-semibold text-gray-900 mb-3">
+                  Thông Tin Tài Xế
+                </h3>
+                {loadingDriverInfo ? (
+                  <div className="flex items-center justify-center py-4">
+                    <Spin size="small" />
+                    <span className="ml-2 text-sm text-gray-600">Đang tải...</span>
+                  </div>
+                ) : driverInfo ? (
+                  <div className="space-y-3">
+                    <div>
+                      <p className="text-sm text-gray-600 font-medium mb-1">
+                        Số Giấy Phép Lái Xe
+                      </p>
+                      <p className="text-gray-900 font-mono">
+                        {driverInfo.licenseNumber || "Không có"}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600 font-medium mb-1">
+                        Ngày Hết Hạn Giấy Phép
+                      </p>
+                      <div className="flex items-center gap-2 text-gray-900">
+                        <Calendar size={14} />
+                        {formatDate(driverInfo.licenseExpiry)}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500">
+                    Không thể tải thông tin tài xế
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+        )}
       </Modal>
     </div>
   );

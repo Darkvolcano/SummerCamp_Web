@@ -399,12 +399,6 @@ const CampPrograms: React.FC = () => {
                   Tên Trại
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider w-[130px]">
-                  Loại Trại
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider w-[150px]">
-                  Địa Điểm
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider w-[130px]">
                   <div className="flex items-center gap-1.5">
                     Ngày Bắt Đầu
                     <button
@@ -439,7 +433,7 @@ const CampPrograms: React.FC = () => {
             <tbody className="divide-y divide-[#E5E7EB]">
               {loading ? (
                 <tr>
-                  <td colSpan={11} className="px-6 py-12 text-center">
+                  <td colSpan={9} className="px-6 py-12 text-center">
                     <div className="flex items-center justify-center">
                       <Spin size="large" tip="Đang tải..." />
                     </div>
@@ -448,7 +442,7 @@ const CampPrograms: React.FC = () => {
               ) : filteredCamps.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={11}
+                    colSpan={9}
                     className="px-6 py-12 text-center text-[#6B7280]"
                   >
                     Không tìm thấy trại phù hợp
@@ -467,14 +461,6 @@ const CampPrograms: React.FC = () => {
                       <div className="text-sm font-semibold text-[#111827]">
                         {camp.name}
                       </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#EFF6FF] text-[#3B82F6]">
-                        {camp.campType?.name || "Không có"}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-[#6B7280]">
-                      {camp.place}
                     </td>
                     <td className="px-6 py-4 text-sm text-[#374151]">
                       {formatDate(camp.startDate)}
