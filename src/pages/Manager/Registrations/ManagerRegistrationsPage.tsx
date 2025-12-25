@@ -397,7 +397,7 @@ const ManagerRegistrationsPage: React.FC = () => {
                           ID
                         </th>
                         <th className="px-4 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider w-28">
-                          Trại Viên
+                          Số Trại Viên
                         </th>
                         <th className="px-4 py-3 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider w-24">
                           Ngày ĐK
